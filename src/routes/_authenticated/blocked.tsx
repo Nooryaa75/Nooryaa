@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/blocked")({
-  head: () => ({ meta: [{ title: "Profils bloqués — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Profils bloqués — Nooryaa" }] }),
   component: BlockedList,
 });
 

@@ -11,7 +11,7 @@ import { MapPin, Search, User } from "lucide-react";
 import { EDUCATION_LEVELS } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/browse")({
-  head: () => ({ meta: [{ title: "Découvrir — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Découvrir — Nooryaa" }] }),
   component: Browse,
 });
 
@@ -63,7 +63,7 @@ function Browse() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-serif text-primary">Découvrir</h1>
-        <p className="text-muted-foreground text-sm">Affinez votre recherche. Noorya est 100% gratuit.</p>
+        <p className="text-muted-foreground text-sm">Affinez votre recherche. Nooryaa est 100% gratuit.</p>
       </div>
 
       <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 grid md:grid-cols-3 lg:grid-cols-7 gap-3">

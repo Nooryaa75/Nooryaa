@@ -14,26 +14,26 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Noorya — Site de rencontre musulman 100% gratuit pour mariage halal" },
-      { name: "description", content: "Noorya : site de rencontre musulman 100% gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
-      { name: "keywords", content: "site de rencontre musulman gratuit, rencontre musulmane, mariage halal, célibataire musulman, célibataire musulmane, rencontre mariage musulman, site mariage islam, rencontre halal, muslima, inchallah, Noorya" },
-      { property: "og:title", content: "Noorya — Rencontres musulmanes 100% gratuites pour mariage halal" },
+      { title: "Nooryaa — Site de rencontre musulman 100% gratuit pour mariage halal" },
+      { name: "description", content: "Nooryaa : site de rencontre musulman 100% gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
+      { name: "keywords", content: "site de rencontre musulman gratuit, rencontre musulmane, mariage halal, célibataire musulman, célibataire musulmane, rencontre mariage musulman, site mariage islam, rencontre halal, muslima, inchallah, Nooryaa" },
+      { property: "og:title", content: "Nooryaa — Rencontres musulmanes 100% gratuites pour mariage halal" },
       { property: "og:description", content: "Inscription, messagerie et photos 100% gratuites. Trouvez votre moitié dans le respect des valeurs de l'islam." },
-      { property: "og:url", content: "https://noorya.lovable.app/" },
+      { property: "og:url", content: "https://nooryaa.lovable.app/" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://noorya.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://nooryaa.lovable.app/" }],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Noorya",
-          url: "https://noorya.lovable.app/",
+          name: "Nooryaa",
+          url: "https://nooryaa.lovable.app/",
           inLanguage: "fr",
           description: "Site de rencontre musulman 100% gratuit pour mariage halal sérieux.",
-          potentialAction: { "@type": "SearchAction", target: "https://noorya.lovable.app/browse?q={search_term_string}", "query-input": "required name=search_term_string" },
+          potentialAction: { "@type": "SearchAction", target: "https://nooryaa.lovable.app/browse?q={search_term_string}", "query-input": "required name=search_term_string" },
         }),
       },
       {
@@ -41,8 +41,8 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Noorya",
-          url: "https://noorya.lovable.app/",
+          name: "Nooryaa",
+          url: "https://nooryaa.lovable.app/",
           slogan: "Rencontres musulmanes 100% gratuites pour mariage halal",
           areaServed: ["FR", "BE", "CH", "CA", "LU", "MA", "DZ", "TN"],
         }),
@@ -53,10 +53,10 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: [
-            { "@type": "Question", name: "Noorya est-il vraiment 100% gratuit ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Inscription, recherche, photos et messagerie sont entièrement gratuites sur Noorya. Aucun abonnement, aucune option payante." } },
-            { "@type": "Question", name: "Noorya est-il un site de rencontre halal ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Noorya est pensé pour le mariage musulman : profils sérieux, valeurs de l'islam respectées, modération active." } },
-            { "@type": "Question", name: "Comment s'inscrire sur Noorya ?", acceptedAnswer: { "@type": "Answer", text: "Inscription en moins d'une minute par email ou Google, avec un numéro de téléphone unique. Choisissez un pseudo, ajoutez jusqu'à 6 photos et commencez à discuter." } },
-            { "@type": "Question", name: "Qui peut utiliser Noorya ?", acceptedAnswer: { "@type": "Answer", text: "Tous les célibataires musulmans et musulmanes majeurs cherchant un mariage halal sérieux, partout en France, en Belgique, en Suisse, au Canada et dans le monde francophone." } },
+            { "@type": "Question", name: "Nooryaa est-il vraiment 100% gratuit ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Inscription, recherche, photos et messagerie sont entièrement gratuites sur Nooryaa. Aucun abonnement, aucune option payante." } },
+            { "@type": "Question", name: "Nooryaa est-il un site de rencontre halal ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Nooryaa est pensé pour le mariage musulman : profils sérieux, valeurs de l'islam respectées, modération active." } },
+            { "@type": "Question", name: "Comment s'inscrire sur Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Inscription en moins d'une minute par email ou Google, avec un numéro de téléphone unique. Choisissez un pseudo, ajoutez jusqu'à 6 photos et commencez à discuter." } },
+            { "@type": "Question", name: "Qui peut utiliser Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Tous les célibataires musulmans et musulmanes majeurs cherchant un mariage halal sérieux, partout en France, en Belgique, en Suisse, au Canada et dans le monde francophone." } },
           ],
         }),
       },
@@ -69,12 +69,12 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="bg-[color:var(--gold)] text-primary-foreground text-center text-xs md:text-sm py-2 px-4 font-medium">
-        ✨ Noorya est <strong>100% GRATUIT</strong> — inscription, photos et messagerie illimitée, sans abonnement, sans carte bancaire.
+        ✨ Nooryaa est <strong>100% GRATUIT</strong> — inscription, photos et messagerie illimitée, sans abonnement, sans carte bancaire.
       </div>
       <header className="absolute top-0 left-0 right-0 z-10">
         <nav className="container mx-auto flex items-center justify-between px-6 py-5">
           <Link to="/" className="text-2xl font-serif font-semibold tracking-tight text-primary">
-            Noorya
+            Nooryaa
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-foreground/80 hover:text-foreground">
@@ -97,7 +97,7 @@ function Landing() {
               Rencontres musulmanes <span className="text-[color:var(--gold)]">100% gratuites</span> pour le mariage halal.
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">
-              Noorya est le site de rencontre musulman <strong>100% gratuit</strong> — sans
+              Nooryaa est le site de rencontre musulman <strong>100% gratuit</strong> — sans
               abonnement, sans option payante. Inscription, photos et messagerie illimitée
               offertes. Trouvez un mari ou une épouse dans le respect des valeurs de l'islam.
             </p>
@@ -212,7 +212,7 @@ function Landing() {
           </p>
           <Link to="/auth" search={{ mode: "signup" }}>
             <Button size="lg" className="rounded-full px-10 shadow-[var(--shadow-soft)]">
-              Rejoindre Noorya gratuitement
+              Rejoindre Nooryaa gratuitement
             </Button>
           </Link>
         </div>
@@ -221,7 +221,7 @@ function Landing() {
       <ContactSection />
 
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © 2026 Noorya — Rencontres musulmanes sérieuses, 100% gratuites
+        © 2026 Nooryaa — Rencontres musulmanes sérieuses, 100% gratuites
       </footer>
     </div>
   );
@@ -232,7 +232,7 @@ function HeroVisual() {
   const { data: ads } = useQuery({ queryKey: ["public-ads"], queryFn: () => fetchAds() });
   const slides = (ads && ads.length > 0)
     ? ads.map((a) => ({ id: a.id, image_url: a.image_url, link_url: a.link_url, title: a.title }))
-    : [{ id: "hero", image_url: heroImg, link_url: null as string | null, title: "Noorya" }];
+    : [{ id: "hero", image_url: heroImg, link_url: null as string | null, title: "Nooryaa" }];
 
   const [idx, setIdx] = useState(0);
   useEffect(() => {
@@ -245,7 +245,7 @@ function HeroVisual() {
   const Img = (
     <img
       src={current.image_url}
-      alt={current.title ?? "Noorya"}
+      alt={current.title ?? "Nooryaa"}
       className="rounded-[1.75rem] shadow-[var(--shadow-soft)] w-full h-auto object-cover transition-opacity duration-700"
     />
   );

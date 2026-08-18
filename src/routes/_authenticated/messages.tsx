@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle, User } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/messages")({
-  head: () => ({ meta: [{ title: "Messages — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Messages — Nooryaa" }] }),
   component: MessagesLayout,
 });
 

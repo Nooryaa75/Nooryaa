@@ -253,14 +253,14 @@ export const adminSeedTestProfiles = createServerFn({ method: "POST" }).handler(
   const results: { pseudo: string; status: string }[] = [];
 
   for (const p of TEST_PROFILES) {
-    const email = `${p.pseudo}@noorya.test`;
+    const email = `${p.pseudo}@nooryaa.test`;
     // Skip if already exists
     const { data: existing } = await supabaseAdmin.from("profiles").select("id").eq("pseudo", p.pseudo).maybeSingle();
     if (existing) { results.push({ pseudo: p.pseudo, status: "exists" }); continue; }
 
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password: "TestNoorya2026!",
+      password: "TestNooryaa2026!",
       email_confirm: true,
       user_metadata: { test_profile: true },
     });

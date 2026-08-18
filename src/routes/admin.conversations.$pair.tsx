@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/conversations/$pair")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Conversation — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Conversation — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });

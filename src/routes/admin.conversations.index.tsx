@@ -10,7 +10,7 @@ import { MessageSquare, Image as ImageIcon } from "lucide-react";
 
 export const Route = createFileRoute("/admin/conversations/")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Discussions — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Discussions — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });

@@ -13,7 +13,7 @@ import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROF
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/me")({
-  head: () => ({ meta: [{ title: "Mon profil — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Mon profil — Nooryaa" }] }),
   component: MyProfile,
 });
 
@@ -210,7 +210,7 @@ function MyProfile() {
             </Select>
           </div>
           <div className="md:col-span-2">
-            <Label>Mon objectif sur Noorya</Label>
+            <Label>Mon objectif sur Nooryaa</Label>
             <Select value={form.objective ?? ""} onValueChange={(v) => setForm({ ...form, objective: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>

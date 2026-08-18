@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, ACTIVITIES_OPTIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  head: () => ({ meta: [{ title: "Compléter mon profil — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Compléter mon profil — Nooryaa" }] }),
   component: Onboarding,
 });
 
@@ -92,7 +92,7 @@ function Onboarding() {
 
   return (
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
-      <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Noorya</h1>
+      <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
       <p className="text-muted-foreground text-sm mb-6">Quelques informations pour bien démarrer. Tout est gratuit.</p>
       <form onSubmit={submit} className="space-y-5">
         <div>
@@ -213,7 +213,7 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Mon objectif sur Noorya *</Label>
+          <Label>Mon objectif sur Nooryaa *</Label>
           <Select value={form.objective} onValueChange={(v) => setForm({ ...form, objective: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>

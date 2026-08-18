@@ -10,7 +10,7 @@ import { Mail, Trash2, CheckCircle2, Circle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/contact")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Contact — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Contact — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });
@@ -42,7 +42,7 @@ function AdminContact() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-serif text-primary flex items-center gap-2"><Mail className="h-7 w-7" /> Messages de contact</h1>
-            <p className="text-sm text-muted-foreground">Messages envoyés depuis le formulaire de contact de Noorya.</p>
+            <p className="text-sm text-muted-foreground">Messages envoyés depuis le formulaire de contact de Nooryaa.</p>
           </div>
           <Button variant={onlyUnread ? "default" : "outline"} size="sm" onClick={() => setOnlyUnread((v) => !v)}>
             {onlyUnread ? "Tous" : "Non lus uniquement"}

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/login")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Admin — Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Admin — Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (authed) throw redirect({ to: "/admin" });
@@ -44,7 +44,7 @@ function AdminLogin() {
         <div className="flex flex-col items-center gap-2">
           <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Lock className="h-5 w-5" /></div>
           <h1 className="text-xl font-serif text-primary">Espace administration</h1>
-          <p className="text-xs text-muted-foreground">Accès réservé à l'équipe Noorya</p>
+          <p className="text-xs text-muted-foreground">Accès réservé à l'équipe Nooryaa</p>
         </div>
         <div>
           <Label htmlFor="pwd">Mot de passe</Label>

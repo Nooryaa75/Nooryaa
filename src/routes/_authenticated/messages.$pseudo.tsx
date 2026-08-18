@@ -8,7 +8,7 @@ import { ArrowLeft, Send, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/messages/$pseudo")({
-  head: ({ params }) => ({ meta: [{ title: `Chat avec ${params.pseudo} — Noorya` }] }),
+  head: ({ params }) => ({ meta: [{ title: `Chat avec ${params.pseudo} — Nooryaa` }] }),
   component: Conversation,
 });
 

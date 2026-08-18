@@ -1,7 +1,7 @@
 
-## Plan — Noorya v2
+## Plan — Nooryaa v2
 
-### 1. Renommage Nikah → Noorya
+### 1. Renommage Nikah → Nooryaa
 - `AppHeader`, `index.tsx` (landing), `auth.tsx`, balises `<title>` / meta description / OG.
 
 ### 2. Nouveaux champs profil

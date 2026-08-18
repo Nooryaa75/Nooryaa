@@ -11,7 +11,7 @@ import { ageFromBirthdate } from "@/lib/profile";
 
 export const Route = createFileRoute("/admin/profiles/")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Profils — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Profils — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });

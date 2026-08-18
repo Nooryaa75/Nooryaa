@@ -5,7 +5,7 @@ import { Heart, User } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/likes")({
-  head: () => ({ meta: [{ title: "Coups de cœur — Noorya" }] }),
+  head: () => ({ meta: [{ title: "Coups de cœur — Nooryaa" }] }),
   component: Likes,
 });
 

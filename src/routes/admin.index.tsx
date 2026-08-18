@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Tableau de bord — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Tableau de bord — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });
@@ -56,7 +56,7 @@ function AdminDashboard() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-serif text-primary">Tableau de bord</h1>
-            <p className="text-sm text-muted-foreground">Vue d'ensemble de la plateforme Noorya.</p>
+            <p className="text-sm text-muted-foreground">Vue d'ensemble de la plateforme Nooryaa.</p>
           </div>
           {data && data.openReports > 0 && (
             <Link to="/admin/reports" className="inline-flex items-center gap-2 rounded-full bg-red-50 text-red-700 px-4 py-2 text-sm font-medium hover:bg-red-100">
@@ -98,7 +98,7 @@ function AdminDashboard() {
             <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center"><Sparkles className="h-5 w-5" /></div>
             <div>
               <div className="font-medium text-primary">Profils de test</div>
-              <p className="text-sm text-muted-foreground max-w-xl">Crée 6 profils de test (3 hommes / 3 femmes) avec photos, bio et infos complètes pour discuter avec vos prospects. Mot de passe : <code className="px-1 rounded bg-muted">TestNoorya2026!</code>, emails <code className="px-1 rounded bg-muted">*@noorya.test</code>.</p>
+              <p className="text-sm text-muted-foreground max-w-xl">Crée 6 profils de test (3 hommes / 3 femmes) avec photos, bio et infos complètes pour discuter avec vos prospects. Mot de passe : <code className="px-1 rounded bg-muted">TestNooryaa2026!</code>, emails <code className="px-1 rounded bg-muted">*@nooryaa.test</code>.</p>
             </div>
           </div>
           <Button onClick={() => seed.mutate()} disabled={seed.isPending} className="rounded-full">

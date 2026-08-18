@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
-  head: ({ params }) => ({ meta: [{ title: `${params.pseudo} — Noorya` }] }),
+  head: ({ params }) => ({ meta: [{ title: `${params.pseudo} — Nooryaa` }] }),
   component: ProfileView,
 });
 

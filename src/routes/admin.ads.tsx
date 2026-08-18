@@ -13,7 +13,7 @@ import { Trash2, Plus, ExternalLink, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/admin/ads")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Publicités — Admin Noorya" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Publicités — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });

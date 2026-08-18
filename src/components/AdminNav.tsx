@@ -39,7 +39,7 @@ export function AdminNav() {
   return (
     <header className="sticky top-0 z-40 bg-primary text-primary-foreground border-b border-border/60">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-6xl">
-        <Link to="/admin" className="text-lg font-serif font-semibold">Noorya · Administration</Link>
+        <Link to="/admin" className="text-lg font-serif font-semibold">Nooryaa · Administration</Link>
         <nav className="hidden md:flex items-center gap-1">
           {links.map((l) => {
             const active = l.exact ? pathname === l.to : pathname.startsWith(l.to);

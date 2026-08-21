@@ -154,10 +154,11 @@ function Landing() {
             <ul className="space-y-4">
               {[
                 "Inscription, recherche et messagerie 100% gratuites.",
-                "Profils vérifiés par téléphone et email (un seul compte par personne).",
                 "Modération active : signalement et blocage en un clic.",
                 "Aucune publicité, aucun abonnement caché.",
-                "Respect strict de la confidentialité de vos données.",
+                "Respect strict de la confidentialité et de la pudeur.",
+                "Un cadre pensé pour des rencontres halal, avec intention de nikah.",
+                "Possibilité d’échanges respectueux, avec ou sans implication du wali, selon les préférences.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-[color:var(--gold)] flex-shrink-0 mt-0.5" />

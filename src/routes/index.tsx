@@ -210,11 +210,12 @@ function ContactSection() {
       <div className="grid md:grid-cols-2 gap-10 items-start max-w-5xl mx-auto">
         <div>
           <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4 flex items-center gap-3"><Mail className="h-7 w-7 text-[color:var(--gold)]" /> Contactez-nous</h2>
-          <p className="text-muted-foreground mb-4">Une question, un partenariat, un signalement urgent ? Notre équipe vous répond rapidement.</p>
+          <p className="text-muted-foreground mb-4">Une question, un partenariat, un signalement urgent ?<br />Notre équipe vous répond rapidement, dans un esprit de bienveillance et de respect.</p>
           <ul className="space-y-2 text-sm text-foreground/80">
             <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Réponse sous 24h ouvrées</li>
             <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Confidentialité garantie</li>
             <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Modération sérieuse</li>
+            <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Respect des valeurs du dîn</li>
           </ul>
         </div>
         <form

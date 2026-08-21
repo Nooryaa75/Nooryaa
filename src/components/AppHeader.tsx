@@ -26,11 +26,13 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-6xl">
-        <Link to="/browse" className="flex items-center gap-2.5">
-          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-full object-cover gold-glow" />
-          <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
-          <span className="hidden sm:inline-block ml-1 align-middle text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-sans">100% gratuit</span>
+      <div className="container mx-auto flex items-start justify-between px-4 pt-2 pb-2 max-w-6xl">
+        <Link to="/browse" className="flex items-start gap-2.5 -mt-1">
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-10 w-10 rounded-full object-cover gold-glow -mt-0.5" />
+          <div className="flex flex-col leading-none">
+            <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-sans w-fit mt-1">100% gratuit</span>
+          </div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

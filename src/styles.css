@@ -66,34 +66,39 @@
 
 :root {
   --radius: 0.875rem;
-  /* Doux & romantique: sauge, crème, or chaud */
-  --background: oklch(0.985 0.012 80);
-  --foreground: oklch(0.22 0.03 150);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 150);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 150);
-  --primary: oklch(0.36 0.05 155);
-  --primary-foreground: oklch(0.985 0.012 80);
-  --secondary: oklch(0.94 0.035 75);
-  --secondary-foreground: oklch(0.32 0.05 155);
-  --muted: oklch(0.95 0.018 80);
-  --muted-foreground: oklch(0.48 0.03 120);
-  --accent: oklch(0.74 0.10 75);
-  --accent-foreground: oklch(0.22 0.03 150);
-  --destructive: oklch(0.58 0.20 25);
-  --destructive-foreground: oklch(0.985 0.012 80);
-  --border: oklch(0.90 0.02 80);
-  --input: oklch(0.92 0.02 80);
-  --ring: oklch(0.74 0.10 75);
-  --gold: oklch(0.74 0.10 75);
-  --sage: oklch(0.36 0.05 155);
-  --sage-deep: oklch(0.28 0.04 155);
-  --cream: oklch(0.94 0.035 75);
-  --gradient-romantic: linear-gradient(135deg, oklch(0.36 0.05 155), oklch(0.28 0.04 155));
-  --gradient-warm: linear-gradient(135deg, oklch(0.94 0.035 75), oklch(0.985 0.012 80));
-  --shadow-soft: 0 10px 40px -10px oklch(0.36 0.05 155 / 0.18);
-  --shadow-card: 0 4px 24px -6px oklch(0.36 0.05 155 / 0.12);
+  /* Charte orientale : émeraude profonde, or antique, ivoire */
+  --background: oklch(0.982 0.014 88);
+  --foreground: oklch(0.21 0.035 165);
+  --card: oklch(0.995 0.008 90);
+  --card-foreground: oklch(0.21 0.035 165);
+  --popover: oklch(0.995 0.008 90);
+  --popover-foreground: oklch(0.21 0.035 165);
+  --primary: oklch(0.32 0.075 168);
+  --primary-foreground: oklch(0.965 0.03 88);
+  --secondary: oklch(0.93 0.045 88);
+  --secondary-foreground: oklch(0.29 0.07 168);
+  --muted: oklch(0.945 0.024 88);
+  --muted-foreground: oklch(0.46 0.035 150);
+  --accent: oklch(0.72 0.115 82);
+  --accent-foreground: oklch(0.21 0.035 165);
+  --destructive: oklch(0.52 0.19 25);
+  --destructive-foreground: oklch(0.975 0.02 88);
+  --border: oklch(0.89 0.032 85);
+  --input: oklch(0.91 0.03 85);
+  --ring: oklch(0.72 0.115 82);
+  --gold: oklch(0.72 0.115 82);
+  --gold-deep: oklch(0.58 0.105 75);
+  --gold-light: oklch(0.86 0.075 88);
+  --sage: oklch(0.32 0.075 168);
+  --sage-deep: oklch(0.23 0.06 168);
+  --emerald-deep: oklch(0.23 0.06 168);
+  --cream: oklch(0.93 0.045 88);
+  --gradient-romantic: linear-gradient(135deg, oklch(0.32 0.075 168), oklch(0.2 0.055 168));
+  --gradient-warm: linear-gradient(135deg, oklch(0.93 0.045 88), oklch(0.982 0.014 88));
+  --gradient-gold: linear-gradient(100deg, oklch(0.58 0.105 75), oklch(0.86 0.075 88) 45%, oklch(0.66 0.11 78));
+  --shadow-soft: 0 18px 50px -18px oklch(0.23 0.06 168 / 0.32);
+  --shadow-card: 0 6px 26px -8px oklch(0.23 0.06 168 / 0.16);
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);

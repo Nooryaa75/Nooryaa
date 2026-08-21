@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 
 const links = [
   { to: "/browse", label: "Découvrir", icon: Search },

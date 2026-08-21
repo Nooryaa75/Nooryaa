@@ -3,7 +3,7 @@ import heroImg from "@/assets/hero.jpg";
 import heroAsset from "@/assets/nooryaa-hero-clean.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
+import { Shield, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listActiveAds, submitContactMessage } from "@/lib/admin.functions";

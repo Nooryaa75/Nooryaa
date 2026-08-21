@@ -77,7 +77,7 @@ function Landing() {
             <span className="text-lg md:text-2xl font-serif font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-primary md:text-white drop-shadow-md">Nooryaa</span>
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-primary hover:text-primary/80 md:text-white/90 md:hover:text-white drop-shadow-md hidden sm:inline">
+            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-primary hover:text-primary/80 md:text-white/90 md:hover:text-white drop-shadow-md">
               Connexion
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>

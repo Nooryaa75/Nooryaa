@@ -177,10 +177,43 @@
 
 @utility gold-text {
   background-image: var(--gradient-gold);
+  background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: gold-shine 7s linear infinite;
 }
+
+@keyframes gold-shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@utility gold-glow {
+  box-shadow: var(--glow-gold);
+}
+
+@utility gold-sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, color-mix(in oklab, var(--gold-light) 40%, transparent) 50%, transparent 65%);
+    transform: translateX(-120%);
+    transition: transform 0.9s ease;
+    pointer-events: none;
+  }
+  &:hover::after {
+    transform: translateX(120%);
+  }
+}
+
+@utility vignette {
+  background-image: radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--sage) 40%, transparent), transparent 65%);
+}
+
 
 @utility gold-rule {
   height: 1px;

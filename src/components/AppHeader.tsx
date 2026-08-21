@@ -26,9 +26,12 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-6xl">
-        <Link to="/browse" className="text-xl font-serif font-semibold text-primary">
-          Nooryaa <span className="hidden sm:inline-block ml-2 align-middle text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-sans">100% gratuit</span>
+        <Link to="/browse" className="flex items-center gap-2.5">
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-full object-cover gold-glow" />
+          <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
+          <span className="hidden sm:inline-block ml-1 align-middle text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-sans">100% gratuit</span>
         </Link>
+
         <nav className="hidden md:flex items-center gap-1">
           {links.map((l) => {
             const active = pathname.startsWith(l.to);

@@ -98,7 +98,35 @@ function Landing() {
         />
       </section>
 
-
+      {/* Pourquoi Nooryaa */}
+      <section className="relative bg-[color:var(--cream)]/40 py-20 arabesque">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <p className="text-sm font-medium tracking-widest uppercase text-[color:var(--gold-deep)] mb-3">Notre différence</p>
+            <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">Pourquoi Nooryaa ?</h2>
+            <div className="gold-rule w-24 mx-auto mb-4" />
+            <p className="text-muted-foreground">
+              Une plateforme pensée pour les musulmans et musulmanes qui cherchent une relation sérieuse, dans le respect et la sérénité.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Heart, title: "100% gratuit", text: "Inscription, recherche, photos et messagerie illimitée. Aucun abonnement, jamais." },
+              { icon: ShieldCheck, title: "Halal & sérieux", text: "Une démarche tournée vers le mariage, avec des valeurs islamiques au cœur de l'expérience." },
+              { icon: Users, title: "Profils vérifiés", text: "Un seul compte par téléphone et par email pour garantir des échanges authentiques." },
+              { icon: Sparkles, title: "Bienveillance", text: "Modération active, signalement simple et communauté respectueuse pour avancer en confiance." },
+            ].map((item) => (
+              <div key={item.title} className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] text-center hover:shadow-[var(--glow-gold)] transition-shadow">
+                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--gold)]/10 flex items-center justify-center">
+                  <item.icon className="h-6 w-6 text-[color:var(--gold-deep)]" />
+                </div>
+                <h3 className="font-serif text-xl text-primary mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Engagements */}
       <section className="container mx-auto px-6 py-20">

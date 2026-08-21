@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
+import heroAsset from "@/assets/nooryaa-hero.jpg.asset.json";
+import featChoose from "@/assets/feature-choose.jpg";
+import featProfiles from "@/assets/feature-profiles.jpg";
+import featSearch from "@/assets/feature-search.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail } from "lucide-react";
+import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listActiveAds, submitContactMessage } from "@/lib/admin.functions";
@@ -11,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({

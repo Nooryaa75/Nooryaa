@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
 import heroAsset from "@/assets/nooryaa-hero-clean.jpg";
-import featChoose from "@/assets/feature-choose.jpg";
-import featProfiles from "@/assets/feature-profiles.jpg";
-import featSearch from "@/assets/feature-search.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
@@ -132,30 +129,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Pourquoi choisir Nooryaa — alternance image / texte */}
-      <section className="container mx-auto px-6 py-20">
-        <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">Pourquoi choisir Nooryaa ?</h2>
-        <div className="gold-rule mx-auto w-40 mb-14" />
-        <div className="space-y-16 max-w-5xl mx-auto">
-          {[
-            { img: featChoose, icon: Users, title: "Choisissez qui peut vous contacter", desc: "Définissez vos envies : âge, ville, pays d'origine, pratique religieuse. Vous seul décidez des profils qui peuvent vous écrire." },
-            { img: featProfiles, icon: Camera, title: "Découvrez des profils complets", desc: "Jusqu'à 6 photos, profession, études, activités et objectif de mariage : tout pour savoir si la personne vous correspond." },
-            { img: featSearch, icon: Search, title: "Recherchez facilement votre moitié", desc: "Des filtres puissants sur l'origine, la pratique religieuse et le niveau d'études pour trouver la bonne personne rapidement." },
-          ].map((f, i) => (
-            <div key={f.title} className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""}`}>
-              <div className="relative">
-                <div className="absolute -inset-4 arch bg-[color:var(--gold)]/10 -z-10" aria-hidden="true" />
-                <img src={f.img} alt={f.title} loading="lazy" width={1024} height={1024} className="arch gold-frame w-full h-auto object-cover shadow-[var(--shadow-soft)]" />
-              </div>
-              <div>
-                <f.icon className="h-8 w-8 text-[color:var(--gold)] mb-4" />
-                <h3 className="text-2xl font-serif text-primary mb-3">{f.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Partenaires / mise en avant */}
       <section className="container mx-auto px-6 pb-4">

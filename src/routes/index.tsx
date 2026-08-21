@@ -166,53 +166,6 @@ function Landing() {
   );
 }
 
-function HeroVisual() {
-  const fetchAds = useServerFn(listActiveAds);
-  const { data: ads } = useQuery({ queryKey: ["public-ads"], queryFn: () => fetchAds() });
-  const slides = (ads && ads.length > 0)
-    ? ads.map((a) => ({ id: a.id, image_url: a.image_url, link_url: a.link_url, title: a.title }))
-    : [{ id: "hero", image_url: heroImg, link_url: null as string | null, title: "Nooryaa" }];
-
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    if (slides.length <= 1) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
-    return () => clearInterval(t);
-  }, [slides.length]);
-
-  const current = slides[idx % slides.length];
-  const Img = (
-    <img
-      src={current.image_url}
-      alt={current.title ?? "Nooryaa"}
-      className="arch gold-frame shadow-[var(--shadow-soft)] w-full h-auto object-cover transition-opacity duration-700"
-    />
-  );
-
-  return (
-    <div className="relative">
-      {current.link_url ? (
-        <a href={current.link_url} target="_blank" rel="noopener noreferrer sponsored">{Img}</a>
-      ) : Img}
-      {slides.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {slides.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => setIdx(i)}
-              aria-label={`Diapositive ${i + 1}`}
-              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-[color:var(--gold)]" : "w-2 bg-white/70"}`}
-            />
-          ))}
-        </div>
-      )}
-      {ads && ads.length > 0 && (
-        <span className="absolute top-3 left-3 text-[10px] font-medium uppercase tracking-wider bg-white/85 text-foreground/70 px-2 py-0.5 rounded-full">Partenaire</span>
-      )}
-    </div>
-  );
-}
-
 function ContactSection() {
   const submit = useServerFn(submitContactMessage);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });

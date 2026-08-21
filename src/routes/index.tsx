@@ -175,7 +175,9 @@ function Landing() {
             Prêt(e) à commencer ?
           </h2>
           <p className="text-muted-foreground mb-8">
-            Inscription en moins d'une minute, avec votre email ou Google. Un numéro de téléphone et un email sont demandés (chacun utilisable une seule fois) pour garantir des profils uniques.
+            Avancez dans la moutabala avec sérénité.
+            <br />
+            Inscription en moins d’une minute.
           </p>
           <Link to="/auth" search={{ mode: "signup" }}>
             <Button size="lg" className="rounded-full px-10 shadow-[var(--shadow-soft)]">

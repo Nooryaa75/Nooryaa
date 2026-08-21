@@ -102,14 +102,7 @@ function Landing() {
         />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
         <div className="relative container mx-auto px-6 text-center max-w-3xl pb-16">
-          <h1 className="text-3xl md:text-5xl font-serif leading-tight text-foreground drop-shadow-[0_2px_18px_rgba(0,0,0,0.6)]">
-            L'application n°1 de la <span className="gold-text">rencontre musulmane</span> 100% gratuite
-          </h1>
-          <p className="mt-4 text-base md:text-lg text-foreground/85 max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-            Rencontre authentique dans le dîn : inscription, photos et messagerie illimitée offertes, sans abonnement.
-          </p>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link to="/auth" search={{ mode: "signup" }}>
               <Button size="lg" className="rounded-full px-9 shadow-[var(--shadow-soft)] gold-sheen">Je m'inscris</Button>
             </Link>

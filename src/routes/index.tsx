@@ -87,12 +87,12 @@ function Landing() {
         </nav>
       </header>
 
-      {/* HERO — visuel Nooryaa complet, non recadré */}
-      <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[color:var(--hero-bg)]">
+      {/* HERO — visuel Nooryaa pleine largeur, sans bandes noires */}
+      <section className="relative min-h-screen w-full overflow-hidden bg-[color:var(--hero-bg)]">
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="max-h-screen w-auto object-contain"
+          className="h-full w-full object-cover"
           width={1369}
           height={1149}
         />

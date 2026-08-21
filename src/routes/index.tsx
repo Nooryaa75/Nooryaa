@@ -3,7 +3,7 @@ import heroImg from "@/assets/hero.jpg";
 import heroAsset from "@/assets/nooryaa-hero-new.jpg.asset.json";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { Shield, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
+import { UserPlus, Camera, Send, CheckCircle2, Star, Mail } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listActiveAds, submitContactMessage } from "@/lib/admin.functions";
@@ -88,7 +88,7 @@ function Landing() {
         </nav>
       </header>
 
-      {/* HERO plein écran façon Mektoube */}
+      {/* HERO plein écran */}
       <section className="relative min-h-[92vh] flex items-end justify-center overflow-hidden">
         <img
           src={heroAsset.url}
@@ -98,36 +98,8 @@ function Landing() {
           height={768}
         />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
-        <div className="relative container mx-auto px-6 text-center max-w-3xl pb-16">
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link to="/auth" search={{ mode: "signup" }}>
-              <Button size="lg" className="rounded-full px-9 shadow-[var(--shadow-soft)] gold-sheen">Je m'inscris</Button>
-            </Link>
-            <Link to="/auth" search={{ mode: "signin" }}>
-              <Button size="lg" variant="outline" className="rounded-full px-9 bg-background/40 backdrop-blur">Je me connecte</Button>
-            </Link>
-          </div>
-        </div>
       </section>
 
-      {/* Bandeau confiance */}
-      <section className="border-y border-border/60 bg-card/40">
-        <div className="container mx-auto grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/60 px-6">
-          {[
-            { icon: Clock, title: "Validation rapide", desc: "Vos photos validées en quelques minutes." },
-            { icon: Gift, title: "100% gratuit", desc: "Aucun abonnement, aucune option payante." },
-            { icon: Shield, title: "Modération active", desc: "Une équipe dédiée à la sécurité des échanges." },
-          ].map((t) => (
-            <div key={t.title} className="flex items-start gap-3 px-2 py-7">
-              <t.icon className="h-6 w-6 text-[color:var(--gold)] flex-shrink-0" />
-              <div>
-                <p className="font-serif text-primary text-lg">{t.title}</p>
-                <p className="text-sm text-muted-foreground">{t.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
 
       {/* Partenaires / mise en avant */}

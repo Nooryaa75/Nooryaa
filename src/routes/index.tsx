@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
-import heroAsset from "@/assets/nooryaa-hero-clean.jpg";
+import heroAsset from "@/assets/nooryaa-hero-new.jpg.asset.json";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Shield, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";

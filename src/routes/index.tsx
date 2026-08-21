@@ -92,7 +92,7 @@ function Landing() {
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
           width={1369}
           height={1149}
         />

@@ -159,3 +159,38 @@
     color: var(--color-foreground);
   }
 }
+
+/* --- Ornements orientaux --- */
+@utility arabesque {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 0 0, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 100% 0, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 0 100%, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 100% 100%, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%);
+  background-size: 44px 44px;
+}
+
+@utility gold-text {
+  background-image: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility gold-rule {
+  height: 1px;
+  background-image: linear-gradient(90deg, transparent, color-mix(in oklab, var(--gold) 80%, transparent), transparent);
+}
+
+@utility arch {
+  border-top-left-radius: 999px;
+  border-top-right-radius: 999px;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+@utility gold-frame {
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--gold) 10%, transparent);
+}

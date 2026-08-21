@@ -120,7 +120,7 @@ function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Heart, title: "100% gratuit", text: "Inscription, recherche, photos et messagerie illimitée. Aucun abonnement, jamais." },
+              { icon: Heart, title: "100% gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
               { icon: ShieldCheck, title: "Halal & sérieux", text: "Une démarche tournée vers le mariage, avec des valeurs islamiques au cœur de l'expérience." },
               { icon: Users, title: "Profils vérifiés", text: "Un seul compte par téléphone et par email pour garantir des échanges authentiques." },
               { icon: Sparkles, title: "Bienveillance", text: "Modération active, signalement simple et communauté respectueuse pour avancer en confiance." },

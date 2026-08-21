@@ -171,7 +171,7 @@ function Landing() {
               {[0,1,2,3,4].map((i) => <Star key={i} className="h-5 w-5 fill-current" />)}
             </div>
             <p className="font-serif text-xl text-primary leading-relaxed">
-              « Enfin une plateforme musulmane sérieuse, claire et totalement gratuite. J'ai trouvé une personne sincère en quelques semaines. »
+              « Enfin une plateforme musulmane sérieuse, claire et totalement gratuite.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">— Amina, 28 ans</p>
           </div>

@@ -111,7 +111,7 @@ function Landing() {
       <section className="relative bg-[color:var(--cream)]/40 py-20 arabesque">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-3xl md:text-4xl font-medium tracking-widest uppercase text-[color:var(--gold-deep)] mb-3">Nos pilliers</p>
+            <p className="text-3xl md:text-4xl font-medium tracking-widest uppercase text-[color:var(--gold-deep)] mb-3">Nos Pilliers</p>
             <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">Pourquoi Nooryaa ?</h2>
             <div className="gold-rule w-24 mx-auto mb-4" />
             <p className="text-muted-foreground">

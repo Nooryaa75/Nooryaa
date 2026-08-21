@@ -98,6 +98,15 @@ function Landing() {
         />
       </section>
 
+      {/* Sous-titre sous le slogan du hero */}
+      <section className="bg-background py-6 md:py-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="font-serif text-lg md:text-2xl text-[color:var(--gold-deep)] tracking-wide">
+            Pour une relation sincère tournée vers le nikah
+          </p>
+        </div>
+      </section>
+
       {/* Pourquoi Nooryaa */}
       <section className="relative bg-[color:var(--cream)]/40 py-20 arabesque">
         <div className="container mx-auto px-6">

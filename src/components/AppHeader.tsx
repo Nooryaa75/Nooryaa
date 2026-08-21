@@ -29,9 +29,8 @@ export function AppHeader() {
       <div className="container mx-auto flex items-start justify-between px-4 pt-2 pb-2 max-w-6xl">
         <Link to="/browse" className="flex items-start gap-2.5 -mt-1">
           <img src={logoAsset.url} alt="Logo Nooryaa" className="h-10 w-10 rounded-full object-cover gold-glow -mt-0.5" />
-          <div className="flex flex-col leading-none">
+          <div className="flex flex-col leading-none justify-center">
             <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-sans w-fit mt-1">100% gratuit</span>
           </div>
         </Link>
 

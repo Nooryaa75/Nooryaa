@@ -74,9 +74,6 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="bg-[color:var(--gold)] text-primary-foreground text-center text-xs md:text-sm py-2 px-4 font-medium">
-        ✨ Nooryaa est <strong>100% GRATUIT</strong> — inscription, photos et messagerie illimitée, sans abonnement, sans carte bancaire.
-      </div>
       <header className="absolute top-0 left-0 right-0 z-10">
         <nav className="container mx-auto flex items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-3">

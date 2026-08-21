@@ -71,17 +71,17 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="absolute top-0 left-0 right-0 z-20">
-        <nav className="container mx-auto flex items-center justify-between px-6 py-5">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-11 w-11 rounded-full object-cover gold-glow" />
-            <span className="text-2xl font-serif font-semibold tracking-[0.18em] uppercase text-white drop-shadow-md">Nooryaa</span>
+        <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">
+          <Link to="/" className="flex items-center gap-2 md:gap-3">
+            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover gold-glow" />
+            <span className="text-lg md:text-2xl font-serif font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-white drop-shadow-md">Nooryaa</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-white/90 hover:text-white drop-shadow-md">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-white/90 hover:text-white drop-shadow-md hidden sm:inline">
               Connexion
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-5 gold-sheen border-0 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm">S'inscrire</Button>
+              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm">S'inscrire</Button>
             </Link>
           </div>
         </nav>

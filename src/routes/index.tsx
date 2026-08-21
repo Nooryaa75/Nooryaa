@@ -95,22 +95,23 @@ function Landing() {
       </header>
 
       {/* HERO plein écran façon Mektoube */}
-      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[92vh] flex items-end justify-center overflow-hidden">
         <img
           src={heroAsset.url}
           alt="Couple musulman marchant vers une mosquée au coucher du soleil — Nooryaa, rencontre authentique dans le dîn"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-top"
           width={1349}
           height={1152}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" aria-hidden="true" />
-        <div className="relative container mx-auto px-6 text-center max-w-3xl pt-32 pb-24">
-          <h1 className="text-4xl md:text-6xl font-serif leading-tight text-foreground drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]">
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
+        <div className="relative container mx-auto px-6 text-center max-w-3xl pb-16">
+          <h1 className="text-3xl md:text-5xl font-serif leading-tight text-foreground drop-shadow-[0_2px_18px_rgba(0,0,0,0.6)]">
             L'application n°1 de la <span className="gold-text">rencontre musulmane</span> 100% gratuite
           </h1>
-          <p className="mt-5 text-base md:text-lg text-foreground/85 max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+          <p className="mt-4 text-base md:text-lg text-foreground/85 max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
             Rencontre authentique dans le dîn : inscription, photos et messagerie illimitée offertes, sans abonnement.
           </p>
+
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link to="/auth" search={{ mode: "signup" }}>
               <Button size="lg" className="rounded-full px-9 shadow-[var(--shadow-soft)] gold-sheen">Je m'inscris</Button>

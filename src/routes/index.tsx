@@ -148,9 +148,13 @@ function Landing() {
 
       {/* Engagements */}
       <section className="container mx-auto px-6 py-20">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <p className="text-sm font-medium tracking-widest uppercase text-[color:var(--gold-deep)] mb-3">Nos pilliers</p>
+          <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">Nos engagements</h2>
+          <div className="gold-rule w-24 mx-auto mb-4" />
+        </div>
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-serif text-primary mb-6">Nos engagements</h2>
             <ul className="space-y-4">
               {[
                 "Inscription, recherche et messagerie 100% gratuites.",

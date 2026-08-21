@@ -88,14 +88,16 @@ function Landing() {
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
+        <div className="pointer-events-none absolute inset-0 arabesque opacity-[0.35]" aria-hidden="true" />
+        <div className="relative container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
           <div className="space-y-7">
-            <span className="inline-block rounded-full bg-secondary px-4 py-1.5 text-xs font-medium tracking-wider uppercase text-secondary-foreground">
+            <span className="inline-block rounded-full border border-[color:var(--gold)]/50 bg-secondary px-4 py-1.5 text-xs font-medium tracking-[0.18em] uppercase text-secondary-foreground">
               100% Gratuit · Halal · Sérieux
             </span>
             <h1 className="text-5xl md:text-6xl font-serif leading-tight text-primary">
-              Rencontres musulmanes <span className="text-[color:var(--gold)]">100% gratuites</span> pour le mariage halal.
+              Rencontres musulmanes <span className="gold-text">100% gratuites</span> pour le mariage halal.
             </h1>
+
             <p className="text-lg text-muted-foreground max-w-xl">
               Nooryaa est le site de rencontre musulman <strong>100% gratuit</strong> — sans
               abonnement, sans option payante. Inscription, photos et messagerie illimitée
@@ -120,16 +122,17 @@ function Landing() {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-6 rounded-[2rem] bg-[color:var(--cream)] -z-10" />
+            <div className="absolute -inset-6 arch bg-[color:var(--cream)] -z-10" />
             <HeroVisual />
           </div>
         </div>
       </section>
 
       <section className="container mx-auto px-6 py-20">
-        <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-14">
+        <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">
           Une rencontre pensée pour le mariage
         </h2>
+        <div className="gold-rule mx-auto w-40 mb-12" />
         <div className="grid md:grid-cols-3 gap-6">
           {[
             { icon: Users, title: "Profil complet", desc: "Pseudo unique, âge, profession, ville, pays d'origine, religion, études, activités et objectif." },
@@ -139,7 +142,7 @@ function Landing() {
             { icon: Shield, title: "Profils modérés", desc: "Notre équipe veille en continu pour garantir des profils sérieux et authentiques." },
             { icon: Gift, title: "100% gratuit", desc: "Inscription, recherche, photos et messagerie illimitée : tout est offert, sans abonnement." },
           ].map((f) => (
-            <div key={f.title} className="rounded-2xl bg-card p-8 shadow-[var(--shadow-card)] border border-border/60">
+            <div key={f.title} className="rounded-2xl bg-card p-8 shadow-[var(--shadow-card)] border border-border/60 transition-shadow hover:shadow-[var(--shadow-soft)]">
               <f.icon className="h-8 w-8 text-[color:var(--gold)] mb-4" />
               <h3 className="text-xl font-serif text-primary mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
@@ -152,6 +155,7 @@ function Landing() {
       <section className="bg-[color:var(--cream)]/40 py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">Comment ça marche ?</h2>
+          <div className="gold-rule mx-auto w-40 mb-6" />
           <p className="text-center text-muted-foreground max-w-xl mx-auto mb-14">Trois étapes simples pour rencontrer une personne sérieuse, dans le respect de vos valeurs.</p>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
@@ -246,7 +250,7 @@ function HeroVisual() {
     <img
       src={current.image_url}
       alt={current.title ?? "Nooryaa"}
-      className="rounded-[1.75rem] shadow-[var(--shadow-soft)] w-full h-auto object-cover transition-opacity duration-700"
+      className="arch gold-frame shadow-[var(--shadow-soft)] w-full h-auto object-cover transition-opacity duration-700"
     />
   );
 

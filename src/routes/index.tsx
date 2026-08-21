@@ -73,22 +73,25 @@ function Landing() {
       </div>
       <header className="absolute top-0 left-0 right-0 z-10">
         <nav className="container mx-auto flex items-center justify-between px-6 py-5">
-          <Link to="/" className="text-2xl font-serif font-semibold tracking-tight text-primary">
-            Nooryaa
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-11 w-11 rounded-full object-cover gold-glow" />
+            <span className="text-2xl font-serif font-semibold tracking-[0.18em] uppercase gold-text">Nooryaa</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-foreground/80 hover:text-foreground">
               Connexion
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-5">S'inscrire</Button>
+              <Button variant="default" size="sm" className="rounded-full px-5 gold-sheen">S'inscrire</Button>
             </Link>
           </div>
         </nav>
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 arabesque opacity-[0.35]" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 vignette" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 arabesque opacity-[0.22]" aria-hidden="true" />
+
         <div className="relative container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
           <div className="space-y-7">
             <span className="inline-block rounded-full border border-[color:var(--gold)]/50 bg-secondary px-4 py-1.5 text-xs font-medium tracking-[0.18em] uppercase text-secondary-foreground">

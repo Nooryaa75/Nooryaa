@@ -88,14 +88,16 @@ function Landing() {
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
+        <div className="pointer-events-none absolute inset-0 arabesque opacity-[0.35]" aria-hidden="true" />
+        <div className="relative container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
           <div className="space-y-7">
-            <span className="inline-block rounded-full bg-secondary px-4 py-1.5 text-xs font-medium tracking-wider uppercase text-secondary-foreground">
+            <span className="inline-block rounded-full border border-[color:var(--gold)]/50 bg-secondary px-4 py-1.5 text-xs font-medium tracking-[0.18em] uppercase text-secondary-foreground">
               100% Gratuit · Halal · Sérieux
             </span>
             <h1 className="text-5xl md:text-6xl font-serif leading-tight text-primary">
-              Rencontres musulmanes <span className="text-[color:var(--gold)]">100% gratuites</span> pour le mariage halal.
+              Rencontres musulmanes <span className="gold-text">100% gratuites</span> pour le mariage halal.
             </h1>
+
             <p className="text-lg text-muted-foreground max-w-xl">
               Nooryaa est le site de rencontre musulman <strong>100% gratuit</strong> — sans
               abonnement, sans option payante. Inscription, photos et messagerie illimitée

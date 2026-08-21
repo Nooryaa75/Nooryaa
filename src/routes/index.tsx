@@ -123,7 +123,7 @@ function Landing() {
               { icon: Heart, title: "100% gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
               { icon: ShieldCheck, title: "Halal & sérieux", text: "Une démarche centrée sur le nikah, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
               { icon: Users, title: "Fonctionnalités", text: "Chaque fonctionnalité est pensée pour préserver la pudeur, la sécurité, et la baraka dans les rencontres." },
-              { icon: Sparkles, title: "Bienveillance", text: "Modération active, signalement simple et communauté respectueuse pour avancer en confiance." },
+              { icon: Sparkles, title: "Bienveillance & adab", text: "Modération active, signalement simple et communauté respectueuse pour avancer en confiance." },
             ].map((item) => (
               <div key={item.title} className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] text-center hover:shadow-[var(--glow-gold)] transition-shadow">
                 <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--gold)]/10 flex items-center justify-center">

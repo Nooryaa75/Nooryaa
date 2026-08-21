@@ -115,7 +115,7 @@ function Landing() {
             <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">Pourquoi Nooryaa ?</h2>
             <div className="gold-rule w-24 mx-auto mb-4" />
             <p className="text-muted-foreground">
-              Une plateforme pensée pour les musulmans et musulmanes qui cherchent une relation sérieuse, dans le respect et la sérénité.
+              Une plateforme pensée pour les musulmans et musulmanes qui souhaitent avancer dans la moutabala (rencontre respectueuse), avec niyyah claire et adab dans chaque échange.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

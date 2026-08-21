@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroFullAsset from "@/assets/nooryaa-hero-full.jpg.asset.json";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Camera, Send, CheckCircle2, Star, Mail } from "lucide-react";
+import { CheckCircle2, Star, Mail } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitContactMessage } from "@/lib/admin.functions";
@@ -98,28 +98,6 @@ function Landing() {
         />
       </section>
 
-      {/* Comment ça marche */}
-      <section className="bg-[color:var(--cream)]/40 py-20">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">Comment ça marche ?</h2>
-          <div className="gold-rule mx-auto w-40 mb-6" />
-          <p className="text-center text-muted-foreground max-w-xl mx-auto mb-14">Trois étapes simples pour rencontrer une personne sérieuse, dans le respect de vos valeurs.</p>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { n: "1", icon: UserPlus, title: "Créez votre profil", desc: "Email + téléphone (unique). Choisissez un pseudo et complétez vos informations." },
-              { n: "2", icon: Camera, title: "Ajoutez vos photos", desc: "Jusqu'à 6 photos pour vous présenter authentiquement." },
-              { n: "3", icon: Send, title: "Discutez librement", desc: "Coup de cœur, message direct, partage de photos — sans aucune limite payante." },
-            ].map((s) => (
-              <div key={s.n} className="relative bg-card rounded-2xl p-8 border border-border/60 text-center">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-serif">{s.n}</div>
-                <s.icon className="h-8 w-8 text-[color:var(--gold)] mx-auto mb-3 mt-2" />
-                <h3 className="font-serif text-primary text-lg mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Engagements */}
       <section className="container mx-auto px-6 py-20">

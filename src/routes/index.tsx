@@ -87,12 +87,22 @@ function Landing() {
         </nav>
       </header>
 
-      {/* HERO — visuel Nooryaa pleine largeur, sans bandes noires */}
+      {/* HERO — visuel Nooryaa pleine largeur, image complète visible sur mobile */}
       <section className="relative min-h-screen w-full overflow-hidden bg-[color:var(--hero-bg)]">
+        {/* Fond flouté qui évite les bandes noires quand l'image est en contain */}
+        <img
+          src={heroFullAsset.url}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover blur-xl opacity-60 scale-110"
+          width={1369}
+          height={1149}
+        />
+        {/* Image principale : contain sur mobile (pas de recadrage latéral), cover sur desktop */}
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain md:object-cover"
           width={1369}
           height={1149}
         />

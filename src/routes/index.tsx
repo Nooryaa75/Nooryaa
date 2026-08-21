@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import heroImg from "@/assets/hero.jpg";
-import heroAsset from "@/assets/nooryaa-hero-new.jpg.asset.json";
+import heroFullAsset from "@/assets/nooryaa-hero-full.jpg.asset.json";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Camera, Send, CheckCircle2, Star, Mail } from "lucide-react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { listActiveAds, submitContactMessage } from "@/lib/admin.functions";
-import { useEffect, useState } from "react";
+import { submitContactMessage } from "@/lib/admin.functions";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -71,7 +70,7 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="absolute top-0 left-0 right-0 z-10">
+      <header className="absolute top-0 left-0 right-0 z-20">
         <nav className="container mx-auto flex items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-3">
             <img src={logoAsset.url} alt="Logo Nooryaa" className="h-11 w-11 rounded-full object-cover gold-glow" />
@@ -88,27 +87,16 @@ function Landing() {
         </nav>
       </header>
 
-      {/* HERO plein écran */}
-      <section className="relative min-h-[92vh] flex items-end justify-center overflow-hidden">
+      {/* HERO plein écran avec visuel complet Nooryaa */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <img
-          src={heroAsset.url}
-          alt="Couple musulman se tenant la main sous une arche, marchant vers la lumière — Nooryaa, rencontre authentique dans le dîn"
+          src={heroFullAsset.url}
+          alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
           className="absolute inset-0 h-full w-full object-cover object-top"
-          width={1152}
+          width={1344}
           height={768}
         />
-        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
       </section>
-
-
-
-      {/* Partenaires / mise en avant */}
-      <section className="container mx-auto px-6 pb-4">
-        <div className="max-w-2xl mx-auto">
-          <HeroVisual />
-        </div>
-      </section>
-
 
       {/* Comment ça marche */}
       <section className="bg-[color:var(--cream)]/40 py-20">
@@ -186,53 +174,6 @@ function Landing() {
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
         © 2026 Nooryaa — Rencontres musulmanes sérieuses, 100% gratuites
       </footer>
-    </div>
-  );
-}
-
-function HeroVisual() {
-  const fetchAds = useServerFn(listActiveAds);
-  const { data: ads } = useQuery({ queryKey: ["public-ads"], queryFn: () => fetchAds() });
-  const slides = (ads && ads.length > 0)
-    ? ads.map((a) => ({ id: a.id, image_url: a.image_url, link_url: a.link_url, title: a.title }))
-    : [{ id: "hero", image_url: heroImg, link_url: null as string | null, title: "Nooryaa" }];
-
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    if (slides.length <= 1) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
-    return () => clearInterval(t);
-  }, [slides.length]);
-
-  const current = slides[idx % slides.length];
-  const Img = (
-    <img
-      src={current.image_url}
-      alt={current.title ?? "Nooryaa"}
-      className="arch gold-frame shadow-[var(--shadow-soft)] w-full h-auto object-cover transition-opacity duration-700"
-    />
-  );
-
-  return (
-    <div className="relative">
-      {current.link_url ? (
-        <a href={current.link_url} target="_blank" rel="noopener noreferrer sponsored">{Img}</a>
-      ) : Img}
-      {slides.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {slides.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => setIdx(i)}
-              aria-label={`Diapositive ${i + 1}`}
-              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-[color:var(--gold)]" : "w-2 bg-white/70"}`}
-            />
-          ))}
-        </div>
-      )}
-      {ads && ads.length > 0 && (
-        <span className="absolute top-3 left-3 text-[10px] font-medium uppercase tracking-wider bg-white/85 text-foreground/70 px-2 py-0.5 rounded-full">Partenaire</span>
-      )}
     </div>
   );
 }

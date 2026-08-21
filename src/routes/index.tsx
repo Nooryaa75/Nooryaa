@@ -91,11 +91,11 @@ function Landing() {
       {/* HERO plein écran façon Mektoube */}
       <section className="relative min-h-[92vh] flex items-end justify-center overflow-hidden">
         <img
-          src={heroAsset}
-          alt="Couple musulman marchant vers une mosquée au coucher du soleil — Nooryaa, rencontre authentique dans le dîn"
+          src={heroAsset.url}
+          alt="Couple musulman se tenant la main sous une arche, marchant vers la lumière — Nooryaa, rencontre authentique dans le dîn"
           className="absolute inset-0 h-full w-full object-cover object-top"
           width={1152}
-          height={928}
+          height={768}
         />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
         <div className="relative container mx-auto px-6 text-center max-w-3xl pb-16">

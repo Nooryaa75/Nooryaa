@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
-import heroAsset from "@/assets/nooryaa-hero.jpg.asset.json";
+import heroAsset from "@/assets/nooryaa-hero-clean.jpg";
 import featChoose from "@/assets/feature-choose.jpg";
 import featProfiles from "@/assets/feature-profiles.jpg";
 import featSearch from "@/assets/feature-search.jpg";

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
-import heroAsset from "@/assets/nooryaa-hero.jpg.asset.json";
+import heroAsset from "@/assets/nooryaa-hero-clean.jpg";
 import featChoose from "@/assets/feature-choose.jpg";
 import featProfiles from "@/assets/feature-profiles.jpg";
 import featSearch from "@/assets/feature-search.jpg";
@@ -97,11 +97,11 @@ function Landing() {
       {/* HERO plein écran façon Mektoube */}
       <section className="relative min-h-[92vh] flex items-end justify-center overflow-hidden">
         <img
-          src={heroAsset.url}
+          src={heroAsset}
           alt="Couple musulman marchant vers une mosquée au coucher du soleil — Nooryaa, rencontre authentique dans le dîn"
           className="absolute inset-0 h-full w-full object-cover object-top"
-          width={1349}
-          height={1152}
+          width={1152}
+          height={928}
         />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent via-background/80 to-background" aria-hidden="true" />
         <div className="relative container mx-auto px-6 text-center max-w-3xl pb-16">

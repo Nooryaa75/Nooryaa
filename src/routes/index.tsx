@@ -87,16 +87,17 @@ function Landing() {
         </nav>
       </header>
 
-      {/* HERO — hauteur naturelle sur mobile pour éviter bandes et recadrage */}
-      <section className="relative w-full overflow-hidden bg-background md:min-h-screen md:bg-[color:var(--hero-bg)]">
+      {/* HERO — hauteur naturelle : image entière, pleine largeur, aucune bande */}
+      <section className="relative w-full overflow-hidden bg-background">
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="block h-auto w-full object-contain md:absolute md:inset-0 md:h-full md:object-contain"
+          className="block h-auto w-full"
           width={1369}
           height={1149}
         />
       </section>
+
 
 
       {/* Engagements */}

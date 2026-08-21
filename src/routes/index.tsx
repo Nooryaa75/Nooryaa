@@ -86,14 +86,6 @@ function Landing() {
         </nav>
       </header>
 
-      {/* Partenaires / mise en avant */}
-      <section className="container mx-auto px-6 pb-4">
-        <div className="max-w-2xl mx-auto">
-          <HeroVisual />
-        </div>
-      </section>
-
-
       {/* Comment ça marche */}
       <section className="bg-[color:var(--cream)]/40 py-20">
         <div className="container mx-auto px-6">

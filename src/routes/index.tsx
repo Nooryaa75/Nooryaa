@@ -88,7 +88,7 @@ function Landing() {
       </header>
 
       {/* HERO plein écran avec visuel complet Nooryaa */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen lg:h-[88vh] flex items-center justify-center overflow-hidden">
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."

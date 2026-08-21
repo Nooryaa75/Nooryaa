@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
+import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";

@@ -74,25 +74,25 @@ function Landing() {
         <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">
           <Link to="/" className="flex items-center gap-2 md:gap-3">
             <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover gold-glow" />
-            <span className="text-lg md:text-2xl font-serif font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-white drop-shadow-md">Nooryaa</span>
+            <span className="text-lg md:text-2xl font-serif font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-primary md:text-white drop-shadow-md">Nooryaa</span>
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-white/90 hover:text-white drop-shadow-md hidden sm:inline">
+            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-primary hover:text-primary/80 md:text-white/90 md:hover:text-white drop-shadow-md hidden sm:inline">
               Connexion
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm">S'inscrire</Button>
+              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary/10 text-primary hover:bg-primary/20 md:bg-white/10 md:text-white md:hover:bg-white/20 backdrop-blur-sm">S'inscrire</Button>
             </Link>
           </div>
         </nav>
       </header>
 
-      {/* HERO — visuel Nooryaa pleine largeur, sans bandes */}
-      <section className="relative min-h-screen w-full overflow-hidden bg-[color:var(--hero-bg)]">
+      {/* HERO — visuel Nooryaa complet sur mobile (object-contain), plein écran sur desktop */}
+      <section className="relative min-h-screen w-full overflow-hidden bg-background md:bg-[color:var(--hero-bg)]">
         <img
           src={heroFullAsset.url}
           alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="absolute inset-0 h-full w-full object-cover object-[center_70%]"
+          className="absolute inset-0 h-full w-full object-contain md:object-cover"
           width={1369}
           height={1149}
         />

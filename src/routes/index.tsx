@@ -158,7 +158,7 @@ function Landing() {
                 "Aucune publicité, aucun abonnement caché.",
                 "Respect strict de la confidentialité et de la pudeur.",
                 "Un cadre pensé pour des rencontres halal, avec intention de nikah.",
-                "Possibilité d’échanges respectueux, avec ou sans implication du wali, selon les préférences.",
+                "Possibilité d’échanges respectueux, avec ou sans implication du mahram, selon les préférences.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-[color:var(--gold)] flex-shrink-0 mt-0.5" />

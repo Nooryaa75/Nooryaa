@@ -70,7 +70,7 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="relative z-10 border-b border-border/40 bg-background/95 backdrop-blur">
+      <header className="absolute top-0 left-0 right-0 z-20">
         <nav className="container mx-auto flex items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-3">
             <img src={logoAsset.url} alt="Logo Nooryaa" className="h-11 w-11 rounded-full object-cover gold-glow" />
@@ -86,6 +86,17 @@ function Landing() {
           </div>
         </nav>
       </header>
+
+      {/* HERO plein écran avec visuel complet Nooryaa */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <img
+          src={heroFullAsset.url}
+          alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
+          className="absolute inset-0 h-full w-full object-cover object-top"
+          width={1344}
+          height={768}
+        />
+      </section>
 
       {/* Comment ça marche */}
       <section className="bg-[color:var(--cream)]/40 py-20">

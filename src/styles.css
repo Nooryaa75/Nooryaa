@@ -92,6 +92,7 @@
   --sage: oklch(0.55 0.06 155);
   --sage-deep: oklch(0.35 0.05 157);
   --emerald-deep: oklch(0.28 0.045 156);
+  --hero-bg: oklch(0.16 0.018 150);
   --cream: oklch(0.965 0.018 85);
   --sand: oklch(0.88 0.035 80);
   --gradient-romantic: radial-gradient(120% 100% at 50% 0%, oklch(0.85 0.04 82), oklch(0.91 0.028 82) 70%);

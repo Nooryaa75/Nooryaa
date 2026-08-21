@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.jpg";
+import heroAsset from "@/assets/nooryaa-hero.jpg.asset.json";
+import featChoose from "@/assets/feature-choose.jpg";
+import featProfiles from "@/assets/feature-profiles.jpg";
+import featSearch from "@/assets/feature-search.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail } from "lucide-react";
+import { Heart, Shield, Search, Users, Sparkles, MessageCircle, UserPlus, Camera, Send, CheckCircle2, Star, Gift, Mail, Clock } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listActiveAds, submitContactMessage } from "@/lib/admin.functions";
@@ -11,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -89,71 +94,85 @@ function Landing() {
         </nav>
       </header>
 
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 vignette" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 arabesque opacity-[0.22]" aria-hidden="true" />
-
-        <div className="relative container mx-auto grid lg:grid-cols-2 gap-12 px-6 pt-28 pb-20 items-center">
-          <div className="space-y-7">
-            <span className="inline-block rounded-full border border-[color:var(--gold)]/50 bg-secondary px-4 py-1.5 text-xs font-medium tracking-[0.18em] uppercase text-secondary-foreground">
-              100% Gratuit · Halal · Sérieux
-            </span>
-            <h1 className="text-5xl md:text-6xl font-serif leading-tight text-primary">
-              Rencontres musulmanes <span className="gold-text">100% gratuites</span> pour le mariage halal.
-            </h1>
-
-            <p className="text-lg text-muted-foreground max-w-xl">
-              Nooryaa est le site de rencontre musulman <strong>100% gratuit</strong> — sans
-              abonnement, sans option payante. Inscription, photos et messagerie illimitée
-              offertes. Trouvez un mari ou une épouse dans le respect des valeurs de l'islam.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/auth" search={{ mode: "signup" }}>
-                <Button size="lg" className="rounded-full px-8 shadow-[var(--shadow-soft)]">
-                  Créer mon profil gratuitement
-                </Button>
-              </Link>
-              <Link to="/auth" search={{ mode: "signin" }}>
-                <Button size="lg" variant="outline" className="rounded-full px-8">
-                  J'ai déjà un compte
-                </Button>
-              </Link>
-            </div>
-            <div className="flex items-center gap-6 pt-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2"><Gift className="h-4 w-4 text-[color:var(--gold)]" /> 100% gratuit</div>
-              <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[color:var(--gold)]" /> Profils modérés</div>
-              <div className="flex items-center gap-2"><Heart className="h-4 w-4 text-[color:var(--gold)]" /> Mariage halal</div>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="absolute -inset-6 arch bg-[color:var(--cream)] -z-10" />
-            <HeroVisual />
+      {/* HERO plein écran façon Mektoube */}
+      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+        <img
+          src={heroAsset.url}
+          alt="Couple musulman marchant vers une mosquée au coucher du soleil — Nooryaa, rencontre authentique dans le dîn"
+          className="absolute inset-0 h-full w-full object-cover"
+          width={1349}
+          height={1152}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" aria-hidden="true" />
+        <div className="relative container mx-auto px-6 text-center max-w-3xl pt-32 pb-24">
+          <h1 className="text-4xl md:text-6xl font-serif leading-tight text-foreground drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]">
+            L'application n°1 de la <span className="gold-text">rencontre musulmane</span> 100% gratuite
+          </h1>
+          <p className="mt-5 text-base md:text-lg text-foreground/85 max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+            Rencontre authentique dans le dîn : inscription, photos et messagerie illimitée offertes, sans abonnement.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link to="/auth" search={{ mode: "signup" }}>
+              <Button size="lg" className="rounded-full px-9 shadow-[var(--shadow-soft)] gold-sheen">Je m'inscris</Button>
+            </Link>
+            <Link to="/auth" search={{ mode: "signin" }}>
+              <Button size="lg" variant="outline" className="rounded-full px-9 bg-background/40 backdrop-blur">Je me connecte</Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="container mx-auto px-6 py-20">
-        <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">
-          Une rencontre pensée pour le mariage
-        </h2>
-        <div className="gold-rule mx-auto w-40 mb-12" />
-        <div className="grid md:grid-cols-3 gap-6">
+      {/* Bandeau confiance */}
+      <section className="border-y border-border/60 bg-card/40">
+        <div className="container mx-auto grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/60 px-6">
           {[
-            { icon: Users, title: "Profil complet", desc: "Pseudo unique, âge, profession, ville, pays d'origine, religion, études, activités et objectif." },
-            { icon: Search, title: "Recherche par critères", desc: "Âge, ville, pratique religieuse, situation, niveau d'études : trouvez la bonne personne." },
-            { icon: Heart, title: "Jusqu'à 6 photos", desc: "Présentez-vous authentiquement avec votre galerie personnelle." },
-            { icon: MessageCircle, title: "Messagerie directe", desc: "Ajoutez un coup de cœur et envoyez un message dès le premier clic." },
-            { icon: Shield, title: "Profils modérés", desc: "Notre équipe veille en continu pour garantir des profils sérieux et authentiques." },
-            { icon: Gift, title: "100% gratuit", desc: "Inscription, recherche, photos et messagerie illimitée : tout est offert, sans abonnement." },
-          ].map((f) => (
-            <div key={f.title} className="rounded-2xl bg-card p-8 shadow-[var(--shadow-card)] border border-border/60 transition-shadow hover:shadow-[var(--shadow-soft)]">
-              <f.icon className="h-8 w-8 text-[color:var(--gold)] mb-4" />
-              <h3 className="text-xl font-serif text-primary mb-2">{f.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
+            { icon: Clock, title: "Validation rapide", desc: "Vos photos validées en quelques minutes." },
+            { icon: Gift, title: "100% gratuit", desc: "Aucun abonnement, aucune option payante." },
+            { icon: Shield, title: "Modération active", desc: "Une équipe dédiée à la sécurité des échanges." },
+          ].map((t) => (
+            <div key={t.title} className="flex items-start gap-3 px-2 py-7">
+              <t.icon className="h-6 w-6 text-[color:var(--gold)] flex-shrink-0" />
+              <div>
+                <p className="font-serif text-primary text-lg">{t.title}</p>
+                <p className="text-sm text-muted-foreground">{t.desc}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Pourquoi choisir Nooryaa — alternance image / texte */}
+      <section className="container mx-auto px-6 py-20">
+        <h2 className="text-3xl md:text-4xl font-serif text-center text-primary mb-4">Pourquoi choisir Nooryaa ?</h2>
+        <div className="gold-rule mx-auto w-40 mb-14" />
+        <div className="space-y-16 max-w-5xl mx-auto">
+          {[
+            { img: featChoose, icon: Users, title: "Choisissez qui peut vous contacter", desc: "Définissez vos envies : âge, ville, pays d'origine, pratique religieuse. Vous seul décidez des profils qui peuvent vous écrire." },
+            { img: featProfiles, icon: Camera, title: "Découvrez des profils complets", desc: "Jusqu'à 6 photos, profession, études, activités et objectif de mariage : tout pour savoir si la personne vous correspond." },
+            { img: featSearch, icon: Search, title: "Recherchez facilement votre moitié", desc: "Des filtres puissants sur l'origine, la pratique religieuse et le niveau d'études pour trouver la bonne personne rapidement." },
+          ].map((f, i) => (
+            <div key={f.title} className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""}`}>
+              <div className="relative">
+                <div className="absolute -inset-4 arch bg-[color:var(--gold)]/10 -z-10" aria-hidden="true" />
+                <img src={f.img} alt={f.title} loading="lazy" width={1024} height={1024} className="arch gold-frame w-full h-auto object-cover shadow-[var(--shadow-soft)]" />
+              </div>
+              <div>
+                <f.icon className="h-8 w-8 text-[color:var(--gold)] mb-4" />
+                <h3 className="text-2xl font-serif text-primary mb-3">{f.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Partenaires / mise en avant */}
+      <section className="container mx-auto px-6 pb-4">
+        <div className="max-w-2xl mx-auto">
+          <HeroVisual />
+        </div>
+      </section>
+
 
       {/* Comment ça marche */}
       <section className="bg-[color:var(--cream)]/40 py-20">

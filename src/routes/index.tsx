@@ -137,6 +137,15 @@ function Landing() {
         </div>
       </section>
 
+      {/* Mission */}
+      <section className="bg-background py-12 md:py-16">
+        <div className="container mx-auto px-6 text-center max-w-3xl">
+          <p className="font-serif text-xl md:text-2xl text-primary leading-relaxed">
+            Nooryaa accompagne ceux qui recherchent une relation sincère, respectueuse, et tournée vers le mariage.
+          </p>
+        </div>
+      </section>
+
       {/* Engagements */}
       <section className="container mx-auto px-6 py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">

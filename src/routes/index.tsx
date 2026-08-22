@@ -91,7 +91,7 @@ function Landing() {
       <section className="relative w-full overflow-hidden bg-background">
         <img
           src={heroFullAsset.url}
-          alt="Nooryaa — Rencontre authentique dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
+          alt="Nooryaa — Mise en relation dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
           className="block h-auto w-full"
           width={1369}
           height={1149}

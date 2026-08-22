@@ -16,11 +16,11 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nooryaa — Site de rencontre musulman 100% gratuit pour mariage halal" },
-      { name: "description", content: "Nooryaa : site de rencontre musulman 100% gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
+      { title: "Nooryaa — Site de rencontre musulman abonnement gratuit pour mariage halal" },
+      { name: "description", content: "Nooryaa : site de rencontre musulman abonnement gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
       { name: "keywords", content: "site de rencontre musulman gratuit, rencontre musulmane, mariage halal, célibataire musulman, célibataire musulmane, rencontre mariage musulman, site mariage islam, rencontre halal, muslima, inchallah, Nooryaa" },
-      { property: "og:title", content: "Nooryaa — Rencontres musulmanes 100% gratuites pour mariage halal" },
-      { property: "og:description", content: "Inscription, messagerie et photos 100% gratuites. Trouvez votre moitié dans le respect des valeurs de l'islam." },
+      { property: "og:title", content: "Nooryaa — Rencontres musulmanes abonnement gratuites pour mariage halal" },
+      { property: "og:description", content: "Inscription, messagerie et photos abonnement gratuites. Trouvez votre moitié dans le respect des valeurs de l'islam." },
       { property: "og:url", content: "https://nooryaa.lovable.app/" },
       { property: "og:type", content: "website" },
     ],
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/")({
           name: "Nooryaa",
           url: "https://nooryaa.lovable.app/",
           inLanguage: "fr",
-          description: "Site de rencontre musulman 100% gratuit pour mariage halal sérieux.",
+          description: "Site de rencontre musulman abonnement gratuit pour mariage halal sérieux.",
           potentialAction: { "@type": "SearchAction", target: "https://nooryaa.lovable.app/browse?q={search_term_string}", "query-input": "required name=search_term_string" },
         }),
       },
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/")({
           "@type": "Organization",
           name: "Nooryaa",
           url: "https://nooryaa.lovable.app/",
-          slogan: "Rencontres musulmanes 100% gratuites pour mariage halal",
+          slogan: "Rencontres musulmanes abonnement gratuites pour mariage halal",
           areaServed: ["FR", "BE", "CH", "CA", "LU", "MA", "DZ", "TN"],
         }),
       },
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: [
-            { "@type": "Question", name: "Nooryaa est-il vraiment 100% gratuit ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Inscription, recherche, photos et messagerie sont entièrement gratuites sur Nooryaa. Aucun abonnement, aucune option payante." } },
+            { "@type": "Question", name: "Nooryaa est-il vraiment abonnement gratuit ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Inscription, recherche, photos et messagerie sont entièrement gratuites sur Nooryaa. Aucun abonnement, aucune option payante." } },
             { "@type": "Question", name: "Nooryaa est-il un site de rencontre halal ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Nooryaa est pensé pour le mariage musulman : profils sérieux, valeurs de l'islam respectées, modération active." } },
             { "@type": "Question", name: "Comment s'inscrire sur Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Inscription en moins d'une minute par email ou Google, avec un numéro de téléphone unique. Choisissez un pseudo, ajoutez jusqu'à 6 photos et commencez à discuter." } },
             { "@type": "Question", name: "Qui peut utiliser Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Tous les célibataires musulmans et musulmanes majeurs cherchant un mariage halal sérieux, partout en France, en Belgique, en Suisse, au Canada et dans le monde francophone." } },
@@ -120,7 +120,7 @@ function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Heart, title: "100% gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
+              { icon: Heart, title: "abonnement gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
               { icon: ShieldCheck, title: "Halal & sérieux", text: "Une démarche centrée sur le nikah, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
               { icon: Users, title: "Fonctionnalités", text: "Chaque fonctionnalité est pensée pour préserver la pudeur, la sécurité, et la baraka dans les rencontres." },
               { icon: Sparkles, title: "Bienveillance & adab", text: "Modération active, signalement simple, communauté respectueuse. Chaque membre s’engage à respecter les adab du dîn dans ses échanges." },
@@ -153,7 +153,7 @@ function Landing() {
           <div>
             <ul className="space-y-4">
               {[
-                "Inscription, recherche et messagerie 100% gratuites.",
+                "Inscription, recherche et messagerie abonnement gratuites.",
                 "Modération active : signalement et blocage en un clic.",
                 "Aucune publicité, aucun abonnement caché.",
                 "Respect strict de la confidentialité et de la pudeur.",
@@ -200,7 +200,7 @@ function Landing() {
       <ContactSection />
 
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © 2026 Nooryaa — Rencontres musulmanes sérieuses, 100% gratuites
+        © 2026 Nooryaa — Rencontres musulmanes sérieuses, abonnement gratuites
       </footer>
     </div>
   );

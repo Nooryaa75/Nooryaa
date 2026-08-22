@@ -14,7 +14,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Connexion — Nooryaa (100% gratuit)" }] }),
+  head: () => ({ meta: [{ title: "Connexion — Nooryaa (abonnement gratuit)" }] }),
   component: AuthPage,
 });
 
@@ -83,7 +83,7 @@ function AuthPage() {
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">
         <Link to="/" className="block text-center text-2xl font-serif text-primary mb-1">Nooryaa</Link>
         <div className="text-center mb-3">
-          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-medium">100% gratuit</span>
+          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-medium">abonnement gratuit</span>
         </div>
         <h1 className="text-2xl font-serif text-center text-primary mb-1">
           {mode === "signup" ? "Créer un compte" : "Bon retour"}

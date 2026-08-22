@@ -78,6 +78,20 @@ function AuthPage() {
     navigate({ to: "/onboarding" });
   }
 
+  async function handleApple() {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      toast.error("Connexion Apple impossible");
+      setLoading(false);
+      return;
+    }
+    if (result.redirected) return;
+    navigate({ to: "/onboarding" });
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">

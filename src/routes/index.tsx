@@ -74,14 +74,15 @@ function Landing() {
         <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">
           <Link to="/" className="flex items-center gap-2 md:gap-3">
             <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover gold-glow" />
-            <span className="text-lg md:text-2xl font-serif font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-primary md:text-white drop-shadow-md">Nooryaa</span>
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-medium text-primary hover:text-primary/80 md:text-white/90 md:hover:text-white drop-shadow-md">
-              Connexion
+            <Link to="/auth" search={{ mode: "signin" }}>
+              <Button variant="outline" size="sm" className="rounded-full px-3 md:px-5 border-primary/40 text-primary hover:bg-primary/10 md:border-white/60 md:text-white md:hover:bg-white/10 backdrop-blur-sm">
+                Connexion
+              </Button>
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary/10 text-primary hover:bg-primary/20 md:bg-white/10 md:text-white md:hover:bg-white/20 backdrop-blur-sm">S'inscrire</Button>
+              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 md:bg-white md:text-primary md:hover:bg-white/90 backdrop-blur-sm">S'inscrire</Button>
             </Link>
           </div>
         </nav>

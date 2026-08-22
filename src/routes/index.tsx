@@ -77,12 +77,12 @@ function Landing() {
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/auth" search={{ mode: "signin" }}>
-              <Button variant="outline" size="sm" className="rounded-full px-3 md:px-5 border-primary/40 text-primary hover:bg-primary/10 md:border-white/60 md:text-white md:hover:bg-white/10 backdrop-blur-sm">
+              <Button variant="outline" size="sm" className="rounded-full px-3 md:px-5 border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm">
                 Connexion
               </Button>
             </Link>
             <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 md:bg-white md:text-primary md:hover:bg-white/90 backdrop-blur-sm">S'inscrire</Button>
+              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm">S'inscrire</Button>
             </Link>
           </div>
         </nav>

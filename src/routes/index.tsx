@@ -102,7 +102,7 @@ function Landing() {
       <section className="bg-background py-6 md:py-8">
         <div className="container mx-auto px-6 text-center">
           <p className="font-serif text-lg md:text-2xl text-[color:var(--gold-deep)] tracking-wide">
-            Pour une relation sincère tournée vers le nikah
+            Pour une relation sincère tournée vers le dîn
           </p>
         </div>
       </section>
@@ -121,7 +121,7 @@ function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: Heart, title: "Abonnement Gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
-              { icon: ShieldCheck, title: "Halal & Sérieux", text: "Une démarche centrée sur le nikah, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
+              { icon: ShieldCheck, title: "Halal & Sérieux", text: "Une démarche centrée sur le dîn, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
               { icon: Users, title: "Fonctionnalités", text: "Chaque fonctionnalité est pensée pour préserver la pudeur, la sécurité, et la baraka dans les rencontres." },
               { icon: Sparkles, title: "Bienveillance & Adab", text: "Modération active, signalement simple, communauté respectueuse. Chaque membre s’engage à respecter les adab du dîn dans ses échanges." },
             ].map((item) => (
@@ -157,7 +157,7 @@ function Landing() {
                 "Modération active : signalement et blocage en un clic.",
                 "Aucune publicité, aucun abonnement caché.",
                 "Respect strict de la confidentialité et de la pudeur.",
-                "Un cadre pensé pour des rencontres halal, avec intention de nikah.",
+                "Un cadre pensé pour des rencontres halal, avec intention de dîn.",
                 "Possibilité d’échanges respectueux, avec ou sans implication du mahram, selon les préférences.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">

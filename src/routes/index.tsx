@@ -121,9 +121,9 @@ function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: Heart, title: "Abonnement Gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
-              { icon: ShieldCheck, title: "Halal title: "Halal & sérieux" Sérieux", text: "Une démarche centrée sur le nikah, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
+              { icon: ShieldCheck, title: "Halal & Sérieux", text: "Une démarche centrée sur le nikah, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
               { icon: Users, title: "Fonctionnalités", text: "Chaque fonctionnalité est pensée pour préserver la pudeur, la sécurité, et la baraka dans les rencontres." },
-              { icon: Sparkles, title: "Bienveillance title: "Bienveillance & adab" Adab", text: "Modération active, signalement simple, communauté respectueuse. Chaque membre s’engage à respecter les adab du dîn dans ses échanges." },
+              { icon: Sparkles, title: "Bienveillance & Adab", text: "Modération active, signalement simple, communauté respectueuse. Chaque membre s’engage à respecter les adab du dîn dans ses échanges." },
             ].map((item) => (
               <div key={item.title} className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] text-center hover:shadow-[var(--glow-gold)] transition-shadow">
                 <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--gold)]/10 flex items-center justify-center">

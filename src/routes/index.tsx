@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import heroFullAsset from "@/assets/nooryaa-hero-full.jpg.asset.json";
+import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Star, Mail, Heart, ShieldCheck, Users, Sparkles } from "lucide-react";
@@ -90,7 +90,7 @@ function Landing() {
       {/* HERO — hauteur naturelle : image entière, pleine largeur, aucune bande */}
       <section className="relative w-full overflow-hidden bg-background">
         <img
-          src={heroFullAsset.url}
+          src={heroFullAsset}
           alt="Nooryaa — Mise en relation dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
           className="block h-auto w-full"
           width={1369}

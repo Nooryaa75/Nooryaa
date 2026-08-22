@@ -200,7 +200,7 @@ function Landing() {
       <ContactSection />
 
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © 2026 Nooryaa — Rencontres musulmanes sérieuses, Abonnement gratuit
+        © 2026 Nooryaa — Mise en relation dans le dîn, Abonnement gratuit
       </footer>
     </div>
   );

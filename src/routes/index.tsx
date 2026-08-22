@@ -153,7 +153,7 @@ function Landing() {
           <div>
             <ul className="space-y-4">
               {[
-                "Inscription, recherche et messagerie Abonnement gratuit.",
+                "Inscription, recherche et messagerie abonnement gratuit.",
                 "Modération active : signalement et blocage en un clic.",
                 "Aucune publicité, aucun abonnement caché.",
                 "Respect strict de la confidentialité et de la pudeur.",

@@ -19,8 +19,8 @@ export const Route = createFileRoute("/")({
       { title: "Nooryaa — Site de rencontre musulman Abonnement gratuit pour mariage halal" },
       { name: "description", content: "Nooryaa : site de rencontre musulman Abonnement gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
       { name: "keywords", content: "site de rencontre musulman gratuit, rencontre musulmane, mariage halal, célibataire musulman, célibataire musulmane, rencontre mariage musulman, site mariage islam, rencontre halal, muslima, inchallah, Nooryaa" },
-      { property: "og:title", content: "Nooryaa — Rencontres musulmanes Abonnement gratuites pour mariage halal" },
-      { property: "og:description", content: "Inscription, messagerie et photos Abonnement gratuites. Trouvez votre moitié dans le respect des valeurs de l'islam." },
+      { property: "og:title", content: "Nooryaa — Rencontres musulmanes Abonnement gratuit pour mariage halal" },
+      { property: "og:description", content: "Inscription, messagerie et photos Abonnement gratuit. Trouvez votre moitié dans le respect des valeurs de l'islam." },
       { property: "og:url", content: "https://nooryaa.lovable.app/" },
       { property: "og:type", content: "website" },
     ],
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/")({
           "@type": "Organization",
           name: "Nooryaa",
           url: "https://nooryaa.lovable.app/",
-          slogan: "Rencontres musulmanes Abonnement gratuites pour mariage halal",
+          slogan: "Rencontres musulmanes Abonnement gratuit pour mariage halal",
           areaServed: ["FR", "BE", "CH", "CA", "LU", "MA", "DZ", "TN"],
         }),
       },
@@ -153,7 +153,7 @@ function Landing() {
           <div>
             <ul className="space-y-4">
               {[
-                "Inscription, recherche et messagerie Abonnement gratuites.",
+                "Inscription, recherche et messagerie Abonnement gratuit.",
                 "Modération active : signalement et blocage en un clic.",
                 "Aucune publicité, aucun abonnement caché.",
                 "Respect strict de la confidentialité et de la pudeur.",
@@ -200,7 +200,7 @@ function Landing() {
       <ContactSection />
 
       <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © 2026 Nooryaa — Rencontres musulmanes sérieuses, Abonnement gratuites
+        © 2026 Nooryaa — Rencontres musulmanes sérieuses, Abonnement gratuit
       </footer>
     </div>
   );

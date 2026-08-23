@@ -102,13 +102,13 @@ function Onboarding() {
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
-      gender: form.gender,
+      gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
       city: form.city || null,
       country: form.country || null,
       country_origin: form.country_origin || null,
-      marital_status: form.marital_status,
+      marital_status: form.marital_status as any,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
       hadj: form.hadj,

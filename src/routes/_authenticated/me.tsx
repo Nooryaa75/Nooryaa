@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Plus, Star, Trash2 } from "lucide-react";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
+import { PhotoManager } from "@/components/PhotoManager";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -23,16 +23,10 @@ export const Route = createFileRoute("/_authenticated/me")({
 function MyProfile() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: profile } = useQuery({
     queryKey: ["me", ctx.userId],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
-  });
-
-  const { data: photos } = useQuery({
-    queryKey: ["my-photos", ctx.userId],
-    queryFn: async () => (await supabase.from("photos").select("*").eq("user_id", ctx.userId).order("position")).data ?? [],
   });
 
   const [form, setForm] = useState<any>(null);
@@ -64,42 +58,6 @@ function MyProfile() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  async function uploadPhoto(file: File) {
-    if (!photos) return;
-    if (photos.length >= 6) { toast.error("Maximum 6 photos"); return; }
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
-    if (upErr) { toast.error(upErr.message); return; }
-    const { data: signed } = await supabase.storage.from("profile-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
-    if (!signed) { toast.error("URL non générée"); return; }
-    const nextPos = (photos.reduce((m, p) => Math.max(m, p.position), 0) || 0) + 1;
-    const { error } = await supabase.from("photos").insert({ user_id: ctx.userId, url: signed.signedUrl, storage_path: path, position: nextPos });
-    if (error) { toast.error(error.message); return; }
-    if (photos.length === 0) {
-      await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl }).eq("id", ctx.userId);
-    }
-    qc.invalidateQueries({ queryKey: ["my-photos"] });
-    qc.invalidateQueries({ queryKey: ["me"] });
-    toast.success("Photo ajoutée");
-  }
-
-  async function deletePhoto(photo: any) {
-    await supabase.storage.from("profile-photos").remove([photo.storage_path]);
-    await supabase.from("photos").delete().eq("id", photo.id);
-    if (profile?.primary_photo_url === photo.url) {
-      const remaining = photos?.filter((p) => p.id !== photo.id) ?? [];
-      await supabase.from("profiles").update({ primary_photo_url: remaining[0]?.url ?? null }).eq("id", ctx.userId);
-    }
-    qc.invalidateQueries({ queryKey: ["my-photos"] });
-    qc.invalidateQueries({ queryKey: ["me"] });
-  }
-
-  async function makePrimary(photo: any) {
-    await supabase.from("profiles").update({ primary_photo_url: photo.url }).eq("id", ctx.userId);
-    qc.invalidateQueries({ queryKey: ["me"] });
-    toast.success("Photo principale mise à jour");
-  }
 
   if (!form) return <div className="text-center py-12">Chargement...</div>;
 
@@ -111,30 +69,9 @@ function MyProfile() {
         </div>
       </div>
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)]">
-        <h2 className="text-xl font-serif text-primary mb-4">Mes photos ({photos?.length ?? 0}/6)</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          {photos?.map((p) => (
-            <div key={p.id} className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">
-              <img src={p.url} alt="" className="w-full h-full object-cover" />
-              {profile?.primary_photo_url === p.url && (
-                <div className="absolute top-1 left-1 bg-[color:var(--gold)] text-primary-foreground rounded-full p-1"><Star className="h-3 w-3 fill-current" /></div>
-              )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {profile?.primary_photo_url !== p.url && (
-                  <button onClick={() => makePrimary(p)} className="bg-white/90 rounded-full p-1.5"><Star className="h-4 w-4 text-primary" /></button>
-                )}
-                <button onClick={() => deletePhoto(p)} className="bg-white/90 rounded-full p-1.5"><Trash2 className="h-4 w-4 text-destructive" /></button>
-              </div>
-            </div>
-          ))}
-          {(photos?.length ?? 0) < 6 && (
-            <button onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:bg-secondary/40 transition-colors">
-              <Plus className="h-6 w-6 text-muted-foreground" />
-            </button>
-          )}
-        </div>
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
+        <PhotoManager userId={ctx.userId} />
       </div>
+
 
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
         <h2 className="text-xl font-serif text-primary">Mes informations</h2>

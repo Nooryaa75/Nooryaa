@@ -223,6 +223,7 @@ export type Database = {
       }
       photos: {
         Row: {
+          blurred: boolean
           created_at: string
           id: string
           position: number
@@ -231,6 +232,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          blurred?: boolean
           created_at?: string
           id?: string
           position: number
@@ -239,6 +241,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          blurred?: boolean
           created_at?: string
           id?: string
           position?: number
@@ -283,6 +286,7 @@ export type Database = {
           onboarded: boolean
           phone: string | null
           porte_voile: boolean | null
+          primary_photo_blurred: boolean
           primary_photo_url: string | null
           profession: string | null
           pseudo: string
@@ -323,6 +327,7 @@ export type Database = {
           onboarded?: boolean
           phone?: string | null
           porte_voile?: boolean | null
+          primary_photo_blurred?: boolean
           primary_photo_url?: string | null
           profession?: string | null
           pseudo: string
@@ -363,6 +368,7 @@ export type Database = {
           onboarded?: boolean
           phone?: string | null
           porte_voile?: boolean | null
+          primary_photo_blurred?: boolean
           primary_photo_url?: string | null
           profession?: string | null
           pseudo?: string

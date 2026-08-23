@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS primary_photo_blurred boolean NOT NULL DEFAULT false;

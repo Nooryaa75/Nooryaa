@@ -111,30 +111,9 @@ function MyProfile() {
         </div>
       </div>
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)]">
-        <h2 className="text-xl font-serif text-primary mb-4">Mes photos ({photos?.length ?? 0}/6)</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          {photos?.map((p) => (
-            <div key={p.id} className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">
-              <img src={p.url} alt="" className="w-full h-full object-cover" />
-              {profile?.primary_photo_url === p.url && (
-                <div className="absolute top-1 left-1 bg-[color:var(--gold)] text-primary-foreground rounded-full p-1"><Star className="h-3 w-3 fill-current" /></div>
-              )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {profile?.primary_photo_url !== p.url && (
-                  <button onClick={() => makePrimary(p)} className="bg-white/90 rounded-full p-1.5"><Star className="h-4 w-4 text-primary" /></button>
-                )}
-                <button onClick={() => deletePhoto(p)} className="bg-white/90 rounded-full p-1.5"><Trash2 className="h-4 w-4 text-destructive" /></button>
-              </div>
-            </div>
-          ))}
-          {(photos?.length ?? 0) < 6 && (
-            <button onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:bg-secondary/40 transition-colors">
-              <Plus className="h-6 w-6 text-muted-foreground" />
-            </button>
-          )}
-        </div>
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
+        <PhotoManager userId={ctx.userId} />
       </div>
+
 
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
         <h2 className="text-xl font-serif text-primary">Mes informations</h2>

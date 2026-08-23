@@ -191,7 +191,7 @@ function MyProfile() {
           <div className="md:col-span-2">
             <Label>À propos</Label>
             <Textarea value={form.bio ?? ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} />
-            <p className="text-xs text-muted-foreground mt-1">{(form.bio || "").length}/500 caractères (minimum 200)</p>
+            <p className="text-xs text-muted-foreground mt-1">{(form.bio || "").length}/500 caractères (minimum 100)</p>
           </div>
         </div>
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>

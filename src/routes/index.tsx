@@ -77,16 +77,21 @@ function Landing() {
             <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover gold-glow" />
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
+            <Link to="/notre-difference">
+              <Button variant="outline" size="sm" className="rounded-full px-2 md:px-4 text-xs md:text-sm border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm whitespace-nowrap">
+                Notre Différence
+              </Button>
+            </Link>
+            <Link to="/auth" search={{ mode: "signup" }}>
+              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm">S'inscrire</Button>
+            </Link>
             <Link to="/auth" search={{ mode: "signin" }}>
               <Button variant="outline" size="sm" className="rounded-full px-3 md:px-5 border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm">
                 Connexion
               </Button>
             </Link>
-            <NotreDifferenceSheet />
-            <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm">S'inscrire</Button>
-            </Link>
           </div>
+
         </nav>
       </header>
 

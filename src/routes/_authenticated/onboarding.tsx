@@ -158,11 +158,11 @@ function Onboarding() {
           )}
         </div>
         <div className="space-y-2">
-          <Label>Enfants</Label>
+          <Label>Enfants *</Label>
           <YesNoRadio name="has_children" label="Avez-vous des enfants ?" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : "" })} />
           {form.has_children === true && (
             <div>
-              <Label htmlFor="children_count">Combien d'enfants ?</Label>
+              <Label htmlFor="children_count">Combien d'enfants ? *</Label>
               <Select value={form.children_count} onValueChange={(v) => setForm({ ...form, children_count: v })}>
                 <SelectTrigger id="children_count"><SelectValue placeholder="Choisir" /></SelectTrigger>
                 <SelectContent>
@@ -173,7 +173,7 @@ function Onboarding() {
               </Select>
             </div>
           )}
-          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
+          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ? *" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>

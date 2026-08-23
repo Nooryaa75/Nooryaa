@@ -269,6 +269,7 @@ export type Database = {
           email: string
           first_name: string | null
           gender: Database["public"]["Enums"]["gender"] | null
+          hadj: boolean | null
           id: string
           identity_key: string | null
           last_active: string
@@ -276,15 +277,19 @@ export type Database = {
           looking_for: Database["public"]["Enums"]["gender"] | null
           marital_status: Database["public"]["Enums"]["marital_status"] | null
           objective: string | null
+          omra: boolean | null
           onboarded: boolean
           phone: string | null
+          porte_voile: boolean | null
           primary_photo_url: string | null
           profession: string | null
           pseudo: string
+          ramadan: boolean | null
           religion: string | null
           religious_practice:
             | Database["public"]["Enums"]["religious_practice"]
             | null
+          salat_quotidienne: boolean | null
           status: string
           updated_at: string
         }
@@ -300,6 +305,7 @@ export type Database = {
           email: string
           first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
+          hadj?: boolean | null
           id: string
           identity_key?: string | null
           last_active?: string
@@ -307,15 +313,19 @@ export type Database = {
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null
+          omra?: boolean | null
           onboarded?: boolean
           phone?: string | null
+          porte_voile?: boolean | null
           primary_photo_url?: string | null
           profession?: string | null
           pseudo: string
+          ramadan?: boolean | null
           religion?: string | null
           religious_practice?:
             | Database["public"]["Enums"]["religious_practice"]
             | null
+          salat_quotidienne?: boolean | null
           status?: string
           updated_at?: string
         }
@@ -331,6 +341,7 @@ export type Database = {
           email?: string
           first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
+          hadj?: boolean | null
           id?: string
           identity_key?: string | null
           last_active?: string
@@ -338,15 +349,19 @@ export type Database = {
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null
+          omra?: boolean | null
           onboarded?: boolean
           phone?: string | null
+          porte_voile?: boolean | null
           primary_photo_url?: string | null
           profession?: string | null
           pseudo?: string
+          ramadan?: boolean | null
           religion?: string | null
           religious_practice?:
             | Database["public"]["Enums"]["religious_practice"]
             | null
+          salat_quotidienne?: boolean | null
           status?: string
           updated_at?: string
         }

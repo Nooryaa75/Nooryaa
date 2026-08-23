@@ -31,6 +31,9 @@ function Onboarding() {
     hadj: null as boolean | null,
     omra: null as boolean | null,
     porte_voile: null as boolean | null,
+    has_children: null as boolean | null,
+    children_count: "",
+    wants_children: null as boolean | null,
     religion: "Islam (sunnite)",
     profession: "",
     education_level: "",
@@ -85,6 +88,9 @@ function Onboarding() {
       hadj: form.hadj,
       omra: form.omra,
       porte_voile: form.gender === "femme" ? form.porte_voile : null,
+      has_children: form.has_children,
+      children_count: form.has_children ? Number(form.children_count) || null : null,
+      wants_children: form.wants_children,
       religion: form.religion || "Islam",
       profession: form.profession || null,
       education_level: form.education_level || null,
@@ -123,6 +129,17 @@ function Onboarding() {
               Vous verrez uniquement des profils {form.gender === "homme" ? "femmes" : "hommes"}.
             </p>
           )}
+        </div>
+        <div className="space-y-2">
+          <Label>Enfants</Label>
+          <YesNoRadio name="has_children" label="Avez-vous des enfants ?" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : "" })} />
+          {form.has_children === true && (
+            <div>
+              <Label htmlFor="children_count">Combien d'enfants ?</Label>
+              <Input id="children_count" type="number" min={1} max={20} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: e.target.value })} />
+            </div>
+          )}
+          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>

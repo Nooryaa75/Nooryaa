@@ -46,6 +46,9 @@ function MyProfile() {
         hadj: form.hadj ?? null,
         omra: form.omra ?? null,
         porte_voile: profile?.gender === "femme" ? (form.porte_voile ?? null) : null,
+        has_children: form.has_children ?? null,
+        children_count: form.has_children ? (Number(form.children_count) || null) : null,
+        wants_children: form.wants_children ?? null,
         religion: form.religion,
         looking_for: profile?.gender === "homme" ? "femme" : "homme",
         bio: form.bio,
@@ -186,6 +189,17 @@ function MyProfile() {
                 <SelectItem value="veuf">Veuf·ve</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="md:col-span-2 space-y-2">
+            <Label>Enfants</Label>
+            <YesNoRadio name="has_children" label="Avez-vous des enfants ?" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : null })} />
+            {form.has_children === true && (
+              <div>
+                <Label htmlFor="children_count">Combien d'enfants ?</Label>
+                <Input id="children_count" type="number" min={1} max={20} value={form.children_count ?? ""} onChange={(e) => setForm({ ...form, children_count: e.target.value })} />
+              </div>
+            )}
+            <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Pratique religieuse</Label>

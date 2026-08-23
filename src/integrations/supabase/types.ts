@@ -261,6 +261,7 @@ export type Database = {
           activities: string | null
           bio: string | null
           birthdate: string | null
+          children_count: number | null
           city: string | null
           country: string | null
           country_origin: string | null
@@ -270,6 +271,7 @@ export type Database = {
           first_name: string | null
           gender: Database["public"]["Enums"]["gender"] | null
           hadj: boolean | null
+          has_children: boolean | null
           id: string
           identity_key: string | null
           last_active: string
@@ -292,11 +294,13 @@ export type Database = {
           salat_quotidienne: boolean | null
           status: string
           updated_at: string
+          wants_children: boolean | null
         }
         Insert: {
           activities?: string | null
           bio?: string | null
           birthdate?: string | null
+          children_count?: number | null
           city?: string | null
           country?: string | null
           country_origin?: string | null
@@ -306,6 +310,7 @@ export type Database = {
           first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
           hadj?: boolean | null
+          has_children?: boolean | null
           id: string
           identity_key?: string | null
           last_active?: string
@@ -328,11 +333,13 @@ export type Database = {
           salat_quotidienne?: boolean | null
           status?: string
           updated_at?: string
+          wants_children?: boolean | null
         }
         Update: {
           activities?: string | null
           bio?: string | null
           birthdate?: string | null
+          children_count?: number | null
           city?: string | null
           country?: string | null
           country_origin?: string | null
@@ -342,6 +349,7 @@ export type Database = {
           first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
           hadj?: boolean | null
+          has_children?: boolean | null
           id?: string
           identity_key?: string | null
           last_active?: string
@@ -364,6 +372,7 @@ export type Database = {
           salat_quotidienne?: boolean | null
           status?: string
           updated_at?: string
+          wants_children?: boolean | null
         }
         Relationships: []
       }

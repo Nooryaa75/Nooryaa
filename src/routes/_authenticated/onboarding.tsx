@@ -36,6 +36,7 @@ function Onboarding() {
     has_children: null as boolean | null,
     children_count: "",
     wants_children: null as boolean | null,
+    smoker: null as boolean | null,
     religion: "Islam (sunnite)",
     profession: "",
     education_level: "",
@@ -69,7 +70,7 @@ function Onboarding() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!(await checkPseudo(form.pseudo))) return;
-    if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective) {
+    if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective || form.smoker === null) {
       toast.error("Merci de remplir tous les champs obligatoires (*)"); return;
     }
     if (!isAdult(form.birthdate)) {
@@ -93,6 +94,7 @@ function Onboarding() {
       has_children: form.has_children,
       children_count: form.has_children ? Number(form.children_count) || null : null,
       wants_children: form.wants_children,
+      smoker: form.smoker,
       religion: form.religion || "Islam",
       profession: form.profession || null,
       education_level: form.education_level || null,
@@ -240,7 +242,10 @@ function Onboarding() {
           <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
-
+        <div className="space-y-2">
+          <Label>Mode de vie</Label>
+          <YesNoRadio name="smoker" label="Fumez-vous ?" value={form.smoker} onChange={(v) => setForm({ ...form, smoker: v })} />
+        </div>
         <div>
           <Label>Mon objectif sur Nooryaa *</Label>
           <Select value={form.objective} onValueChange={(v) => setForm({ ...form, objective: v })}>

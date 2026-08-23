@@ -262,7 +262,7 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Activités / centres d'intérêt * (plusieurs choix possibles)</Label>
+          <Label>Activités / centres d'intérêt * (3 max)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
         <div className="space-y-2">

@@ -183,7 +183,7 @@ function Onboarding() {
           </div>
           <div>
             <Label>Situation *</Label>
-            <Select value={form.marital_status} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
+            <Select value={form.marital_status || undefined} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="celibataire">Célibataire</SelectItem>

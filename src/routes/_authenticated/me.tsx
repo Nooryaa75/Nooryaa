@@ -172,7 +172,7 @@ function MyProfile() {
             </Select>
           </div>
           <div className="md:col-span-2">
-            <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
+            <Label>Activités / centres d'intérêt (3 max)</Label>
             <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
           </div>
           <div className="md:col-span-2 space-y-2">

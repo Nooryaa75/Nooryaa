@@ -144,7 +144,7 @@ function Onboarding() {
         </div>
         <div>
           <Label>Je suis *</Label>
-          <Select value={form.gender} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
+          <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="homme">Un homme</SelectItem>

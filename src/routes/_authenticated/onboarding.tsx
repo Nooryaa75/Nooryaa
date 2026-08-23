@@ -25,6 +25,7 @@ function Onboarding() {
     pseudo: "",
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
+    phone: "",
     city: "",
     country: "France",
     country_origin: "",

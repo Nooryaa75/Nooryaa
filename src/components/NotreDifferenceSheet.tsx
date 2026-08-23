@@ -19,13 +19,13 @@ export function NotreDifferenceSheet() {
           size="sm"
           className="rounded-full px-2 md:px-4 text-xs md:text-sm border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm whitespace-nowrap"
         >
-          Notre différence
+          Notre Différence
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[90vw] sm:max-w-2xl overflow-y-auto">
         <SheetHeader className="pb-4">
           <SheetTitle className="font-serif text-2xl text-primary">
-            Notre différence
+            Notre Différence
           </SheetTitle>
           <SheetDescription>Pourquoi le site ?</SheetDescription>
         </SheetHeader>

@@ -24,6 +24,9 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,15 +42,30 @@ function AuthPage() {
       if (mode === "signup") {
         if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
         if (password !== password2) throw new Error("Les deux mots de passe ne correspondent pas.");
+        if (firstName.trim().length < 2 || lastName.trim().length < 2) {
+          throw new Error("Merci d'indiquer votre prénom et votre nom.");
+        }
+        const digits = phone.replace(/[^0-9]/g, "");
+        if (digits.length < 8 || digits.length > 15) {
+          throw new Error("Merci d'indiquer un numéro de téléphone valide.");
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: window.location.origin,
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              phone: phone.trim(),
+            },
           },
         });
         if (error) {
           if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
+          if (/duplicate key|unique constraint|Database error/i.test(error.message)) {
+            throw new Error("Un compte existe déjà avec cet email, ce numéro de téléphone ou cette identité.");
+          }
           throw error;
         }
         toast.success("Compte créé ! Vous pouvez compléter votre profil.");
@@ -63,6 +81,7 @@ function AuthPage() {
       setLoading(false);
     }
   }
+
 
   async function handleGoogle() {
     setLoading(true);

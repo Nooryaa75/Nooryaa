@@ -194,7 +194,7 @@ function Onboarding() {
           </div>
         </div>
         <div>
-          <Label>Profession</Label>
+          <Label>Profession *</Label>
           <Select value={form.profession} onValueChange={(v) => setForm({ ...form, profession: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>
@@ -204,7 +204,7 @@ function Onboarding() {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <Label>Ville / région</Label>
+            <Label>Ville / région *</Label>
             <Select value={form.city} onValueChange={(v) => setForm({ ...form, city: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
@@ -213,7 +213,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Pays de résidence</Label>
+            <Label>Pays de résidence *</Label>
             <Select value={form.country} onValueChange={(v) => setForm({ ...form, country: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
@@ -233,7 +233,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Religion</Label>
+            <Label>Religion *</Label>
             <Select value={form.religion} onValueChange={(v) => setForm({ ...form, religion: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -262,11 +262,11 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
+          <Label>Activités / centres d'intérêt * (plusieurs choix possibles)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
         <div className="space-y-2">
-          <Label>Mode de vie</Label>
+          <Label>Mode de vie *</Label>
           <YesNoRadio name="smoker" label="Fumez-vous ?" value={form.smoker} onChange={(v) => setForm({ ...form, smoker: v })} />
         </div>
         <div>
@@ -279,7 +279,7 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label htmlFor="bio">À propos de vous et de votre objectif</Label>
+          <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
           <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 200</p>
         </div>

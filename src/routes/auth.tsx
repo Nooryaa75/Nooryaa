@@ -119,6 +119,32 @@ function AuthPage() {
   }
 
   return (
+  if (signupEmailSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
+        <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60 text-center">
+          <Link to="/" className="block text-2xl font-serif text-primary mb-4">Nooryaa</Link>
+          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-[color:var(--gold)]/15 flex items-center justify-center text-2xl">✉️</div>
+          <h1 className="text-2xl font-serif text-primary mb-2">Vérifiez votre boîte mail</h1>
+          <p className="text-sm text-muted-foreground mb-2">
+            Nous avons envoyé un email de confirmation à <span className="font-medium text-foreground">{email}</span>.
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Cliquez sur le lien reçu pour activer votre compte, puis revenez compléter votre profil.
+            Pensez à regarder dans vos courriers indésirables.
+          </p>
+          <Button asChild className="w-full rounded-full mb-3">
+            <Link to="/auth" search={{ mode: "signin" }} onClick={() => setSignupEmailSent(false)}>
+              J'ai confirmé, je me connecte
+            </Link>
+          </Button>
+          <Link to="/" className="text-sm text-muted-foreground hover:text-primary">Retour à l'accueil</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">
         <Link to="/" className="block text-center text-2xl font-serif text-primary mb-1">Nooryaa</Link>

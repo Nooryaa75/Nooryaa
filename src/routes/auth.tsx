@@ -49,7 +49,7 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -68,8 +68,14 @@ function AuthPage() {
           }
           throw error;
         }
+        if (!data.session) {
+          setSignupEmailSent(true);
+          toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+          return;
+        }
         toast.success("Compte créé ! Vous pouvez compléter votre profil.");
         navigate({ to: "/onboarding" });
+
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;

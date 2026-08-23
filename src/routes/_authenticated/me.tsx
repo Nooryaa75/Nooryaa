@@ -34,6 +34,10 @@ function MyProfile() {
 
   const save = useMutation({
     mutationFn: async () => {
+      const bio = form.bio || "";
+      if (bio.length > 0 && (bio.length < 200 || bio.length > 500)) {
+        throw new Error("La bio doit contenir entre 200 et 500 caractères");
+      }
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
         marital_status: form.marital_status,
@@ -186,7 +190,8 @@ function MyProfile() {
           </div>
           <div className="md:col-span-2">
             <Label>À propos</Label>
-            <Textarea value={form.bio ?? ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={1000} />
+            <Textarea value={form.bio ?? ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} />
+            <p className="text-xs text-muted-foreground mt-1">{(form.bio || "").length}/500 caractères (minimum 200)</p>
           </div>
         </div>
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>

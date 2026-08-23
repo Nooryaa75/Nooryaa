@@ -74,6 +74,9 @@ function Onboarding() {
     if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective || form.smoker === null) {
       toast.error("Merci de remplir tous les champs obligatoires (*)"); return;
     }
+    if (form.bio.length < 200 || form.bio.length > 500) {
+      toast.error("La bio doit contenir entre 200 et 500 caractères"); return;
+    }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
@@ -258,7 +261,8 @@ function Onboarding() {
         </div>
         <div>
           <Label htmlFor="bio">À propos de vous et de votre objectif</Label>
-          <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={1000} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
+          <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
+          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 200</p>
         </div>
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <PhotoManager userId={ctx.userId} />

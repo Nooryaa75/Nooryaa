@@ -34,6 +34,10 @@ function MyProfile() {
 
   const save = useMutation({
     mutationFn: async () => {
+      const bio = form.bio || "";
+      if (bio.length > 0 && (bio.length < 200 || bio.length > 500)) {
+        throw new Error("La bio doit contenir entre 200 et 500 caractères");
+      }
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
         marital_status: form.marital_status,

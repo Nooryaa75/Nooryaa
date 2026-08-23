@@ -92,7 +92,7 @@ function Onboarding() {
     if (!form.activities) missing.push("Activités / centres d'intérêt");
     if (form.smoker === null) missing.push("Fumez-vous");
     if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 200 || form.bio.length > 500) missing.push("À propos (200 à 500 caractères)");
+    if (form.bio.length < 100 || form.bio.length > 500) missing.push("À propos (100 à 500 caractères)");
     if (missing.length > 0) {
       toast.error("Champs à compléter : " + missing.join(", ")); return;
     }

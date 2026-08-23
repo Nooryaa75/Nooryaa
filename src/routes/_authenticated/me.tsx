@@ -64,42 +64,6 @@ function MyProfile() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  async function uploadPhoto(file: File) {
-    if (!photos) return;
-    if (photos.length >= 6) { toast.error("Maximum 6 photos"); return; }
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
-    if (upErr) { toast.error(upErr.message); return; }
-    const { data: signed } = await supabase.storage.from("profile-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
-    if (!signed) { toast.error("URL non générée"); return; }
-    const nextPos = (photos.reduce((m, p) => Math.max(m, p.position), 0) || 0) + 1;
-    const { error } = await supabase.from("photos").insert({ user_id: ctx.userId, url: signed.signedUrl, storage_path: path, position: nextPos });
-    if (error) { toast.error(error.message); return; }
-    if (photos.length === 0) {
-      await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl }).eq("id", ctx.userId);
-    }
-    qc.invalidateQueries({ queryKey: ["my-photos"] });
-    qc.invalidateQueries({ queryKey: ["me"] });
-    toast.success("Photo ajoutée");
-  }
-
-  async function deletePhoto(photo: any) {
-    await supabase.storage.from("profile-photos").remove([photo.storage_path]);
-    await supabase.from("photos").delete().eq("id", photo.id);
-    if (profile?.primary_photo_url === photo.url) {
-      const remaining = photos?.filter((p) => p.id !== photo.id) ?? [];
-      await supabase.from("profiles").update({ primary_photo_url: remaining[0]?.url ?? null }).eq("id", ctx.userId);
-    }
-    qc.invalidateQueries({ queryKey: ["my-photos"] });
-    qc.invalidateQueries({ queryKey: ["me"] });
-  }
-
-  async function makePrimary(photo: any) {
-    await supabase.from("profiles").update({ primary_photo_url: photo.url }).eq("id", ctx.userId);
-    qc.invalidateQueries({ queryKey: ["me"] });
-    toast.success("Photo principale mise à jour");
-  }
 
   if (!form) return <div className="text-center py-12">Chargement...</div>;
 

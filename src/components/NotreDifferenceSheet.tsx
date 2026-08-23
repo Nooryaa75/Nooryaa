@@ -19,13 +19,13 @@ export function NotreDifferenceSheet() {
           size="sm"
           className="rounded-full px-2 md:px-4 text-xs md:text-sm border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm whitespace-nowrap"
         >
-          Notre différence
+          Notre Différence
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[90vw] sm:max-w-2xl overflow-y-auto">
         <SheetHeader className="pb-4">
           <SheetTitle className="font-serif text-2xl text-primary">
-            Notre différence
+            Notre Différence
           </SheetTitle>
           <SheetDescription>Pourquoi le site ?</SheetDescription>
         </SheetHeader>
@@ -63,10 +63,10 @@ export function NotreDifferenceSheet() {
 
           <section className="space-y-4">
             <p className="font-semibold text-base text-foreground">
-              Notre différence : un site pensé pour le mariage
+              Notre Différence : un site pensé pour le mariage
             </p>
             <p>
-              Notre différence ne se résume pas à une fonctionnalité de plus. Elle commence dès le premier jour, avec une approche claire : ici, on s’inscrit pour une seule raison, le mariage.
+              Notre Différence ne se résume pas à une fonctionnalité de plus. Elle commence dès le premier jour, avec une approche claire : ici, on s’inscrit pour une seule raison, le mariage.
             </p>
             <p>
               Contrairement aux plateformes de mise en relation classiques, notre site ne cherche pas à favoriser le simple flirt, les fréquentations ou les relations sans lendemain. L’objectif est annoncé dès l’inscription : entrer en contact avec des personnes qui partagent la même intention et avancer dans le but d’aboutir à un mariage.

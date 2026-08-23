@@ -127,7 +127,7 @@ function ProfileView() {
             <div className="grid grid-cols-5 gap-2">
               {photos.slice(1).map((p) => (
                 <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                  <img src={p.url} alt="" className="w-full h-full object-cover" />
+                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred ? "blur-md scale-110" : ""}`} />
                 </div>
               ))}
             </div>

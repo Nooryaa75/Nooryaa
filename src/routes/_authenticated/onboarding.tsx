@@ -235,14 +235,10 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Activités / centres d'intérêt</Label>
-          <Select value={form.activities} onValueChange={(v) => setForm({ ...form, activities: v })}>
-            <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-            <SelectContent>
-              {ACTIVITIES_OPTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
+          <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
+
         <div>
           <Label>Mon objectif sur Nooryaa *</Label>
           <Select value={form.objective} onValueChange={(v) => setForm({ ...form, objective: v })}>

@@ -13,6 +13,7 @@ import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
+import { CityAutocomplete } from "@/components/CityAutocomplete";
 
 
 export const Route = createFileRoute("/_authenticated/me")({

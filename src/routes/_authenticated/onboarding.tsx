@@ -11,6 +11,7 @@ import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROF
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
+import { CityAutocomplete } from "@/components/CityAutocomplete";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -212,12 +213,7 @@ function Onboarding() {
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label>Ville / région *</Label>
-            <Select value={form.city} onValueChange={(v) => setForm({ ...form, city: v })}>
-              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-              <SelectContent>
-                {CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <CityAutocomplete value={form.city} onChange={(v) => setForm({ ...form, city: v })} suggestions={CITIES} placeholder="Commencez à taper votre ville..." />
           </div>
           <div>
             <Label>Pays de résidence *</Label>

@@ -25,6 +25,7 @@ function Onboarding() {
     pseudo: "",
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
+    phone: "",
     city: "",
     country: "France",
     country_origin: "",
@@ -84,6 +85,7 @@ function Onboarding() {
     if (form.has_children === null) missing.push("Avez-vous des enfants");
     if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
     if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
+    if (!form.phone) missing.push("Téléphone");
     if (!form.city) missing.push("Ville / région");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");
@@ -105,6 +107,7 @@ function Onboarding() {
       gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
+      phone: form.phone || null,
       city: form.city || null,
       country: form.country || null,
       country_origin: form.country_origin || null,
@@ -129,7 +132,7 @@ function Onboarding() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Profil créé !");
-    navigate({ to: "/me" });
+    navigate({ to: "/browse" });
   }
 
   return (
@@ -141,6 +144,10 @@ function Onboarding() {
           <Label htmlFor="pseudo">Pseudo *</Label>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
+        </div>
+        <div>
+          <Label htmlFor="phone">Téléphone *</Label>
+          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
         </div>
         <div>
           <Label>Je suis *</Label>

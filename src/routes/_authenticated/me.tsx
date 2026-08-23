@@ -55,6 +55,7 @@ function MyProfile() {
         bio: form.bio,
         profession: form.profession, education_level: form.education_level,
         activities: form.activities, objective: form.objective,
+        phone: form.phone || null,
       }).eq("id", ctx.userId);
       if (error) throw error;
     },
@@ -82,6 +83,10 @@ function MyProfile() {
         <div className="grid md:grid-cols-2 gap-4">
           <div><Label>Pseudo</Label><Input value={profile?.pseudo ?? ""} disabled /></div>
           <div><Label>Email</Label><Input value={profile?.email ?? ""} disabled /></div>
+          <div>
+            <Label>Téléphone</Label>
+            <Input type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+          </div>
           <div>
             <Label>Profession</Label>
             <Select value={form.profession ?? ""} onValueChange={(v) => setForm({ ...form, profession: v })}>

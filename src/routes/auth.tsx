@@ -118,7 +118,6 @@ function AuthPage() {
     navigate({ to: "/onboarding" });
   }
 
-  return (
   if (signupEmailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">

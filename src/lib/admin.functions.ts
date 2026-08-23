@@ -425,3 +425,20 @@ export const listActiveAds = createServerFn({ method: "GET" }).handler(async () 
     .limit(20);
   return data ?? [];
 });
+// ---------- Modération automatique ----------
+
+export const adminListModeration = createServerFn({ method: "GET" })
+  .inputValidator((data: { verdict?: string }) => data ?? {})
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin.from("moderation_events").select("*").order("created_at", { ascending: false }).limit(200);
+    if (data.verdict && data.verdict !== "all") q = q.eq("verdict", data.verdict);
+    const { data: rows } = await q;
+    const ids = new Set<string>();
+    (rows ?? []).forEach((r: any) => { ids.add(r.user_id); if (r.target_user) ids.add(r.target_user); });
+    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [...ids]);
+    const byId = new Map((profs ?? []).map((p) => [p.id, p]));
+    return (rows ?? []).map((r: any) => ({ ...r, author: byId.get(r.user_id), target: r.target_user ? byId.get(r.target_user) : null }));
+  });

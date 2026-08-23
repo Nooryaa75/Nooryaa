@@ -107,6 +107,7 @@ function Onboarding() {
       gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
+      phone: form.phone || null,
       city: form.city || null,
       country: form.country || null,
       country_origin: form.country_origin || null,

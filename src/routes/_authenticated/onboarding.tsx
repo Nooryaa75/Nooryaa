@@ -129,7 +129,7 @@ function Onboarding() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Profil créé !");
-    navigate({ to: "/me" });
+    navigate({ to: "/browse" });
   }
 
   return (

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Plus, Star, Trash2 } from "lucide-react";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, ACTIVITIES_OPTIONS } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
+import { YesNoRadio } from "@/components/YesNoRadio";
 
 export const Route = createFileRoute("/_authenticated/me")({
   head: () => ({ meta: [{ title: "Mon profil — Nooryaa" }] }),

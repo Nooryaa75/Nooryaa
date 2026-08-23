@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-import { NotreDifferenceSheet } from "@/components/NotreDifferenceSheet";
 import { CheckCircle2, Star, Mail, Heart, ShieldCheck, Users, Sparkles } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";

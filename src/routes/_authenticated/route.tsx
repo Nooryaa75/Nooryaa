@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated")({
       .select("onboarded")
       .eq("id", data.user.id)
       .maybeSingle();
-    if (profile && !profile.onboarded && location.pathname !== "/onboarding") {
+    if (!profile?.onboarded && location.pathname !== "/onboarding") {
       throw redirect({ to: "/onboarding" });
     }
     return { userId: data.user.id };

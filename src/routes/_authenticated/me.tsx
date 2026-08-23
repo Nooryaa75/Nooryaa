@@ -83,6 +83,10 @@ function MyProfile() {
           <div><Label>Pseudo</Label><Input value={profile?.pseudo ?? ""} disabled /></div>
           <div><Label>Email</Label><Input value={profile?.email ?? ""} disabled /></div>
           <div>
+            <Label>Téléphone</Label>
+            <Input type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+          </div>
+          <div>
             <Label>Profession</Label>
             <Select value={form.profession ?? ""} onValueChange={(v) => setForm({ ...form, profession: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>

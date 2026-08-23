@@ -106,7 +106,7 @@ function Onboarding() {
     }).eq("id", ctx.userId);
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Profil créé ! Ajoutez maintenant vos photos.");
+    toast.success("Profil créé !");
     navigate({ to: "/me" });
   }
 

@@ -118,7 +118,7 @@ function ProfileView() {
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
             {photos && photos[0] ? (
-              <img src={photos[0].url} alt={profile.pseudo} className="w-full h-full object-cover" />
+              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
             )}

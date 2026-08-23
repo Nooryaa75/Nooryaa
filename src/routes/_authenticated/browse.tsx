@@ -138,7 +138,7 @@ function Browse() {
             >
               <div className="aspect-[3/4] bg-secondary relative overflow-hidden">
                 {p.primary_photo_url ? (
-                  <img src={p.primary_photo_url} alt={p.pseudo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={p.primary_photo_url} alt={p.pseudo} className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${(p as any).primary_photo_blurred ? "blur-md scale-110" : ""}`} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><User className="h-16 w-16 text-muted-foreground/40" /></div>
                 )}

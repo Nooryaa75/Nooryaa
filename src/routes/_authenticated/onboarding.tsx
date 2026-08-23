@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, ACTIVITIES_OPTIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
+import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
 import { YesNoRadio } from "@/components/YesNoRadio";
+import { ActivitiesPicker } from "@/components/ActivitiesPicker";
+
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({ meta: [{ title: "Compléter mon profil — Nooryaa" }] }),
@@ -235,14 +237,10 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Activités / centres d'intérêt</Label>
-          <Select value={form.activities} onValueChange={(v) => setForm({ ...form, activities: v })}>
-            <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-            <SelectContent>
-              {ACTIVITIES_OPTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
+          <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
+
         <div>
           <Label>Mon objectif sur Nooryaa *</Label>
           <Select value={form.objective} onValueChange={(v) => setForm({ ...form, objective: v })}>

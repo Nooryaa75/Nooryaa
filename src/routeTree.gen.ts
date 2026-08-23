@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -34,6 +35,11 @@ import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authe
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotreDifferenceRoute = NotreDifferenceRouteImport.update({
+  id: '/notre-difference',
+  path: '/notre-difference',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -141,6 +147,7 @@ const AuthenticatedMessagesPseudoRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/notre-difference': typeof NotreDifferenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/notre-difference': typeof NotreDifferenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/notre-difference': typeof NotreDifferenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/notre-difference'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/notre-difference'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/notre-difference'
     | '/sitemap.xml'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
@@ -280,6 +292,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  NotreDifferenceRoute: typeof NotreDifferenceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminContactRoute: typeof AdminContactRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notre-difference': {
+      id: '/notre-difference'
+      path: '/notre-difference'
+      fullPath: '/notre-difference'
+      preLoaderRoute: typeof NotreDifferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -484,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  NotreDifferenceRoute: NotreDifferenceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminContactRoute: AdminContactRoute,

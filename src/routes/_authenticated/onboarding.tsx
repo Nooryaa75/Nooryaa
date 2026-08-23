@@ -124,6 +124,17 @@ function Onboarding() {
             </p>
           )}
         </div>
+        <div className="space-y-2">
+          <Label>Enfants</Label>
+          <YesNoRadio name="has_children" label="Avez-vous des enfants ?" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : "" })} />
+          {form.has_children === true && (
+            <div>
+              <Label htmlFor="children_count">Combien d'enfants ?</Label>
+              <Input id="children_count" type="number" min={1} max={20} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: e.target.value })} />
+            </div>
+          )}
+          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="birthdate">Date de naissance *</Label>

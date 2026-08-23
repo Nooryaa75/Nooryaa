@@ -71,11 +71,30 @@ function Onboarding() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!(await checkPseudo(form.pseudo))) return;
-    if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective || form.smoker === null) {
-      toast.error("Merci de remplir tous les champs obligatoires (*)"); return;
-    }
-    if (form.bio.length < 200 || form.bio.length > 500) {
-      toast.error("La bio doit contenir entre 200 et 500 caractères"); return;
+    const missing: string[] = [];
+    if (!form.pseudo) missing.push("Pseudo");
+    if (!form.gender) missing.push("Je suis");
+    if (!form.birthdate) missing.push("Date de naissance");
+    if (!form.marital_status) missing.push("Situation");
+    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
+    if (form.ramadan === null) missing.push("Ramadan");
+    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
+    if (form.omra === null) missing.push("Avez-vous fait la Omra");
+    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
+    if (form.has_children === null) missing.push("Avez-vous des enfants");
+    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
+    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
+    if (!form.city) missing.push("Ville / région");
+    if (!form.country) missing.push("Pays de résidence");
+    if (!form.country_origin) missing.push("Pays d'origine");
+    if (!form.profession) missing.push("Profession");
+    if (!form.education_level) missing.push("Niveau d'études");
+    if (!form.activities) missing.push("Activités / centres d'intérêt");
+    if (form.smoker === null) missing.push("Fumez-vous");
+    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
+    if (form.bio.length < 200 || form.bio.length > 500) missing.push("À propos (200 à 500 caractères)");
+    if (missing.length > 0) {
+      toast.error("Champs à compléter : " + missing.join(", ")); return;
     }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
@@ -83,13 +102,13 @@ function Onboarding() {
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
-      gender: form.gender,
+      gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
       city: form.city || null,
       country: form.country || null,
       country_origin: form.country_origin || null,
-      marital_status: form.marital_status,
+      marital_status: form.marital_status as any,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
       hadj: form.hadj,
@@ -116,7 +135,7 @@ function Onboarding() {
   return (
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
-      <p className="text-muted-foreground text-sm mb-6">Quelques informations pour bien démarrer. Tout est gratuit.</p>
+      <p className="text-muted-foreground text-sm mb-6">Tous les champs sont obligatoires pour finaliser votre profil.</p>
       <form onSubmit={submit} className="space-y-5">
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
@@ -125,7 +144,7 @@ function Onboarding() {
         </div>
         <div>
           <Label>Je suis *</Label>
-          <Select value={form.gender} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
+          <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="homme">Un homme</SelectItem>
@@ -139,11 +158,11 @@ function Onboarding() {
           )}
         </div>
         <div className="space-y-2">
-          <Label>Enfants</Label>
+          <Label>Enfants *</Label>
           <YesNoRadio name="has_children" label="Avez-vous des enfants ?" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : "" })} />
           {form.has_children === true && (
             <div>
-              <Label htmlFor="children_count">Combien d'enfants ?</Label>
+              <Label htmlFor="children_count">Combien d'enfants ? *</Label>
               <Select value={form.children_count} onValueChange={(v) => setForm({ ...form, children_count: v })}>
                 <SelectTrigger id="children_count"><SelectValue placeholder="Choisir" /></SelectTrigger>
                 <SelectContent>
@@ -154,7 +173,7 @@ function Onboarding() {
               </Select>
             </div>
           )}
-          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
+          <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ? *" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -164,7 +183,7 @@ function Onboarding() {
           </div>
           <div>
             <Label>Situation *</Label>
-            <Select value={form.marital_status} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
+            <Select value={form.marital_status || undefined} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="celibataire">Célibataire</SelectItem>
@@ -175,7 +194,7 @@ function Onboarding() {
           </div>
         </div>
         <div>
-          <Label>Profession</Label>
+          <Label>Profession *</Label>
           <Select value={form.profession} onValueChange={(v) => setForm({ ...form, profession: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>
@@ -185,7 +204,7 @@ function Onboarding() {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <Label>Ville / région</Label>
+            <Label>Ville / région *</Label>
             <Select value={form.city} onValueChange={(v) => setForm({ ...form, city: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
@@ -194,7 +213,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Pays de résidence</Label>
+            <Label>Pays de résidence *</Label>
             <Select value={form.country} onValueChange={(v) => setForm({ ...form, country: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
@@ -214,7 +233,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Religion</Label>
+            <Label>Religion *</Label>
             <Select value={form.religion} onValueChange={(v) => setForm({ ...form, religion: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -243,11 +262,11 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
+          <Label>Activités / centres d'intérêt * (plusieurs choix possibles)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
         </div>
         <div className="space-y-2">
-          <Label>Mode de vie</Label>
+          <Label>Mode de vie *</Label>
           <YesNoRadio name="smoker" label="Fumez-vous ?" value={form.smoker} onChange={(v) => setForm({ ...form, smoker: v })} />
         </div>
         <div>
@@ -260,7 +279,7 @@ function Onboarding() {
           </Select>
         </div>
         <div>
-          <Label htmlFor="bio">À propos de vous et de votre objectif</Label>
+          <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
           <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 200</p>
         </div>

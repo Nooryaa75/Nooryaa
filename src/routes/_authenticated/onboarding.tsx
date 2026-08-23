@@ -85,6 +85,7 @@ function Onboarding() {
     if (form.has_children === null) missing.push("Avez-vous des enfants");
     if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
     if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
+    if (!form.phone) missing.push("Téléphone");
     if (!form.city) missing.push("Ville / région");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");

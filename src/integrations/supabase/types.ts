@@ -292,6 +292,7 @@ export type Database = {
             | Database["public"]["Enums"]["religious_practice"]
             | null
           salat_quotidienne: boolean | null
+          smoker: boolean | null
           status: string
           updated_at: string
           wants_children: boolean | null
@@ -331,6 +332,7 @@ export type Database = {
             | Database["public"]["Enums"]["religious_practice"]
             | null
           salat_quotidienne?: boolean | null
+          smoker?: boolean | null
           status?: string
           updated_at?: string
           wants_children?: boolean | null
@@ -370,6 +372,7 @@ export type Database = {
             | Database["public"]["Enums"]["religious_practice"]
             | null
           salat_quotidienne?: boolean | null
+          smoker?: boolean | null
           status?: string
           updated_at?: string
           wants_children?: boolean | null

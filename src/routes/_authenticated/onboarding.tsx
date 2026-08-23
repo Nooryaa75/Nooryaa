@@ -135,7 +135,7 @@ function Onboarding() {
   return (
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
-      <p className="text-muted-foreground text-sm mb-6">Quelques informations pour bien démarrer. Tout est gratuit.</p>
+      <p className="text-muted-foreground text-sm mb-6">Tous les champs sont obligatoires pour finaliser votre profil.</p>
       <form onSubmit={submit} className="space-y-5">
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>

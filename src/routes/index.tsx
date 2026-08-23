@@ -82,6 +82,7 @@ function Landing() {
                 Connexion
               </Button>
             </Link>
+            <NotreDifferenceSheet />
             <Link to="/auth" search={{ mode: "signup" }}>
               <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm">S'inscrire</Button>
             </Link>

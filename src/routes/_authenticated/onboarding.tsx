@@ -146,6 +146,10 @@ function Onboarding() {
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
         </div>
         <div>
+          <Label htmlFor="phone">Téléphone *</Label>
+          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+        </div>
+        <div>
           <Label>Je suis *</Label>
           <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>

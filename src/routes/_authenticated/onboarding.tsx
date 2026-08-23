@@ -11,6 +11,7 @@ import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROF
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
+import { CityAutocomplete } from "@/components/CityAutocomplete";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({

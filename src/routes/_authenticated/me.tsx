@@ -181,17 +181,15 @@ function MyProfile() {
               </SelectContent>
             </Select>
           </div>
-          <div>
+          <div className="md:col-span-2 space-y-2">
             <Label>Pratique religieuse</Label>
-            <Select value={form.religious_practice ?? ""} onValueChange={(v) => setForm({ ...form, religious_practice: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tres_pratiquant">Très pratiquant·e</SelectItem>
-                <SelectItem value="pratiquant">Pratiquant·e</SelectItem>
-                <SelectItem value="en_apprentissage">En apprentissage</SelectItem>
-                <SelectItem value="non_pratiquant">Non pratiquant·e</SelectItem>
-              </SelectContent>
-            </Select>
+            <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
+            <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
+            <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
+            <YesNoRadio name="omra" label="Avez-vous fait la Omra ?" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
+            {profile?.gender === "femme" && (
+              <YesNoRadio name="voile" label="Portez-vous le voile ?" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
+            )}
           </div>
           <div>
             <Label>Niveau d'études</Label>

@@ -51,6 +51,7 @@ function MyProfile() {
         has_children: form.has_children ?? null,
         children_count: form.has_children ? (Number(form.children_count) || null) : null,
         wants_children: form.wants_children ?? null,
+        smoker: form.smoker ?? null,
         religion: form.religion,
         looking_for: profile?.gender === "homme" ? "femme" : "homme",
         bio: form.bio,
@@ -233,7 +234,10 @@ function MyProfile() {
             <Label>Activités / centres d'intérêt (plusieurs choix possibles)</Label>
             <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
           </div>
-
+          <div className="md:col-span-2 space-y-2">
+            <Label>Mode de vie</Label>
+            <YesNoRadio name="smoker" label="Fumez-vous ?" value={form.smoker} onChange={(v) => setForm({ ...form, smoker: v })} />
+          </div>
           <div className="md:col-span-2">
             <Label>Mon objectif sur Nooryaa</Label>
             <Select value={form.objective ?? ""} onValueChange={(v) => setForm({ ...form, objective: v })}>

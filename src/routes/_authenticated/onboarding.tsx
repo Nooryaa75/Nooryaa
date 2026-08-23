@@ -136,7 +136,14 @@ function Onboarding() {
           {form.has_children === true && (
             <div>
               <Label htmlFor="children_count">Combien d'enfants ?</Label>
-              <Input id="children_count" type="number" min={1} max={20} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: e.target.value })} />
+              <Select value={form.children_count} onValueChange={(v) => setForm({ ...form, children_count: v })}>
+                <SelectTrigger id="children_count"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
           <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />

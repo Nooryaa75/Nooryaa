@@ -281,7 +281,7 @@ function Onboarding() {
         <div>
           <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
-          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 200</p>
+          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 100</p>
         </div>
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <PhotoManager userId={ctx.userId} />

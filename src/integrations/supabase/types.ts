@@ -221,6 +221,57 @@ export type Database = {
           },
         ]
       }
+      moderation_events: {
+        Row: {
+          categories: string[]
+          content: string
+          created_at: string
+          id: string
+          reason: string | null
+          source: string
+          target_user: string | null
+          user_id: string
+          verdict: string
+        }
+        Insert: {
+          categories?: string[]
+          content: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          source?: string
+          target_user?: string | null
+          user_id: string
+          verdict: string
+        }
+        Update: {
+          categories?: string[]
+          content?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          source?: string
+          target_user?: string | null
+          user_id?: string
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_events_target_user_fkey"
+            columns: ["target_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photos: {
         Row: {
           blurred: boolean

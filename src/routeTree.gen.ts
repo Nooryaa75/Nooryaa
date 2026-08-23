@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
@@ -64,6 +65,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminModerationRoute = AdminModerationRouteImport.update({
+  id: '/admin/moderation',
+  path: '/admin/moderation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin': typeof AdminIndexRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
     | '/messages/$pseudo'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/moderation'
     | '/admin/reports'
     | '/admin'
     | '/messages/$pseudo'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
     | '/_authenticated/messages/$pseudo'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   AdminAdsRoute: typeof AdminAdsRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminModerationRoute: typeof AdminModerationRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
@@ -354,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/reports'
       fullPath: '/admin/reports'
       preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/moderation': {
+      id: '/admin/moderation'
+      path: '/admin/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AdminModerationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -509,6 +529,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAdsRoute: AdminAdsRoute,
   AdminContactRoute: AdminContactRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminModerationRoute: AdminModerationRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,

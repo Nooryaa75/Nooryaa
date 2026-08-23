@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
-import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail } from "lucide-react";
+import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const links = [
@@ -10,6 +10,7 @@ const links = [
   { to: "/admin/profiles", label: "Profils", icon: Users, exact: false },
   { to: "/admin/conversations", label: "Discussions", icon: MessageSquare, exact: false },
   { to: "/admin/reports", label: "Signalements", icon: Flag, exact: false, badge: "reports" as const },
+  { to: "/admin/moderation", label: "Modération", icon: ShieldAlert, exact: false },
   { to: "/admin/contact", label: "Contact", icon: Mail, exact: false, badge: "contacts" as const },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
 ] as const;

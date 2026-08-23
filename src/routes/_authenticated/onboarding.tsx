@@ -63,7 +63,7 @@ function Onboarding() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!(await checkPseudo(form.pseudo))) return;
-    if (!form.gender || !form.birthdate || !form.marital_status || !form.religious_practice || !form.country_origin || !form.education_level || !form.objective) {
+    if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective) {
       toast.error("Merci de remplir tous les champs obligatoires (*)"); return;
     }
     if (!isAdult(form.birthdate)) {

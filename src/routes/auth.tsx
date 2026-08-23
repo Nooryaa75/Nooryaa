@@ -24,6 +24,9 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,15 +42,30 @@ function AuthPage() {
       if (mode === "signup") {
         if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
         if (password !== password2) throw new Error("Les deux mots de passe ne correspondent pas.");
+        if (firstName.trim().length < 2 || lastName.trim().length < 2) {
+          throw new Error("Merci d'indiquer votre prénom et votre nom.");
+        }
+        const digits = phone.replace(/[^0-9]/g, "");
+        if (digits.length < 8 || digits.length > 15) {
+          throw new Error("Merci d'indiquer un numéro de téléphone valide.");
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: window.location.origin,
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              phone: phone.trim(),
+            },
           },
         });
         if (error) {
           if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
+          if (/duplicate key|unique constraint|Database error/i.test(error.message)) {
+            throw new Error("Un compte existe déjà avec cet email, ce numéro de téléphone ou cette identité.");
+          }
           throw error;
         }
         toast.success("Compte créé ! Vous pouvez compléter votre profil.");
@@ -63,6 +81,7 @@ function AuthPage() {
       setLoading(false);
     }
   }
+
 
   async function handleGoogle() {
     setLoading(true);
@@ -131,10 +150,30 @@ function AuthPage() {
         </div>
 
         <form onSubmit={handleEmail} className="space-y-4">
+          {mode === "signup" && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="firstName">Prénom</Label>
+                  <Input id="firstName" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Nom</Label>
+                  <Input id="lastName" required maxLength={60} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input id="phone" type="tel" required maxLength={20} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+33 6 12 34 56 78" />
+                <p className="text-[11px] text-muted-foreground mt-1">Non visible sur votre profil. Sert à garantir un seul compte par personne.</p>
+              </div>
+            </>
+          )}
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email (identifiant de connexion)</Label>
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
+
           <div>
             <Label htmlFor="password">Mot de passe</Label>
             <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />

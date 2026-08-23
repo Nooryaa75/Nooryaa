@@ -267,9 +267,12 @@ export type Database = {
           created_at: string
           education_level: string | null
           email: string
+          first_name: string | null
           gender: Database["public"]["Enums"]["gender"] | null
           id: string
+          identity_key: string | null
           last_active: string
+          last_name: string | null
           looking_for: Database["public"]["Enums"]["gender"] | null
           marital_status: Database["public"]["Enums"]["marital_status"] | null
           objective: string | null
@@ -295,9 +298,12 @@ export type Database = {
           created_at?: string
           education_level?: string | null
           email: string
+          first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
           id: string
+          identity_key?: string | null
           last_active?: string
+          last_name?: string | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null
@@ -323,9 +329,12 @@ export type Database = {
           created_at?: string
           education_level?: string | null
           email?: string
+          first_name?: string | null
           gender?: Database["public"]["Enums"]["gender"] | null
           id?: string
+          identity_key?: string | null
           last_active?: string
+          last_name?: string | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null

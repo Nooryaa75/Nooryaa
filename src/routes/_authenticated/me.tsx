@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Plus, Star, Trash2 } from "lucide-react";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
+import { PhotoManager } from "@/components/PhotoManager";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -23,16 +23,10 @@ export const Route = createFileRoute("/_authenticated/me")({
 function MyProfile() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: profile } = useQuery({
     queryKey: ["me", ctx.userId],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
-  });
-
-  const { data: photos } = useQuery({
-    queryKey: ["my-photos", ctx.userId],
-    queryFn: async () => (await supabase.from("photos").select("*").eq("user_id", ctx.userId).order("position")).data ?? [],
   });
 
   const [form, setForm] = useState<any>(null);

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
+import { PhotoManager } from "@/components/PhotoManager";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -258,6 +259,9 @@ function Onboarding() {
         <div>
           <Label htmlFor="bio">À propos de vous et de votre objectif</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={1000} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
+        </div>
+        <div className="space-y-2 rounded-xl border border-border/60 p-4">
+          <PhotoManager userId={ctx.userId} />
         </div>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

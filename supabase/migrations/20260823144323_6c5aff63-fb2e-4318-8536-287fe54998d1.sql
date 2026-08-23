@@ -1,0 +1,1 @@
+ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS blurred boolean NOT NULL DEFAULT false;

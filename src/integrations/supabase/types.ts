@@ -223,6 +223,7 @@ export type Database = {
       }
       photos: {
         Row: {
+          blurred: boolean
           created_at: string
           id: string
           position: number
@@ -231,6 +232,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          blurred?: boolean
           created_at?: string
           id?: string
           position: number
@@ -239,6 +241,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          blurred?: boolean
           created_at?: string
           id?: string
           position?: number

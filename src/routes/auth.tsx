@@ -150,10 +150,30 @@ function AuthPage() {
         </div>
 
         <form onSubmit={handleEmail} className="space-y-4">
+          {mode === "signup" && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="firstName">Prénom</Label>
+                  <Input id="firstName" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Nom</Label>
+                  <Input id="lastName" required maxLength={60} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input id="phone" type="tel" required maxLength={20} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+33 6 12 34 56 78" />
+                <p className="text-[11px] text-muted-foreground mt-1">Non visible sur votre profil. Sert à garantir un seul compte par personne.</p>
+              </div>
+            </>
+          )}
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email (identifiant de connexion)</Label>
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
+
           <div>
             <Label htmlFor="password">Mot de passe</Label>
             <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />

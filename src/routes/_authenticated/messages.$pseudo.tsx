@@ -76,7 +76,7 @@ function Conversation() {
       if (local.verdict === "block") throw new Error(local.reason);
 
       // 2e filtre : analyse du ton et du contexte
-      let verdict = local.verdict;
+      let verdict: "allow" | "warn" | "block" = local.verdict;
       let reason = local.reason;
       try {
         const res = await moderate({ data: { content, targetUserId: peer.id } });

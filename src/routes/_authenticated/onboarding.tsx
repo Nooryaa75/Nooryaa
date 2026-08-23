@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, ACTIVITIES_OPTIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
+import { YesNoRadio } from "@/components/YesNoRadio";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({ meta: [{ title: "Compléter mon profil — Nooryaa" }] }),
@@ -25,7 +26,11 @@ function Onboarding() {
     country: "France",
     country_origin: "",
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
-    religious_practice: "" as any,
+    salat_quotidienne: null as boolean | null,
+    ramadan: null as boolean | null,
+    hadj: null as boolean | null,
+    omra: null as boolean | null,
+    porte_voile: null as boolean | null,
     religion: "Islam (sunnite)",
     profession: "",
     education_level: "",
@@ -59,7 +64,7 @@ function Onboarding() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!(await checkPseudo(form.pseudo))) return;
-    if (!form.gender || !form.birthdate || !form.marital_status || !form.religious_practice || !form.country_origin || !form.education_level || !form.objective) {
+    if (!form.gender || !form.birthdate || !form.marital_status || form.salat_quotidienne === null || form.ramadan === null || form.hadj === null || form.omra === null || (form.gender === "femme" && form.porte_voile === null) || !form.country_origin || !form.education_level || !form.objective) {
       toast.error("Merci de remplir tous les champs obligatoires (*)"); return;
     }
     if (!isAdult(form.birthdate)) {
@@ -75,7 +80,11 @@ function Onboarding() {
       country: form.country || null,
       country_origin: form.country_origin || null,
       marital_status: form.marital_status,
-      religious_practice: form.religious_practice,
+      salat_quotidienne: form.salat_quotidienne,
+      ramadan: form.ramadan,
+      hadj: form.hadj,
+      omra: form.omra,
+      porte_voile: form.gender === "femme" ? form.porte_voile : null,
       religion: form.religion || "Islam",
       profession: form.profession || null,
       education_level: form.education_level || null,
@@ -182,17 +191,15 @@ function Onboarding() {
             </Select>
           </div>
         </div>
-        <div>
+        <div className="space-y-2">
           <Label>Pratique religieuse *</Label>
-          <Select value={form.religious_practice} onValueChange={(v: any) => setForm({ ...form, religious_practice: v })}>
-            <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="tres_pratiquant">Très pratiquant·e</SelectItem>
-              <SelectItem value="pratiquant">Pratiquant·e</SelectItem>
-              <SelectItem value="en_apprentissage">En apprentissage</SelectItem>
-              <SelectItem value="non_pratiquant">Non pratiquant·e</SelectItem>
-            </SelectContent>
-          </Select>
+          <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
+          <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
+          <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
+          <YesNoRadio name="omra" label="Avez-vous fait la Omra ?" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
+          {form.gender === "femme" && (
+            <YesNoRadio name="voile" label="Portez-vous le voile ?" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
+          )}
         </div>
         <div>
           <Label>Niveau d'études *</Label>

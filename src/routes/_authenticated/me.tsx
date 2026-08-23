@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Plus, Star, Trash2 } from "lucide-react";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, ACTIVITIES_OPTIONS } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
+import { YesNoRadio } from "@/components/YesNoRadio";
 
 export const Route = createFileRoute("/_authenticated/me")({
   head: () => ({ meta: [{ title: "Mon profil — Nooryaa" }] }),
@@ -39,7 +40,12 @@ function MyProfile() {
     mutationFn: async () => {
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
-        marital_status: form.marital_status, religious_practice: form.religious_practice,
+        marital_status: form.marital_status,
+        salat_quotidienne: form.salat_quotidienne ?? null,
+        ramadan: form.ramadan ?? null,
+        hadj: form.hadj ?? null,
+        omra: form.omra ?? null,
+        porte_voile: profile?.gender === "femme" ? (form.porte_voile ?? null) : null,
         religion: form.religion,
         looking_for: profile?.gender === "homme" ? "femme" : "homme",
         bio: form.bio,
@@ -181,17 +187,15 @@ function MyProfile() {
               </SelectContent>
             </Select>
           </div>
-          <div>
+          <div className="md:col-span-2 space-y-2">
             <Label>Pratique religieuse</Label>
-            <Select value={form.religious_practice ?? ""} onValueChange={(v) => setForm({ ...form, religious_practice: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tres_pratiquant">Très pratiquant·e</SelectItem>
-                <SelectItem value="pratiquant">Pratiquant·e</SelectItem>
-                <SelectItem value="en_apprentissage">En apprentissage</SelectItem>
-                <SelectItem value="non_pratiquant">Non pratiquant·e</SelectItem>
-              </SelectContent>
-            </Select>
+            <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
+            <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
+            <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
+            <YesNoRadio name="omra" label="Avez-vous fait la Omra ?" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
+            {profile?.gender === "femme" && (
+              <YesNoRadio name="voile" label="Portez-vous le voile ?" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
+            )}
           </div>
           <div>
             <Label>Niveau d'études</Label>

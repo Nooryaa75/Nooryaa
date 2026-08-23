@@ -40,7 +40,7 @@ function Onboarding() {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
       if (data) setForm((f) => ({
         ...f,
-        pseudo: data.pseudo.startsWith("user_") ? "" : data.pseudo,
+        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : "",
       }));
     });
   }, [ctx.userId]);

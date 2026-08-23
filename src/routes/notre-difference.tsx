@@ -96,7 +96,7 @@ function NotreDifferencePage() {
           </section>
         </article>
 
-        <div className="mt-12 flex flex-wrap gap-3">
+        <div className="mt-12 flex flex-wrap justify-center gap-3">
           <Link to="/auth" search={{ mode: "signup" }}>
             <Button size="lg" className="rounded-full px-8">Rejoindre Nooryaa gratuitement</Button>
           </Link>

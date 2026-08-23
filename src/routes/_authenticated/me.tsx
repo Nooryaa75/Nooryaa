@@ -55,6 +55,7 @@ function MyProfile() {
         bio: form.bio,
         profession: form.profession, education_level: form.education_level,
         activities: form.activities, objective: form.objective,
+        phone: form.phone || null,
       }).eq("id", ctx.userId);
       if (error) throw error;
     },

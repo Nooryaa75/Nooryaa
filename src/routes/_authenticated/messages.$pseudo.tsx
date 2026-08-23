@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { moderateMessage } from "@/lib/moderation.functions";
+import { lexiconCheck } from "@/lib/moderation-rules";
 
 export const Route = createFileRoute("/_authenticated/messages/$pseudo")({
   head: ({ params }) => ({ meta: [{ title: `Chat avec ${params.pseudo} — Nooryaa` }] }),
@@ -61,10 +64,31 @@ function Conversation() {
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [messages]);
 
+  const moderate = useServerFn(moderateMessage);
+
   const send = useMutation({
     mutationFn: async () => {
       if (!peer || !text.trim()) return;
-      const { error } = await supabase.from("messages").insert({ sender: ctx.userId, receiver: peer.id, content: text.trim() });
+      const content = text.trim();
+
+      // 1er filtre instantané côté client
+      const local = lexiconCheck(content);
+      if (local.verdict === "block") throw new Error(local.reason);
+
+      // 2e filtre : analyse du ton et du contexte
+      let verdict = local.verdict;
+      let reason = local.reason;
+      try {
+        const res = await moderate({ data: { content, targetUserId: peer.id } });
+        verdict = res.verdict;
+        reason = res.reason;
+      } catch {
+        // en cas d'indisponibilité de l'analyse, on garde le filtre local
+      }
+      if (verdict === "block") throw new Error(reason || "Ce message ne respecte pas la charte de Nooryaa.");
+      if (verdict === "warn" && reason) toast.warning(reason);
+
+      const { error } = await supabase.from("messages").insert({ sender: ctx.userId, receiver: peer.id, content });
       if (error) throw error;
     },
     onSuccess: () => { setText(""); qc.invalidateQueries({ queryKey: ["messages"] }); },

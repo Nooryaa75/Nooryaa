@@ -40,7 +40,12 @@ function MyProfile() {
     mutationFn: async () => {
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
-        marital_status: form.marital_status, religious_practice: form.religious_practice,
+        marital_status: form.marital_status,
+        salat_quotidienne: form.salat_quotidienne ?? null,
+        ramadan: form.ramadan ?? null,
+        hadj: form.hadj ?? null,
+        omra: form.omra ?? null,
+        porte_voile: profile?.gender === "femme" ? (form.porte_voile ?? null) : null,
         religion: form.religion,
         looking_for: profile?.gender === "homme" ? "femme" : "homme",
         bio: form.bio,

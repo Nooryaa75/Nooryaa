@@ -473,14 +473,14 @@ function Browse() {
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
           ) : deck ? (
             <SwipeDeck
-              title={DECKS.find((d) => d.key === deck)!.title}
+              title={deckList.find((d) => d.key === deck)!.title}
               profiles={decks[deck]}
               userId={ctx.userId}
               onBack={() => setDeck(null)}
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-3">
-              {DECKS.map(({ key, title, desc, Icon }) => (
+              {deckList.map(({ key, title, desc, Icon }) => (
                 <button
                   key={key}
                   type="button"

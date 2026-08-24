@@ -163,7 +163,7 @@ function Recherche() {
     toast.success(`Recherche « ${row.name} » appliquée`);
   }
 
-  const originMissing = filters.radiusEnabled && (me?.latitude == null || me?.longitude == null) && (!filters.originLat || !filters.originLng);
+  const originMissing = filters.radiusEnabled && (originLat == null || originLng == null);
 
   return (
     <div className="space-y-6">

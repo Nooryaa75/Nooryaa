@@ -110,6 +110,8 @@ function Onboarding() {
       birthdate: form.birthdate,
       phone: form.phone || null,
       city: form.city || null,
+      latitude: (form as any).latitude ?? null,
+      longitude: (form as any).longitude ?? null,
       country: form.country || null,
       country_origin: form.country_origin || null,
       marital_status: form.marital_status as any,

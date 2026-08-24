@@ -144,10 +144,18 @@ export function PhotoManager({ userId }: { userId: string }) {
           </div>
         ))}
         {(photos?.length ?? 0) < MAX_PHOTOS && (
-          <button type="button" onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:bg-secondary/40 transition-colors">
-            <Plus className="h-6 w-6 text-muted-foreground" />
+          <button type="button" disabled={checking} onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:bg-secondary/40 transition-colors disabled:opacity-60">
+            {checking ? (
+              <>
+                <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
+                <span className="text-[10px] text-muted-foreground">Vérification…</span>
+              </>
+            ) : (
+              <Plus className="h-6 w-6 text-muted-foreground" />
+            )}
           </button>
         )}
+
       </div>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
     </div>

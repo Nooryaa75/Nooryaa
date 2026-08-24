@@ -163,6 +163,7 @@ function Recherche() {
 
   function applySearch(row: any) {
     setFilters({ ...DEFAULT_FILTERS, ...(row.filters ?? {}) });
+    setActiveSearchName(row.name ?? null);
     setTab("resultats");
     toast.success(`Recherche « ${row.name} » appliquée`);
   }

@@ -193,11 +193,13 @@ function Browse() {
   });
 
   const [deck, setDeck] = useState<DeckKey | null>(null);
+  const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
 
   // Les trois sélections proposées avant le mode swipe.
   const decks = useMemo(() => {
     const rows: any[] = profiles ?? [];
     const prefs: any = (me as any)?.preferences ?? {};
+    const iAmMan = me?.gender === "homme";
     const score = (p: any) => {
       let s = 0;
       if (prefs.city && p.city && String(p.city).toLowerCase().includes(String(prefs.city).toLowerCase())) s += 2;
@@ -207,10 +209,15 @@ function Browse() {
       if (prefs.marital && p.marital_status === prefs.marital) s += 1;
       if (typeof prefs.wantsChildren === "boolean" && p.wants_children === prefs.wantsChildren) s += 1;
       if (typeof prefs.smoker === "boolean" && p.smoker === prefs.smoker) s += 1;
+      // Le critère du voile n'a de sens que pour un homme cherchant une femme.
+      if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
+      if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
+      if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
       if (me?.city && p.city === me.city) s += 1;
       if (me?.objective && p.objective === me.objective) s += 1;
       return s;
     };
+
     const withDistance = rows
       .map((p) => {
         if (typeof p._distance === "number") return p;

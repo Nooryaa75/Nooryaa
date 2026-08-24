@@ -145,6 +145,26 @@ export function useDiscovery(userId: string, filters: Filters) {
       return s;
     };
 
+    const maxScore = Math.max(
+      1,
+      (prefs.city ? 2 : 0) +
+        (prefs.country ? 1 : 0) +
+        (prefs.education ? 1 : 0) +
+        (prefs.objective ? 2 : 0) +
+        (prefs.marital ? 1 : 0) +
+        (typeof prefs.wantsChildren === "boolean" ? 1 : 0) +
+        (typeof prefs.smoker === "boolean" ? 1 : 0) +
+        (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
+        (typeof prefs.salat === "boolean" ? 1 : 0) +
+        (typeof prefs.ramadan === "boolean" ? 1 : 0) +
+        (me?.city ? 1 : 0) +
+        (me?.objective ? 1 : 0)
+    );
+    const withPercent = (p: any) => ({
+      ...p,
+      _matchPercent: Math.min(100, Math.round((score(p) / maxScore) * 100)),
+    });
+
     const withDistance = rows.map((p) => {
       if (typeof p._distance === "number") return p;
       const lat = p.latitude, lng = p.longitude;
@@ -154,7 +174,7 @@ export function useDiscovery(userId: string, filters: Filters) {
     });
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return {
-      match: [...rows].sort((a, b) => score(b) - score(a)),
+      match: [...rows].sort((a, b) => score(b) - score(a)).map(withPercent),
       proches: withDistance
         .filter((p: any) => p._distance != null && p._distance <= 20)
         .sort((a: any, b: any) => a._distance - b._distance),

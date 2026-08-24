@@ -82,10 +82,26 @@ function Browse() {
       else if (me?.gender === "femme") q = q.eq("gender", "homme");
       q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);
       if (filters.city) q = q.ilike("city", `%${filters.city}%`);
-      if (filters.country) q = q.ilike("country", `%${filters.country}%`);
-      if (filters.practice !== "any") q = q.eq("religious_practice", filters.practice as any);
-      if (filters.marital !== "any") q = q.eq("marital_status", filters.marital as any);
-      if (filters.education !== "any") q = q.eq("education_level", filters.education);
+      if (filters.country !== ANY) q = q.eq("country", filters.country);
+      if (filters.countryOrigin !== ANY) q = q.eq("country_origin", filters.countryOrigin);
+      if (filters.profession !== ANY) q = q.eq("profession", filters.profession);
+      if (filters.marital !== ANY) q = q.eq("marital_status", filters.marital as any);
+      if (filters.education !== ANY) q = q.eq("education_level", filters.education);
+      if (filters.objective !== ANY) q = q.eq("objective", filters.objective);
+      if (filters.activity !== ANY) q = q.ilike("activities", `%${filters.activity}%`);
+      for (const [col, val] of [
+        ["salat_quotidienne", filters.salat],
+        ["ramadan", filters.ramadan],
+        ["hadj", filters.hadj],
+        ["omra", filters.omra],
+        ["porte_voile", filters.voile],
+        ["has_children", filters.hasChildren],
+        ["wants_children", filters.wantsChildren],
+        ["smoker", filters.smoker],
+      ] as const) {
+        const b = tri(val);
+        if (b !== null) q = q.eq(col, b);
+      }
       const { data, error } = await q.order("last_active", { ascending: false }).limit(80);
       if (error) throw error;
       return (data ?? []).filter((p) => !excluded.has(p.id));

@@ -9,6 +9,9 @@ export type PhotoModerationResult = {
   reason: string;
   ai_generated: "no" | "maybe" | "yes";
   filtered: "no" | "light" | "heavy";
+  apparent_age_min: number;
+  apparent_age_max: number;
+  age_match: "ok" | "doubt" | "mismatch" | "unknown";
 };
 
 const SYSTEM_PROMPT = `Tu es le modérateur photo de Nooryaa, plateforme de mise en relation musulmane sérieuse (pudeur / hayâ).
@@ -17,12 +20,14 @@ Tu analyses une photo de profil.
 Vérifie trois choses :
 1. Conformité : verdict "block" si nudité, sous-vêtements, tenue très suggestive, contenu sexuel, violence, drogue, haine, contenu illicite, image pornographique, ou si ce n'est manifestement pas une photo de personne réelle utilisable comme photo de profil (capture d'écran, texte publicitaire, coordonnées visibles). Verdict "warn" si tenue limite, pose aguicheuse, photo de groupe où la personne n'est pas identifiable, photo floue ou de très mauvaise qualité, visage totalement masqué par un objet.
 2. Image générée ou retouchée par IA : "yes", "maybe" ou "no" (indices : peau lissée irréelle, mains/oreilles/bijoux déformés, arrière-plan incohérent, rendu 3D/illustration).
-3. Filtres : "no", "light" (retouche légère) ou "heavy" (filtre beauté marqué, déformation du visage, stickers, oreilles d'animaux).
+3. Âge apparent : estime une fourchette d'âge apparent (apparent_age_min / apparent_age_max, entiers). Si aucun visage humain exploitable, mets 0 et 0.
+4. Filtres : "no", "light" (retouche légère) ou "heavy" (filtre beauté marqué, déformation du visage, stickers, oreilles d'animaux).
 
+Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte en français adressée à la personne","ai_generated":"no|maybe|yes","filtered":"no|light|heavy"}`;
+{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte en français adressée à la personne","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -30,8 +35,12 @@ function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallb
 
 export const moderatePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { imageDataUrl: string }) => ({
+  .inputValidator((data: { imageDataUrl: string; declaredAge?: number | null }) => ({
     imageDataUrl: String(data?.imageDataUrl ?? ""),
+    declaredAge:
+      typeof data?.declaredAge === "number" && Number.isFinite(data.declaredAge)
+        ? Math.round(data.declaredAge)
+        : null,
   }))
   .handler(async ({ data, context }): Promise<PhotoModerationResult> => {
     const fallback: PhotoModerationResult = {
@@ -40,6 +49,9 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       reason: "",
       ai_generated: "no",
       filtered: "no",
+      apparent_age_min: 0,
+      apparent_age_max: 0,
+      age_match: "unknown",
     };
 
     const apiKey = process.env["LOVABLE_API_KEY"];
@@ -57,7 +69,12 @@ export const moderatePhoto = createServerFn({ method: "POST" })
             {
               role: "user",
               content: [
-                { type: "input_text", text: "Analyse cette photo de profil." },
+                {
+                  type: "input_text",
+                  text: data.declaredAge
+                    ? `Analyse cette photo de profil. Âge déclaré par la personne : ${data.declaredAge} ans.`
+                    : "Analyse cette photo de profil.",
+                },
                 { type: "input_image", image_url: data.imageDataUrl },
               ],
             },
@@ -83,9 +100,32 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         reason: typeof parsed.reason === "string" ? parsed.reason : "",
         ai_generated: safeEnum(parsed.ai_generated, ["no", "maybe", "yes"] as const, "no"),
         filtered: safeEnum(parsed.filtered, ["no", "light", "heavy"] as const, "no"),
+        apparent_age_min: Number.isFinite(Number(parsed.apparent_age_min)) ? Number(parsed.apparent_age_min) : 0,
+        apparent_age_max: Number.isFinite(Number(parsed.apparent_age_max)) ? Number(parsed.apparent_age_max) : 0,
+        age_match: "unknown",
       };
     } catch {
       return fallback;
+    }
+
+    const { apparent_age_min: lo, apparent_age_max: hi } = result;
+    if (lo > 0 && hi > 0) {
+      if (hi < 18) {
+        result.verdict = "block";
+        result.categories = [...result.categories, "mineur_apparent"];
+        result.reason = result.reason || "La personne sur la photo paraît mineure.";
+      } else if (data.declaredAge) {
+        const gap =
+          data.declaredAge < lo ? lo - data.declaredAge : data.declaredAge > hi ? data.declaredAge - hi : 0;
+        result.age_match = gap === 0 ? "ok" : gap <= 7 ? "doubt" : "mismatch";
+        if (result.age_match === "mismatch" && result.verdict === "allow") {
+          result.verdict = "warn";
+          result.categories = [...result.categories, "age_incoherent"];
+          result.reason =
+            result.reason ||
+            `L'âge apparent sur la photo (environ ${lo}-${hi} ans) semble éloigné de l'âge déclaré (${data.declaredAge} ans).`;
+        }
+      }
     }
 
     if (result.ai_generated === "yes") result.verdict = "block";
@@ -98,7 +138,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         await supabaseAdmin.from("moderation_events").insert({
           user_id: (context as any).userId,
-          content: `Photo de profil — IA:${result.ai_generated} / filtres:${result.filtered}`,
+          content: `Photo de profil — IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
           verdict: result.verdict,
           categories: result.categories,
           reason: result.reason,

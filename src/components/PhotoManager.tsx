@@ -48,7 +48,10 @@ export function PhotoManager({ userId }: { userId: string }) {
     setChecking(true);
     try {
       const dataUrl = await toDataUrl(file);
-      const check = await checkPhoto({ data: { imageDataUrl: dataUrl } });
+      const declaredAge = profile?.birthdate
+        ? Math.floor((Date.now() - new Date(profile.birthdate).getTime()) / 31557600000)
+        : null;
+      const check = await checkPhoto({ data: { imageDataUrl: dataUrl, declaredAge } });
       if (check.verdict === "block") {
         toast.error(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.");
         return;
@@ -119,7 +122,7 @@ export function PhotoManager({ userId }: { userId: string }) {
       </p>
       <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1.5">
         <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--gold)]" />
-        Chaque photo est vérifiée automatiquement (pudeur, image générée par IA, filtres excessifs).
+        Chaque photo est vérifiée automatiquement (pudeur, image générée par IA, filtres excessifs, cohérence avec l'âge déclaré).
       </p>
 
       <div className="grid grid-cols-3 gap-3">

@@ -41,6 +41,7 @@ function MyProfile() {
       }
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
+        latitude: form.latitude ?? null, longitude: form.longitude ?? null,
         marital_status: form.marital_status,
         salat_quotidienne: form.salat_quotidienne ?? null,
         ramadan: form.ramadan ?? null,
@@ -97,7 +98,13 @@ function MyProfile() {
           </div>
           <div>
             <Label>Ville / région</Label>
-            <CityAutocomplete value={form.city ?? ""} onChange={(v) => setForm({ ...form, city: v })} suggestions={CITIES} placeholder="Commencez à taper votre ville..." />
+            <CityAutocomplete
+              value={form.city ?? ""}
+              onChange={(v) => setForm({ ...form, city: v })}
+              onCoords={(c) => setForm((f: any) => ({ ...f, latitude: c?.latitude ?? null, longitude: c?.longitude ?? null }))}
+              suggestions={CITIES}
+              placeholder="Commencez à taper votre ville..."
+            />
           </div>
           <div>
             <Label>Pays de résidence</Label>

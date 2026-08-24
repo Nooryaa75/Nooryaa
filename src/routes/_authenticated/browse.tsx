@@ -25,11 +25,20 @@ import { SwipeDeck } from "@/components/SwipeDeck";
 
 type DeckKey = "match" | "proches" | "nouveaux";
 
-const DECKS: { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] = [
-  { key: "match", title: "Ils/elles te correspondent", desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
-  { key: "proches", title: "Près de chez toi", desc: "Les profils les plus proches de votre ville.", Icon: Navigation },
-  { key: "nouveaux", title: "Les nouveaux profils", desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
-];
+const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] => {
+  // On s'adresse au genre recherché : un homme voit des femmes, une femme voit des hommes.
+  const isMan = gender === "homme";
+  const isWoman = gender === "femme";
+  const they = isMan ? "Elles" : isWoman ? "Ils" : "Ils/elles";
+  const them = isMan ? "des femmes" : isWoman ? "des hommes" : "des profils";
+  const news = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
+  return [
+    { key: "match", title: `${they} te correspondent`, desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
+    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} les plus proches de votre ville.`, Icon: Navigation },
+    { key: "nouveaux", title: news, desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
+  ];
+};
+
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({

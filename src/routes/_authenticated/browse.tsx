@@ -413,48 +413,32 @@ function Browse() {
         <TabsContent value="resultats">
           {isLoading ? (
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
-          ) : !profiles || profiles.length === 0 ? (
-            <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
-              <Search className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-muted-foreground">Aucun profil ne correspond à vos critères pour le moment.</p>
-            </div>
+          ) : deck ? (
+            <SwipeDeck
+              title={DECKS.find((d) => d.key === deck)!.title}
+              profiles={decks[deck]}
+              userId={ctx.userId}
+              onBack={() => setDeck(null)}
+            />
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {profiles.map((p: any) => (
-                <Link
-                  key={p.id}
-                  to="/profile/$pseudo"
-                  params={{ pseudo: p.pseudo }}
-                  className="group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] transition-shadow"
+            <div className="grid gap-4 sm:grid-cols-3">
+              {DECKS.map(({ key, title, desc, Icon }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setDeck(key)}
+                  className="text-left bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] p-5 hover:shadow-[var(--shadow-soft)] transition-shadow"
                 >
-                  <div className="aspect-[3/4] bg-secondary relative overflow-hidden">
-                    {p.primary_photo_url ? (
-                      <img src={p.primary_photo_url} alt={p.pseudo} className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${p.primary_photo_blurred ? "blur-md scale-110" : ""}`} />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center"><User className="h-16 w-16 text-muted-foreground/40" /></div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <div className="flex items-baseline justify-between">
-                      <span className="font-serif text-primary truncate">{p.pseudo}</span>
-                      <span className="text-sm text-muted-foreground">{ageFromBirthdate(p.birthdate)} ans</span>
-                    </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                      <MapPin className="h-3 w-3" />
-                      {p.city || p.country || "—"}
-                      {typeof p._distance === "number" && <span>· {Math.round(p._distance)} km</span>}
-                    </div>
-                    {p.religious_practice && (
-                      <div className="mt-2 text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
-                        {PRACTICE_LABELS[p.religious_practice]}
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                  <Icon className="h-7 w-7 text-[color:var(--gold)]" />
+                  <p className="font-serif text-lg text-primary mt-3">{title}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{desc}</p>
+                  <p className="text-sm mt-3">{decks[key].length} profil{decks[key].length > 1 ? "s" : ""}</p>
+                </button>
               ))}
             </div>
           )}
         </TabsContent>
+
       </Tabs>
     </div>
   );

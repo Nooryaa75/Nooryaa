@@ -204,7 +204,6 @@ function Browse() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-serif text-primary">Découvrir</h1>
-        <p className="text-muted-foreground text-sm">Nooryaa est un abonnement gratuit.</p>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">

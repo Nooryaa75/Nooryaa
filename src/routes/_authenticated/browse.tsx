@@ -45,10 +45,15 @@ export const Route = createFileRoute("/_authenticated/browse")({
 
 function Browse() {
   const ctx = Route.useRouteContext();
-  const [filters, setFilters] = useState({
-    ageMin: 18, ageMax: 60, city: "", country: "",
-    practice: "any", marital: "any", education: "any",
-  });
+  const initialFilters = {
+    ageMin: 18, ageMax: 60, city: "", country: ANY, countryOrigin: ANY,
+    profession: ANY, marital: ANY, education: ANY, objective: ANY, activity: ANY,
+    salat: ANY, ramadan: ANY, hadj: ANY, omra: ANY, voile: ANY,
+    hasChildren: ANY, wantsChildren: ANY, smoker: ANY,
+  };
+  const [filters, setFilters] = useState(initialFilters);
+  const set = (patch: Partial<typeof initialFilters>) => setFilters((f) => ({ ...f, ...patch }));
+  const tri = (v: string) => (v === ANY ? null : v === "yes");
 
   const { data: me } = useQuery({
     queryKey: ["me", ctx.userId],

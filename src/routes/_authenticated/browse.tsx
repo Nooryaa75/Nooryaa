@@ -25,11 +25,20 @@ import { SwipeDeck } from "@/components/SwipeDeck";
 
 type DeckKey = "match" | "proches" | "nouveaux";
 
-const DECKS: { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] = [
-  { key: "match", title: "Ils/elles te correspondent", desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
-  { key: "proches", title: "Près de chez toi", desc: "Les profils les plus proches de votre ville.", Icon: Navigation },
-  { key: "nouveaux", title: "Les nouveaux profils", desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
-];
+const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] => {
+  // On s'adresse au genre recherché : un homme voit des femmes, une femme voit des hommes.
+  const isMan = gender === "homme";
+  const isWoman = gender === "femme";
+  const they = isMan ? "Elles" : isWoman ? "Ils" : "Ils/elles";
+  const them = isMan ? "des femmes" : isWoman ? "des hommes" : "des profils";
+  const news = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
+  return [
+    { key: "match", title: `${they} te correspondent`, desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
+    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} les plus proches de votre ville.`, Icon: Navigation },
+    { key: "nouveaux", title: news, desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
+  ];
+};
+
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({
@@ -184,11 +193,13 @@ function Browse() {
   });
 
   const [deck, setDeck] = useState<DeckKey | null>(null);
+  const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
 
   // Les trois sélections proposées avant le mode swipe.
   const decks = useMemo(() => {
     const rows: any[] = profiles ?? [];
     const prefs: any = (me as any)?.preferences ?? {};
+    const iAmMan = me?.gender === "homme";
     const score = (p: any) => {
       let s = 0;
       if (prefs.city && p.city && String(p.city).toLowerCase().includes(String(prefs.city).toLowerCase())) s += 2;
@@ -198,10 +209,15 @@ function Browse() {
       if (prefs.marital && p.marital_status === prefs.marital) s += 1;
       if (typeof prefs.wantsChildren === "boolean" && p.wants_children === prefs.wantsChildren) s += 1;
       if (typeof prefs.smoker === "boolean" && p.smoker === prefs.smoker) s += 1;
+      // Le critère du voile n'a de sens que pour un homme cherchant une femme.
+      if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
+      if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
+      if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
       if (me?.city && p.city === me.city) s += 1;
       if (me?.objective && p.objective === me.objective) s += 1;
       return s;
     };
+
     const withDistance = rows
       .map((p) => {
         if (typeof p._distance === "number") return p;
@@ -464,14 +480,14 @@ function Browse() {
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
           ) : deck ? (
             <SwipeDeck
-              title={DECKS.find((d) => d.key === deck)!.title}
+              title={deckList.find((d) => d.key === deck)!.title}
               profiles={decks[deck]}
               userId={ctx.userId}
               onBack={() => setDeck(null)}
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-3">
-              {DECKS.map(({ key, title, desc, Icon }) => (
+              {deckList.map(({ key, title, desc, Icon }) => (
                 <button
                   key={key}
                   type="button"

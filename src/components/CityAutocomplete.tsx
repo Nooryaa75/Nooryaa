@@ -13,10 +13,11 @@ interface CityAutocompleteProps {
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
-export function CityAutocomplete({ value, onChange, placeholder, suggestions = [] }: CityAutocompleteProps) {
+export function CityAutocomplete({ value, onChange, placeholder, suggestions = [], onCoords }: CityAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState(value);
   const [remote, setRemote] = useState<string[]>([]);
+  const coordsMap = useRef<Record<string, { latitude: number; longitude: number }>>({});
   const ref = useRef<HTMLDivElement>(null);
   const skipFetch = useRef(false);
 

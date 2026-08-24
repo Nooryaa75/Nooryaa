@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 
 const links = [
@@ -13,10 +14,27 @@ const links = [
   { to: "/me", label: "Profil", icon: User },
 ] as const;
 
+function Badge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold leading-[18px] text-center">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: counts } = useUnreadCounts();
+
+  function countFor(to: string) {
+    if (to === "/likes") return counts?.likes ?? 0;
+    if (to === "/messages") return counts?.messages ?? 0;
+    return 0;
+  }
+
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -46,7 +64,10 @@ export function AppHeader() {
                   active ? "bg-secondary text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <l.icon className="h-4 w-4" />
+                <span className="relative flex items-center">
+                  <l.icon className="h-4 w-4" />
+                  <Badge count={countFor(l.to)} />
+                </span>
                 {l.label}
               </Link>
             );
@@ -62,7 +83,10 @@ export function AppHeader() {
           const active = pathname.startsWith(l.to);
           return (
             <Link key={l.to} to={l.to} className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
-              <l.icon className="h-5 w-5" />
+              <span className="relative flex items-center">
+                <l.icon className="h-5 w-5" />
+                <Badge count={countFor(l.to)} />
+              </span>
               {l.label}
             </Link>
           );

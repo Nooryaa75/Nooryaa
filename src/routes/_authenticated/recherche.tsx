@@ -123,7 +123,11 @@ function Recherche() {
   const [tab, setTab] = useState("resultats");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
-  const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
+  const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
+  const set = (patch: Partial<Filters>) => {
+    setActiveSearchName(null);
+    setFilters((f) => ({ ...f, ...patch }));
+  };
 
   const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
 
@@ -159,6 +163,7 @@ function Recherche() {
 
   function applySearch(row: any) {
     setFilters({ ...DEFAULT_FILTERS, ...(row.filters ?? {}) });
+    setActiveSearchName(row.name ?? null);
     setTab("resultats");
     toast.success(`Recherche « ${row.name} » appliquée`);
   }
@@ -339,7 +344,7 @@ function Recherche() {
                 <Input value={searchName} onChange={(e) => setSearchName(e.target.value)} maxLength={60} placeholder="Ex. Lyon 30 km, pratiquante" />
               </div>
               <Button onClick={saveCurrentSearch}>Enregistrer</Button>
-              <Button variant="outline" onClick={() => setFilters(DEFAULT_FILTERS)}>Réinitialiser</Button>
+              <Button variant="outline" onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}>Réinitialiser</Button>
               <Button variant="secondary" onClick={() => setTab("resultats")}>Voir les profils</Button>
             </div>
           </div>
@@ -386,7 +391,22 @@ function Recherche() {
             </div>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground mb-4">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
+                {activeSearchName && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
+                    Recherche : {activeSearchName}
+                    <button
+                      type="button"
+                      onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
+                      className="hover:text-primary transition-colors"
+                      aria-label="Effacer la recherche"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+              </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {profiles.map((p) => (
                   <ProfileCard key={p.id} profile={p} userId={ctx.userId} />

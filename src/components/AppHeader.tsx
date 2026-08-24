@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 
 const links = [
@@ -63,7 +64,10 @@ export function AppHeader() {
                   active ? "bg-secondary text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <l.icon className="h-4 w-4" />
+                <span className="relative flex items-center">
+                  <l.icon className="h-4 w-4" />
+                  <Badge count={countFor(l.to)} />
+                </span>
                 {l.label}
               </Link>
             );
@@ -79,7 +83,10 @@ export function AppHeader() {
           const active = pathname.startsWith(l.to);
           return (
             <Link key={l.to} to={l.to} className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
-              <l.icon className="h-5 w-5" />
+              <span className="relative flex items-center">
+                <l.icon className="h-5 w-5" />
+                <Badge count={countFor(l.to)} />
+              </span>
               {l.label}
             </Link>
           );

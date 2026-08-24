@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Heart, User } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
+import { useMarkLikesSeen } from "@/hooks/useUnreadCounts";
 
 export const Route = createFileRoute("/_authenticated/likes")({
   head: () => ({ meta: [{ title: "Coups de cœur — Nooryaa" }] }),
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/likes")({
 
 function Likes() {
   const ctx = Route.useRouteContext();
+  useMarkLikesSeen();
 
   const { data: received } = useQuery({
     queryKey: ["likes-received", ctx.userId],

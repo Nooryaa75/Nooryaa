@@ -123,7 +123,11 @@ function Recherche() {
   const [tab, setTab] = useState("resultats");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
-  const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
+  const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
+  const set = (patch: Partial<Filters>) => {
+    setActiveSearchName(null);
+    setFilters((f) => ({ ...f, ...patch }));
+  };
 
   const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
 

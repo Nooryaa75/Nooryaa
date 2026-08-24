@@ -125,7 +125,7 @@ function Recherche() {
   const [searchName, setSearchName] = useState("");
   const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
 
-  const { me, isLoading, profiles } = useDiscovery(ctx.userId, filters);
+  const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],

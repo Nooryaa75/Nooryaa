@@ -1,8 +1,21 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Star, Trash2, EyeOff, Eye } from "lucide-react";
+import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck } from "lucide-react";
+import { moderatePhoto } from "@/lib/photo-moderation.functions";
+
+async function toDataUrl(file: File, max = 768): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
 
 const MAX_PHOTOS = 3;
 

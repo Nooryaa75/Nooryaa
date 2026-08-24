@@ -48,14 +48,22 @@ export function CityAutocomplete({ value, onChange, placeholder, suggestions = [
     const t = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,departement&boost=population&limit=8`,
+          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,departement,centre&boost=population&limit=8`,
           { signal: ctrl.signal },
         );
         if (!res.ok) return;
-        const data = (await res.json()) as Array<{ nom: string; departement?: { nom?: string } }>;
-        setRemote(
-          data.map((c) => (c.departement?.nom ? `${c.nom} (${c.departement.nom})` : c.nom)),
-        );
+        const data = (await res.json()) as Array<{
+          nom: string;
+          departement?: { nom?: string };
+          centre?: { coordinates?: [number, number] };
+        }>;
+        const labels = data.map((c) => {
+          const label = c.departement?.nom ? `${c.nom} (${c.departement.nom})` : c.nom;
+          const co = c.centre?.coordinates;
+          if (co) coordsMap.current[label] = { longitude: co[0], latitude: co[1] };
+          return label;
+        });
+        setRemote(labels);
       } catch {
         /* ignore */
       }

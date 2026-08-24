@@ -46,12 +46,15 @@ function OptionalSelect({
 export function SearchPreferences({
   value,
   onChange,
+  gender,
 }: {
   value: Preferences | null | undefined;
   onChange: (p: Preferences) => void;
+  gender?: "homme" | "femme" | string | null;
 }) {
   const p: Preferences = value ?? {};
   const set = (k: string, v: any) => onChange({ ...p, [k]: v });
+  const isWoman = gender === "femme";
 
   return (
     <div className="space-y-2">

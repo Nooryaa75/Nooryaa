@@ -344,7 +344,7 @@ function Recherche() {
                 <Input value={searchName} onChange={(e) => setSearchName(e.target.value)} maxLength={60} placeholder="Ex. Lyon 30 km, pratiquante" />
               </div>
               <Button onClick={saveCurrentSearch}>Enregistrer</Button>
-              <Button variant="outline" onClick={() => setFilters(DEFAULT_FILTERS)}>Réinitialiser</Button>
+              <Button variant="outline" onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}>Réinitialiser</Button>
               <Button variant="secondary" onClick={() => setTab("resultats")}>Voir les profils</Button>
             </div>
           </div>

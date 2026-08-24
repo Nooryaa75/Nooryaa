@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+
 import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
@@ -6,7 +8,7 @@ import { CheckCircle2, Star, Mail, Heart, ShieldCheck, Users, Sparkles } from "l
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitContactMessage } from "@/lib/admin.functions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -68,7 +70,24 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (cancelled || !data.user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarded")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      navigate({ to: profile?.onboarded ? "/browse" : "/onboarding" });
+    });
+    return () => { cancelled = true; };
+  }, [navigate]);
+
   return (
+
     <div className="min-h-screen bg-background text-foreground">
       <header className="absolute top-0 left-0 right-0 z-20">
         <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">

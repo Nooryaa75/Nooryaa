@@ -68,7 +68,24 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (cancelled || !data.user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarded")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      navigate({ to: profile?.onboarded ? "/browse" : "/onboarding" });
+    });
+    return () => { cancelled = true; };
+  }, [navigate]);
+
   return (
+
     <div className="min-h-screen bg-background text-foreground">
       <header className="absolute top-0 left-0 right-0 z-20">
         <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">

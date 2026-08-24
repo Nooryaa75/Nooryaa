@@ -6,9 +6,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
+import {
+  ageFromBirthdate,
+  PRACTICE_LABELS,
+  EDUCATION_LEVELS,
+  COUNTRIES,
+  CITIES,
+  PROFESSIONS,
+  OBJECTIVES,
+  ACTIVITIES_OPTIONS,
+} from "@/lib/profile";
 import { MapPin, Search, User } from "lucide-react";
-import { EDUCATION_LEVELS } from "@/lib/profile";
+import { CityAutocomplete } from "@/components/CityAutocomplete";
+
+const ANY = "any";
+
+/** Filtre tri-état oui / non / indifférent, reprend les questions de la fiche profil. */
+function TriFilter({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <Label className="text-xs">{label}</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>Indifférent</SelectItem>
+          <SelectItem value="yes">Oui</SelectItem>
+          <SelectItem value="no">Non</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({ meta: [{ title: "Découvrir — Nooryaa" }] }),

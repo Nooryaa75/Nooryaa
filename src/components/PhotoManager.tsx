@@ -114,9 +114,14 @@ export function PhotoManager({ userId }: { userId: string }) {
       <div className="flex items-baseline justify-between mb-1">
         <h2 className="text-xl font-serif text-primary">Mes photos ({photos?.length ?? 0}/{MAX_PHOTOS})</h2>
       </div>
-      <p className="text-xs text-muted-foreground mb-4">
+      <p className="text-xs text-muted-foreground mb-2">
         Choisissez votre photo principale (étoile) et floutez-la si vous préférez rester discret·e (œil barré).
       </p>
+      <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1.5">
+        <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--gold)]" />
+        Chaque photo est vérifiée automatiquement (pudeur, image générée par IA, filtres excessifs).
+      </p>
+
       <div className="grid grid-cols-3 gap-3">
         {photos?.map((p: any) => (
           <div key={p.id} className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">

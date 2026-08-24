@@ -330,6 +330,8 @@ export type Database = {
           identity_key: string | null
           last_active: string
           last_name: string | null
+          latitude: number | null
+          longitude: number | null
           looking_for: Database["public"]["Enums"]["gender"] | null
           marital_status: Database["public"]["Enums"]["marital_status"] | null
           objective: string | null
@@ -371,6 +373,8 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          latitude?: number | null
+          longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null
@@ -412,6 +416,8 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          latitude?: number | null
+          longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
           objective?: string | null
@@ -477,6 +483,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_searches: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

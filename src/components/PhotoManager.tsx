@@ -1,14 +1,29 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Star, Trash2, EyeOff, Eye } from "lucide-react";
+import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck } from "lucide-react";
+import { moderatePhoto } from "@/lib/photo-moderation.functions";
+
+async function toDataUrl(file: File, max = 768): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
 
 const MAX_PHOTOS = 3;
 
 export function PhotoManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [checking, setChecking] = useState(false);
+  const checkPhoto = useServerFn(moderatePhoto);
 
   const { data: profile } = useQuery({
     queryKey: ["me", userId],
@@ -29,6 +44,24 @@ export function PhotoManager({ userId }: { userId: string }) {
   async function uploadPhoto(file: File) {
     if (!photos) return;
     if (photos.length >= MAX_PHOTOS) { toast.error(`Maximum ${MAX_PHOTOS} photos`); return; }
+
+    setChecking(true);
+    try {
+      const dataUrl = await toDataUrl(file);
+      const check = await checkPhoto({ data: { imageDataUrl: dataUrl } });
+      if (check.verdict === "block") {
+        toast.error(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.");
+        return;
+      }
+      if (check.verdict === "warn") {
+        toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
+      }
+    } catch {
+      // si la vérification échoue, on laisse passer l'envoi
+    } finally {
+      setChecking(false);
+    }
+
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
     const { error: upErr } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
@@ -44,6 +77,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     refresh();
     toast.success("Photo ajoutée");
   }
+
 
   async function deletePhoto(photo: any) {
     await supabase.storage.from("profile-photos").remove([photo.storage_path]);
@@ -80,9 +114,14 @@ export function PhotoManager({ userId }: { userId: string }) {
       <div className="flex items-baseline justify-between mb-1">
         <h2 className="text-xl font-serif text-primary">Mes photos ({photos?.length ?? 0}/{MAX_PHOTOS})</h2>
       </div>
-      <p className="text-xs text-muted-foreground mb-4">
+      <p className="text-xs text-muted-foreground mb-2">
         Choisissez votre photo principale (étoile) et floutez-la si vous préférez rester discret·e (œil barré).
       </p>
+      <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1.5">
+        <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--gold)]" />
+        Chaque photo est vérifiée automatiquement (pudeur, image générée par IA, filtres excessifs).
+      </p>
+
       <div className="grid grid-cols-3 gap-3">
         {photos?.map((p: any) => (
           <div key={p.id} className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">
@@ -105,10 +144,18 @@ export function PhotoManager({ userId }: { userId: string }) {
           </div>
         ))}
         {(photos?.length ?? 0) < MAX_PHOTOS && (
-          <button type="button" onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:bg-secondary/40 transition-colors">
-            <Plus className="h-6 w-6 text-muted-foreground" />
+          <button type="button" disabled={checking} onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:bg-secondary/40 transition-colors disabled:opacity-60">
+            {checking ? (
+              <>
+                <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
+                <span className="text-[10px] text-muted-foreground">Vérification…</span>
+              </>
+            ) : (
+              <Plus className="h-6 w-6 text-muted-foreground" />
+            )}
           </button>
         )}
+
       </div>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
     </div>

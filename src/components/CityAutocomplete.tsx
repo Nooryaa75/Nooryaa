@@ -6,6 +6,8 @@ interface CityAutocompleteProps {
   onChange: (value: string) => void;
   placeholder?: string;
   suggestions?: readonly string[];
+  /** Appelé avec les coordonnées de la commune choisie (si disponibles). */
+  onCoords?: (coords: { latitude: number; longitude: number } | null) => void;
 }
 
 const norm = (s: string) =>

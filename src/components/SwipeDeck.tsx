@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MapPin, User, ArrowLeft } from "lucide-react";
+import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
 

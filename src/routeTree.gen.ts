@@ -20,6 +20,7 @@ import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
+import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
@@ -86,6 +87,11 @@ const AdminAdsRoute = AdminAdsRouteImport.update({
   id: '/admin/ads',
   path: '/admin/ads',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRechercheRoute = AuthenticatedRechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/onboarding'
+    | '/recherche'
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/onboarding'
+    | '/recherche'
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me'
     | '/_authenticated/messages'
     | '/_authenticated/onboarding'
+    | '/_authenticated/recherche'
     | '/admin/ads'
     | '/admin/contact'
     | '/admin/login'
@@ -397,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/recherche': {
+      id: '/_authenticated/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof AuthenticatedRechercheRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -504,6 +523,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedRechercheRoute: typeof AuthenticatedRechercheRoute
   AuthenticatedProfilePseudoRoute: typeof AuthenticatedProfilePseudoRoute
 }
 
@@ -514,6 +534,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedRechercheRoute: AuthenticatedRechercheRoute,
   AuthenticatedProfilePseudoRoute: AuthenticatedProfilePseudoRoute,
 }
 

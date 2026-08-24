@@ -34,8 +34,8 @@ const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc
   const news = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
   return [
     { key: "match", title: `${they} te correspondent`, desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
-    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} les plus proches de votre ville.`, Icon: Navigation },
-    { key: "nouveaux", title: news, desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
+    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} dans un rayon de 20 km.`, Icon: Navigation },
+    { key: "nouveaux", title: news, desc: "Les inscriptions des 7 derniers jours.", Icon: Clock },
   ];
 };
 

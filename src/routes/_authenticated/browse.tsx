@@ -115,59 +115,121 @@ function Browse() {
         <p className="text-muted-foreground text-sm">Affinez votre recherche. Nooryaa est Abonnement gratuit.</p>
       </div>
 
-      <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 grid md:grid-cols-3 lg:grid-cols-7 gap-3">
-        <div>
-          <Label className="text-xs">Âge min</Label>
-          <Input type="number" min={18} max={99} value={filters.ageMin} onChange={(e) => setFilters({ ...filters, ageMin: Number(e.target.value) })} />
+      <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 space-y-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <Label className="text-xs">Âge min</Label>
+            <Input type="number" min={18} max={99} value={filters.ageMin} onChange={(e) => set({ ageMin: Number(e.target.value) })} />
+          </div>
+          <div>
+            <Label className="text-xs">Âge max</Label>
+            <Input type="number" min={18} max={99} value={filters.ageMax} onChange={(e) => set({ ageMax: Number(e.target.value) })} />
+          </div>
+          <div>
+            <Label className="text-xs">Ville / région</Label>
+            <CityAutocomplete value={filters.city} onChange={(v) => set({ city: v })} suggestions={CITIES} placeholder="Commencez à taper une ville..." />
+          </div>
+          <div>
+            <Label className="text-xs">Pays de résidence</Label>
+            <Select value={filters.country} onValueChange={(v) => set({ country: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Tous</SelectItem>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Pays d'origine</Label>
+            <Select value={filters.countryOrigin} onValueChange={(v) => set({ countryOrigin: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Tous</SelectItem>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Profession</Label>
+            <Select value={filters.profession} onValueChange={(v) => set({ profession: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Toutes</SelectItem>
+                {PROFESSIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Situation</Label>
+            <Select value={filters.marital} onValueChange={(v) => set({ marital: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Toutes</SelectItem>
+                <SelectItem value="celibataire">Célibataire</SelectItem>
+                <SelectItem value="divorce">Divorcé·e</SelectItem>
+                <SelectItem value="veuf">Veuf·ve</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Niveau d'études</Label>
+            <Select value={filters.education} onValueChange={(v) => set({ education: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Tous</SelectItem>
+                {EDUCATION_LEVELS.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Objectif sur Nooryaa</Label>
+            <Select value={filters.objective} onValueChange={(v) => set({ objective: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Tous</SelectItem>
+                {OBJECTIVES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Activité / centre d'intérêt</Label>
+            <Select value={filters.activity} onValueChange={(v) => set({ activity: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Toutes</SelectItem>
+                {ACTIVITIES_OPTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+
         <div>
-          <Label className="text-xs">Âge max</Label>
-          <Input type="number" min={18} max={99} value={filters.ageMax} onChange={(e) => setFilters({ ...filters, ageMax: Number(e.target.value) })} />
+          <p className="text-xs font-medium text-muted-foreground mb-2">Pratique religieuse</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <TriFilter label="Salat quotidienne" value={filters.salat} onChange={(v) => set({ salat: v })} />
+            <TriFilter label="Ramadan" value={filters.ramadan} onChange={(v) => set({ ramadan: v })} />
+            <TriFilter label="A fait le Hadj" value={filters.hadj} onChange={(v) => set({ hadj: v })} />
+            <TriFilter label="A fait la Omra" value={filters.omra} onChange={(v) => set({ omra: v })} />
+            {me?.gender === "homme" && (
+              <TriFilter label="Porte le voile" value={filters.voile} onChange={(v) => set({ voile: v })} />
+            )}
+          </div>
         </div>
+
         <div>
-          <Label className="text-xs">Ville</Label>
-          <Input value={filters.city} onChange={(e) => setFilters({ ...filters, city: e.target.value })} placeholder="Lyon..." />
+          <p className="text-xs font-medium text-muted-foreground mb-2">Enfants & mode de vie</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <TriFilter label="A des enfants" value={filters.hasChildren} onChange={(v) => set({ hasChildren: v })} />
+            <TriFilter label="Souhaite des enfants" value={filters.wantsChildren} onChange={(v) => set({ wantsChildren: v })} />
+            <TriFilter label="Fumeur·se" value={filters.smoker} onChange={(v) => set({ smoker: v })} />
+          </div>
         </div>
-        <div>
-          <Label className="text-xs">Pays</Label>
-          <Input value={filters.country} onChange={(e) => setFilters({ ...filters, country: e.target.value })} placeholder="France..." />
-        </div>
-        <div>
-          <Label className="text-xs">Pratique</Label>
-          <Select value={filters.practice} onValueChange={(v) => setFilters({ ...filters, practice: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Toutes</SelectItem>
-              <SelectItem value="tres_pratiquant">Très pratiquant·e</SelectItem>
-              <SelectItem value="pratiquant">Pratiquant·e</SelectItem>
-              <SelectItem value="en_apprentissage">En apprentissage</SelectItem>
-              <SelectItem value="non_pratiquant">Non pratiquant·e</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label className="text-xs">Situation</Label>
-          <Select value={filters.marital} onValueChange={(v) => setFilters({ ...filters, marital: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Toutes</SelectItem>
-              <SelectItem value="celibataire">Célibataire</SelectItem>
-              <SelectItem value="divorce">Divorcé·e</SelectItem>
-              <SelectItem value="veuf">Veuf·ve</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label className="text-xs">Études</Label>
-          <Select value={filters.education} onValueChange={(v) => setFilters({ ...filters, education: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Tous</SelectItem>
-              {EDUCATION_LEVELS.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-            </SelectContent>
-          </Select>
+
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" onClick={() => setFilters(initialFilters)}>Réinitialiser les filtres</Button>
         </div>
       </div>
+
 
       {isLoading ? (
         <div className="text-center text-muted-foreground py-12">Chargement...</div>

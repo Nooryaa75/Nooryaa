@@ -95,7 +95,7 @@ function Onboarding() {
     if (!form.activities) missing.push("Activités / centres d'intérêt");
     if (form.smoker === null) missing.push("Fumez-vous");
     if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 100 || form.bio.length > 500) missing.push("À propos (100 à 500 caractères)");
+    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos (50 à 500 caractères)");
     if (missing.length > 0) {
       toast.error("Champs à compléter : " + missing.join(", ")); return;
     }
@@ -292,7 +292,7 @@ function Onboarding() {
         <div>
           <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
-          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 100</p>
+          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 50</p>
         </div>
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <PhotoManager userId={ctx.userId} />

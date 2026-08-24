@@ -24,8 +24,6 @@ import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
 
-type DeckKey = "match" | "proches" | "nouveaux";
-
 const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] => {
   // On s'adresse au genre recherché : un homme voit des femmes, une femme voit des hommes.
   const isMan = gender === "homme";

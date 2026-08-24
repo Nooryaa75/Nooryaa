@@ -19,8 +19,17 @@ import {
   OBJECTIVES,
   ACTIVITIES_OPTIONS,
 } from "@/lib/profile";
-import { MapPin, Search, User, Trash2, Star } from "lucide-react";
+import { MapPin, Search, User, Trash2, Star, Sparkles, Navigation, Clock } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { SwipeDeck } from "@/components/SwipeDeck";
+
+type DeckKey = "match" | "proches" | "nouveaux";
+
+const DECKS: { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] = [
+  { key: "match", title: "Ils/elles te correspondent", desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
+  { key: "proches", title: "Près de chez toi", desc: "Les profils les plus proches de votre ville.", Icon: Navigation },
+  { key: "nouveaux", title: "Les nouveaux profils", desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
+];
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({

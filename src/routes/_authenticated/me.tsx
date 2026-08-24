@@ -214,6 +214,7 @@ function MyProfile() {
         <SearchPreferences
           value={form.preferences}
           onChange={(p) => setForm({ ...form, preferences: p })}
+          gender={profile?.gender}
         />
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
       </div>

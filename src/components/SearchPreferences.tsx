@@ -46,12 +46,15 @@ function OptionalSelect({
 export function SearchPreferences({
   value,
   onChange,
+  gender,
 }: {
   value: Preferences | null | undefined;
   onChange: (p: Preferences) => void;
+  gender?: "homme" | "femme" | string | null;
 }) {
   const p: Preferences = value ?? {};
   const set = (k: string, v: any) => onChange({ ...p, [k]: v });
+  const isWoman = gender === "femme";
 
   return (
     <div className="space-y-2">
@@ -102,7 +105,9 @@ export function SearchPreferences({
               <TriState label="Ramadan" value={p.ramadan} onChange={(v) => set("ramadan", v)} />
               <TriState label="A fait le Hadj" value={p.hadj} onChange={(v) => set("hadj", v)} />
               <TriState label="A fait la Omra" value={p.omra} onChange={(v) => set("omra", v)} />
-              <TriState label="Porte le voile" value={p.porte_voile} onChange={(v) => set("porte_voile", v)} />
+              {!isWoman && (
+                <TriState label="Porte le voile" value={p.porte_voile} onChange={(v) => set("porte_voile", v)} />
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>

@@ -207,6 +207,15 @@ function MyProfile() {
         </div>
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
       </div>
+
+      <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
+        <h2 className="text-xl font-serif text-primary">Ce que je recherche</h2>
+        <SearchPreferences
+          value={form.preferences}
+          onChange={(p) => setForm({ ...form, preferences: p })}
+        />
+        <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
+      </div>
     </div>
   );
 }

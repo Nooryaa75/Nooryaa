@@ -14,6 +14,7 @@ import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { SearchPreferences } from "@/components/SearchPreferences";
 
 
 export const Route = createFileRoute("/_authenticated/me")({

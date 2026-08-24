@@ -98,7 +98,13 @@ function MyProfile() {
           </div>
           <div>
             <Label>Ville / région</Label>
-            <CityAutocomplete value={form.city ?? ""} onChange={(v) => setForm({ ...form, city: v })} suggestions={CITIES} placeholder="Commencez à taper votre ville..." />
+            <CityAutocomplete
+              value={form.city ?? ""}
+              onChange={(v) => setForm({ ...form, city: v })}
+              onCoords={(c) => setForm((f: any) => ({ ...f, latitude: c?.latitude ?? null, longitude: c?.longitude ?? null }))}
+              suggestions={CITIES}
+              placeholder="Commencez à taper votre ville..."
+            />
           </div>
           <div>
             <Label>Pays de résidence</Label>

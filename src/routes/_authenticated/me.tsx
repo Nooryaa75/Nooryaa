@@ -41,6 +41,7 @@ function MyProfile() {
       }
       const { error } = await supabase.from("profiles").update({
         city: form.city, country: form.country, country_origin: form.country_origin,
+        latitude: form.latitude ?? null, longitude: form.longitude ?? null,
         marital_status: form.marital_status,
         salat_quotidienne: form.salat_quotidienne ?? null,
         ramadan: form.ramadan ?? null,

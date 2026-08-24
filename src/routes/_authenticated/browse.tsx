@@ -226,14 +226,15 @@ function Browse() {
           ? distanceKm(originLat, originLng, lat, lng) : null;
         return { ...p, _distance: d };
       });
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return {
       match: [...rows].sort((a, b) => score(b) - score(a)),
       proches: withDistance
-        .filter((p: any) => p._distance != null)
+        .filter((p: any) => p._distance != null && p._distance <= 20)
         .sort((a: any, b: any) => a._distance - b._distance),
-      nouveaux: [...rows].sort(
-        (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(),
-      ),
+      nouveaux: [...rows]
+        .filter((p) => new Date(p.created_at ?? 0).getTime() >= sevenDaysAgo)
+        .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()),
     } as Record<DeckKey, any[]>;
   }, [profiles, me, originLat, originLng]);
 

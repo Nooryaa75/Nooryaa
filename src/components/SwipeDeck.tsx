@@ -82,6 +82,13 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>
               )}
+              {typeof current._matchPercent === "number" && (
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-10 w-10 shadow-md border-2 border-background">
+                    {current._matchPercent}%
+                  </span>
+                </div>
+              )}
               {drag > 40 && (
                 <span className="absolute top-5 left-5 rounded-lg border-2 border-emerald-400 px-3 py-1 font-bold text-emerald-400 rotate-[-12deg]">OUI</span>
               )}

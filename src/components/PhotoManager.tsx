@@ -22,6 +22,8 @@ const MAX_PHOTOS = 3;
 export function PhotoManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [checking, setChecking] = useState(false);
+  const checkPhoto = useServerFn(moderatePhoto);
 
   const { data: profile } = useQuery({
     queryKey: ["me", userId],
@@ -42,6 +44,24 @@ export function PhotoManager({ userId }: { userId: string }) {
   async function uploadPhoto(file: File) {
     if (!photos) return;
     if (photos.length >= MAX_PHOTOS) { toast.error(`Maximum ${MAX_PHOTOS} photos`); return; }
+
+    setChecking(true);
+    try {
+      const dataUrl = await toDataUrl(file);
+      const check = await checkPhoto({ data: { imageDataUrl: dataUrl } });
+      if (check.verdict === "block") {
+        toast.error(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.");
+        return;
+      }
+      if (check.verdict === "warn") {
+        toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
+      }
+    } catch {
+      // si la vérification échoue, on laisse passer l'envoi
+    } finally {
+      setChecking(false);
+    }
+
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
     const { error: upErr } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
@@ -57,6 +77,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     refresh();
     toast.success("Photo ajoutée");
   }
+
 
   async function deletePhoto(photo: any) {
     await supabase.storage.from("profile-photos").remove([photo.storage_path]);

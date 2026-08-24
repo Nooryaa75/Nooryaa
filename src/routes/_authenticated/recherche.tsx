@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,11 +16,11 @@ import {
   PROFESSIONS,
   OBJECTIVES,
   ACTIVITIES_OPTIONS,
+  ageFromBirthdate,
+  PRACTICE_LABELS,
 } from "@/lib/profile";
-import { Trash2, Star } from "lucide-react";
-import { DeckCard, type DeckKey } from "@/components/DeckCard";
+import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
-import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
@@ -54,16 +54,78 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
   );
 }
 
+function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
+  const age = ageFromBirthdate(profile.birthdate);
+  const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
+
+  async function like(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
+    if (error && !error.message.includes("duplicate")) toast.error(error.message);
+    else toast.success(`Vous avez aimé ${profile.pseudo}`);
+  }
+
+  return (
+    <div className="group bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300">
+      <div className="relative aspect-[4/5] bg-secondary">
+        {profile.primary_photo_url ? (
+          <img
+            src={profile.primary_photo_url}
+            alt={profile.pseudo}
+            className={`w-full h-full object-cover ${profile.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <User className="h-16 w-16 text-muted-foreground/30" />
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={like}
+          className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-background/90 border border-border/60 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+          aria-label="J'aime"
+        >
+          <Heart className="h-5 w-5" />
+        </button>
+      </div>
+      <div className="p-4 space-y-2">
+        <div className="flex items-baseline justify-between">
+          <h3 className="font-serif text-lg text-primary truncate">{profile.pseudo}</h3>
+          {age != null && <span className="text-sm text-muted-foreground whitespace-nowrap">{age} ans</span>}
+        </div>
+        <div className="text-xs text-muted-foreground flex items-center gap-1">
+          <MapPin className="h-3 w-3" />
+          {profile.city || profile.country || "—"}
+          {distance && <span>· {distance}</span>}
+        </div>
+        {profile.religious_practice && (
+          <p className="text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
+            {PRACTICE_LABELS[profile.religious_practice]}
+          </p>
+        )}
+        {profile.bio && <p className="text-sm text-muted-foreground line-clamp-2">{profile.bio}</p>}
+        <Link
+          to="/profile/$pseudo"
+          params={{ pseudo: profile.pseudo }}
+          className="inline-block text-sm font-medium text-primary underline-offset-4 hover:underline mt-1"
+        >
+          Voir la fiche
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
-  const [deck, setDeck] = useState<DeckKey | null>(null);
   const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
 
-  const { me, isLoading, decks, deckList, originLat, originLng } = useDiscovery(ctx.userId, filters);
+  const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],
@@ -316,19 +378,21 @@ function Recherche() {
         <TabsContent value="resultats">
           {isLoading ? (
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
-          ) : deck ? (
-            <SwipeDeck
-              title={deckList.find((d) => d.key === deck)!.title}
-              profiles={decks[deck]}
-              userId={ctx.userId}
-              onBack={() => setDeck(null)}
-            />
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-3">
-              {deckList.map((meta) => (
-                <DeckCard key={meta.key} meta={meta} profiles={decks[meta.key]} onClick={() => setDeck(meta.key)} />
-              ))}
+          ) : !profiles || profiles.length === 0 ? (
+            <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
+              <User className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-muted-foreground">Aucun profil ne correspond à vos critères.</p>
+              <Button className="mt-4" variant="outline" onClick={() => setTab("filtres")}>Modifier les filtres</Button>
             </div>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground mb-4">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {profiles.map((p) => (
+                  <ProfileCard key={p.id} profile={p} userId={ctx.userId} />
+                ))}
+              </div>
+            </>
           )}
         </TabsContent>
       </Tabs>

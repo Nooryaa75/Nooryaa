@@ -84,6 +84,7 @@ export function CityAutocomplete({ value, onChange, placeholder, suggestions = [
     skipFetch.current = true;
     setInput(s);
     onChange(s);
+    onCoords?.(coordsMap.current[s] ?? null);
     setRemote([]);
     setOpen(false);
   };

@@ -34,8 +34,8 @@ const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc
   const news = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
   return [
     { key: "match", title: `${they} te correspondent`, desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
-    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} les plus proches de votre ville.`, Icon: Navigation },
-    { key: "nouveaux", title: news, desc: "Les dernières inscriptions sur Nooryaa.", Icon: Clock },
+    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} dans un rayon de 20 km.`, Icon: Navigation },
+    { key: "nouveaux", title: news, desc: "Les inscriptions des 7 derniers jours.", Icon: Clock },
   ];
 };
 
@@ -226,14 +226,15 @@ function Browse() {
           ? distanceKm(originLat, originLng, lat, lng) : null;
         return { ...p, _distance: d };
       });
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return {
       match: [...rows].sort((a, b) => score(b) - score(a)),
       proches: withDistance
-        .filter((p: any) => p._distance != null)
+        .filter((p: any) => p._distance != null && p._distance <= 20)
         .sort((a: any, b: any) => a._distance - b._distance),
-      nouveaux: [...rows].sort(
-        (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(),
-      ),
+      nouveaux: [...rows]
+        .filter((p) => new Date(p.created_at ?? 0).getTime() >= sevenDaysAgo)
+        .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()),
     } as Record<DeckKey, any[]>;
   }, [profiles, me, originLat, originLng]);
 

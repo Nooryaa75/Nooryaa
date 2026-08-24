@@ -20,10 +20,9 @@ import {
   ACTIVITIES_OPTIONS,
 } from "@/lib/profile";
 import { MapPin, Search, User, Trash2, Star, Sparkles, Navigation, Clock } from "lucide-react";
+import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
-
-type DeckKey = "match" | "proches" | "nouveaux";
 
 const buildDecks = (gender?: string | null): { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] => {
   // On s'adresse au genre recherché : un homme voit des femmes, une femme voit des hommes.
@@ -488,18 +487,13 @@ function Browse() {
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-3">
-              {deckList.map(({ key, title, desc, Icon }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setDeck(key)}
-                  className="text-left bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] p-5 hover:shadow-[var(--shadow-soft)] transition-shadow"
-                >
-                  <Icon className="h-7 w-7 text-[color:var(--gold)]" />
-                  <p className="font-serif text-lg text-primary mt-3">{title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{desc}</p>
-                  <p className="text-sm mt-3">{decks[key].length} profil{decks[key].length > 1 ? "s" : ""}</p>
-                </button>
+              {deckList.map((meta) => (
+                <DeckCard
+                  key={meta.key}
+                  meta={meta}
+                  profiles={decks[meta.key]}
+                  onClick={() => setDeck(meta.key)}
+                />
               ))}
             </div>
           )}

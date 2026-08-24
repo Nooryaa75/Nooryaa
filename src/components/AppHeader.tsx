@@ -13,10 +13,27 @@ const links = [
   { to: "/me", label: "Profil", icon: User },
 ] as const;
 
+function Badge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold leading-[18px] text-center">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: counts } = useUnreadCounts();
+
+  function countFor(to: string) {
+    if (to === "/likes") return counts?.likes ?? 0;
+    if (to === "/messages") return counts?.messages ?? 0;
+    return 0;
+  }
+
 
   async function signOut() {
     await queryClient.cancelQueries();

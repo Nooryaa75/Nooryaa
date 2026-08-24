@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MapPin, User, ArrowLeft } from "lucide-react";
+import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
 
@@ -108,7 +108,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-5">
+          <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
             <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" onClick={() => decide(false)}>
               <X className="h-6 w-6" />
             </Button>
@@ -118,6 +118,14 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
               className="text-sm underline text-muted-foreground"
             >
               Voir la fiche
+            </Link>
+            <Link
+              to="/messages/$pseudo"
+              params={{ pseudo: current.pseudo }}
+            >
+              <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
+                <MessageCircle className="h-6 w-6" />
+              </Button>
             </Link>
             <Button size="lg" className="rounded-full h-14 w-14 p-0" aria-label="J'aime" onClick={() => decide(true)}>
               <Heart className="h-6 w-6" />

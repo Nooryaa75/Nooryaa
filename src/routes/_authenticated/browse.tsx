@@ -20,6 +20,7 @@ import {
   ACTIVITIES_OPTIONS,
 } from "@/lib/profile";
 import { MapPin, Search, User, Trash2, Star, Sparkles, Navigation, Clock } from "lucide-react";
+import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
 

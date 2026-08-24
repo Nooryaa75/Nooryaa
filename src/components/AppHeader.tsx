@@ -1,12 +1,13 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, MessageCircle, Search, User, LogOut } from "lucide-react";
+import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 
 const links = [
-  { to: "/browse", label: "Découvrir", icon: Search },
+  { to: "/browse", label: "Accueil", icon: Home },
+  { to: "/recherche", label: "Recherche", icon: Search },
   { to: "/likes", label: "Likes", icon: Heart },
   { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/me", label: "Profil", icon: User },

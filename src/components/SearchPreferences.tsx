@@ -105,7 +105,9 @@ export function SearchPreferences({
               <TriState label="Ramadan" value={p.ramadan} onChange={(v) => set("ramadan", v)} />
               <TriState label="A fait le Hadj" value={p.hadj} onChange={(v) => set("hadj", v)} />
               <TriState label="A fait la Omra" value={p.omra} onChange={(v) => set("omra", v)} />
-              <TriState label="Porte le voile" value={p.porte_voile} onChange={(v) => set("porte_voile", v)} />
+              {!isWoman && (
+                <TriState label="Porte le voile" value={p.porte_voile} onChange={(v) => set("porte_voile", v)} />
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>

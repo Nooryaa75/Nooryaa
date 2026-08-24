@@ -14,6 +14,7 @@ import { YesNoRadio } from "@/components/YesNoRadio";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { SearchPreferences } from "@/components/SearchPreferences";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -58,6 +59,7 @@ function MyProfile() {
         profession: form.profession, education_level: form.education_level,
         activities: form.activities, objective: form.objective,
         phone: form.phone || null,
+        preferences: form.preferences ?? {},
       }).eq("id", ctx.userId);
       if (error) throw error;
     },
@@ -204,6 +206,15 @@ function MyProfile() {
             <p className="text-xs text-muted-foreground mt-1">{(form.bio || "").length}/500 caractères (minimum 100)</p>
           </div>
         </div>
+        <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
+      </div>
+
+      <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
+        <h2 className="text-xl font-serif text-primary">Ce que je recherche</h2>
+        <SearchPreferences
+          value={form.preferences}
+          onChange={(p) => setForm({ ...form, preferences: p })}
+        />
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
       </div>
     </div>

@@ -339,6 +339,7 @@ export type Database = {
           onboarded: boolean
           phone: string | null
           porte_voile: boolean | null
+          preferences: Json
           primary_photo_blurred: boolean
           primary_photo_url: string | null
           profession: string | null
@@ -382,6 +383,7 @@ export type Database = {
           onboarded?: boolean
           phone?: string | null
           porte_voile?: boolean | null
+          preferences?: Json
           primary_photo_blurred?: boolean
           primary_photo_url?: string | null
           profession?: string | null
@@ -425,6 +427,7 @@ export type Database = {
           onboarded?: boolean
           phone?: string | null
           porte_voile?: boolean | null
+          preferences?: Json
           primary_photo_blurred?: boolean
           primary_photo_url?: string | null
           profession?: string | null

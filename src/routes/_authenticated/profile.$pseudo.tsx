@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, notFound } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS, PERSONALITY_OPTIONS } from "@/lib/profile";
+import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
   BookOpen, Users, Search, Phone, ShieldCheck

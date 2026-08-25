@@ -221,10 +221,14 @@ function Conversation() {
             <Button variant="ghost" size="icon" aria-label="Options de la conversation"><MoreVertical className="h-4 w-4" /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setReportOpen(true)}>
+              <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+            </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDeleteConvo(true)}>
               <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation
             </DropdownMenuItem>
           </DropdownMenuContent>
+
         </DropdownMenu>
       </div>
 

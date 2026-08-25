@@ -262,14 +262,18 @@ function Recherche() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Activité / centre d'intérêt</Label>
-                <Select value={filters.activity} onValueChange={(v) => set({ activity: v })}>
+                <Label className="text-xs">Type de personnalité</Label>
+                <Select value={filters.personality} onValueChange={(v) => set({ personality: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ANY}>Toutes</SelectItem>
-                    {ACTIVITIES_OPTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+                    <SelectItem value={ANY}>Indifférent</SelectItem>
+                    {PERSONALITY_OPTIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="sm:col-span-2 lg:col-span-4">
+                <Label className="text-xs">Activités / centres d'intérêt</Label>
+                <ActivitiesPicker value={filters.activities} onChange={(v) => set({ activities: v })} />
               </div>
             </div>
 

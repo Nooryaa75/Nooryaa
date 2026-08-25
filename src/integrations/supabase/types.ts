@@ -180,6 +180,9 @@ export type Database = {
         Row: {
           content: string | null
           created_at: string
+          deleted_at: string | null
+          edited_at: string | null
+          hidden_for: string[]
           id: string
           image_path: string | null
           read_at: string | null
@@ -189,6 +192,9 @@ export type Database = {
         Insert: {
           content?: string | null
           created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          hidden_for?: string[]
           id?: string
           image_path?: string | null
           read_at?: string | null
@@ -198,6 +204,9 @@ export type Database = {
         Update: {
           content?: string | null
           created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          hidden_for?: string[]
           id?: string
           image_path?: string | null
           read_at?: string | null

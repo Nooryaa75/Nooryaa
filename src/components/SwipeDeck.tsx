@@ -155,14 +155,24 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             >
               Voir la fiche
             </Link>
-            <Link
-              to="/messages/$pseudo"
-              params={{ pseudo: current.pseudo }}
-            >
-              <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
+            {currentCanMessage ? (
+              <Link to="/messages/$pseudo" params={{ pseudo: current.pseudo }}>
+                <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
+                  <MessageCircle className="h-6 w-6" />
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full h-14 w-14 p-0 opacity-50"
+                aria-label={MESSAGE_BLOCKED_HINT}
+                title={MESSAGE_BLOCKED_HINT}
+                onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+              >
                 <MessageCircle className="h-6 w-6" />
               </Button>
-            </Link>
+            )}
             <Button
               size="lg"
               variant={currentLiked ? "default" : "outline"}

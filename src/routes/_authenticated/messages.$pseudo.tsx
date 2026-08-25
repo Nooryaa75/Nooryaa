@@ -327,6 +327,33 @@ function Conversation() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={reportOpen} onOpenChange={setReportOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Signaler {peer.pseudo}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Textarea
+            value={reportReason}
+            onChange={(e) => setReportReason(e.target.value)}
+            placeholder="Propos déplacés, harcèlement, arnaque…"
+            maxLength={500}
+            rows={4}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={reportReason.trim().length < 10 || reportAbuse.isPending}
+              onClick={(e) => { e.preventDefault(); reportAbuse.mutate(); }}
+            >
+              Envoyer le signalement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

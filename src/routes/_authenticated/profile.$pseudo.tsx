@@ -2,14 +2,19 @@ import { createFileRoute, useNavigate, notFound } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
-import { Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles } from "lucide-react";
+import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS, PERSONALITY_OPTIONS } from "@/lib/profile";
+import {
+  Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
+  BookOpen, Moon, Plane, PlaneTakeoff, Baby, Cigarette, Users, Search, Phone,
+  ChevronRight, ShieldCheck, Target
+} from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
   head: ({ params }) => ({ meta: [{ title: `${params.pseudo} — Nooryaa` }] }),

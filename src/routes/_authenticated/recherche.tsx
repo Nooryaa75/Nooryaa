@@ -57,7 +57,7 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
   );
 }
 
-function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId: string; liked: boolean; onLiked: (profileId: string) => void }) {
+function ProfileCard({ profile, userId, liked, onToggleLike }: { profile: any; userId: string; liked: boolean; onToggleLike: (profileId: string, nextLiked: boolean) => void }) {
   const age = ageFromBirthdate(profile.birthdate);
   const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
   const { data: me } = useMyProfile(userId);
@@ -67,14 +67,23 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
   async function like(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (liked) return;
+    if (liked) {
+      const { error } = await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", profile.id);
+      if (error) toast.error(error.message);
+      else {
+        onToggleLike(profile.id, false);
+        toast.success(`Vous n'aimez plus ${profile.pseudo}`);
+      }
+      return;
+    }
     const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
     if (error && !error.message.includes("duplicate")) toast.error(error.message);
     else {
-      onLiked(profile.id);
+      onToggleLike(profile.id, true);
       toast.success(`Vous avez aimé ${profile.pseudo}`);
     }
   }
+
 
   return (
     <div className="group bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300">

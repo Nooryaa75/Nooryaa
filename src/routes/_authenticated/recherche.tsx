@@ -112,7 +112,7 @@ function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
             {PRACTICE_LABELS[profile.religious_practice]}
           </p>
         )}
-        {profile.bio && <p className="text-sm text-muted-foreground line-clamp-2">{profile.bio}</p>}
+        {profile.bio && <p className="text-sm text-muted-foreground line-clamp-2 break-words [overflow-wrap:anywhere]">{profile.bio}</p>}
         <Link
           to="/profile/$pseudo"
           params={{ pseudo: profile.pseudo }}

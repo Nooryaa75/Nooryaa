@@ -26,7 +26,7 @@ function Likes() {
   const { data: sent } = useQuery({
     queryKey: ["likes-sent", ctx.userId],
     queryFn: async () => {
-      const { data } = await supabase.from("likes").select("to_user, created_at, profiles!likes_to_user_fkey(*)").eq("from_user", ctx.userId).order("created_at", { ascending: false });
+      const { data } = await supabase.from("likes").select("to_user, created_at, profiles!likes_to_user_fkey(*)").eq("from_user", ctx.userId).order("created_at", { ascending: false }).limit(20);
       return data ?? [];
     },
   });

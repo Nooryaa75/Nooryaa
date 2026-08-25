@@ -51,7 +51,7 @@ function AdminModeration() {
                   {e.author?.pseudo ?? "—"} → {e.target?.pseudo ?? "—"}
                 </span>
                 <span className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${e.verdict === "block" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${e.verdict === "block" ? "bg-destructive/10 text-destructive" : "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]"}`}>
                     {e.verdict === "block" ? "Bloqué" : "Averti"}
                   </span>
                   <span className="text-muted-foreground text-xs">{new Date(e.created_at).toLocaleString("fr-FR")}</span>

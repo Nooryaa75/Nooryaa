@@ -5,7 +5,7 @@ import { adminLogin, adminCheckAuth } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/login")({
@@ -39,11 +39,12 @@ function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
-      <form onSubmit={submit} className="w-full max-w-sm bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60 space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-background vignette px-4">
+      <form onSubmit={submit} className="w-full max-w-sm bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 gold-frame space-y-4">
         <div className="flex flex-col items-center gap-2">
-          <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Lock className="h-5 w-5" /></div>
-          <h1 className="text-xl font-serif text-primary">Espace administration</h1>
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-14 w-14 rounded-full object-cover gold-glow" />
+          <div className="gold-rule w-24" />
+          <h1 className="text-xl font-serif gold-text tracking-[0.12em] uppercase">Espace administration</h1>
           <p className="text-xs text-muted-foreground">Accès réservé à l'équipe Nooryaa</p>
         </div>
         <div>

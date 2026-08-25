@@ -70,7 +70,7 @@ function AdminReports() {
                   <span className="text-muted-foreground"> par </span>
                   <Link to="/admin/profiles/$id" params={{ id: r.reporter }} className="font-medium text-primary underline">{r.reporterProfile?.pseudo ?? r.reporter.slice(0,8)}</Link>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "open" ? "bg-orange-100 text-orange-800" : r.status === "resolved" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-700"}`}>{r.status}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "open" ? "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]" : r.status === "resolved" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{r.status}</span>
               </div>
               <p className="text-sm">{r.reason}</p>
               <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")}</div>

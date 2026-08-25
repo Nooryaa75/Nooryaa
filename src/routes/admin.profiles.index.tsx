@@ -21,9 +21,9 @@ export const Route = createFileRoute("/admin/profiles/")({
 
 const STATUS_LABEL: Record<string, string> = { active: "Actif", suspended: "Suspendu", banned: "Banni" };
 const STATUS_CLASS: Record<string, string> = {
-  active: "bg-green-100 text-green-800",
-  suspended: "bg-orange-100 text-orange-800",
-  banned: "bg-red-100 text-red-800",
+  active: "bg-primary/10 text-primary",
+  suspended: "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]",
+  banned: "bg-destructive/10 text-destructive",
 };
 
 function AdminProfilesList() {

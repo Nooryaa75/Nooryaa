@@ -31,16 +31,18 @@ function MessagesLayout() {
     queryKey: ["conversations", ctx.userId],
     queryFn: async () => {
       // Toute personne avec qui j'ai échangé un message OU à qui j'ai envoyé un coup de cœur
-      const [{ data: sent }, { data: received }, { data: likes }, { data: iBlock }, { data: blockedMe }] = await Promise.all([
+      const [{ data: sent }, { data: received }, { data: likes }, { data: iBlock }, { data: blockedMe }, { data: hiddenConvos }] = await Promise.all([
         supabase.from("messages").select("receiver, hidden_for").eq("sender", ctx.userId),
         supabase.from("messages").select("sender, hidden_for").eq("receiver", ctx.userId),
         supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
         supabase.from("blocks").select("blocked").eq("blocker", ctx.userId),
         supabase.from("blocks").select("blocker").eq("blocked", ctx.userId),
+        supabase.from("conversation_hides").select("peer_id").eq("user_id", ctx.userId),
       ]);
       const excluded = new Set<string>([
         ...(iBlock ?? []).map((r) => r.blocked),
         ...(blockedMe ?? []).map((r) => r.blocker),
+        ...((hiddenConvos ?? []) as Array<{ peer_id: string }>).map((r) => r.peer_id),
       ]);
       // Une conversation supprimée de mon côté n'apparaît plus dans la liste
       const visible = new Set<string>();
@@ -66,17 +68,27 @@ function MessagesLayout() {
 
   const deleteConversation = useMutation({
     mutationFn: async (peerId: string) => {
+      const { error: hideError } = await supabase.from("conversation_hides").upsert(
+        { user_id: ctx.userId, peer_id: peerId } as any,
+        { onConflict: "user_id,peer_id" },
+      );
+      if (hideError) throw hideError;
+
       const { data: rows } = await supabase.from("messages").select("id, hidden_for")
         .or(`and(sender.eq.${ctx.userId},receiver.eq.${peerId}),and(sender.eq.${peerId},receiver.eq.${ctx.userId})`);
       for (const m of rows ?? []) {
         const hidden: string[] = [...((m as any).hidden_for ?? [])];
         if (hidden.includes(ctx.userId)) continue;
         hidden.push(ctx.userId);
-        await supabase.from("messages").update({ hidden_for: hidden } as any).eq("id", m.id);
+        const { error } = await supabase.from("messages").update({ hidden_for: hidden } as any).eq("id", m.id);
+        if (error) throw error;
       }
     },
     onSuccess: () => {
       toast.success("Conversation supprimée");
+      if (confirmDelete) {
+        qc.setQueryData(["conversations", ctx.userId], (old: any) => Array.isArray(old) ? old.filter((p) => p.id !== confirmDelete.id) : old);
+      }
       setConfirmDelete(null);
       qc.invalidateQueries({ queryKey: ["messages"] });
       qc.invalidateQueries({ queryKey: ["conversations"] });

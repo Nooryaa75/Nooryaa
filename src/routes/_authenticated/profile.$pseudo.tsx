@@ -174,6 +174,7 @@ function ProfileView() {
                 {profile.city ? `${profile.city}, ${profile.country}` : profile.country}
                 {profile.birthdate && <span className="ml-2">· {ageFromBirthdate(profile.birthdate)} ans</span>}
                 {profile.gender && <span className="ml-2">· {GENDER_LABELS[profile.gender]}</span>}
+                {(profile as any).height_cm && <span className="ml-2">· {(profile as any).height_cm} cm</span>}
               </p>
             </div>
 

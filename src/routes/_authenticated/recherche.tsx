@@ -15,10 +15,11 @@ import {
   CITIES,
   PROFESSIONS,
   OBJECTIVES,
-  ACTIVITIES_OPTIONS,
+  PERSONALITY_OPTIONS,
   ageFromBirthdate,
   PRACTICE_LABELS,
 } from "@/lib/profile";
+import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";

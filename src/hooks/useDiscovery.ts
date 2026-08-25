@@ -8,7 +8,8 @@ export const ANY = "any";
 
 export type Filters = {
   ageMin: number; ageMax: number; city: string; country: string; countryOrigin: string;
-  profession: string; marital: string; education: string; objective: string; activity: string;
+  profession: string; marital: string; education: string; objective: string;
+  activity: string; activities: string; personality: string;
   salat: string; ramadan: string; hadj: string; omra: string; voile: string;
   hasChildren: string; wantsChildren: string; smoker: string;
   radiusEnabled: boolean; radiusKm: number;

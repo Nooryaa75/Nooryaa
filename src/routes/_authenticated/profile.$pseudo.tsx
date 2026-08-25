@@ -141,83 +141,158 @@ function ProfileView() {
           )}
         </div>
 
-        <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
-              {!isMe && typeof matchPercent(me, profile) === "number" && (
-                <div className="flex flex-col items-center shrink-0">
-                  <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>
-                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-12 w-12 shadow-md border-2 border-background">
-                    {matchPercent(me, profile)}%
-                  </span>
+        <div className="space-y-4">
+          <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
+            <div>
+              <div className="flex items-center justify-between gap-3">
+                <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
+                {!isMe && typeof matchPercent(me, profile) === "number" && (
+                  <div className="flex flex-col items-center shrink-0">
+                    <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>
+                    <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-12 w-12 shadow-md border-2 border-background">
+                      {matchPercent(me, profile)}%
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-muted-foreground flex items-center gap-1 mt-1 flex-wrap text-sm">
+                <MapPin className="h-4 w-4" />
+                {profile.city ? `${profile.city}, ${profile.country}` : profile.country}
+                {profile.birthdate && <span className="ml-2">· {ageFromBirthdate(profile.birthdate)} ans</span>}
+                {profile.gender && <span className="ml-2">· {GENDER_LABELS[profile.gender]}</span>}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              {!isMe && !blocked && (
+                <>
+                  <Button onClick={() => toggleLike.mutate()} disabled={toggleLike.isPending} className="rounded-full gap-2" variant={liked ? "outline" : "default"}>
+                    <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                    {liked ? "Coup de cœur ✓" : "Coup de cœur"}
+                  </Button>
+                  <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
+                    <MessageCircle className="h-4 w-4" /> Envoyer un message
+                  </Button>
+                  <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" size="sm" className="gap-2 text-muted-foreground">
+                    <Ban className="h-4 w-4" /> Bloquer
+                  </Button>
+                  <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-2 ml-auto text-muted-foreground"><Flag className="h-4 w-4" /> Signaler</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader><DialogTitle>Signaler ce profil</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <Select value={reportCategory} onValueChange={setReportCategory}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {REPORT_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                        <Textarea value={reportDetail} onChange={(e) => setReportDetail(e.target.value)} placeholder="Précisez (facultatif)..." maxLength={400} />
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={submitReport}>Envoyer le signalement</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
+              )}
+              {!isMe && blockState?.iBlocked && (
+                <div className="w-full border border-border rounded-lg p-3 text-sm flex items-center justify-between">
+                  <span className="text-muted-foreground">Vous avez bloqué ce profil.</span>
+                  <Button onClick={() => toggleBlock.mutate()} variant="outline" size="sm">Débloquer</Button>
                 </div>
               )}
+              {!isMe && blockState?.blocksMe && !blockState?.iBlocked && (
+                <p className="text-xs text-muted-foreground italic">Ce profil n'est plus disponible.</p>
+              )}
             </div>
-            <p className="text-muted-foreground flex items-center gap-1 mt-1 flex-wrap text-sm">
-              <MapPin className="h-4 w-4" />
-              {profile.city ? `${profile.city}, ${profile.country}` : profile.country}
-              {profile.birthdate && <span className="ml-2">· {ageFromBirthdate(profile.birthdate)} ans</span>}
-            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            {profile.religious_practice && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground">Pratique</div>
-                <div className="text-primary font-medium">{PRACTICE_LABELS[profile.religious_practice]}</div>
-              </div>
+          <Accordion type="multiple" defaultValue={["bio"]} className="bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] px-6">
+            {profile.bio && (
+              <AccordionItem value="bio">
+                <AccordionTrigger className="text-primary hover:no-underline">
+                  <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-[color:var(--gold)]" /> À propos</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap pb-2">{profile.bio}</p>
+                </AccordionContent>
+              </AccordionItem>
             )}
-            {profile.marital_status && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground">Situation</div>
-                <div className="text-primary font-medium">{MARITAL_LABELS[profile.marital_status]}</div>
-              </div>
-            )}
-            {profile.religion && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground">Religion</div>
-                <div className="text-primary font-medium">{profile.religion}</div>
-              </div>
-            )}
-            {profile.country_origin && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground flex items-center gap-1"><Globe className="h-3 w-3" /> Origine</div>
-                <div className="text-primary font-medium">{profile.country_origin}</div>
-              </div>
-            )}
-            {profile.profession && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground flex items-center gap-1"><Briefcase className="h-3 w-3" /> Profession</div>
-                <div className="text-primary font-medium">{profile.profession}</div>
-              </div>
-            )}
-            {profile.education_level && (
-              <div className="bg-secondary/60 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground flex items-center gap-1"><GraduationCap className="h-3 w-3" /> Études</div>
-                <div className="text-primary font-medium">{profile.education_level}</div>
-              </div>
-            )}
-            {profile.objective && (
-              <div className="bg-secondary/60 rounded-lg p-3 col-span-2">
-                <div className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="h-3 w-3" /> Objectif</div>
-                <div className="text-primary font-medium">{profile.objective}</div>
-              </div>
-            )}
-            {profile.activities && (
-              <div className="bg-secondary/60 rounded-lg p-3 col-span-2">
-                <div className="text-xs text-muted-foreground">Activités</div>
-                <div className="text-primary font-medium">{profile.activities}</div>
-              </div>
-            )}
-          </div>
 
-          {profile.bio && (
-            <div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">À propos</div>
-              <p className="text-foreground leading-relaxed whitespace-pre-wrap">{profile.bio}</p>
-            </div>
-          )}
+            <AccordionItem value="religion">
+              <AccordionTrigger className="text-primary hover:no-underline">
+                <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[color:var(--gold)]" /> Pratique religieuse</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-2 gap-3 pb-2">
+                  <Info label="Religion" value={profile.religion} />
+                  <Info label="Pratique" value={profile.religious_practice ? PRACTICE_LABELS[profile.religious_practice] : undefined} />
+                  <Info label="Salat quotidienne" value={boolLabel(profile.salat_quotidienne)} />
+                  <Info label="Jeûne du Ramadan" value={boolLabel(profile.ramadan)} />
+                  <Info label="Hadj effectué" value={boolLabel(profile.hadj)} />
+                  <Info label="Omra effectuée" value={boolLabel(profile.omra)} />
+                  {profile.gender === "femme" && <Info label="Porte le voile" value={boolLabel(profile.porte_voile)} />}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="lifestyle">
+              <AccordionTrigger className="text-primary hover:no-underline">
+                <span className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-[color:var(--gold)]" /> Mode de vie</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-2 gap-3 pb-2">
+                  <Info label="Situation" value={profile.marital_status ? MARITAL_LABELS[profile.marital_status] : undefined} />
+                  <Info label="Origine" value={profile.country_origin} />
+                  <Info label="Profession" value={profile.profession} />
+                  <Info label="Études" value={profile.education_level} />
+                  <Info label="Personnalité" value={profile.personality} />
+                  <Info label="Fumeur" value={boolLabel(profile.smoker, "Oui", "Non")} />
+                  {profile.activities && <div className="col-span-2"><Info label="Activités" value={profile.activities} /></div>}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="family">
+              <AccordionTrigger className="text-primary hover:no-underline">
+                <span className="flex items-center gap-2"><Users className="h-4 w-4 text-[color:var(--gold)]" /> Famille</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-2 gap-3 pb-2">
+                  <Info label="A des enfants" value={boolLabel(profile.has_children)} />
+                  {profile.has_children && <Info label="Nombre d'enfants" value={profile.children_count?.toString()} />}
+                  <Info label="Souhaite avoir des enfants" value={boolLabel(profile.wants_children)} />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="search">
+              <AccordionTrigger className="text-primary hover:no-underline">
+                <span className="flex items-center gap-2"><Search className="h-4 w-4 text-[color:var(--gold)]" /> Ce que je recherche</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-2 gap-3 pb-2">
+                  <Info label="Objectif" value={profile.objective} />
+                  <Info label="Je recherche" value={profile.looking_for ? GENDER_LABELS[profile.looking_for] : undefined} />
+                  <PreferenceInfo profile={profile} />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {isMe && profile.phone && (
+              <AccordionItem value="contact">
+                <AccordionTrigger className="text-primary hover:no-underline">
+                  <span className="flex items-center gap-2"><Phone className="h-4 w-4 text-[color:var(--gold)]" /> Contact</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Info label="Téléphone" value={profile.phone} />
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
 
           {!isMe && !blocked && (
             <div className="flex flex-wrap gap-2 pt-2">

@@ -2,6 +2,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { COUNTRIES, EDUCATION_LEVELS, OBJECTIVES, PROFESSIONS } from "@/lib/profile";
 
@@ -130,6 +131,10 @@ export function SearchPreferences({
           <AccordionContent>
             <div className="space-y-3 pt-1">
               <TriState label="Fumeur·se" value={p.smoker} onChange={(v) => set("smoker", v)} />
+              <div>
+                <Label>Type de personnalité recherché</Label>
+                <PersonalityPicker name="pref-personality" allowAny value={p.personality} onChange={(v) => set("personality", v)} />
+              </div>
               <div>
                 <Label>Activités partagées (3 max)</Label>
                 <ActivitiesPicker value={p.activities} onChange={(v) => set("activities", v)} />

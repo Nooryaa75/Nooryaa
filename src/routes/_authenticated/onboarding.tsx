@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
 import { YesNoRadio } from "@/components/YesNoRadio";
+import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
@@ -44,6 +45,7 @@ function Onboarding() {
     profession: "",
     education_level: "",
     activities: "",
+    personality: "",
     objective: "",
     bio: "",
   });
@@ -128,6 +130,7 @@ function Onboarding() {
       profession: form.profession || null,
       education_level: form.education_level || null,
       activities: form.activities || null,
+      personality: form.personality || null,
       objective: form.objective || null,
       bio: form.bio || null,
       onboarded: true,
@@ -275,6 +278,10 @@ function Onboarding() {
         <div>
           <Label>Activités / centres d'intérêt * (3 max)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
+        </div>
+        <div>
+          <Label>Type de personnalité</Label>
+          <PersonalityPicker value={form.personality} onChange={(v) => setForm({ ...form, personality: v })} />
         </div>
         <div className="space-y-2">
           <Label>Mode de vie *</Label>

@@ -105,7 +105,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                   src={current.primary_photo_url}
                   alt={current.pseudo}
                   draggable={false}
-                  className={`w-full h-full object-cover ${current.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+                  className={`w-full h-full object-cover ${currentBlurred ? "blur-md scale-110" : ""}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>

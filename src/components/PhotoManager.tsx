@@ -147,20 +147,32 @@ export function PhotoManager({ userId }: { userId: string }) {
           </div>
         ))}
         {(photos?.length ?? 0) < MAX_PHOTOS && (
-          <button type="button" disabled={checking} onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:bg-secondary/40 transition-colors disabled:opacity-60">
+          <div className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 p-2">
             {checking ? (
               <>
                 <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
                 <span className="text-[10px] text-muted-foreground">Vérification…</span>
               </>
             ) : (
-              <Plus className="h-6 w-6 text-muted-foreground" />
+              <>
+                <button type="button" onClick={() => fileRef.current?.click()} className="flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-secondary/40 transition-colors">
+                  <Plus className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">Importer</span>
+                </button>
+                <button type="button" onClick={openCamera} className="flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-secondary/40 transition-colors">
+                  <Camera className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">Prendre une photo</span>
+                </button>
+              </>
             )}
-          </button>
+          </div>
         )}
 
       </div>
-      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
+      <input ref={captureRef} type="file" accept="image/*" capture="user" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
+      <CameraCapture open={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={(f) => uploadPhoto(f)} />
+
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
@@ -17,13 +18,32 @@ type Props = {
 export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
   const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
+  const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const startX = useRef<number | null>(null);
   const current = profiles[index];
+
+  const { data: sentLikes } = useQuery({
+    queryKey: ["sent-likes", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("likes").select("to_user").eq("from_user", userId);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const likedIds = useMemo(
+    () => new Set([...(sentLikes ?? []).map((row) => row.to_user), ...localLikedIds]),
+    [sentLikes, localLikedIds],
+  );
+  const currentLiked = current ? likedIds.has(current.id) : false;
 
   async function decide(like: boolean) {
     if (!current) return;
     if (like) {
-      const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: current.id });
+      setLocalLikedIds((ids) => ids.includes(current.id) ? ids : [...ids, current.id]);
+      const { error } = currentLiked
+        ? { error: null }
+        : await supabase.from("likes").insert({ from_user: userId, to_user: current.id });
       if (error && !error.message.includes("duplicate")) toast.error(error.message);
       else toast.success(`Vous avez aimé ${current.pseudo}`);
     }
@@ -135,8 +155,14 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                 <MessageCircle className="h-6 w-6" />
               </Button>
             </Link>
-            <Button size="lg" className="rounded-full h-14 w-14 p-0" aria-label="J'aime" onClick={() => decide(true)}>
-              <Heart className="h-6 w-6" />
+            <Button
+              size="lg"
+              variant={currentLiked ? "default" : "outline"}
+              className={`rounded-full h-14 w-14 p-0 transition-colors ${currentLiked ? "bg-[color:var(--gold)] text-primary hover:bg-[color:var(--gold-deep)] hover:text-primary-foreground border border-[color:var(--gold)]" : "bg-background/90 text-muted-foreground border-border hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+              aria-label={currentLiked ? "Déjà aimé" : "J'aime"}
+              onClick={() => decide(true)}
+            >
+              <Heart className={`h-6 w-6 ${currentLiked ? "fill-current" : ""}`} />
             </Button>
           </div>
           <p className="text-center text-xs text-muted-foreground mt-3">

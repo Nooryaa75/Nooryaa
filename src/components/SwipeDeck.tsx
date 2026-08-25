@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Heart, X, MapPin, User, ArrowLeft, MessageCircle, Hand, ChevronLeft, ChevronRight } from "lucide-react";
@@ -18,6 +18,7 @@ type Props = {
 
 /** Pile de profils façon Tinder : glisser à droite pour aimer, à gauche pour passer. */
 export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
+  const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
@@ -61,6 +62,13 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
         : await supabase.from("likes").insert({ from_user: userId, to_user: current.id });
       if (error && !error.message.includes("duplicate")) toast.error(error.message);
       else toast.success(`Vous avez aimé ${current.pseudo}`);
+    } else {
+      // Profil écarté : on le mémorise pour ne plus le proposer dans les sélections.
+      const { error } = await supabase
+        .from("profile_passes")
+        .upsert({ user_id: userId, target_id: current.id }, { onConflict: "user_id,target_id" });
+      if (error && !error.message.includes("duplicate")) toast.error(error.message);
+      queryClient.invalidateQueries({ queryKey: ["passes", userId] });
     }
     setDrag(0);
     setIndex((i) => i + 1);

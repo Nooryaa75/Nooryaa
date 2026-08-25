@@ -72,6 +72,15 @@ export function useDiscovery(userId: string, filters: Filters) {
     },
   });
 
+  const { data: passes } = useQuery({
+    queryKey: ["passes", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profile_passes").select("target_id").eq("user_id", userId);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   // Point de référence : la ville choisie dans le filtre, sinon la position du profil.
   const originLat = filters.originLat ?? (me as any)?.latitude ?? null;
   const originLng = filters.originLng ?? (me as any)?.longitude ?? null;
@@ -156,7 +165,8 @@ export function useDiscovery(userId: string, filters: Filters) {
 
   const decks = useMemo(() => {
     const likedIds = new Set((sentLikes ?? []).map((r) => r.to_user));
-    const rows: any[] = (profiles ?? []).filter((p) => !likedIds.has(p.id));
+    const passedIds = new Set((passes ?? []).map((r: any) => r.target_id));
+    const rows: any[] = (profiles ?? []).filter((p) => !likedIds.has(p.id) && !passedIds.has(p.id));
     const withPercent = (p: any) => ({
       ...p,
       _matchPercent: matchPercent(me, p) ?? 0,
@@ -179,7 +189,7 @@ export function useDiscovery(userId: string, filters: Filters) {
         .filter((p) => new Date(p.created_at ?? 0).getTime() >= sevenDaysAgo)
         .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()),
     } as Record<DeckKey, any[]>;
-  }, [profiles, me, originLat, originLng, sentLikes]);
+  }, [profiles, me, originLat, originLng, sentLikes, passes]);
 
   return { me, profiles, isLoading, decks, deckList, originLat, originLng };
 }

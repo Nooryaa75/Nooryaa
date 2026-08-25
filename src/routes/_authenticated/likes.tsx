@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Heart, User } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
 import { useMarkLikesSeen } from "@/hooks/useUnreadCounts";
+import { matchPercent, useMyProfile } from "@/lib/match";
 
 export const Route = createFileRoute("/_authenticated/likes")({
   head: () => ({ meta: [{ title: "Coups de cœur — Nooryaa" }] }),
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/likes")({
 function Likes() {
   const ctx = Route.useRouteContext();
   useMarkLikesSeen();
+  const { data: me } = useMyProfile(ctx.userId);
 
   const { data: received } = useQuery({
     queryKey: ["likes-received", ctx.userId],

@@ -68,6 +68,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
 
   function onPointerDown(e: React.PointerEvent) {
     startX.current = e.clientX;
+    setShowHint(false);
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
   }
   function onPointerMove(e: React.PointerEvent) {

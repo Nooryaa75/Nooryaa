@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
+import { Heart, X, MapPin, User, ArrowLeft, MessageCircle, Hand, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
 import { useMyProfile } from "@/lib/match";
@@ -21,8 +21,15 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
   const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
+  const [showHint, setShowHint] = useState(true);
   const startX = useRef<number | null>(null);
   const current = profiles[index];
+
+  useEffect(() => {
+    if (!showHint) return;
+    const t = setTimeout(() => setShowHint(false), 4500);
+    return () => clearTimeout(t);
+  }, [showHint]);
 
   const { data: sentLikes } = useQuery({
     queryKey: ["sent-likes", userId],
@@ -61,6 +68,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
 
   function onPointerDown(e: React.PointerEvent) {
     startX.current = e.clientX;
+    setShowHint(false);
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
   }
   function onPointerMove(e: React.PointerEvent) {
@@ -99,6 +107,18 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             style={{ transform: `translateX(${drag}px) rotate(${drag / 25}deg)`, transition: startX.current == null ? "transform .2s" : "none" }}
             className="relative bg-card rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] touch-none cursor-grab active:cursor-grabbing"
           >
+            {showHint && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 pointer-events-none animate-in fade-in duration-500">
+                <div className="relative flex items-center gap-8">
+                  <ChevronLeft className="h-10 w-10 text-destructive/80 animate-pulse" />
+                  <div className="flex flex-col items-center">
+                    <Hand className="h-10 w-10 text-primary drop-shadow-md" />
+                    <span className="mt-2 text-xs font-semibold text-primary bg-background/80 px-2 py-1 rounded-full">Glissez pour choisir</span>
+                  </div>
+                  <ChevronRight className="h-10 w-10 text-primary/80 animate-pulse" />
+                </div>
+              </div>
+            )}
             <div className="aspect-[3/4] bg-secondary relative">
               {current.primary_photo_url ? (
                 <img
@@ -119,7 +139,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                 </div>
               )}
               {drag > 40 && (
-                <span className="absolute top-5 left-5 rounded-lg border-2 border-emerald-400 px-3 py-1 font-bold text-emerald-400 rotate-[-12deg]">OUI</span>
+                <span className="absolute top-5 left-5 rounded-lg border-2 border-primary px-3 py-1 font-bold text-primary rotate-[-12deg]">OUI</span>
               )}
               {drag < -40 && (
                 <span className="absolute top-5 right-5 rounded-lg border-2 border-destructive px-3 py-1 font-bold text-destructive rotate-[12deg]">NON</span>
@@ -183,9 +203,15 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
               <Heart className={`h-6 w-6 ${currentLiked ? "fill-current" : ""}`} />
             </Button>
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-3">
-            {index + 1} / {profiles.length} · glissez la carte à droite pour aimer
-          </p>
+          <div className="mt-3 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
+              <ChevronLeft className="h-3.5 w-3.5 text-destructive" /> Passer
+            </span>
+            <span className="font-medium">{index + 1} / {profiles.length}</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
+              Aimer <ChevronRight className="h-3.5 w-3.5 text-primary" />
+            </span>
+          </div>
         </div>
       )}
     </div>

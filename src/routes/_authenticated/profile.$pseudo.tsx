@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { matchPercent, useMyProfile } from "@/lib/match";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
@@ -25,6 +26,7 @@ function ProfileView() {
   const [reportOpen, setReportOpen] = useState(false);
   const [reportCategory, setReportCategory] = useState(REPORT_REASONS[0]);
   const [reportDetail, setReportDetail] = useState("");
+  const { data: me } = useMyProfile(ctx.userId);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", pseudo],
@@ -136,7 +138,14 @@ function ProfileView() {
 
         <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
           <div>
-            <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
+              {!isMe && typeof matchPercent(me, profile) === "number" && (
+                <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-12 w-12 shadow-md border-2 border-background shrink-0">
+                  {matchPercent(me, profile)}%
+                </span>
+              )}
+            </div>
             <p className="text-muted-foreground flex items-center gap-1 mt-1 flex-wrap text-sm">
               <MapPin className="h-4 w-4" />
               {profile.city ? `${profile.city}, ${profile.country}` : profile.country}

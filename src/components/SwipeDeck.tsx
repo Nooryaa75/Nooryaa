@@ -115,7 +115,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                     <Hand className="h-10 w-10 text-primary drop-shadow-md" />
                     <span className="mt-2 text-xs font-semibold text-primary bg-background/80 px-2 py-1 rounded-full">Glissez pour choisir</span>
                   </div>
-                  <ChevronRight className="h-10 w-10 text-emerald-500/80 animate-pulse" />
+                  <ChevronRight className="h-10 w-10 text-primary/80 animate-pulse" />
                 </div>
               </div>
             )}

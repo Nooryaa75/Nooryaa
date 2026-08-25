@@ -83,7 +83,8 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>
               )}
               {typeof current._matchPercent === "number" && (
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
+                  <span className="text-[10px] uppercase tracking-wider text-primary-foreground/90 font-semibold drop-shadow-sm">Compatibilité</span>
                   <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-10 w-10 shadow-md border-2 border-background">
                     {current._matchPercent}%
                   </span>

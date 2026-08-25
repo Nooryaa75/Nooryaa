@@ -141,9 +141,12 @@ function ProfileView() {
             <div className="flex items-center justify-between gap-3">
               <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
               {!isMe && typeof matchPercent(me, profile) === "number" && (
-                <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-12 w-12 shadow-md border-2 border-background shrink-0">
-                  {matchPercent(me, profile)}%
-                </span>
+                <div className="flex flex-col items-center shrink-0">
+                  <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>
+                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-12 w-12 shadow-md border-2 border-background">
+                    {matchPercent(me, profile)}%
+                  </span>
+                </div>
               )}
             </div>
             <p className="text-muted-foreground flex items-center gap-1 mt-1 flex-wrap text-sm">

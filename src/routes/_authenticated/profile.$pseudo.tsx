@@ -75,6 +75,7 @@ function ProfileView() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["liked"] });
+      qc.invalidateQueries({ queryKey: ["like-graph"] });
       toast.success(liked ? "Coup de cœur retiré" : "Coup de cœur ajouté 💚");
     },
   });

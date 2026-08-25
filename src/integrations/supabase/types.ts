@@ -366,6 +366,7 @@ export type Database = {
           gender: Database["public"]["Enums"]["gender"] | null
           hadj: boolean | null
           has_children: boolean | null
+          height_cm: number | null
           id: string
           identity_key: string | null
           last_active: string
@@ -411,6 +412,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender"] | null
           hadj?: boolean | null
           has_children?: boolean | null
+          height_cm?: number | null
           id: string
           identity_key?: string | null
           last_active?: string
@@ -456,6 +458,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender"] | null
           hadj?: boolean | null
           has_children?: boolean | null
+          height_cm?: number | null
           id?: string
           identity_key?: string | null
           last_active?: string

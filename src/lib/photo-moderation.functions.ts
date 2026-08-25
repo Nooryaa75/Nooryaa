@@ -117,13 +117,19 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       } else if (data.declaredAge) {
         const gap =
           data.declaredAge < lo ? lo - data.declaredAge : data.declaredAge > hi ? data.declaredAge - hi : 0;
-        result.age_match = gap === 0 ? "ok" : gap <= 7 ? "doubt" : "mismatch";
-        if (result.age_match === "mismatch" && result.verdict === "allow") {
-          result.verdict = "warn";
+        result.age_match = gap <= 4 ? "ok" : gap <= 10 ? "doubt" : "mismatch";
+        if (result.age_match === "mismatch") {
+          // Écart supérieur à 10 ans : la photo ne correspond manifestement pas
+          // à la personne déclarée, on la refuse.
+          result.verdict = "block";
           result.categories = [...result.categories, "age_incoherent"];
+          result.reason = `L'âge apparent sur la photo (environ ${lo}-${hi} ans) est trop éloigné de votre âge déclaré (${data.declaredAge} ans). Merci d'utiliser une photo récente de vous.`;
+        } else if (result.age_match === "doubt" && result.verdict === "allow") {
+          result.verdict = "warn";
+          result.categories = [...result.categories, "age_a_verifier"];
           result.reason =
             result.reason ||
-            `L'âge apparent sur la photo (environ ${lo}-${hi} ans) semble éloigné de l'âge déclaré (${data.declaredAge} ans).`;
+            `L'âge apparent sur la photo (environ ${lo}-${hi} ans) diffère de l'âge déclaré (${data.declaredAge} ans).`;
         }
       }
     }

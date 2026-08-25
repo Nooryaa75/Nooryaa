@@ -174,6 +174,7 @@ function ProfileView() {
                 {profile.city ? `${profile.city}, ${profile.country}` : profile.country}
                 {profile.birthdate && <span className="ml-2">· {ageFromBirthdate(profile.birthdate)} ans</span>}
                 {profile.gender && <span className="ml-2">· {GENDER_LABELS[profile.gender]}</span>}
+                {(profile as any).height_cm && <span className="ml-2">· {(profile as any).height_cm} cm</span>}
               </p>
             </div>
 
@@ -282,6 +283,7 @@ function ProfileView() {
                   <Info label="Études" value={profile.education_level} />
                   <Info label="Personnalité" value={profile.personality} />
                   <Info label="Fumeur" value={boolLabel(profile.smoker, "Oui", "Non")} />
+                  <Info label="Taille" value={(profile as any).height_cm ? `${(profile as any).height_cm} cm` : undefined} />
                   {profile.activities && <div className="col-span-2"><Info label="Activités" value={profile.activities} /></div>}
                 </div>
               </AccordionContent>
@@ -355,6 +357,7 @@ function PreferenceInfo({ profile }: { profile: any }) {
   if (prefs.smoker !== undefined && prefs.smoker !== null) items.push({ label: "Accepte fumeur", value: boolLabel(prefs.smoker) });
   if (prefs.has_children !== undefined && prefs.has_children !== null) items.push({ label: "Accepte enfants", value: boolLabel(prefs.has_children) });
   if (prefs.wants_children !== undefined && prefs.wants_children !== null) items.push({ label: "Souhaite enfants", value: boolLabel(prefs.wants_children) });
+  if (prefs.height_min || prefs.height_max) items.push({ label: "Taille recherchée", value: `${prefs.height_min ?? "—"} - ${prefs.height_max ?? "—"} cm` });
   if (prefs.min_age || prefs.max_age) items.push({ label: "Tranche d'âge", value: `${prefs.min_age ?? "—"} - ${prefs.max_age ?? "—"} ans` });
   if (prefs.max_distance) items.push({ label: "Distance max", value: `${prefs.max_distance} km` });
   if (!items.length) return null;

@@ -79,6 +79,14 @@ export function SearchPreferences({
                 <Label>Distance maximale (km)</Label>
                 <Input type="number" min={1} max={2000} value={p.distance_km ?? ""} onChange={(e) => set("distance_km", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
               </div>
+              <div>
+                <Label>Taille minimum (cm)</Label>
+                <Input type="number" min={120} max={230} value={p.height_min ?? ""} onChange={(e) => set("height_min", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
+              </div>
+              <div>
+                <Label>Taille maximum (cm)</Label>
+                <Input type="number" min={120} max={230} value={p.height_max ?? ""} onChange={(e) => set("height_max", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
+              </div>
               <OptionalSelect label="Pays de résidence" value={p.country} onChange={(v) => set("country", v)} options={COUNTRIES} />
               <OptionalSelect label="Pays d'origine" value={p.country_origin} onChange={(v) => set("country_origin", v)} options={COUNTRIES} />
             </div>

@@ -119,7 +119,7 @@ function ProfileView() {
   const blocked = blockState?.iBlocked || blockState?.blocksMe;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">

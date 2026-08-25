@@ -31,13 +31,13 @@ function Likes() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <Section title="Personnes qui vous ont liké·e" items={received} keyField="from_user" />
-      <Section title="Vos likes envoyés" items={sent} keyField="to_user" />
+      <Section title="Personnes qui vous ont liké·e" items={received} me={me} />
+      <Section title="Vos likes envoyés" items={sent} me={me} />
     </div>
   );
 }
 
-function Section({ title, items }: { title: string; items: any[] | undefined; keyField: string }) {
+function Section({ title, items, me }: { title: string; items: any[] | undefined; me: any }) {
   return (
     <div>
       <h2 className="text-xl font-serif text-primary mb-4 flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
@@ -48,10 +48,16 @@ function Section({ title, items }: { title: string; items: any[] | undefined; ke
           {items.map((it: any, i) => {
             const p = it.profiles;
             if (!p) return null;
+            const pct = matchPercent(me, p);
             return (
               <Link key={i} to="/profile/$pseudo" params={{ pseudo: p.pseudo }} className="bg-card rounded-xl overflow-hidden border border-border/60">
-                <div className="aspect-square bg-secondary">
+                <div className="aspect-square bg-secondary relative">
                   {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className={`w-full h-full object-cover ${(p as any).primary_photo_blurred ? "blur-md scale-110" : ""}`} /> : <div className="w-full h-full flex items-center justify-center"><User className="h-10 w-10 text-muted-foreground/40" /></div>}
+                  {typeof pct === "number" && (
+                    <span className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-[10px] h-9 w-9 shadow-md border-2 border-background">
+                      {pct}%
+                    </span>
+                  )}
                 </div>
                 <div className="p-2"><div className="font-serif text-primary text-sm truncate">{p.pseudo}</div><div className="text-xs text-muted-foreground">{ageFromBirthdate(p.birthdate)} ans</div></div>
               </Link>

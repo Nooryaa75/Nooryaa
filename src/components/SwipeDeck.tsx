@@ -209,7 +209,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             </span>
             <span className="font-medium">{index + 1} / {profiles.length}</span>
             <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
-              Aimer <ChevronRight className="h-3.5 w-3.5 text-emerald-500" />
+              Aimer <ChevronRight className="h-3.5 w-3.5 text-primary" />
             </span>
           </div>
         </div>

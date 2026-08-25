@@ -27,6 +27,7 @@ function ProfileView() {
   const { pseudo } = Route.useParams();
   const ctx = Route.useRouteContext();
   const navigate = useNavigate();
+  const router = useRouter();
   const qc = useQueryClient();
   const [reportOpen, setReportOpen] = useState(false);
   const [reportCategory, setReportCategory] = useState(REPORT_REASONS[0]);

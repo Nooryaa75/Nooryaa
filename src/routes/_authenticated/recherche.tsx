@@ -150,7 +150,7 @@ function Recherche() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
-  const [optimisticLikedIds, setOptimisticLikedIds] = useState<string[]>([]);
+  const [optimisticLikes, setOptimisticLikes] = useState<Record<string, boolean>>({});
   const set = (patch: Partial<Filters>) => {
     setActiveSearchName(null);
     setFilters((f) => ({ ...f, ...patch }));

@@ -337,6 +337,7 @@ export type Database = {
           objective: string | null
           omra: boolean | null
           onboarded: boolean
+          personality: string | null
           phone: string | null
           porte_voile: boolean | null
           preferences: Json
@@ -381,6 +382,7 @@ export type Database = {
           objective?: string | null
           omra?: boolean | null
           onboarded?: boolean
+          personality?: string | null
           phone?: string | null
           porte_voile?: boolean | null
           preferences?: Json
@@ -425,6 +427,7 @@ export type Database = {
           objective?: string | null
           omra?: boolean | null
           onboarded?: boolean
+          personality?: string | null
           phone?: string | null
           porte_voile?: boolean | null
           preferences?: Json

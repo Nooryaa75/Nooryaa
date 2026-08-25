@@ -66,7 +66,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
       // Profil écarté : on le mémorise pour ne plus le proposer dans les sélections.
       const { error } = await supabase
         .from("profile_passes")
-        .upsert({ user_id: userId, target_id: current.id }, { onConflict: "user_id,target_id" });
+        .insert({ user_id: userId, target_id: current.id });
       if (error && !error.message.includes("duplicate")) toast.error(error.message);
       queryClient.invalidateQueries({ queryKey: ["passes", userId] });
     }

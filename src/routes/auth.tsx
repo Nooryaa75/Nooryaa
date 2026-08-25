@@ -31,8 +31,9 @@ function AuthPage() {
   const [signupEmailSent, setSignupEmailSent] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/browse" });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      await redirectAfterAuth(navigate);
     });
   }, [navigate]);
 

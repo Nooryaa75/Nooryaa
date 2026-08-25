@@ -130,7 +130,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/onboarding" });
+    await redirectAfterAuth(navigate);
   }
 
   if (signupEmailSent) {

@@ -92,7 +92,17 @@ export function useDiscovery(userId: string, filters: Filters) {
       if (filters.marital !== ANY) q = q.eq("marital_status", filters.marital as any);
       if (filters.education !== ANY) q = q.eq("education_level", filters.education);
       if (filters.objective !== ANY) q = q.eq("objective", filters.objective);
-      if (filters.activity !== ANY) q = q.ilike("activities", `%${filters.activity}%`);
+      if (filters.personality !== ANY) q = q.eq("personality", filters.personality);
+      const selectedActivities = (filters.activities ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (selectedActivities.length > 0) {
+        const orClause = selectedActivities.map((a) => `activities.ilike.%${a}%`).join(",");
+        q = q.or(orClause);
+      } else if (filters.activity !== ANY) {
+        q = q.ilike("activities", `%${filters.activity}%`);
+      }
       for (const [col, val] of [
         ["salat_quotidienne", filters.salat],
         ["ramadan", filters.ramadan],

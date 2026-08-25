@@ -203,9 +203,15 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
               <Heart className={`h-6 w-6 ${currentLiked ? "fill-current" : ""}`} />
             </Button>
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-3">
-            {index + 1} / {profiles.length} · glissez la carte à droite pour aimer
-          </p>
+          <div className="mt-3 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
+              <ChevronLeft className="h-3.5 w-3.5 text-destructive" /> Passer
+            </span>
+            <span className="font-medium">{index + 1} / {profiles.length}</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
+              Aimer <ChevronRight className="h-3.5 w-3.5 text-emerald-500" />
+            </span>
+          </div>
         </div>
       )}
     </div>

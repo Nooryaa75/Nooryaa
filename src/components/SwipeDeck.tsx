@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
+import { Heart, X, MapPin, User, ArrowLeft, MessageCircle, Hand, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
 import { useMyProfile } from "@/lib/match";

@@ -57,7 +57,7 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
   );
 }
 
-function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId: string; liked: boolean; onLiked: (profileId: string) => void }) {
+function ProfileCard({ profile, userId, liked, onToggleLike }: { profile: any; userId: string; liked: boolean; onToggleLike: (profileId: string, nextLiked: boolean) => void }) {
   const age = ageFromBirthdate(profile.birthdate);
   const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
   const { data: me } = useMyProfile(userId);
@@ -67,14 +67,23 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
   async function like(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (liked) return;
+    if (liked) {
+      const { error } = await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", profile.id);
+      if (error) toast.error(error.message);
+      else {
+        onToggleLike(profile.id, false);
+        toast.success(`Vous n'aimez plus ${profile.pseudo}`);
+      }
+      return;
+    }
     const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
     if (error && !error.message.includes("duplicate")) toast.error(error.message);
     else {
-      onLiked(profile.id);
+      onToggleLike(profile.id, true);
       toast.success(`Vous avez aimé ${profile.pseudo}`);
     }
   }
+
 
   return (
     <div className="group bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300">
@@ -101,7 +110,7 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
           type="button"
           onClick={like}
           className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-primary border-primary text-primary-foreground" : "bg-background/90 border-border/60 text-muted-foreground hover:text-primary hover:border-primary"}`}
-          aria-label={liked ? "Déjà aimé" : "J'aime"}
+          aria-label={liked ? "Retirer mon like" : "J'aime"}
         >
           <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
         </button>
@@ -141,7 +150,7 @@ function Recherche() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
-  const [optimisticLikedIds, setOptimisticLikedIds] = useState<string[]>([]);
+  const [optimisticLikes, setOptimisticLikes] = useState<Record<string, boolean>>({});
   const set = (patch: Partial<Filters>) => {
     setActiveSearchName(null);
     setFilters((f) => ({ ...f, ...patch }));
@@ -158,7 +167,10 @@ function Recherche() {
     },
   });
 
-  const likedIds = new Set([...(sentLikes ?? []).map((row) => row.to_user), ...optimisticLikedIds]);
+  const likedIds = new Set(
+    (sentLikes ?? []).map((row) => row.to_user).filter((id) => optimisticLikes[id] !== false),
+  );
+  for (const [id, v] of Object.entries(optimisticLikes)) if (v) likedIds.add(id);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],
@@ -447,7 +459,11 @@ function Recherche() {
                     profile={p}
                     userId={ctx.userId}
                     liked={likedIds.has(p.id)}
-                    onLiked={(profileId) => setOptimisticLikedIds((ids) => ids.includes(profileId) ? ids : [...ids, profileId])}
+                    onToggleLike={(profileId, nextLiked) => {
+                      setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
+                      qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
+                      qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
+                    }}
                   />
                 ))}
               </div>

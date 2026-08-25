@@ -21,8 +21,15 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
   const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
+  const [showHint, setShowHint] = useState(true);
   const startX = useRef<number | null>(null);
   const current = profiles[index];
+
+  useEffect(() => {
+    if (!showHint) return;
+    const t = setTimeout(() => setShowHint(false), 4500);
+    return () => clearTimeout(t);
+  }, [showHint]);
 
   const { data: sentLikes } = useQuery({
     queryKey: ["sent-likes", userId],

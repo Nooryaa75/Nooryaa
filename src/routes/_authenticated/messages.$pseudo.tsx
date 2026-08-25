@@ -162,15 +162,26 @@ function Conversation() {
   const deleteConversation = useMutation({
     mutationFn: async () => {
       if (!peer) return;
+      const { error: hideError } = await supabase.from("conversation_hides").upsert(
+        { user_id: ctx.userId, peer_id: peer.id } as any,
+        { onConflict: "user_id,peer_id" },
+      );
+      if (hideError) throw hideError;
+
       for (const m of messages ?? []) {
         const hidden: string[] = [...((m as any).hidden_for ?? [])];
         if (hidden.includes(ctx.userId)) continue;
         hidden.push(ctx.userId);
-        await supabase.from("messages").update({ hidden_for: hidden } as any).eq("id", m.id);
+        const { error } = await supabase.from("messages").update({ hidden_for: hidden } as any).eq("id", m.id);
+        if (error) throw error;
       }
     },
     onSuccess: () => {
       toast.success("Conversation supprimée");
+      setConfirmDeleteConvo(false);
+      if (peer) {
+        qc.setQueryData(["conversations", ctx.userId], (old: any) => Array.isArray(old) ? old.filter((p) => p.id !== peer.id) : old);
+      }
       qc.invalidateQueries({ queryKey: ["messages"] });
       qc.invalidateQueries({ queryKey: ["conversations"] });
       navigate({ to: "/messages" });

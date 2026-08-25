@@ -55,16 +55,20 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
   );
 }
 
-function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
+function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId: string; liked: boolean; onLiked: (profileId: string) => void }) {
   const age = ageFromBirthdate(profile.birthdate);
   const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
 
   async function like(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (liked) return;
     const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
     if (error && !error.message.includes("duplicate")) toast.error(error.message);
-    else toast.success(`Vous avez aimé ${profile.pseudo}`);
+    else {
+      onLiked(profile.id);
+      toast.success(`Vous avez aimé ${profile.pseudo}`);
+    }
   }
 
   return (
@@ -91,10 +95,10 @@ function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
         <button
           type="button"
           onClick={like}
-          className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-background/90 border border-border/60 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-          aria-label="J'aime"
+          className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-[color:var(--gold)] border-[color:var(--gold)] text-primary" : "bg-background/90 border-border/60 text-muted-foreground hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+          aria-label={liked ? "Déjà aimé" : "J'aime"}
         >
-          <Heart className="h-5 w-5" />
+          <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
         </button>
       </div>
       <div className="p-4 space-y-2">
@@ -132,12 +136,24 @@ function Recherche() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
+  const [optimisticLikedIds, setOptimisticLikedIds] = useState<string[]>([]);
   const set = (patch: Partial<Filters>) => {
     setActiveSearchName(null);
     setFilters((f) => ({ ...f, ...patch }));
   };
 
   const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
+
+  const { data: sentLikes } = useQuery({
+    queryKey: ["sent-likes", ctx.userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("likes").select("to_user").eq("from_user", ctx.userId);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const likedIds = new Set([...(sentLikes ?? []).map((row) => row.to_user), ...optimisticLikedIds]);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],
@@ -421,7 +437,13 @@ function Recherche() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {profiles.map((p) => (
-                  <ProfileCard key={p.id} profile={p} userId={ctx.userId} />
+                  <ProfileCard
+                    key={p.id}
+                    profile={p}
+                    userId={ctx.userId}
+                    liked={likedIds.has(p.id)}
+                    onLiked={(profileId) => setOptimisticLikedIds((ids) => ids.includes(profileId) ? ids : [...ids, profileId])}
+                  />
                 ))}
               </div>
             </>

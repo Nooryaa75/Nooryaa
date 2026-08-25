@@ -117,6 +117,7 @@ function ProfileView() {
 
   const isMe = profile.id === ctx.userId;
   const blocked = blockState?.iBlocked || blockState?.blocksMe;
+  const isLiked = !!liked;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
@@ -165,9 +166,14 @@ function ProfileView() {
             <div className="flex flex-wrap gap-2 pt-2">
               {!isMe && !blocked && (
                 <>
-                  <Button onClick={() => toggleLike.mutate()} disabled={toggleLike.isPending} className="rounded-full gap-2" variant={liked ? "outline" : "default"}>
-                    <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-                    {liked ? "Coup de cœur ✓" : "Coup de cœur"}
+                  <Button
+                    onClick={() => toggleLike.mutate()}
+                    disabled={toggleLike.isPending}
+                    className={`rounded-full gap-2 ${isLiked ? "bg-[color:var(--gold)] text-primary hover:bg-[color:var(--gold-deep)] hover:text-primary-foreground border border-[color:var(--gold)]" : "text-muted-foreground border-border hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+                    variant={isLiked ? "default" : "outline"}
+                  >
+                    <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
+                    {isLiked ? "Coup de cœur ✓" : "Coup de cœur"}
                   </Button>
                   <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
                     <MessageCircle className="h-4 w-4" /> Envoyer un message

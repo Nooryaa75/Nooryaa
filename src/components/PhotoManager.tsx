@@ -3,8 +3,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck } from "lucide-react";
+import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
+import { CameraCapture } from "@/components/CameraCapture";
+
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -22,8 +24,19 @@ const MAX_PHOTOS = 3;
 export function PhotoManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const captureRef = useRef<HTMLInputElement>(null);
   const [checking, setChecking] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const checkPhoto = useServerFn(moderatePhoto);
+
+  // Web app : getUserMedia. Apps natives / navigateurs mobiles sans getUserMedia :
+  // repli sur <input capture> qui ouvre l'appareil photo du téléphone.
+  function openCamera() {
+    const hasMedia = typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia && window.isSecureContext;
+    if (hasMedia) setCameraOpen(true);
+    else captureRef.current?.click();
+  }
+
 
   const { data: profile } = useQuery({
     queryKey: ["me", userId],
@@ -147,20 +160,32 @@ export function PhotoManager({ userId }: { userId: string }) {
           </div>
         ))}
         {(photos?.length ?? 0) < MAX_PHOTOS && (
-          <button type="button" disabled={checking} onClick={() => fileRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:bg-secondary/40 transition-colors disabled:opacity-60">
+          <div className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 p-2">
             {checking ? (
               <>
                 <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
                 <span className="text-[10px] text-muted-foreground">Vérification…</span>
               </>
             ) : (
-              <Plus className="h-6 w-6 text-muted-foreground" />
+              <>
+                <button type="button" onClick={() => fileRef.current?.click()} className="flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-secondary/40 transition-colors">
+                  <Plus className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">Importer</span>
+                </button>
+                <button type="button" onClick={openCamera} className="flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-secondary/40 transition-colors">
+                  <Camera className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">Prendre une photo</span>
+                </button>
+              </>
             )}
-          </button>
+          </div>
         )}
 
       </div>
-      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
+      <input ref={captureRef} type="file" accept="image/*" capture="user" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
+      <CameraCapture open={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={(f) => uploadPhoto(f)} />
+
     </div>
   );
 }

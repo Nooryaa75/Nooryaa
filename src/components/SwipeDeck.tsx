@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 
 type Props = {
   title: string;

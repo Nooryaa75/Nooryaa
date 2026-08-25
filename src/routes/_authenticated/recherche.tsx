@@ -81,6 +81,13 @@ function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
             <User className="h-16 w-16 text-muted-foreground/30" />
           </div>
         )}
+        {typeof profile._matchPercent === "number" && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-9 w-9 shadow-md border-2 border-background">
+              {profile._matchPercent}%
+            </span>
+          </div>
+        )}
         <button
           type="button"
           onClick={like}

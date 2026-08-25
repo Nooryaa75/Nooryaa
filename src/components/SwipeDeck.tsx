@@ -139,7 +139,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                 </div>
               )}
               {drag > 40 && (
-                <span className="absolute top-5 left-5 rounded-lg border-2 border-emerald-400 px-3 py-1 font-bold text-emerald-400 rotate-[-12deg]">OUI</span>
+                <span className="absolute top-5 left-5 rounded-lg border-2 border-primary px-3 py-1 font-bold text-primary rotate-[-12deg]">OUI</span>
               )}
               {drag < -40 && (
                 <span className="absolute top-5 right-5 rounded-lg border-2 border-destructive px-3 py-1 font-bold text-destructive rotate-[12deg]">NON</span>

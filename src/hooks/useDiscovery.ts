@@ -63,6 +63,15 @@ export function useDiscovery(userId: string, filters: Filters) {
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", userId).single()).data,
   });
 
+  const { data: sentLikes } = useQuery({
+    queryKey: ["sent-likes-discovery", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("likes").select("to_user").eq("from_user", userId);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   // Point de référence : la ville choisie dans le filtre, sinon la position du profil.
   const originLat = filters.originLat ?? (me as any)?.latitude ?? null;
   const originLng = filters.originLng ?? (me as any)?.longitude ?? null;

@@ -563,6 +563,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      hide_conversation: { Args: { _peer_id: string }; Returns: undefined }
       is_blocked_between: { Args: { a: string; b: string }; Returns: boolean }
     }
     Enums: {

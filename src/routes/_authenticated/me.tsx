@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS } from "@/lib/profile";
+import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, ageFromBirthdate, isAdult } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
@@ -41,7 +41,11 @@ function MyProfile() {
       if (bio.length > 0 && (bio.length < 50 || bio.length > 500)) {
         throw new Error("La bio doit contenir entre 50 et 500 caractères");
       }
+      if (form.birthdate && !isAdult(form.birthdate)) {
+        throw new Error("Vous devez avoir au moins 18 ans");
+      }
       const { error } = await supabase.from("profiles").update({
+        birthdate: form.birthdate || null,
         city: form.city, country: form.country, country_origin: form.country_origin,
         latitude: form.latitude ?? null, longitude: form.longitude ?? null,
         marital_status: form.marital_status,
@@ -92,6 +96,19 @@ function MyProfile() {
           <div>
             <Label>Téléphone</Label>
             <Input type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+          </div>
+          <div>
+            <Label>Date de naissance</Label>
+            <Input
+              type="date"
+              value={form.birthdate ?? ""}
+              min={minBirthdate()}
+              max={maxBirthdate()}
+              onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
+            />
+            {form.birthdate && (
+              <p className="text-xs text-muted-foreground mt-1">{ageFromBirthdate(form.birthdate)} ans</p>
+            )}
           </div>
           <div>
             <Label>Profession</Label>

@@ -119,7 +119,7 @@ function ProfileView() {
   const blocked = blockState?.iBlocked || blockState?.blocksMe;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
@@ -140,11 +140,11 @@ function ProfileView() {
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
             <div>
               <div className="flex items-center justify-between gap-3">
-                <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
+                <h1 className="text-3xl font-serif text-primary break-words min-w-0 flex-1">{profile.pseudo}</h1>
                 {!isMe && typeof matchPercent(me, profile) === "number" && (
                   <div className="flex flex-col items-center shrink-0">
                     <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>
@@ -216,7 +216,7 @@ function ProfileView() {
                   <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-[color:var(--gold)]" /> À propos</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap pb-2">{profile.bio}</p>
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] pb-2">{profile.bio}</p>
                 </AccordionContent>
               </AccordionItem>
             )}

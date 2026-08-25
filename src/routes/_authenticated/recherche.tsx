@@ -15,10 +15,11 @@ import {
   CITIES,
   PROFESSIONS,
   OBJECTIVES,
-  ACTIVITIES_OPTIONS,
+  PERSONALITY_OPTIONS,
   ageFromBirthdate,
   PRACTICE_LABELS,
 } from "@/lib/profile";
+import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
@@ -78,6 +79,13 @@ function ProfileCard({ profile, userId }: { profile: any; userId: string }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <User className="h-16 w-16 text-muted-foreground/30" />
+          </div>
+        )}
+        {typeof profile._matchPercent === "number" && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-9 w-9 shadow-md border-2 border-background">
+              {profile._matchPercent}%
+            </span>
           </div>
         )}
         <button
@@ -261,14 +269,18 @@ function Recherche() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Activité / centre d'intérêt</Label>
-                <Select value={filters.activity} onValueChange={(v) => set({ activity: v })}>
+                <Label className="text-xs">Type de personnalité</Label>
+                <Select value={filters.personality} onValueChange={(v) => set({ personality: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ANY}>Toutes</SelectItem>
-                    {ACTIVITIES_OPTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+                    <SelectItem value={ANY}>Indifférent</SelectItem>
+                    {PERSONALITY_OPTIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="sm:col-span-2 lg:col-span-4">
+                <Label className="text-xs">Activités / centres d'intérêt</Label>
+                <ActivitiesPicker value={filters.activities} onChange={(v) => set({ activities: v })} />
               </div>
             </div>
 

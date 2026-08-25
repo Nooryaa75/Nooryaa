@@ -8,7 +8,8 @@ export const ANY = "any";
 
 export type Filters = {
   ageMin: number; ageMax: number; city: string; country: string; countryOrigin: string;
-  profession: string; marital: string; education: string; objective: string; activity: string;
+  profession: string; marital: string; education: string; objective: string;
+  activity: string; activities: string; personality: string;
   salat: string; ramadan: string; hadj: string; omra: string; voile: string;
   hasChildren: string; wantsChildren: string; smoker: string;
   radiusEnabled: boolean; radiusKm: number;
@@ -17,7 +18,8 @@ export type Filters = {
 
 export const DEFAULT_FILTERS: Filters = {
   ageMin: 18, ageMax: 60, city: "", country: ANY, countryOrigin: ANY,
-  profession: ANY, marital: ANY, education: ANY, objective: ANY, activity: ANY,
+  profession: ANY, marital: ANY, education: ANY, objective: ANY,
+  activity: ANY, activities: "", personality: ANY,
   salat: ANY, ramadan: ANY, hadj: ANY, omra: ANY, voile: ANY,
   hasChildren: ANY, wantsChildren: ANY, smoker: ANY,
   radiusEnabled: false, radiusKm: 50,
@@ -90,7 +92,17 @@ export function useDiscovery(userId: string, filters: Filters) {
       if (filters.marital !== ANY) q = q.eq("marital_status", filters.marital as any);
       if (filters.education !== ANY) q = q.eq("education_level", filters.education);
       if (filters.objective !== ANY) q = q.eq("objective", filters.objective);
-      if (filters.activity !== ANY) q = q.ilike("activities", `%${filters.activity}%`);
+      if (filters.personality !== ANY) q = q.eq("personality", filters.personality);
+      const selectedActivities = (filters.activities ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (selectedActivities.length > 0) {
+        const orClause = selectedActivities.map((a) => `activities.ilike.%${a}%`).join(",");
+        q = q.or(orClause);
+      } else if (filters.activity !== ANY) {
+        q = q.ilike("activities", `%${filters.activity}%`);
+      }
       for (const [col, val] of [
         ["salat_quotidienne", filters.salat],
         ["ramadan", filters.ramadan],
@@ -118,7 +130,48 @@ export function useDiscovery(userId: string, filters: Filters) {
           .filter((p: any) => p._distance != null && p._distance <= filters.radiusKm)
           .sort((a: any, b: any) => a._distance - b._distance);
       }
-      return rows.slice(0, 80);
+
+      const prefs: any = (me as any)?.preferences ?? {};
+      const iAmMan = me?.gender === "homme";
+      const score = (p: any) => {
+        let s = 0;
+        if (prefs.city && p.city && String(p.city).toLowerCase().includes(String(prefs.city).toLowerCase())) s += 2;
+        if (prefs.country && p.country === prefs.country) s += 1;
+        if (prefs.education && p.education_level === prefs.education) s += 1;
+        if (prefs.objective && p.objective === prefs.objective) s += 2;
+        if (prefs.marital && p.marital_status === prefs.marital) s += 1;
+        if (typeof prefs.wantsChildren === "boolean" && p.wants_children === prefs.wantsChildren) s += 1;
+        if (typeof prefs.smoker === "boolean" && p.smoker === prefs.smoker) s += 1;
+        if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
+        if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
+        if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
+        if (prefs.personality && p.personality === prefs.personality) s += 1;
+        if (me?.city && p.city === me.city) s += 1;
+        if (me?.objective && p.objective === me.objective) s += 1;
+        return s;
+      };
+      const maxScore = Math.max(
+        1,
+        (prefs.city ? 2 : 0) +
+          (prefs.country ? 1 : 0) +
+          (prefs.education ? 1 : 0) +
+          (prefs.objective ? 2 : 0) +
+          (prefs.marital ? 1 : 0) +
+          (typeof prefs.wantsChildren === "boolean" ? 1 : 0) +
+          (typeof prefs.smoker === "boolean" ? 1 : 0) +
+          (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
+          (typeof prefs.salat === "boolean" ? 1 : 0) +
+          (typeof prefs.ramadan === "boolean" ? 1 : 0) +
+          (prefs.personality ? 1 : 0) +
+          (me?.city ? 1 : 0) +
+          (me?.objective ? 1 : 0)
+      );
+      const withPercent = (p: any) => ({
+        ...p,
+        _matchPercent: Math.min(100, Math.round((score(p) / maxScore) * 100)),
+      });
+
+      return rows.slice(0, 80).map(withPercent);
     },
   });
 
@@ -140,6 +193,7 @@ export function useDiscovery(userId: string, filters: Filters) {
       if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
       if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
       if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
+      if (prefs.personality && p.personality === prefs.personality) s += 1;
       if (me?.city && p.city === me.city) s += 1;
       if (me?.objective && p.objective === me.objective) s += 1;
       return s;
@@ -157,6 +211,7 @@ export function useDiscovery(userId: string, filters: Filters) {
         (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
         (typeof prefs.salat === "boolean" ? 1 : 0) +
         (typeof prefs.ramadan === "boolean" ? 1 : 0) +
+        (prefs.personality ? 1 : 0) +
         (me?.city ? 1 : 0) +
         (me?.objective ? 1 : 0)
     );

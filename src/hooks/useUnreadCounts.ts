@@ -24,9 +24,12 @@ export function useMarkLikesSeen() {
 }
 
 export function useUnreadCounts() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ["unread-counts"],
     refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data: auth } = await supabase.auth.getUser();
       const userId = auth.user?.id;
@@ -39,16 +42,49 @@ export function useUnreadCounts() {
         .eq("to_user", userId);
       if (since) likesQuery = likesQuery.gt("created_at", since);
 
-      const [likesRes, messagesRes] = await Promise.all([
+      const [likesRes, messagesRes, hidesRes] = await Promise.all([
         likesQuery,
         supabase
           .from("messages")
-          .select("id", { count: "exact", head: true })
+          .select("id, sender")
           .eq("receiver", userId)
-          .is("read_at", null),
+          .is("read_at", null)
+          .is("deleted_at", null),
+        supabase.from("conversation_hides").select("peer_id").eq("user_id", userId),
       ]);
 
-      return { likes: likesRes.count ?? 0, messages: messagesRes.count ?? 0 };
+      const hidden = new Set((hidesRes.data ?? []).map((h: any) => h.peer_id));
+      const messages = (messagesRes.data ?? []).filter((m: any) => !hidden.has(m.sender)).length;
+
+      return { likes: likesRes.count ?? 0, messages };
     },
   });
+
+  // Keep badges in sync in real time (new/removed likes, deleted or read messages).
+  useEffect(() => {
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+
+    (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth.user?.id;
+      if (!userId || cancelled) return;
+
+      channel = supabase
+        .channel(`unread-counts-${userId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "likes" }, invalidate)
+        .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, invalidate)
+        .on("postgres_changes", { event: "*", schema: "public", table: "conversation_hides" }, invalidate)
+        .subscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 }

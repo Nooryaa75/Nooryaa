@@ -91,7 +91,7 @@ function MessagesLayout() {
       }
       setConfirmDelete(null);
       qc.invalidateQueries({ queryKey: ["messages"] });
-      qc.invalidateQueries({ queryKey: ["conversations"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     },
     onError: (e: any) => toast.error(e.message),
   });

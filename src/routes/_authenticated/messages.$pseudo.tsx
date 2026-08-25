@@ -149,7 +149,7 @@ function Conversation() {
     },
     onSuccess: () => {
       setText(""); setReplyTo(null); setEditing(null);
-      qc.invalidateQueries({ queryKey: ["messages"] });
+      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -161,7 +161,7 @@ function Conversation() {
         .eq("id", m.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["messages"] }); },
+    onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -188,7 +188,7 @@ function Conversation() {
       if (peer) {
         qc.setQueryData(["conversations", ctx.userId], (old: any) => Array.isArray(old) ? old.filter((p) => p.id !== peer.id) : old);
       }
-      qc.invalidateQueries({ queryKey: ["messages"] });
+      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
       qc.invalidateQueries({ queryKey: ["conversations"] });
       navigate({ to: "/messages" });
     },
@@ -230,7 +230,7 @@ function Conversation() {
       } as any);
       if (error) throw error;
       setReplyTo(null);
-      qc.invalidateQueries({ queryKey: ["messages"] });
+      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     } catch (e: any) {
       toast.error(e.message);
     } finally {

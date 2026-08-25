@@ -12,6 +12,20 @@ const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).catch("signin"),
 });
 
+async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    navigate({ to: "/auth", search: { mode: "signin" } });
+    return;
+  }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("onboarded")
+    .eq("id", userData.user.id)
+    .maybeSingle();
+  navigate({ to: profile?.onboarded ? "/browse" : "/onboarding" });
+}
+
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({ meta: [{ title: "Connexion — Nooryaa (Abonnement gratuit)" }] }),

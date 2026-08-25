@@ -180,28 +180,40 @@ export type Database = {
         Row: {
           content: string | null
           created_at: string
+          deleted_at: string | null
+          edited_at: string | null
+          hidden_for: string[]
           id: string
           image_path: string | null
           read_at: string | null
           receiver: string
+          reply_to: string | null
           sender: string
         }
         Insert: {
           content?: string | null
           created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          hidden_for?: string[]
           id?: string
           image_path?: string | null
           read_at?: string | null
           receiver: string
+          reply_to?: string | null
           sender: string
         }
         Update: {
           content?: string | null
           created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          hidden_for?: string[]
           id?: string
           image_path?: string | null
           read_at?: string | null
           receiver?: string
+          reply_to?: string | null
           sender?: string
         }
         Relationships: [
@@ -210,6 +222,13 @@ export type Database = {
             columns: ["receiver"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {

@@ -18,8 +18,8 @@ function MessagesLayout() {
     queryFn: async () => {
       // Toute personne avec qui j'ai échangé un message OU à qui j'ai envoyé un coup de cœur
       const [{ data: sent }, { data: received }, { data: likes }, { data: iBlock }, { data: blockedMe }] = await Promise.all([
-        supabase.from("messages").select("receiver").eq("sender", ctx.userId),
-        supabase.from("messages").select("sender").eq("receiver", ctx.userId),
+        supabase.from("messages").select("receiver, hidden_for").eq("sender", ctx.userId),
+        supabase.from("messages").select("sender, hidden_for").eq("receiver", ctx.userId),
         supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
         supabase.from("blocks").select("blocked").eq("blocker", ctx.userId),
         supabase.from("blocks").select("blocker").eq("blocked", ctx.userId),
@@ -28,10 +28,20 @@ function MessagesLayout() {
         ...(iBlock ?? []).map((r) => r.blocked),
         ...(blockedMe ?? []).map((r) => r.blocker),
       ]);
+      // Une conversation supprimée de mon côté n'apparaît plus dans la liste
+      const visible = new Set<string>();
+      const hiddenOnly = new Set<string>();
+      for (const [rows, key] of [[sent ?? [], "receiver"], [received ?? [], "sender"]] as const) {
+        for (const r of rows as any[]) {
+          const peerId = r[key];
+          if (((r.hidden_for ?? []) as string[]).includes(ctx.userId)) hiddenOnly.add(peerId);
+          else visible.add(peerId);
+        }
+      }
+      for (const id of visible) hiddenOnly.delete(id);
       const ids = new Set<string>([
-        ...(sent ?? []).map((r) => r.receiver),
-        ...(received ?? []).map((r) => r.sender),
-        ...(likes ?? []).map((r) => r.to_user),
+        ...visible,
+        ...(likes ?? []).map((r) => r.to_user).filter((id) => !hiddenOnly.has(id)),
       ]);
       const filtered = [...ids].filter((id) => !excluded.has(id));
       if (filtered.length === 0) return [];

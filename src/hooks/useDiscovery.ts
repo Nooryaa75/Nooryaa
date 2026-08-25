@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Navigation, Clock } from "lucide-react";
 import type { DeckKey } from "@/components/DeckCard";
+import { matchPercent } from "@/lib/match";
 
 export const ANY = "any";
 
@@ -131,44 +132,9 @@ export function useDiscovery(userId: string, filters: Filters) {
           .sort((a: any, b: any) => a._distance - b._distance);
       }
 
-      const prefs: any = (me as any)?.preferences ?? {};
-      const iAmMan = me?.gender === "homme";
-      const score = (p: any) => {
-        let s = 0;
-        if (prefs.city && p.city && String(p.city).toLowerCase().includes(String(prefs.city).toLowerCase())) s += 2;
-        if (prefs.country && p.country === prefs.country) s += 1;
-        if (prefs.education && p.education_level === prefs.education) s += 1;
-        if (prefs.objective && p.objective === prefs.objective) s += 2;
-        if (prefs.marital && p.marital_status === prefs.marital) s += 1;
-        if (typeof prefs.wantsChildren === "boolean" && p.wants_children === prefs.wantsChildren) s += 1;
-        if (typeof prefs.smoker === "boolean" && p.smoker === prefs.smoker) s += 1;
-        if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
-        if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
-        if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
-        if (prefs.personality && p.personality === prefs.personality) s += 1;
-        if (me?.city && p.city === me.city) s += 1;
-        if (me?.objective && p.objective === me.objective) s += 1;
-        return s;
-      };
-      const maxScore = Math.max(
-        1,
-        (prefs.city ? 2 : 0) +
-          (prefs.country ? 1 : 0) +
-          (prefs.education ? 1 : 0) +
-          (prefs.objective ? 2 : 0) +
-          (prefs.marital ? 1 : 0) +
-          (typeof prefs.wantsChildren === "boolean" ? 1 : 0) +
-          (typeof prefs.smoker === "boolean" ? 1 : 0) +
-          (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
-          (typeof prefs.salat === "boolean" ? 1 : 0) +
-          (typeof prefs.ramadan === "boolean" ? 1 : 0) +
-          (prefs.personality ? 1 : 0) +
-          (me?.city ? 1 : 0) +
-          (me?.objective ? 1 : 0)
-      );
       const withPercent = (p: any) => ({
         ...p,
-        _matchPercent: Math.min(100, Math.round((score(p) / maxScore) * 100)),
+        _matchPercent: matchPercent(me, p) ?? 0,
       });
 
       return rows.slice(0, 80).map(withPercent);
@@ -179,45 +145,9 @@ export function useDiscovery(userId: string, filters: Filters) {
 
   const decks = useMemo(() => {
     const rows: any[] = profiles ?? [];
-    const prefs: any = (me as any)?.preferences ?? {};
-    const iAmMan = me?.gender === "homme";
-    const score = (p: any) => {
-      let s = 0;
-      if (prefs.city && p.city && String(p.city).toLowerCase().includes(String(prefs.city).toLowerCase())) s += 2;
-      if (prefs.country && p.country === prefs.country) s += 1;
-      if (prefs.education && p.education_level === prefs.education) s += 1;
-      if (prefs.objective && p.objective === prefs.objective) s += 2;
-      if (prefs.marital && p.marital_status === prefs.marital) s += 1;
-      if (typeof prefs.wantsChildren === "boolean" && p.wants_children === prefs.wantsChildren) s += 1;
-      if (typeof prefs.smoker === "boolean" && p.smoker === prefs.smoker) s += 1;
-      if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
-      if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
-      if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
-      if (prefs.personality && p.personality === prefs.personality) s += 1;
-      if (me?.city && p.city === me.city) s += 1;
-      if (me?.objective && p.objective === me.objective) s += 1;
-      return s;
-    };
-
-    const maxScore = Math.max(
-      1,
-      (prefs.city ? 2 : 0) +
-        (prefs.country ? 1 : 0) +
-        (prefs.education ? 1 : 0) +
-        (prefs.objective ? 2 : 0) +
-        (prefs.marital ? 1 : 0) +
-        (typeof prefs.wantsChildren === "boolean" ? 1 : 0) +
-        (typeof prefs.smoker === "boolean" ? 1 : 0) +
-        (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
-        (typeof prefs.salat === "boolean" ? 1 : 0) +
-        (typeof prefs.ramadan === "boolean" ? 1 : 0) +
-        (prefs.personality ? 1 : 0) +
-        (me?.city ? 1 : 0) +
-        (me?.objective ? 1 : 0)
-    );
     const withPercent = (p: any) => ({
       ...p,
-      _matchPercent: Math.min(100, Math.round((score(p) / maxScore) * 100)),
+      _matchPercent: matchPercent(me, p) ?? 0,
     });
 
     const withDistance = rows.map((p) => {
@@ -229,7 +159,7 @@ export function useDiscovery(userId: string, filters: Filters) {
     });
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return {
-      match: [...rows].sort((a, b) => score(b) - score(a)).map(withPercent),
+      match: [...rows].sort((a, b) => (matchPercent(me, b) ?? 0) - (matchPercent(me, a) ?? 0)).map(withPercent),
       proches: withDistance
         .filter((p: any) => p._distance != null && p._distance <= 20)
         .sort((a: any, b: any) => a._distance - b._distance),

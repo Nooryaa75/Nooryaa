@@ -32,13 +32,13 @@ function AdminDashboard() {
   });
 
   const cards = [
-    { label: "Total profils", value: data?.total, icon: Users, tone: "bg-blue-50 text-blue-700" },
-    { label: "Actifs", value: data?.active, icon: UserCheck, tone: "bg-green-50 text-green-700" },
-    { label: "Connectés (24h)", value: data?.activeToday, icon: UserCheck, tone: "bg-sky-50 text-sky-700" },
-    { label: "Suspendus / bannis", value: data?.suspended, icon: AlertTriangle, tone: "bg-orange-50 text-orange-700" },
-    { label: "Signalements ouverts", value: data?.openReports, icon: Flag, tone: "bg-red-50 text-red-700" },
-    { label: "Blocages totaux", value: data?.blocks, icon: Ban, tone: "bg-gray-100 text-gray-700" },
-    { label: "Messages (24h)", value: data?.messages24h, icon: MessageCircle, tone: "bg-purple-50 text-purple-700" },
+    { label: "Total profils", value: data?.total, icon: Users, tone: "bg-primary/10 text-primary" },
+    { label: "Actifs", value: data?.active, icon: UserCheck, tone: "bg-primary/10 text-primary" },
+    { label: "Connectés (24h)", value: data?.activeToday, icon: UserCheck, tone: "bg-secondary text-primary" },
+    { label: "Suspendus / bannis", value: data?.suspended, icon: AlertTriangle, tone: "bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[color:var(--gold)]" },
+    { label: "Signalements ouverts", value: data?.openReports, icon: Flag, tone: "bg-destructive/10 text-destructive" },
+    { label: "Blocages totaux", value: data?.blocks, icon: Ban, tone: "bg-muted text-muted-foreground" },
+    { label: "Messages (24h)", value: data?.messages24h, icon: MessageCircle, tone: "bg-secondary text-primary" },
   ];
 
   const shortcuts = [
@@ -50,16 +50,16 @@ function AdminDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background vignette">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-serif text-primary">Tableau de bord</h1>
+            <h1 className="text-3xl font-serif gold-text tracking-wide">Tableau de bord</h1>
             <p className="text-sm text-muted-foreground">Vue d'ensemble de la plateforme Nooryaa.</p>
           </div>
           {data && data.openReports > 0 && (
-            <Link to="/admin/reports" className="inline-flex items-center gap-2 rounded-full bg-red-50 text-red-700 px-4 py-2 text-sm font-medium hover:bg-red-100">
+            <Link to="/admin/reports" className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-4 py-2 text-sm font-medium hover:bg-destructive/20">
               <Flag className="h-4 w-4" /> {data.openReports} signalement{data.openReports > 1 ? "s" : ""} à traiter
             </Link>
           )}
@@ -67,7 +67,7 @@ function AdminDashboard() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {cards.map((c) => (
-            <div key={c.label} className="bg-card rounded-2xl p-5 border border-border/60 shadow-[var(--shadow-card)]">
+            <div key={c.label} className="bg-card rounded-2xl p-5 gold-frame shadow-[var(--shadow-card)]">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${c.tone}`}>
                 <c.icon className="h-5 w-5" />
               </div>
@@ -95,7 +95,7 @@ function AdminDashboard() {
 
         <div className="bg-card rounded-2xl p-5 border border-border/60 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center"><Sparkles className="h-5 w-5" /></div>
+            <div className="h-10 w-10 rounded-xl bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[color:var(--gold)] flex items-center justify-center"><Sparkles className="h-5 w-5" /></div>
             <div>
               <div className="font-medium text-primary">Profils de test</div>
               <p className="text-sm text-muted-foreground max-w-xl">Crée 6 profils de test (3 hommes / 3 femmes) avec photos, bio et infos complètes pour discuter avec vos prospects. Mot de passe : <code className="px-1 rounded bg-muted">TestNooryaa2026!</code>, emails <code className="px-1 rounded bg-muted">*@nooryaa.test</code>.</p>

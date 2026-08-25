@@ -102,7 +102,7 @@ function AdminAds() {
             <div key={a.id} className="bg-card rounded-2xl border border-border/60 overflow-hidden">
               <div className="aspect-[16/6] bg-secondary/30 relative">
                 <img src={a.image_url} alt={a.title ?? ""} className="w-full h-full object-cover" />
-                <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${a.active ? "bg-green-500 text-white" : "bg-gray-400 text-white"}`}>{a.active ? "Active" : "Désactivée"}</span>
+                <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${a.active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{a.active ? "Active" : "Désactivée"}</span>
               </div>
               <div className="p-4 space-y-2">
                 <div className="font-medium text-primary">{a.title || <span className="text-muted-foreground italic">(sans titre)</span>}</div>

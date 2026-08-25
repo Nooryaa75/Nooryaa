@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
+import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
@@ -58,6 +59,7 @@ function MyProfile() {
         bio: form.bio,
         profession: form.profession, education_level: form.education_level,
         activities: form.activities, objective: form.objective,
+        personality: form.personality || null,
         phone: form.phone || null,
         preferences: form.preferences ?? {},
       }).eq("id", ctx.userId);
@@ -186,6 +188,10 @@ function MyProfile() {
           <div className="md:col-span-2">
             <Label>Activités / centres d'intérêt (3 max)</Label>
             <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Type de personnalité</Label>
+            <PersonalityPicker value={form.personality} onChange={(v) => setForm({ ...form, personality: v })} />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Mode de vie</Label>

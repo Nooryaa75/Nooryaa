@@ -97,3 +97,14 @@ export const ACTIVITIES_OPTIONS = [
   "Sciences islamiques", "Bénévolat / caritatif", "Arts / musique halal",
   "Technologie", "Famille / enfants", "Entrepreneuriat", "Langues",
 ] as const;
+
+export const PERSONALITY_OPTIONS = [
+  "Calme et posé·e",
+  "Sociable et extraverti·e",
+  "Réservé·e et discret·ète",
+  "Organisé·e et rigoureux·se",
+  "Spontané·e et aventurier·ère",
+  "Sensible et empathique",
+  "Ambitieux·se et déterminé·e",
+  "Humoristique et joyeux·se",
+] as const;

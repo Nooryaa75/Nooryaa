@@ -176,7 +176,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             <Button
               size="lg"
               variant={currentLiked ? "default" : "outline"}
-              className={`rounded-full h-14 w-14 p-0 transition-colors ${currentLiked ? "bg-[color:var(--gold)] text-primary hover:bg-[color:var(--gold-deep)] hover:text-primary-foreground border border-[color:var(--gold)]" : "bg-background/90 text-muted-foreground border-border hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+              className={`rounded-full h-14 w-14 p-0 transition-colors ${currentLiked ? "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary" : "bg-background/90 text-muted-foreground border-border hover:text-primary hover:border-primary"}`}
               aria-label={currentLiked ? "Déjà aimé" : "J'aime"}
               onClick={() => decide(true)}
             >

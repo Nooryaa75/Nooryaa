@@ -174,7 +174,7 @@ function ProfileView() {
                   <Button
                     onClick={() => toggleLike.mutate()}
                     disabled={toggleLike.isPending}
-                    className={`rounded-full gap-2 ${isLiked ? "bg-[color:var(--gold)] text-primary hover:bg-[color:var(--gold-deep)] hover:text-primary-foreground border border-[color:var(--gold)]" : "text-muted-foreground border-border hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+                    className={`rounded-full gap-2 ${isLiked ? "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary" : "text-muted-foreground border-border hover:text-primary hover:border-primary"}`}
                     variant={isLiked ? "default" : "outline"}
                   >
                     <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />

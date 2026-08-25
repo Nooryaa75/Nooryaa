@@ -100,7 +100,7 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
         <button
           type="button"
           onClick={like}
-          className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-[color:var(--gold)] border-[color:var(--gold)] text-primary" : "bg-background/90 border-border/60 text-muted-foreground hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]"}`}
+          className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-primary border-primary text-primary-foreground" : "bg-background/90 border-border/60 text-muted-foreground hover:text-primary hover:border-primary"}`}
           aria-label={liked ? "Déjà aimé" : "J'aime"}
         >
           <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />

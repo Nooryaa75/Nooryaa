@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check } from "lucide-react";
+import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, Flag } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { moderateMessage } from "@/lib/moderation.functions";
@@ -31,6 +32,8 @@ function Conversation() {
   const [replyTo, setReplyTo] = useState<any | null>(null);
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
   const [peerTyping, setPeerTyping] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -175,6 +178,26 @@ function Conversation() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const reportAbuse = useMutation({
+    mutationFn: async () => {
+      if (!peer) return;
+      const { error } = await supabase.from("reports").insert({
+        reporter: ctx.userId,
+        reported: peer.id,
+        reason: reportReason.trim(),
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Signalement envoyé à la modération");
+      setReportOpen(false);
+      setReportReason("");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+
+
   async function handlePhoto(file: File) {
     if (!peer) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo trop lourde (max 5 Mo)"); return; }
@@ -221,10 +244,14 @@ function Conversation() {
             <Button variant="ghost" size="icon" aria-label="Options de la conversation"><MoreVertical className="h-4 w-4" /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setReportOpen(true)}>
+              <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+            </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDeleteConvo(true)}>
               <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation
             </DropdownMenuItem>
           </DropdownMenuContent>
+
         </DropdownMenu>
       </div>
 
@@ -317,6 +344,33 @@ function Conversation() {
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteConversation.mutate()}>Supprimer</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={reportOpen} onOpenChange={setReportOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Signaler {peer.pseudo}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Textarea
+            value={reportReason}
+            onChange={(e) => setReportReason(e.target.value)}
+            placeholder="Propos déplacés, harcèlement, arnaque…"
+            maxLength={500}
+            rows={4}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={reportReason.trim().length < 10 || reportAbuse.isPending}
+              onClick={(e) => { e.preventDefault(); reportAbuse.mutate(); }}
+            >
+              Envoyer le signalement
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -153,7 +153,8 @@ export function useDiscovery(userId: string, filters: Filters) {
   const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
 
   const decks = useMemo(() => {
-    const rows: any[] = profiles ?? [];
+    const likedIds = new Set((sentLikes ?? []).map((r) => r.to_user));
+    const rows: any[] = (profiles ?? []).filter((p) => !likedIds.has(p.id));
     const withPercent = (p: any) => ({
       ...p,
       _matchPercent: matchPercent(me, p) ?? 0,
@@ -176,7 +177,7 @@ export function useDiscovery(userId: string, filters: Filters) {
         .filter((p) => new Date(p.created_at ?? 0).getTime() >= sevenDaysAgo)
         .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()),
     } as Record<DeckKey, any[]>;
-  }, [profiles, me, originLat, originLng]);
+  }, [profiles, me, originLat, originLng, sentLikes]);
 
   return { me, profiles, isLoading, decks, deckList, originLat, originLng };
 }

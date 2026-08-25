@@ -62,6 +62,16 @@ function compatibilityCriteria(me: any, profile: any): Criterion[] {
     });
   }
 
+  const height = Number(profile.height_cm);
+  const minHeight = Number(prefs.height_min);
+  const maxHeight = Number(prefs.height_max);
+  if (Number.isFinite(height) && height > 0 && (Number.isFinite(minHeight) || Number.isFinite(maxHeight))) {
+    criteria.push({
+      weight: 1,
+      matches: (!Number.isFinite(minHeight) || height >= minHeight) && (!Number.isFinite(maxHeight) || height <= maxHeight),
+    });
+  }
+
   const age = ageFromBirthdate(profile.birthdate ?? null);
   const minAge = Number(prefs.age_min);
   const maxAge = Number(prefs.age_max);

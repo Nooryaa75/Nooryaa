@@ -46,6 +46,7 @@ function MyProfile() {
       }
       const { error } = await supabase.from("profiles").update({
         birthdate: form.birthdate || null,
+        height_cm: form.height_cm ? Number(form.height_cm) : null,
         city: form.city, country: form.country, country_origin: form.country_origin,
         latitude: form.latitude ?? null, longitude: form.longitude ?? null,
         marital_status: form.marital_status,
@@ -109,6 +110,10 @@ function MyProfile() {
             {form.birthdate && (
               <p className="text-xs text-muted-foreground mt-1">{ageFromBirthdate(form.birthdate)} ans</p>
             )}
+          </div>
+          <div>
+            <Label>Taille (cm)</Label>
+            <Input type="number" min={120} max={230} value={form.height_cm ?? ""} onChange={(e) => setForm({ ...form, height_cm: e.target.value ? Number(e.target.value) : null })} placeholder="Ex. 175" />
           </div>
           <div>
             <Label>Profession</Label>

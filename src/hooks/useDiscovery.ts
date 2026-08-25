@@ -8,7 +8,7 @@ import { matchPercent } from "@/lib/match";
 export const ANY = "any";
 
 export type Filters = {
-  ageMin: number; ageMax: number; city: string; country: string; countryOrigin: string;
+  ageMin: number; ageMax: number; heightMin: number | null; heightMax: number | null; city: string; country: string; countryOrigin: string;
   profession: string; marital: string; education: string; objective: string;
   activity: string; activities: string; personality: string;
   salat: string; ramadan: string; hadj: string; omra: string; voile: string;
@@ -18,7 +18,7 @@ export type Filters = {
 };
 
 export const DEFAULT_FILTERS: Filters = {
-  ageMin: 18, ageMax: 60, city: "", country: ANY, countryOrigin: ANY,
+  ageMin: 18, ageMax: 60, heightMin: null, heightMax: null, city: "", country: ANY, countryOrigin: ANY,
   profession: ANY, marital: ANY, education: ANY, objective: ANY,
   activity: ANY, activities: "", personality: ANY,
   salat: ANY, ramadan: ANY, hadj: ANY, omra: ANY, voile: ANY,
@@ -95,6 +95,8 @@ export function useDiscovery(userId: string, filters: Filters) {
       if (me?.gender === "homme") q = q.eq("gender", "femme");
       else if (me?.gender === "femme") q = q.eq("gender", "homme");
       q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);
+      if (filters.heightMin) q = q.gte("height_cm", filters.heightMin);
+      if (filters.heightMax) q = q.lte("height_cm", filters.heightMax);
       if (filters.city) q = q.ilike("city", `%${filters.city}%`);
       if (filters.country !== ANY) q = q.eq("country", filters.country);
       if (filters.countryOrigin !== ANY) q = q.eq("country_origin", filters.countryOrigin);

@@ -107,6 +107,18 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             style={{ transform: `translateX(${drag}px) rotate(${drag / 25}deg)`, transition: startX.current == null ? "transform .2s" : "none" }}
             className="relative bg-card rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] touch-none cursor-grab active:cursor-grabbing"
           >
+            {showHint && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 pointer-events-none animate-in fade-in duration-500">
+                <div className="relative flex items-center gap-8">
+                  <ChevronLeft className="h-10 w-10 text-destructive/80 animate-pulse" />
+                  <div className="flex flex-col items-center">
+                    <Hand className="h-10 w-10 text-primary drop-shadow-md" />
+                    <span className="mt-2 text-xs font-semibold text-primary bg-background/80 px-2 py-1 rounded-full">Glissez pour choisir</span>
+                  </div>
+                  <ChevronRight className="h-10 w-10 text-emerald-500/80 animate-pulse" />
+                </div>
+              </div>
+            )}
             <div className="aspect-[3/4] bg-secondary relative">
               {current.primary_photo_url ? (
                 <img

@@ -23,6 +23,8 @@ import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
   head: () => ({
@@ -81,7 +83,7 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
           <img
             src={profile.primary_photo_url}
             alt={profile.pseudo}
-            className={`w-full h-full object-cover ${profile.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+            className={`w-full h-full object-cover ${blurred ? "blur-md scale-110" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

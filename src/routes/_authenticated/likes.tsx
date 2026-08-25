@@ -5,6 +5,7 @@ import { Heart, User } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
 import { useMarkLikesSeen } from "@/hooks/useUnreadCounts";
 import { matchPercent, useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/likes")({
   head: () => ({ meta: [{ title: "Coups de cœur — Nooryaa" }] }),
@@ -15,6 +16,7 @@ function Likes() {
   const ctx = Route.useRouteContext();
   useMarkLikesSeen();
   const { data: me } = useMyProfile(ctx.userId);
+  const { data: graph } = useLikeGraph(ctx.userId);
 
   const { data: received } = useQuery({
     queryKey: ["likes-received", ctx.userId],
@@ -33,13 +35,13 @@ function Likes() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <Section title="Personnes qui vous ont liké·e" items={received} me={me} />
-      <Section title="Vos likes envoyés" items={sent} me={me} />
+      <Section title="Personnes qui vous ont liké·e" items={received} me={me} graph={graph} />
+      <Section title="Vos likes envoyés" items={sent} me={me} graph={graph} />
     </div>
   );
 }
 
-function Section({ title, items, me }: { title: string; items: any[] | undefined; me: any }) {
+function Section({ title, items, me, graph }: { title: string; items: any[] | undefined; me: any; graph: any }) {
   return (
     <div>
       <h2 className="text-xl font-serif text-primary mb-4 flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
@@ -54,7 +56,7 @@ function Section({ title, items, me }: { title: string; items: any[] | undefined
             return (
               <Link key={i} to="/profile/$pseudo" params={{ pseudo: p.pseudo }} className="bg-card rounded-xl overflow-hidden border border-border/60">
                 <div className="aspect-square bg-secondary relative">
-                  {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className={`w-full h-full object-cover ${(p as any).primary_photo_blurred ? "blur-md scale-110" : ""}`} /> : <div className="w-full h-full flex items-center justify-center"><User className="h-10 w-10 text-muted-foreground/40" /></div>}
+                  {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className={`w-full h-full object-cover ${isBlurred(p, me, graph) ? "blur-md scale-110" : ""}`} /> : <div className="w-full h-full flex items-center justify-center"><User className="h-10 w-10 text-muted-foreground/40" /></div>}
                   {typeof pct === "number" && (
                     <div className="absolute top-2 right-2 flex flex-col items-center">
                       <span className="text-[9px] uppercase tracking-wider text-primary-foreground font-semibold drop-shadow-sm">Compatibilité</span>

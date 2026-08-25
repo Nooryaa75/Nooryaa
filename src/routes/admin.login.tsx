@@ -5,7 +5,6 @@ import { adminLogin, adminCheckAuth } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
 import { toast } from "sonner";
 

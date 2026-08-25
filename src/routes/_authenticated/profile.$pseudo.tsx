@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS, PERSONALITY_OPTIONS } from "@/lib/profile";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
-  BookOpen, Moon, Plane, PlaneTakeoff, Baby, Cigarette, Users, Search, Phone,
-  ChevronRight, ShieldCheck, Target
+  BookOpen, Users, Search, Phone, ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";

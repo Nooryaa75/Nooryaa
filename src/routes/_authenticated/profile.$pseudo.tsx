@@ -140,7 +140,7 @@ function ProfileView() {
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
             <div>
               <div className="flex items-center justify-between gap-3">

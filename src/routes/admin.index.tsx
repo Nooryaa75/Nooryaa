@@ -50,7 +50,7 @@ function AdminDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background vignette">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
         <div className="flex flex-wrap items-end justify-between gap-3">

@@ -41,7 +41,7 @@ function AdminProfileDetail() {
   });
 
   if (!data?.profile) return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl">Chargement...</main>
     </div>
@@ -50,7 +50,7 @@ function AdminProfileDetail() {
   const p = data.profile;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
         <Link to="/admin/profiles" className="text-sm text-muted-foreground flex items-center gap-1"><ArrowLeft className="h-4 w-4" /> Retour</Link>

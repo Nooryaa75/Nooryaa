@@ -25,7 +25,7 @@ function AdminModeration() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">

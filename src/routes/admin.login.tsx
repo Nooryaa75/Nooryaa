@@ -39,7 +39,7 @@ function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background vignette px-4">
+    <div className="min-h-screen flex items-center justify-center mosaic px-4">
       <form onSubmit={submit} className="w-full max-w-sm bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 gold-frame space-y-4">
         <div className="flex flex-col items-center gap-2">
           <img src={logoAsset.url} alt="Logo Nooryaa" className="h-14 w-14 rounded-full object-cover gold-glow" />

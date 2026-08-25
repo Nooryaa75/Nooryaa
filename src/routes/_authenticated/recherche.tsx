@@ -58,6 +58,9 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
 function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId: string; liked: boolean; onLiked: (profileId: string) => void }) {
   const age = ageFromBirthdate(profile.birthdate);
   const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
+  const { data: me } = useMyProfile(userId);
+  const { data: graph } = useLikeGraph(userId);
+  const blurred = isBlurred(profile, me, graph);
 
   async function like(e: React.MouseEvent) {
     e.preventDefault();

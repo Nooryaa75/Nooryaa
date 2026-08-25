@@ -18,7 +18,8 @@ export type Filters = {
 
 export const DEFAULT_FILTERS: Filters = {
   ageMin: 18, ageMax: 60, city: "", country: ANY, countryOrigin: ANY,
-  profession: ANY, marital: ANY, education: ANY, objective: ANY, activity: ANY,
+  profession: ANY, marital: ANY, education: ANY, objective: ANY,
+  activity: ANY, activities: "", personality: ANY,
   salat: ANY, ramadan: ANY, hadj: ANY, omra: ANY, voile: ANY,
   hasChildren: ANY, wantsChildren: ANY, smoker: ANY,
   radiusEnabled: false, radiusKm: 50,

@@ -236,6 +236,14 @@ function Recherche() {
                 <Input type="number" min={18} max={99} value={filters.ageMax} onChange={(e) => set({ ageMax: Number(e.target.value) })} />
               </div>
               <div>
+                <Label className="text-xs">Taille min (cm)</Label>
+                <Input type="number" min={120} max={230} value={filters.heightMin ?? ""} onChange={(e) => set({ heightMin: e.target.value ? Number(e.target.value) : null })} placeholder="Indifférent" />
+              </div>
+              <div>
+                <Label className="text-xs">Taille max (cm)</Label>
+                <Input type="number" min={120} max={230} value={filters.heightMax ?? ""} onChange={(e) => set({ heightMax: e.target.value ? Number(e.target.value) : null })} placeholder="Indifférent" />
+              </div>
+              <div>
                 <Label className="text-xs">Ville / région</Label>
                 <CityAutocomplete value={filters.city} onChange={(v) => set({ city: v })} suggestions={CITIES} placeholder="Commencez à taper une ville..." />
               </div>

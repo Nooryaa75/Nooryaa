@@ -19,12 +19,14 @@ type Props = {
 /** Pile de profils façon Tinder : glisser à droite pour aimer, à gauche pour passer. */
 export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
   const queryClient = useQueryClient();
-  const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const [isDeciding, setIsDeciding] = useState(false);
   const [showHint, setShowHint] = useState(true);
   const startX = useRef<number | null>(null);
-  const current = profiles[index];
+  const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
+  const current = profiles.find((profile) => !dismissedSet.has(profile.id));
 
   useEffect(() => {
     if (!showHint) return;
@@ -54,24 +56,44 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
 
 
   async function decide(like: boolean) {
-    if (!current) return;
-    if (like) {
-      setLocalLikedIds((ids) => ids.includes(current.id) ? ids : [...ids, current.id]);
-      const { error } = currentLiked
-        ? { error: null }
-        : await supabase.from("likes").insert({ from_user: userId, to_user: current.id });
-      if (error && !error.message.includes("duplicate")) toast.error(error.message);
-      else toast.success(`Vous avez aimé ${current.pseudo}`);
-    } else {
-      // Profil écarté : on le mémorise pour ne plus le proposer dans les sélections.
-      const { error } = await supabase
-        .from("profile_passes")
-        .insert({ user_id: userId, target_id: current.id });
-      if (error && !error.message.includes("duplicate")) toast.error(error.message);
-      queryClient.invalidateQueries({ queryKey: ["passes", userId] });
+    if (!current || isDeciding) return;
+    const decidedProfile = current;
+    setIsDeciding(true);
+
+    // Toute décision est conservée dans profile_passes afin qu'un profil ne soit
+    // proposé qu'une seule fois. Un « oui » crée également le like correspondant.
+    const [swipeResult, likeResult] = await Promise.all([
+      supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id }),
+      like && !currentLiked
+        ? supabase.from("likes").insert({ from_user: userId, to_user: decidedProfile.id })
+        : Promise.resolve({ error: null }),
+    ]);
+
+    const swipeError = swipeResult.error;
+    const likeError = likeResult.error;
+    const swipeSaved = !swipeError || swipeError.message.includes("duplicate");
+    const likeSaved = !likeError || likeError.message.includes("duplicate");
+
+    if (!swipeSaved || (like && !likeSaved)) {
+      toast.error(swipeError?.message ?? likeError?.message ?? "Impossible d'enregistrer ce choix.");
+      setIsDeciding(false);
+      return;
     }
+
+    if (like) {
+      setLocalLikedIds((ids) => ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]);
+      toast.success(`Vous avez aimé ${decidedProfile.pseudo}`);
+    }
+    setDismissedIds((ids) => ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]);
     setDrag(0);
-    setIndex((i) => i + 1);
+    setIsDeciding(false);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["passes", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["sent-likes", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["likes-sent", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] }),
+    ]);
   }
 
   function onPointerDown(e: React.PointerEvent) {
@@ -173,7 +195,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
           </div>
 
           <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
-            <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" onClick={() => decide(false)}>
+            <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" disabled={isDeciding} onClick={() => decide(false)}>
               <X className="h-6 w-6" />
             </Button>
             <Link
@@ -206,6 +228,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
               variant={currentLiked ? "default" : "outline"}
               className={`rounded-full h-14 w-14 p-0 transition-colors ${currentLiked ? "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary" : "bg-background/90 text-muted-foreground border-border hover:text-primary hover:border-primary"}`}
               aria-label={currentLiked ? "Déjà aimé" : "J'aime"}
+                disabled={isDeciding}
               onClick={() => decide(true)}
             >
               <Heart className={`h-6 w-6 ${currentLiked ? "fill-current" : ""}`} />
@@ -215,7 +238,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
               <ChevronLeft className="h-3.5 w-3.5 text-destructive" /> Passer
             </span>
-            <span className="font-medium">{index + 1} / {profiles.length}</span>
+            <span className="font-medium">{Math.min(dismissedIds.length + 1, profiles.length)} / {profiles.length}</span>
             <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
               Aimer <ChevronRight className="h-3.5 w-3.5 text-primary" />
             </span>

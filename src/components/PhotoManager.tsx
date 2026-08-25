@@ -24,8 +24,19 @@ const MAX_PHOTOS = 3;
 export function PhotoManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const captureRef = useRef<HTMLInputElement>(null);
   const [checking, setChecking] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const checkPhoto = useServerFn(moderatePhoto);
+
+  // Web app : getUserMedia. Apps natives / navigateurs mobiles sans getUserMedia :
+  // repli sur <input capture> qui ouvre l'appareil photo du téléphone.
+  function openCamera() {
+    const hasMedia = typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia && window.isSecureContext;
+    if (hasMedia) setCameraOpen(true);
+    else captureRef.current?.click();
+  }
+
 
   const { data: profile } = useQuery({
     queryKey: ["me", userId],

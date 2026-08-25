@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate, notFound } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter, notFound } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
-  BookOpen, Users, Search, Phone, ShieldCheck
+  BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -27,6 +27,7 @@ function ProfileView() {
   const { pseudo } = Route.useParams();
   const ctx = Route.useRouteContext();
   const navigate = useNavigate();
+  const router = useRouter();
   const qc = useQueryClient();
   const [reportOpen, setReportOpen] = useState(false);
   const [reportCategory, setReportCategory] = useState(REPORT_REASONS[0]);
@@ -126,6 +127,14 @@ function ProfileView() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.history.back()}
+        className="gap-2 text-muted-foreground hover:text-primary -ml-2"
+      >
+        <ArrowLeft className="h-4 w-4" /> Retour
+      </Button>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">

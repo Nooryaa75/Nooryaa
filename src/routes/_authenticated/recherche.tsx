@@ -471,6 +471,7 @@ function Recherche() {
                       setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
                       qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
                       qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
+                      qc.invalidateQueries({ queryKey: ["unread-counts"] });
                     }}
                   />
                 ))}

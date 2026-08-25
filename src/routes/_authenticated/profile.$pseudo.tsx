@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -31,6 +32,7 @@ function ProfileView() {
   const [reportCategory, setReportCategory] = useState(REPORT_REASONS[0]);
   const [reportDetail, setReportDetail] = useState("");
   const { data: me } = useMyProfile(ctx.userId);
+  const { data: likeGraph } = useLikeGraph(ctx.userId);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", pseudo],
@@ -118,6 +120,8 @@ function ProfileView() {
   const isMe = profile.id === ctx.userId;
   const blocked = blockState?.iBlocked || blockState?.blocksMe;
   const isLiked = !!liked;
+  const photosHidden = isBlurred(profile, me, likeGraph);
+  const messagingAllowed = canMessage(me, profile, likeGraph);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
@@ -125,7 +129,7 @@ function ProfileView() {
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
             {photos && photos[0] ? (
-              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred ? "blur-md scale-110" : ""}`} />
+              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred && photosHidden ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
             )}
@@ -134,7 +138,7 @@ function ProfileView() {
             <div className="grid grid-cols-5 gap-2">
               {photos.slice(1).map((p) => (
                 <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred ? "blur-md scale-110" : ""}`} />
+                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred && photosHidden ? "blur-md scale-110" : ""}`} />
                 </div>
               ))}
             </div>
@@ -175,9 +179,21 @@ function ProfileView() {
                     <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
                     {isLiked ? "Coup de cœur ✓" : "Coup de cœur"}
                   </Button>
-                  <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
-                    <MessageCircle className="h-4 w-4" /> Envoyer un message
-                  </Button>
+                  {messagingAllowed ? (
+                    <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
+                      <MessageCircle className="h-4 w-4" /> Envoyer un message
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-full gap-2 opacity-60"
+                      title={MESSAGE_BLOCKED_HINT}
+                      onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+                    >
+                      <MessageCircle className="h-4 w-4" /> Message verrouillé
+                    </Button>
+                  )}
                   <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" size="sm" className="gap-2 text-muted-foreground">
                     <Ban className="h-4 w-4" /> Bloquer
                   </Button>

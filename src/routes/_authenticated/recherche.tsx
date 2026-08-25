@@ -110,7 +110,7 @@ function ProfileCard({ profile, userId, liked, onToggleLike }: { profile: any; u
           type="button"
           onClick={like}
           className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-primary border-primary text-primary-foreground" : "bg-background/90 border-border/60 text-muted-foreground hover:text-primary hover:border-primary"}`}
-          aria-label={liked ? "Déjà aimé" : "J'aime"}
+          aria-label={liked ? "Retirer mon like" : "J'aime"}
         >
           <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
         </button>

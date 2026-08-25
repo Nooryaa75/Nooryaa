@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
-import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -120,7 +120,7 @@ function ProfileView() {
   const isMe = profile.id === ctx.userId;
   const blocked = blockState?.iBlocked || blockState?.blocksMe;
   const isLiked = !!liked;
-  const photosHidden = isBlurred(profile, me, likeGraph);
+  const photosRevealed = isRevealed(profile, me, likeGraph);
   const messagingAllowed = canMessage(me, profile, likeGraph);
 
   return (
@@ -129,7 +129,7 @@ function ProfileView() {
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
             {photos && photos[0] ? (
-              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred && photosHidden ? "blur-md scale-110" : ""}`} />
+              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
             )}
@@ -138,7 +138,7 @@ function ProfileView() {
             <div className="grid grid-cols-5 gap-2">
               {photos.slice(1).map((p) => (
                 <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred && photosHidden ? "blur-md scale-110" : ""}`} />
+                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
                 </div>
               ))}
             </div>

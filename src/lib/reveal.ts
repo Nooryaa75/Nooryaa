@@ -25,16 +25,25 @@ export type LikeGraph = { iLiked: Set<string>; likedMe: Set<string> } | undefine
  * et que je suis moi-même « ouvert·e » : soit je l'ai liké·e en retour,
  * soit ma propre photo n'est pas floutée.
  */
+/** Le flou d'un profil est levé pour moi ? (réciprocité des coups de cœur) */
+export function isRevealed(
+  target: { id?: string | null } | null | undefined,
+  me: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
+  graph: LikeGraph,
+): boolean {
+  if (!target?.id || !me?.id) return false;
+  if (target.id === me.id) return false;
+  if (!graph?.likedMe.has(target.id)) return false;
+  return graph.iLiked.has(target.id) || !me.primary_photo_blurred;
+}
+
 export function isBlurred(
   target: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
   me: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
   graph: LikeGraph,
 ): boolean {
   if (!target?.primary_photo_blurred) return false;
-  if (!target.id || !me?.id) return true;
-  if (target.id === me.id) return true;
-  if (!graph?.likedMe.has(target.id)) return true;
-  return !(graph.iLiked.has(target.id) || !me.primary_photo_blurred);
+  return !isRevealed(target, me, graph);
 }
 
 /** Un homme ne peut écrire à une femme que si elle lui a envoyé un coup de cœur. */

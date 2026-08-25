@@ -281,7 +281,7 @@ function Onboarding() {
         </div>
         <div>
           <Label>Type de personnalité</Label>
-          <PersonalityPicker value={form.personality} onChange={(v) => setForm({ ...form, personality: v })} />
+          <PersonalityPicker value={form.personality} onChange={(v) => setForm({ ...form, personality: v ?? "" })} />
         </div>
         <div className="space-y-2">
           <Label>Mode de vie *</Label>

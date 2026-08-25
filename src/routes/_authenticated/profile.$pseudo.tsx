@@ -216,7 +216,7 @@ function ProfileView() {
                   <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-[color:var(--gold)]" /> À propos</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap pb-2">{profile.bio}</p>
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] pb-2">{profile.bio}</p>
                 </AccordionContent>
               </AccordionItem>
             )}

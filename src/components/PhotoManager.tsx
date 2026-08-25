@@ -3,8 +3,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck } from "lucide-react";
+import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
+import { CameraCapture } from "@/components/CameraCapture";
+
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);

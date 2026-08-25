@@ -178,6 +178,26 @@ function Conversation() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const reportAbuse = useMutation({
+    mutationFn: async () => {
+      if (!peer) return;
+      const { error } = await supabase.from("reports").insert({
+        reporter: ctx.userId,
+        reported: peer.id,
+        reason: reportReason.trim(),
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Signalement envoyé à la modération");
+      setReportOpen(false);
+      setReportReason("");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+
+
   async function handlePhoto(file: File) {
     if (!peer) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo trop lourde (max 5 Mo)"); return; }

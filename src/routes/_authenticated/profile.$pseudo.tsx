@@ -144,7 +144,7 @@ function ProfileView() {
           <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
             <div>
               <div className="flex items-center justify-between gap-3">
-                <h1 className="text-3xl font-serif text-primary">{profile.pseudo}</h1>
+                <h1 className="text-3xl font-serif text-primary break-words min-w-0 flex-1">{profile.pseudo}</h1>
                 {!isMe && typeof matchPercent(me, profile) === "number" && (
                   <div className="flex flex-col items-center shrink-0">
                     <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>

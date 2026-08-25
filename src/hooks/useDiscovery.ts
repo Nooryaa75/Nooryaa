@@ -193,6 +193,7 @@ export function useDiscovery(userId: string, filters: Filters) {
       if (iAmMan && typeof prefs.voile === "boolean" && p.porte_voile === prefs.voile) s += 2;
       if (typeof prefs.salat === "boolean" && p.salat_quotidienne === prefs.salat) s += 1;
       if (typeof prefs.ramadan === "boolean" && p.ramadan === prefs.ramadan) s += 1;
+      if (prefs.personality && p.personality === prefs.personality) s += 1;
       if (me?.city && p.city === me.city) s += 1;
       if (me?.objective && p.objective === me.objective) s += 1;
       return s;
@@ -210,6 +211,7 @@ export function useDiscovery(userId: string, filters: Filters) {
         (iAmMan && typeof prefs.voile === "boolean" ? 2 : 0) +
         (typeof prefs.salat === "boolean" ? 1 : 0) +
         (typeof prefs.ramadan === "boolean" ? 1 : 0) +
+        (prefs.personality ? 1 : 0) +
         (me?.city ? 1 : 0) +
         (me?.objective ? 1 : 0)
     );

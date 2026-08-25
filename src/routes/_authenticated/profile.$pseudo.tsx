@@ -293,53 +293,45 @@ function ProfileView() {
               </AccordionItem>
             )}
           </Accordion>
-
-          {!isMe && !blocked && (
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button onClick={() => toggleLike.mutate()} disabled={toggleLike.isPending} className="rounded-full gap-2" variant={liked ? "outline" : "default"}>
-                <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-                {liked ? "Coup de cœur ✓" : "Coup de cœur"}
-              </Button>
-              <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
-                <MessageCircle className="h-4 w-4" /> Envoyer un message
-              </Button>
-              <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                <Ban className="h-4 w-4" /> Bloquer
-              </Button>
-              <Dialog open={reportOpen} onOpenChange={setReportOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2 ml-auto text-muted-foreground"><Flag className="h-4 w-4" /> Signaler</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>Signaler ce profil</DialogTitle></DialogHeader>
-                  <div className="space-y-3">
-                    <Select value={reportCategory} onValueChange={setReportCategory}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {REPORT_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <Textarea value={reportDetail} onChange={(e) => setReportDetail(e.target.value)} placeholder="Précisez (facultatif)..." maxLength={400} />
-                  </div>
-                  <DialogFooter>
-                    <Button onClick={submitReport}>Envoyer le signalement</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-          )}
-
-          {!isMe && blockState?.iBlocked && (
-            <div className="border border-border rounded-lg p-3 text-sm flex items-center justify-between">
-              <span className="text-muted-foreground">Vous avez bloqué ce profil.</span>
-              <Button onClick={() => toggleBlock.mutate()} variant="outline" size="sm">Débloquer</Button>
-            </div>
-          )}
-          {!isMe && blockState?.blocksMe && !blockState?.iBlocked && (
-            <p className="text-xs text-muted-foreground italic">Ce profil n'est plus disponible.</p>
-          )}
         </div>
       </div>
     </div>
+  );
+}
+
+function Info({ label, value }: { label: string; value?: string | null }) {
+  if (value === null || value === undefined || value === "") return null;
+  return (
+    <div className="bg-secondary/60 rounded-lg p-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-primary font-medium">{value}</div>
+    </div>
+  );
+}
+
+function boolLabel(v: boolean | null | undefined, yes = "Oui", no = "Non"): string | undefined {
+  if (v === null || v === undefined) return undefined;
+  return v ? yes : no;
+}
+
+function PreferenceInfo({ profile }: { profile: any }) {
+  const prefs = profile.preferences;
+  if (!prefs || typeof prefs !== "object") return null;
+  const items: { label: string; value?: string | null }[] = [];
+  if (prefs.religious_practice?.length) items.push({ label: "Pratique recherchée", value: prefs.religious_practice.map((x: string) => PRACTICE_LABELS[x] || x).join(", ") });
+  if (prefs.marital_status?.length) items.push({ label: "Situation recherchée", value: prefs.marital_status.map((x: string) => MARITAL_LABELS[x] || x).join(", ") });
+  if (prefs.personality) items.push({ label: "Personnalité recherchée", value: prefs.personality });
+  if (prefs.smoker !== undefined && prefs.smoker !== null) items.push({ label: "Accepte fumeur", value: boolLabel(prefs.smoker) });
+  if (prefs.has_children !== undefined && prefs.has_children !== null) items.push({ label: "Accepte enfants", value: boolLabel(prefs.has_children) });
+  if (prefs.wants_children !== undefined && prefs.wants_children !== null) items.push({ label: "Souhaite enfants", value: boolLabel(prefs.wants_children) });
+  if (prefs.min_age || prefs.max_age) items.push({ label: "Tranche d'âge", value: `${prefs.min_age ?? "—"} - ${prefs.max_age ?? "—"} ans` });
+  if (prefs.max_distance) items.push({ label: "Distance max", value: `${prefs.max_distance} km` });
+  if (!items.length) return null;
+  return (
+    <>
+      {items.map((it, i) => (
+        <Info key={i} label={it.label} value={it.value} />
+      ))}
+    </>
   );
 }

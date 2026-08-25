@@ -167,7 +167,10 @@ function Recherche() {
     },
   });
 
-  const likedIds = new Set([...(sentLikes ?? []).map((row) => row.to_user), ...optimisticLikedIds]);
+  const likedIds = new Set(
+    (sentLikes ?? []).map((row) => row.to_user).filter((id) => optimisticLikes[id] !== false),
+  );
+  for (const [id, v] of Object.entries(optimisticLikes)) if (v) likedIds.add(id);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],

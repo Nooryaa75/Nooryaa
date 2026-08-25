@@ -127,6 +127,14 @@ function ProfileView() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.history.back()}
+        className="gap-2 text-muted-foreground hover:text-primary -ml-2"
+      >
+        <ArrowLeft className="h-4 w-4" /> Retour
+      </Button>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">

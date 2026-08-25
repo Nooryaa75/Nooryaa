@@ -56,9 +56,12 @@ function Section({ title, items, me }: { title: string; items: any[] | undefined
                 <div className="aspect-square bg-secondary relative">
                   {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className={`w-full h-full object-cover ${(p as any).primary_photo_blurred ? "blur-md scale-110" : ""}`} /> : <div className="w-full h-full flex items-center justify-center"><User className="h-10 w-10 text-muted-foreground/40" /></div>}
                   {typeof pct === "number" && (
-                    <span className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-[10px] h-9 w-9 shadow-md border-2 border-background">
-                      {pct}%
-                    </span>
+                    <div className="absolute top-2 right-2 flex flex-col items-center">
+                      <span className="text-[9px] uppercase tracking-wider text-primary-foreground font-semibold drop-shadow-sm">Compatibilité</span>
+                      <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-[10px] h-9 w-9 shadow-md border-2 border-background">
+                        {pct}%
+                      </span>
+                    </div>
                   )}
                 </div>
                 <div className="p-2"><div className="font-serif text-primary text-sm truncate">{p.pseudo}</div><div className="text-xs text-muted-foreground">{ageFromBirthdate(p.birthdate)} ans</div></div>

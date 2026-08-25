@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, X, MapPin, User, ArrowLeft, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 
 type Props = {
   title: string;
@@ -36,6 +38,12 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
     [sentLikes, localLikedIds],
   );
   const currentLiked = current ? likedIds.has(current.id) : false;
+
+  const { data: me } = useMyProfile(userId);
+  const { data: graph } = useLikeGraph(userId);
+  const currentBlurred = isBlurred(current, me, graph);
+  const currentCanMessage = canMessage(me, current, graph);
+
 
   async function decide(like: boolean) {
     if (!current) return;
@@ -97,7 +105,7 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
                   src={current.primary_photo_url}
                   alt={current.pseudo}
                   draggable={false}
-                  className={`w-full h-full object-cover ${current.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+                  className={`w-full h-full object-cover ${currentBlurred ? "blur-md scale-110" : ""}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>
@@ -147,14 +155,24 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
             >
               Voir la fiche
             </Link>
-            <Link
-              to="/messages/$pseudo"
-              params={{ pseudo: current.pseudo }}
-            >
-              <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
+            {currentCanMessage ? (
+              <Link to="/messages/$pseudo" params={{ pseudo: current.pseudo }}>
+                <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
+                  <MessageCircle className="h-6 w-6" />
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full h-14 w-14 p-0 opacity-50"
+                aria-label={MESSAGE_BLOCKED_HINT}
+                title={MESSAGE_BLOCKED_HINT}
+                onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+              >
                 <MessageCircle className="h-6 w-6" />
               </Button>
-            </Link>
+            )}
             <Button
               size="lg"
               variant={currentLiked ? "default" : "outline"}

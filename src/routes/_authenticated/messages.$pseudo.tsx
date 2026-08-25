@@ -11,6 +11,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { moderateMessage } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -42,8 +44,12 @@ function Conversation() {
 
   const { data: peer } = useQuery({
     queryKey: ["peer", pseudo],
-    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url").eq("pseudo", pseudo).single()).data,
+    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url, gender").eq("pseudo", pseudo).single()).data,
   });
+
+  const { data: me } = useMyProfile(ctx.userId);
+  const { data: likeGraph } = useLikeGraph(ctx.userId);
+  const messagingAllowed = canMessage(me, peer, likeGraph);
 
   const { data: messages } = useQuery({
     queryKey: ["messages", ctx.userId, peer?.id],
@@ -327,6 +333,11 @@ function Conversation() {
         </div>
       )}
 
+      {!messagingAllowed ? (
+        <div className="p-4 border-t border-border/60 text-center text-sm text-muted-foreground">
+          {MESSAGE_BLOCKED_HINT}
+        </div>
+      ) : (
       <form onSubmit={(e) => { e.preventDefault(); send.mutate(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         <Button type="button" size="icon" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
@@ -343,6 +354,7 @@ function Conversation() {
           {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
         </Button>
       </form>
+      )}
 
       <AlertDialog open={confirmDeleteConvo} onOpenChange={setConfirmDeleteConvo}>
         <AlertDialogContent>

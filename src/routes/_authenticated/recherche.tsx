@@ -23,6 +23,8 @@ import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
   head: () => ({
@@ -58,6 +60,9 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
 function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId: string; liked: boolean; onLiked: (profileId: string) => void }) {
   const age = ageFromBirthdate(profile.birthdate);
   const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
+  const { data: me } = useMyProfile(userId);
+  const { data: graph } = useLikeGraph(userId);
+  const blurred = isBlurred(profile, me, graph);
 
   async function like(e: React.MouseEvent) {
     e.preventDefault();
@@ -78,7 +83,7 @@ function ProfileCard({ profile, userId, liked, onLiked }: { profile: any; userId
           <img
             src={profile.primary_photo_url}
             alt={profile.pseudo}
-            className={`w-full h-full object-cover ${profile.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+            className={`w-full h-full object-cover ${blurred ? "blur-md scale-110" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

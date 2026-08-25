@@ -233,3 +233,26 @@
   border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
   box-shadow: 0 0 0 4px color-mix(in oklab, var(--gold) 10%, transparent);
 }
+
+/* Mosaïque orientale : cercles entrelacés dorés sur fond crème */
+@utility mosaic {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px);
+  background-size: 64px 64px;
+}
+
+@utility mosaic-soft {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px);
+  background-size: 64px 64px;
+}

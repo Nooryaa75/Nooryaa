@@ -39,7 +39,7 @@ function AdminConversationView() {
   const pB = data?.participants.find((p: any) => p.id === b);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-4xl space-y-4">
         <Link to="/admin/conversations" className="text-sm text-muted-foreground inline-flex items-center gap-1"><ArrowLeft className="h-4 w-4" /> Retour aux discussions</Link>

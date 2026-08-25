@@ -46,7 +46,7 @@ function AdminAds() {
   const toggleActive = (a: AdRow) => upsertMut.mutate({ id: a.id, title: a.title ?? "", image_url: a.image_url, link_url: a.link_url ?? "", active: !a.active, sort_order: a.sort_order });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-3">

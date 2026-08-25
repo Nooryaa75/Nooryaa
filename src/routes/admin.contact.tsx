@@ -36,7 +36,7 @@ function AdminContact() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-4xl space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">

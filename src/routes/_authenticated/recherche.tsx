@@ -459,7 +459,11 @@ function Recherche() {
                     profile={p}
                     userId={ctx.userId}
                     liked={likedIds.has(p.id)}
-                    onLiked={(profileId) => setOptimisticLikedIds((ids) => ids.includes(profileId) ? ids : [...ids, profileId])}
+                    onToggleLike={(profileId, nextLiked) => {
+                      setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
+                      qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
+                      qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
+                    }}
                   />
                 ))}
               </div>

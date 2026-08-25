@@ -95,7 +95,7 @@ function AuthPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate({ to: "/browse" });
+        await redirectAfterAuth(navigate);
       }
     } catch (err: any) {
       toast.error(err.message || "Une erreur est survenue");

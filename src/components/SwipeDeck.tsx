@@ -39,6 +39,12 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
   );
   const currentLiked = current ? likedIds.has(current.id) : false;
 
+  const { data: me } = useMyProfile(userId);
+  const { data: graph } = useLikeGraph(userId);
+  const currentBlurred = isBlurred(current, me, graph);
+  const currentCanMessage = canMessage(me, current, graph);
+
+
   async function decide(like: boolean) {
     if (!current) return;
     if (like) {

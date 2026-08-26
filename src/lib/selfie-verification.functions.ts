@@ -5,6 +5,7 @@ export type SelfieVerdict = "verified" | "review" | "rejected";
 
 export type SelfieVerificationResult = {
   verdict: SelfieVerdict;
+  single_face: "yes" | "no" | "unknown";
   same_person: "yes" | "maybe" | "no" | "unknown";
   live_capture: "yes" | "maybe" | "no";
   reason: string;

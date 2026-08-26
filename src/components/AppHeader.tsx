@@ -60,8 +60,9 @@ export function AppHeader() {
               <Link
                 key={l.to}
                 to={l.to}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                  active ? "bg-secondary text-primary" : "text-muted-foreground hover:text-foreground"
+                aria-current={active ? "page" : undefined}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-colors ${
+                  active ? "bg-secondary text-primary font-bold" : "text-muted-foreground font-medium hover:text-foreground"
                 }`}
               >
                 <span className="relative flex items-center">
@@ -82,7 +83,7 @@ export function AppHeader() {
         {links.map((l) => {
           const active = pathname.startsWith(l.to);
           return (
-            <Link key={l.to} to={l.to} className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
+            <Link key={l.to} to={l.to} aria-current={active ? "page" : undefined} className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs ${active ? "text-primary font-bold" : "text-muted-foreground"}`}>
               <span className="relative flex items-center">
                 <l.icon className="h-5 w-5" />
                 <Badge count={countFor(l.to)} />

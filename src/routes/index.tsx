@@ -1,272 +1,90 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
 import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, Star, Mail, Heart, ShieldCheck, Users, Sparkles } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { submitContactMessage } from "@/lib/admin.functions";
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-
+import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
+import { SITE_TAGLINE } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   head: () => ({
     meta: [
-      { title: "Nooryaa — Site de rencontre musulman Abonnement gratuit pour mariage halal" },
-      { name: "description", content: "Nooryaa : site de rencontre musulman Abonnement gratuit, sans abonnement, pour célibataires musulmans et musulmanes cherchant un mariage halal sérieux. Inscription gratuite, messagerie illimitée, jusqu'à 6 photos, profils vérifiés." },
-      { name: "keywords", content: "site de rencontre musulman gratuit, rencontre musulmane, mariage halal, célibataire musulman, célibataire musulmane, rencontre mariage musulman, site mariage islam, rencontre halal, muslima, inchallah, Nooryaa" },
-      { property: "og:title", content: "Nooryaa — Rencontres musulmanes Abonnement gratuit pour mariage halal" },
-      { property: "og:description", content: "Inscription, messagerie et photos Abonnement gratuit. Trouvez votre moitié dans le respect des valeurs de l'islam." },
-      { property: "og:url", content: "https://nooryaa.lovable.app/" },
+      { title: "Nooryaa — Application de rencontre musulmane pour mariage halal" },
+      { name: "description", content: "Nooryaa : application de mise en relation dans le dîn pour un mariage halal sérieux. Connectez-vous ou créez votre compte gratuitement." },
+      { property: "og:title", content: "Nooryaa — Mise en relation dans le dîn" },
+      { property: "og:description", content: "Application de rencontre musulmane pour un mariage halal sérieux, abonnement gratuit." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://nooryaa.lovable.app/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "Nooryaa",
-          url: "https://nooryaa.lovable.app/",
-          inLanguage: "fr",
-          description: "Site de rencontre musulman Abonnement gratuit pour mariage halal sérieux.",
-          potentialAction: { "@type": "SearchAction", target: "https://nooryaa.lovable.app/browse?q={search_term_string}", "query-input": "required name=search_term_string" },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "Nooryaa",
-          url: "https://nooryaa.lovable.app/",
-          slogan: "Rencontres musulmanes Abonnement gratuit pour mariage halal",
-          areaServed: ["FR", "BE", "CH", "CA", "LU", "MA", "DZ", "TN"],
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: [
-            { "@type": "Question", name: "Nooryaa est-il vraiment Abonnement gratuit ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Inscription, recherche, photos et messagerie sont entièrement gratuites sur Nooryaa. Aucun abonnement, aucune option payante." } },
-            { "@type": "Question", name: "Nooryaa est-il un site de rencontre halal ?", acceptedAnswer: { "@type": "Answer", text: "Oui. Nooryaa est pensé pour le mariage musulman : profils sérieux, valeurs de l'islam respectées, modération active." } },
-            { "@type": "Question", name: "Comment s'inscrire sur Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Inscription en moins d'une minute par email ou Google, avec un numéro de téléphone unique. Choisissez un pseudo, ajoutez jusqu'à 6 photos et commencez à discuter." } },
-            { "@type": "Question", name: "Qui peut utiliser Nooryaa ?", acceptedAnswer: { "@type": "Answer", text: "Tous les célibataires musulmans et musulmanes majeurs cherchant un mariage halal sérieux, partout en France, en Belgique, en Suisse, au Canada et dans le monde francophone." } },
-          ],
-        }),
-      },
-    ],
   }),
-  component: Landing,
+  component: Splash,
 });
 
-function Landing() {
+function Splash() {
   const navigate = useNavigate();
+
   useEffect(() => {
     let cancelled = false;
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (cancelled || !data.user) return;
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarded")
-        .eq("id", data.user.id)
-        .maybeSingle();
-      if (cancelled) return;
-      navigate({ to: profile?.onboarded ? "/browse" : "/onboarding" });
-    });
+    const start = Date.now();
+
+    async function go() {
+      const { data } = await supabase.auth.getUser();
+      let target: { to: string; search?: any } = { to: "/auth", search: { mode: "signin" } };
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarded")
+          .eq("id", data.user.id)
+          .maybeSingle();
+        target = { to: profile?.onboarded ? "/browse" : "/onboarding" };
+      }
+      const wait = Math.max(0, 2200 - (Date.now() - start));
+      setTimeout(() => {
+        if (!cancelled) navigate({ ...target, replace: true } as any);
+      }, wait);
+    }
+    go();
     return () => { cancelled = true; };
   }, [navigate]);
 
   return (
+    <div className="relative min-h-screen overflow-hidden bg-background flex items-center justify-center">
+      <img
+        src={heroFullAsset}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover opacity-25"
+      />
+      <div className="absolute inset-0 bg-background/70" />
 
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="absolute top-0 left-0 right-0 z-20">
-        <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4 md:py-5">
-          <Link to="/" className="flex items-center gap-2 md:gap-3">
-            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover gold-glow" />
-          </Link>
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/notre-difference">
-              <Button variant="outline" size="sm" className="rounded-full px-2 md:px-4 text-xs md:text-sm border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm whitespace-nowrap">
-                Notre Différence
-              </Button>
-            </Link>
-            <Link to="/auth" search={{ mode: "signup" }}>
-              <Button variant="default" size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm">S'inscrire</Button>
-            </Link>
-            <Link to="/auth" search={{ mode: "signin" }}>
-              <Button variant="outline" size="sm" className="rounded-full px-3 md:px-5 border-primary/40 text-primary hover:bg-primary/10 backdrop-blur-sm">
-                Connexion
-              </Button>
-            </Link>
-          </div>
-
-        </nav>
-      </header>
-
-      {/* HERO — hauteur naturelle : image entière, pleine largeur, aucune bande */}
-      <section className="relative w-full overflow-hidden bg-background">
+      <main className="relative z-10 flex flex-col items-center text-center px-6 animate-in fade-in zoom-in-95 duration-1000">
         <img
-          src={heroFullAsset}
-          alt="Nooryaa — Mise en relation dans le dîn. Couple musulman sous une arche dorée, mosquée au coucher du soleil, lanternes et valeurs islamiques."
-          className="block h-auto w-full"
-          width={1369}
-          height={1149}
+          src={logoAsset.url}
+          alt="Logo Nooryaa"
+          className="h-28 w-28 md:h-32 md:w-32 rounded-full object-cover gold-glow"
         />
-      </section>
+        <h1 className="mt-6 font-serif text-4xl md:text-5xl tracking-[0.18em] uppercase gold-text">
+          Nooryaa
+        </h1>
+        <div className="gold-rule w-28 my-5" />
+        <p className="font-serif text-lg md:text-xl text-[color:var(--gold-deep)] max-w-md">
+          {SITE_TAGLINE}
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground max-w-sm">
+          Pour une relation sincère tournée vers le dîn — abonnement gratuit.
+        </p>
 
-      {/* Sous-titre sous le slogan du hero */}
-      <section className="bg-background py-6 md:py-8">
-        <div className="container mx-auto px-6 text-center">
-          <p className="font-serif text-lg md:text-2xl text-[color:var(--gold-deep)] tracking-wide">
-            Pour une relation sincère tournée vers le dîn
-          </p>
+        <div className="mt-10 flex gap-1.5" aria-label="Chargement">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="h-2 w-2 rounded-full bg-[color:var(--gold)] animate-bounce"
+              style={{ animationDelay: `${i * 150}ms` }}
+            />
+          ))}
         </div>
-      </section>
-
-      {/* Pourquoi Nooryaa */}
-      <section className="relative bg-[color:var(--cream)]/40 py-20 arabesque">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-3xl md:text-4xl font-medium tracking-widest uppercase text-[color:var(--gold-deep)] mb-3">Nos Pilliers</p>
-            <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">Pourquoi Nooryaa ?</h2>
-            <div className="gold-rule w-24 mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              Une plateforme pensée pour les musulmans et musulmanes qui souhaitent avancer dans la moutabala (rencontre respectueuse), avec niyyah claire et adab dans chaque échange.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: Heart, title: "Abonnement Gratuit", text: "Parce que la sincérité ne devrait jamais être conditionnée par un abonnement." },
-              { icon: ShieldCheck, title: "Halal & Sérieux", text: "Une démarche centrée sur le dîn, avec des échanges respectueux, une intention claire (niyyah) et un cadre conforme aux valeurs islamiques." },
-              { icon: Users, title: "Fonctionnalités", text: "Chaque fonctionnalité est pensée pour préserver la pudeur, la sécurité, et la baraka dans les rencontres." },
-              { icon: Sparkles, title: "Bienveillance & Adab", text: "Modération active, signalement simple, communauté respectueuse. Chaque membre s’engage à respecter les adab du dîn dans ses échanges." },
-            ].map((item) => (
-              <div key={item.title} className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] text-center hover:shadow-[var(--glow-gold)] transition-shadow">
-                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--gold)]/10 flex items-center justify-center">
-                  <item.icon className="h-6 w-6 text-[color:var(--gold-deep)]" />
-                </div>
-                <h3 className="font-serif text-xl text-primary mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mission */}
-      <section className="bg-background py-12 md:py-16">
-        <div className="container mx-auto px-6 text-center max-w-3xl">
-          <p className="font-serif text-xl md:text-2xl text-primary leading-relaxed">
-            Nooryaa accompagne ceux qui recherchent une relation sincère, respectueuse, et tournée vers le mariage.
-          </p>
-        </div>
-      </section>
-
-      {/* Engagements */}
-      <section className="container mx-auto px-6 py-20">
-        <h2 className="text-3xl md:text-4xl font-serif text-primary mb-8 text-center">Nos engagements</h2>
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <ul className="space-y-4">
-              {[
-                "Inscription, recherche et messagerie abonnement gratuit.",
-                "Modération active : signalement et blocage en un clic.",
-                "Aucune publicité, aucun abonnement caché.",
-                "Respect strict de la confidentialité et de la pudeur.",
-                "Un cadre pensé pour des rencontres halal, avec intention de dîn.",
-                "Possibilité d’échanges respectueux, avec ou sans implication du mahram, selon les préférences.",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-[color:var(--gold)] flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground/80">{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-[color:var(--cream)] rounded-3xl p-8 md:p-10 border border-border/60">
-            <div className="flex items-center gap-1 text-[color:var(--gold)] mb-3">
-              {[0,1,2,3,4].map((i) => <Star key={i} className="h-5 w-5 fill-current" />)}
-            </div>
-            <p className="font-serif text-xl text-primary leading-relaxed">
-              « Enfin une plateforme musulmane sérieuse, claire et totalement gratuite.
-            </p>
-            <p className="mt-4 text-sm text-muted-foreground">— Amina, 28 ans</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[color:var(--cream)]/60 py-20">
-        <div className="container mx-auto px-6 text-center max-w-2xl">
-          <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">
-            Prêt(e) à commencer ?
-          </h2>
-          <p className="text-muted-foreground mb-8">
-            Avancez dans la moutabala avec sérénité.
-            <br />
-            Inscription en moins d’une minute.
-          </p>
-          <Link to="/auth" search={{ mode: "signup" }}>
-            <Button size="lg" className="rounded-full px-10 shadow-[var(--shadow-soft)]">
-              Rejoindre Nooryaa gratuitement
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      <ContactSection />
-
-      <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        © 2026 Nooryaa — Mise en relation dans le dîn, Abonnement gratuit
-      </footer>
+      </main>
     </div>
-  );
-}
-
-function ContactSection() {
-  const submit = useServerFn(submitContactMessage);
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const mut = useMutation({
-    mutationFn: (vars: typeof form) => submit({ data: vars }),
-    onSuccess: () => { toast.success("Message envoyé ! Nous reviendrons vers vous rapidement."); setForm({ name: "", email: "", subject: "", message: "" }); },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
-  });
-
-  return (
-    <section id="contact" className="container mx-auto px-6 py-20">
-      <div className="grid md:grid-cols-2 gap-10 items-start max-w-5xl mx-auto">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4 flex items-center gap-3"><Mail className="h-7 w-7 text-[color:var(--gold)]" /> Contactez-nous</h2>
-          <p className="text-muted-foreground mb-4">Une question, un partenariat, un signalement urgent ?<br />Notre équipe vous répond rapidement, dans un esprit de bienveillance et de respect.</p>
-          <ul className="space-y-2 text-sm text-foreground/80">
-            <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Réponse sous 24h ouvrées</li>
-            <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Confidentialité garantie</li>
-            <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Modération sérieuse</li>
-            <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[color:var(--gold)] mt-0.5" /> Respect des valeurs du dîn</li>
-          </ul>
-        </div>
-        <form
-          onSubmit={(e) => { e.preventDefault(); mut.mutate(form); }}
-          className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4"
-        >
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div><Label htmlFor="c-name">Nom</Label><Input id="c-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-            <div><Label htmlFor="c-email">Email</Label><Input id="c-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-          </div>
-          <div><Label htmlFor="c-subject">Sujet</Label><Input id="c-subject" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} /></div>
-          <div><Label htmlFor="c-msg">Message</Label><Textarea id="c-msg" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></div>
-          <Button type="submit" disabled={mut.isPending} className="w-full rounded-full">{mut.isPending ? "Envoi..." : "Envoyer le message"}</Button>
-        </form>
-      </div>
-    </section>
   );
 }

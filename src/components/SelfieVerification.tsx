@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,6 @@ import { BadgeCheck, Loader2, ScanFace, ShieldAlert, ShieldCheck } from "lucide-
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
 import { verifySelfie } from "@/lib/selfie-verification.functions";
-import { GESTURES } from "@/lib/selfie-gestures";
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -25,8 +24,6 @@ export function SelfieVerification({ userId }: { userId: string }) {
   const [busy, setBusy] = useState(false);
   const run = useServerFn(verifySelfie);
 
-  const gesture = useMemo(() => GESTURES[Math.floor(Math.random() * GESTURES.length)]!, []);
-
   const { data: profile } = useQuery({
     queryKey: ["me", userId],
     queryFn: async () =>
@@ -41,7 +38,7 @@ export function SelfieVerification({ userId }: { userId: string }) {
     setBusy(true);
     try {
       const selfieDataUrl = await toDataUrl(file);
-      const res = await run({ data: { selfieDataUrl, gesture } });
+      const res = await run({ data: { selfieDataUrl } });
       if (res.verdict === "verified") toast.success(res.reason || "Photo vérifiée ✅");
       else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
       else toast.warning(res.reason || "Vérification à confirmer");
@@ -78,21 +75,14 @@ export function SelfieVerification({ userId }: { userId: string }) {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Prenez un selfie en direct : il est comparé à votre photo principale pour confirmer que
+        Prenez un selfie en direct : il est comparé à vos photos de profil pour confirmer que
         c'est bien vous. Les autres membres verront alors un badge « Photo vérifiée ».
       </p>
-
-      {!verified && (
-        <div className="rounded-xl bg-secondary/40 p-3 text-sm">
-          <span className="font-medium text-primary">Geste demandé : </span>
-          {gesture}
-        </div>
-      )}
 
       {status === "rejected" && !verified && (
         <p className="flex items-start gap-2 text-sm text-destructive">
           <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" />
-          Dernière tentative refusée : le selfie ne correspondait pas ou n'était pas pris en direct.
+          Dernière tentative refusée : le selfie ne correspondait pas à vos photos ou n'était pas pris en direct.
         </p>
       )}
       {status === "review" && !verified && (

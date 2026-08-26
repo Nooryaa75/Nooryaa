@@ -62,6 +62,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
     if (!data.selfieDataUrl.startsWith("data:image/")) {
       return {
         verdict: "rejected",
+        single_face: "unknown",
         same_person: "unknown",
         live_capture: "no",
         reason: "Selfie invalide.",

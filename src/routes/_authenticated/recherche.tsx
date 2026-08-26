@@ -109,24 +109,19 @@ function Recherche() {
   }
 
   const originMissing = filters.radiusEnabled && (originLat == null || originLng == null);
-  const immersive = tab === "resultats" && view === "swipe";
 
   return (
-    <div className={immersive ? "space-y-2" : "space-y-6"}>
-      {!immersive && (
-        <div>
-          <h1 className="text-3xl font-serif text-primary">Recherche</h1>
-        </div>
-      )}
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-serif text-primary">Recherche</h1>
+      </div>
 
-      <Tabs value={tab} onValueChange={setTab} className={immersive ? "space-y-2" : "space-y-6"}>
-        {!immersive && (
-          <TabsList>
-            <TabsTrigger value="resultats">Profils</TabsTrigger>
-            <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
-            <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
-          </TabsList>
-        )}
+      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="resultats">Profils</TabsTrigger>
+          <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
+          <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="filtres" className="space-y-4">
           <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 space-y-5">

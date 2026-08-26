@@ -32,15 +32,6 @@ function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallb
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
-/** Geste aléatoire demandé pour prouver que le selfie est bien pris en direct. */
-export const GESTURES = [
-  "Levez la main droite à côté de votre visage",
-  "Faites un pouce en l'air à côté de votre visage",
-  "Tournez légèrement la tête vers la droite",
-  "Posez votre main ouverte, paume vers la caméra, à côté du visage",
-  "Faites un signe de victoire (deux doigts) à côté du visage",
-] as const;
-
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { selfieDataUrl: string; gesture: string }) => ({

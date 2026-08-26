@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { BadgeCheck, Loader2, ScanFace, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
-import { GESTURES, verifySelfie } from "@/lib/selfie-verification.functions";
+import { verifySelfie } from "@/lib/selfie-verification.functions";
+import { GESTURES } from "@/lib/selfie-gestures";
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);

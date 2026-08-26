@@ -91,6 +91,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
     if (urls.length === 0) {
       return {
         verdict: "review",
+        single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Ajoutez d'abord vos photos de profil avant de lancer la vérification.",
@@ -101,6 +102,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
     if (!apiKey) {
       return {
         verdict: "review",
+        single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Vérification indisponible pour le moment, réessayez plus tard.",
@@ -113,6 +115,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
 
     let result: SelfieVerificationResult = {
       verdict: "review",
+      single_face: "unknown",
       same_person: "unknown",
       live_capture: "maybe",
       reason: "Vérification en attente de contrôle.",

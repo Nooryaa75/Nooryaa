@@ -14,6 +14,7 @@ import { YesNoRadio } from "@/components/YesNoRadio";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
+import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SearchPreferences } from "@/components/SearchPreferences";
 
@@ -87,6 +88,10 @@ function MyProfile() {
       </div>
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)]">
         <PhotoManager userId={ctx.userId} />
+      </div>
+
+      <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)]">
+        <SelfieVerification userId={ctx.userId} />
       </div>
 
 

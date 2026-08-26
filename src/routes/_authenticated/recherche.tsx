@@ -451,7 +451,7 @@ function Recherche() {
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className={`flex-wrap items-center justify-between gap-3 mb-4 ${immersive ? "hidden" : "flex"}`}>
                 <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
                 <div className="flex items-center gap-2">
                   {activeSearchName && (

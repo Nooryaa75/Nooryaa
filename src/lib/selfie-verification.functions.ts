@@ -55,6 +55,8 @@ export const verifySelfie = createServerFn({ method: "POST" })
     const userId = (context as any).userId as string;
     const supabase = (context as any).supabase;
 
+    // Le selfie est uniquement transmis au modèle de comparaison ; il n'est JAMAIS
+    // stocké dans la fiche profil (ni dans la table photos, ni dans un bucket).
     if (!data.selfieDataUrl.startsWith("data:image/")) {
       return {
         verdict: "rejected",

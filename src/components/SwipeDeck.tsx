@@ -202,7 +202,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
+          <div className="flex items-center justify-center gap-3 mt-3 sm:mt-5 flex-wrap">
             <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" disabled={isDeciding} onClick={() => decide(false)}>
               <X className="h-6 w-6" />
             </Button>

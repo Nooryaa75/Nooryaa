@@ -164,7 +164,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       {!current ? (
         <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
           <p className="text-muted-foreground">Plus de profils dans cette sélection pour le moment.</p>
-          <Button className="mt-4" variant="outline" onClick={onBack}>Revenir aux sélections</Button>
+          {onBack && <Button className="mt-4" variant="outline" onClick={onBack}>Revenir aux sélections</Button>}
         </div>
       ) : (
         <div className="mx-auto max-w-md">

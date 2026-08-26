@@ -200,7 +200,13 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <div className="flex items-baseline gap-2">
                   <span className="font-serif text-2xl truncate">{current.pseudo}</span>
                   <span className="text-xl font-light">{ageFromBirthdate(current.birthdate)}</span>
+                  {current.photo_verified && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--gold)]/20 px-2 py-0.5 text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Vérifié
+                    </span>
+                  )}
                 </div>
+
                 <div className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wider text-white/90">
                   <MapPin className="h-3.5 w-3.5" />
                   {typeof current._distance === "number" && <span>À {Math.round(current._distance)} km,</span>}

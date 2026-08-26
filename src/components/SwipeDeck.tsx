@@ -283,13 +283,41 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
                 <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
                 <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
-                <Info icon={<Users className="h-4 w-4" />} label="Enfants" value={current.has_children === null || current.has_children === undefined ? null : current.has_children ? `Oui${current.children_count ? ` (${current.children_count})` : ""}` : "Non"} />
+                <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
+                <Info icon={<Briefcase className="h-4 w-4" />} label="Profession" value={current.profession} />
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité" value={current.personality} />
                 <Info icon={<BookOpen className="h-4 w-4" />} label="Objectif" value={current.objective} />
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={current.activities} />
-                <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={current.smoker === null || current.smoker === undefined ? null : current.smoker ? "Oui" : "Non"} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={boolLabel(current.smoker, "Oui", "Non")} />
               </dl>
             </section>
+
+            <section className="bg-card rounded-2xl border border-border/60 p-4">
+              <h3 className="font-serif text-primary mb-3">Pratique religieuse</h3>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Religion" value={current.religion} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Pratique" value={current.religious_practice ? PRACTICE_LABELS[current.religious_practice] : null} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Salat quotidienne" value={boolLabel(current.salat_quotidienne)} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Jeûne du Ramadan" value={boolLabel(current.ramadan)} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Hadj effectué" value={boolLabel(current.hadj)} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Omra effectuée" value={boolLabel(current.omra)} />
+                {current.gender === "femme" && (
+                  <Info icon={<BookOpen className="h-4 w-4" />} label="Porte le voile" value={boolLabel(current.porte_voile)} />
+                )}
+              </dl>
+            </section>
+
+            <section className="bg-card rounded-2xl border border-border/60 p-4">
+              <h3 className="font-serif text-primary mb-3">Famille</h3>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <Info icon={<Users className="h-4 w-4" />} label="A des enfants" value={boolLabel(current.has_children)} />
+                {current.has_children && (
+                  <Info icon={<Users className="h-4 w-4" />} label="Nombre d'enfants" value={current.children_count?.toString()} />
+                )}
+                <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={boolLabel(current.wants_children)} />
+              </dl>
+            </section>
+
 
             {extraPhotos.length > 0 && (
               <section className="bg-card rounded-2xl border border-border/60 p-4">

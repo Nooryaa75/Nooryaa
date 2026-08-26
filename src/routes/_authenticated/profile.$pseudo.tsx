@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
-  BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft
+  BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft, BadgeCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -160,7 +160,14 @@ function ProfileView() {
           <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-4">
             <div>
               <div className="flex items-center justify-between gap-3">
-                <h1 className="text-3xl font-serif text-primary break-words min-w-0 flex-1">{profile.pseudo}</h1>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-3xl font-serif text-primary break-words">{profile.pseudo}</h1>
+                  {profile.photo_verified && (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Photo vérifiée
+                    </span>
+                  )}
+                </div>
                 {!isMe && typeof matchPercent(me, profile) === "number" && (
                   <div className="flex flex-col items-center shrink-0">
                     <span className="text-[10px] uppercase tracking-wider text-[color:var(--gold)] font-semibold">Compatibilité</span>

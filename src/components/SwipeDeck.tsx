@@ -282,7 +282,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
           {/* Détails du profil */}
           <div className="mt-5 space-y-3">
             <AccordionSection
-                           icon={<BookOpen className="h-5 w-5" />}
+              icon={<BookOpen className="h-5 w-5" />}
               title="À propos"
               open={openSections.about}
               onToggle={() => toggleSection("about")}
@@ -295,7 +295,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-                           icon={<Shield className="h-5 w-5" />}
+              icon={<Shield className="h-5 w-5" />}
               title="Pratique religieuse"
               open={openSections.religious}
               onToggle={() => toggleSection("religious")}
@@ -314,7 +314,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-                           icon={<Sparkles className="h-5 w-5" />}
+              icon={<Sparkles className="h-5 w-5" />}
               title="Mode de vie"
               open={openSections.lifestyle}
               onToggle={() => toggleSection("lifestyle")}
@@ -333,7 +333,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-                           icon={<Users className="h-5 w-5" />}
+              icon={<Users className="h-5 w-5" />}
               title="Famille"
               open={openSections.family}
               onToggle={() => toggleSection("family")}
@@ -348,7 +348,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-                           icon={<Search className="h-5 w-5" />}
+              icon={<Search className="h-5 w-5" />}
               title="Ce que je recherche"
               open={openSections.searching}
               onToggle={() => toggleSection("searching")}
@@ -358,7 +358,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
             {extraPhotos.length > 0 && (
               <AccordionSection
-                               icon={<User className="h-5 w-5" />}
+                icon={<User className="h-5 w-5" />}
                 title="Ses photos"
                 open={openSections.photos}
                 onToggle={() => toggleSection("photos")}

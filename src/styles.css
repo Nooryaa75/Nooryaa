@@ -256,3 +256,10 @@
     radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px);
   background-size: 64px 64px;
 }
+
+/* Protection anti-capture : images non sélectionnables */
+img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

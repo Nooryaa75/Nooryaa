@@ -196,7 +196,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
       if (result.verdict !== "verified") {
         await supabaseAdmin.from("moderation_events").insert({
           user_id: userId,
-          content: `Vérification selfie — même personne:${result.same_person} / prise en direct:${result.live_capture}`,
+          content: `Vérification selfie — une seule tête:${result.single_face} / même personne:${result.same_person} / prise en direct:${result.live_capture}`,
           verdict: result.verdict === "rejected" ? "block" : "warn",
           categories: ["selfie_verification"],
           reason: result.reason,

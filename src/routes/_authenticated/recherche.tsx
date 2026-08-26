@@ -481,6 +481,12 @@ function Recherche() {
                   persistPass={false}
                   hideHeader
                 />
+                <div className="mt-6 text-center">
+                  <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setView("grid")}>
+                    <Layers className="h-4 w-4 mr-1" /> Vue grille et filtres
+                  </Button>
+                </div>
+                </>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {profiles.map((p) => (

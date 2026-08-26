@@ -38,6 +38,13 @@ function activeLabel(lastActive: string | null | undefined): string {
   return "Actif il y a longtemps";
 }
 
+/** Affiche Oui / Non pour un booléen éventuellement absent. */
+function boolLabel(value: boolean | null | undefined, yes = "Oui", no = "Non"): string | null {
+  if (value === null || value === undefined) return null;
+  return value ? yes : no;
+}
+
+
 /** Fiche plein écran : photo + infos, détails en dessous, décision par boutons. */
 export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();

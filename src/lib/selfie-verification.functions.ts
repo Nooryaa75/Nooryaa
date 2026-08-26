@@ -7,38 +7,49 @@ export type SelfieVerificationResult = {
   verdict: SelfieVerdict;
   same_person: "yes" | "maybe" | "no" | "unknown";
   live_capture: "yes" | "maybe" | "no";
-  gesture_ok: boolean;
   reason: string;
 };
 
 const SYSTEM_PROMPT = `Tu es l'agent de vérification d'identité photo de Nooryaa (plateforme de mise en relation musulmane).
-On te donne deux images : (1) le SELFIE de vérification pris en direct par la personne, (2) sa PHOTO DE PROFIL.
+On te donne le SELFIE de vérification pris en direct par la personne, puis une ou plusieurs PHOTOS DE SON PROFIL.
 
 Sois TRÈS STRICT : en cas de doute, ne valide pas. Compare précisément la morphologie du visage (forme du visage, écartement et forme des yeux, nez, bouche, mâchoire, oreilles, grains de beauté), l'âge apparent et le genre apparent. Une simple ressemblance générale (même couleur de cheveux, même type physique, même voile) NE SUFFIT PAS : réponds "no" si un seul trait morphologique diffère nettement.
 
 Analyse :
-1. same_person : la personne du selfie est-elle la même que sur la photo de profil ? "yes" uniquement si tu es quasi certain (>90%), "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
+1. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
 2. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
-3. gesture_ok : la personne réalise-t-elle le geste demandé décrit par l'utilisateur ? true/false.
-4. Le selfie doit rester conforme (pas de nudité, pas de contenu choquant) : sinon verdict "rejected".
+3. Le selfie doit rester conforme (pas de nudité, pas de contenu choquant) : sinon verdict "rejected".
 
 Verdict :
-- "verified" si same_person = yes ET live_capture = yes ET gesture_ok = true.
+- "verified" si same_person = yes ET live_capture = yes.
 - "rejected" si same_person = no, ou live_capture = no, ou contenu non conforme.
 - "review" dans les autres cas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"verified|review|rejected","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","gesture_ok":true,"reason":"phrase courte en français adressée à la personne"}`;
+{"verdict":"verified|review|rejected","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte en français adressée à la personne"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
+async function toDataUrl(url: string): Promise<string> {
+  try {
+    const img = await fetch(url);
+    if (!img.ok) return url;
+    const buf = new Uint8Array(await img.arrayBuffer());
+    let bin = "";
+    for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
+    const mime = img.headers.get("content-type") || "image/jpeg";
+    return `data:${mime};base64,${btoa(bin)}`;
+  } catch {
+    return url;
+  }
+}
+
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { selfieDataUrl: string; gesture: string }) => ({
+  .inputValidator((data: { selfieDataUrl: string }) => ({
     selfieDataUrl: String(data?.selfieDataUrl ?? ""),
-    gesture: String(data?.gesture ?? "").slice(0, 200),
   }))
   .handler(async ({ data, context }): Promise<SelfieVerificationResult> => {
     const userId = (context as any).userId as string;
@@ -49,7 +60,6 @@ export const verifySelfie = createServerFn({ method: "POST" })
         verdict: "rejected",
         same_person: "unknown",
         live_capture: "no",
-        gesture_ok: false,
         reason: "Selfie invalide.",
       };
     }
@@ -60,14 +70,25 @@ export const verifySelfie = createServerFn({ method: "POST" })
       .eq("id", userId)
       .single();
 
-    const photoUrl: string | null = profile?.primary_photo_url ?? null;
-    if (!photoUrl) {
+    const { data: photos } = await supabase
+      .from("photos")
+      .select("url, position")
+      .eq("user_id", userId)
+      .order("position", { ascending: true });
+
+    const urls = Array.from(
+      new Set(
+        [profile?.primary_photo_url, ...((photos ?? []) as { url: string }[]).map((p) => p.url)]
+          .filter((u): u is string => typeof u === "string" && u.length > 0),
+      ),
+    ).slice(0, 3);
+
+    if (urls.length === 0) {
       return {
         verdict: "review",
         same_person: "unknown",
         live_capture: "maybe",
-        gesture_ok: false,
-        reason: "Ajoutez d'abord une photo de profil principale avant de lancer la vérification.",
+        reason: "Ajoutez d'abord vos photos de profil avant de lancer la vérification.",
       };
     }
 
@@ -77,32 +98,18 @@ export const verifySelfie = createServerFn({ method: "POST" })
         verdict: "review",
         same_person: "unknown",
         live_capture: "maybe",
-        gesture_ok: false,
         reason: "Vérification indisponible pour le moment, réessayez plus tard.",
       };
     }
 
-    // La photo de profil est convertie en base64 : l'URL signée n'est pas
-    // toujours accessible par le fournisseur du modèle.
-    let profileDataUrl = photoUrl;
-    try {
-      const img = await fetch(photoUrl);
-      if (img.ok) {
-        const buf = new Uint8Array(await img.arrayBuffer());
-        let bin = "";
-        for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
-        const mime = img.headers.get("content-type") || "image/jpeg";
-        profileDataUrl = `data:${mime};base64,${btoa(bin)}`;
-      }
-    } catch {
-      // on retombe sur l'URL directe
-    }
+    // Les photos de profil sont converties en base64 : les URL signées ne sont
+    // pas toujours accessibles par le fournisseur du modèle.
+    const profileImages = await Promise.all(urls.map(toDataUrl));
 
     let result: SelfieVerificationResult = {
       verdict: "review",
       same_person: "unknown",
       live_capture: "maybe",
-      gesture_ok: false,
       reason: "Vérification en attente de contrôle.",
     };
 
@@ -119,10 +126,10 @@ export const verifySelfie = createServerFn({ method: "POST" })
               content: [
                 {
                   type: "input_text",
-                  text: `Geste demandé à la personne : "${data.gesture}". Image 1 = selfie de vérification. Image 2 = photo de profil.`,
+                  text: `Image 1 = selfie de vérification pris en direct. Images suivantes (${profileImages.length}) = photos du profil.`,
                 },
                 { type: "input_image", image_url: data.selfieDataUrl },
-                { type: "input_image", image_url: profileDataUrl },
+                ...profileImages.map((image_url) => ({ type: "input_image", image_url })),
               ],
             },
           ],
@@ -145,7 +152,6 @@ export const verifySelfie = createServerFn({ method: "POST" })
             verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
             same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
             live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
-            gesture_ok: parsed.gesture_ok === true,
             reason: typeof parsed.reason === "string" ? parsed.reason : "",
           };
         }
@@ -157,12 +163,8 @@ export const verifySelfie = createServerFn({ method: "POST" })
     // Garde-fous côté serveur (stricts : le doute ne valide jamais)
     if (result.same_person === "no" || result.live_capture === "no") {
       result.verdict = "rejected";
-      if (!result.reason) result.reason = "Le selfie ne correspond pas à votre photo de profil.";
-    } else if (
-      result.same_person !== "yes" ||
-      result.live_capture !== "yes" ||
-      !result.gesture_ok
-    ) {
+      if (!result.reason) result.reason = "Le selfie ne correspond pas à vos photos de profil.";
+    } else if (result.same_person !== "yes" || result.live_capture !== "yes") {
       result.verdict = "review";
     }
 
@@ -180,7 +182,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
       if (result.verdict !== "verified") {
         await supabaseAdmin.from("moderation_events").insert({
           user_id: userId,
-          content: `Vérification selfie — même personne:${result.same_person} / prise en direct:${result.live_capture} / geste:${result.gesture_ok ? "ok" : "ko"} (geste demandé: ${data.gesture})`,
+          content: `Vérification selfie — même personne:${result.same_person} / prise en direct:${result.live_capture}`,
           verdict: result.verdict === "rejected" ? "block" : "warn",
           categories: ["selfie_verification"],
           reason: result.reason,
@@ -196,7 +198,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
         result.verdict === "verified"
           ? "Votre photo est vérifiée."
           : result.verdict === "rejected"
-            ? "Le selfie ne correspond pas à votre photo de profil."
+            ? "Le selfie ne correspond pas à vos photos de profil."
             : "Vérification à confirmer, réessayez avec un meilleur éclairage.";
     }
 

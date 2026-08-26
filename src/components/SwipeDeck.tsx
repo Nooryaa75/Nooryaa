@@ -121,12 +121,14 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Retour
-        </Button>
-        <h2 className="font-serif text-xl text-primary">{title}</h2>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Retour
+          </Button>
+          <h2 className="font-serif text-xl text-primary">{title}</h2>
+        </div>
+      )}
 
       {!current ? (
         <div className="text-center py-16 bg-card rounded-2xl border border-border/60">

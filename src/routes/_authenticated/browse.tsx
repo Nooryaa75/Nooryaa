@@ -24,21 +24,31 @@ function Home() {
   const { isLoading, decks, deckList } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-serif text-primary">Accueil</h1>
-        <p className="text-sm text-muted-foreground mt-1">Vos sélections du moment.</p>
-      </div>
+    <div className={deck ? "space-y-2" : "space-y-6"}>
+      {!deck && (
+        <div>
+          <h1 className="text-3xl font-serif text-primary">Accueil</h1>
+          <p className="text-sm text-muted-foreground mt-1">Vos sélections du moment.</p>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="text-center text-muted-foreground py-12">Chargement...</div>
       ) : deck ? (
-        <SwipeDeck
-          title={deckList.find((d) => d.key === deck)!.title}
-          profiles={decks[deck]}
-          userId={ctx.userId}
-          onBack={() => setDeck(null)}
-        />
+        <>
+          <SwipeDeck
+            title={deckList.find((d) => d.key === deck)!.title}
+            profiles={decks[deck]}
+            userId={ctx.userId}
+            onBack={() => setDeck(null)}
+            hideHeader
+          />
+          <div className="mt-6 text-center">
+            <button type="button" onClick={() => setDeck(null)} className="text-xs text-muted-foreground underline">
+              Revenir aux sélections
+            </button>
+          </div>
+        </>
       ) : (
         <div className="grid gap-4 sm:grid-cols-3">
           {deckList.map((meta) => (

@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MapPin, User, ArrowLeft, MessageCircle, Hand, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
+  GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown,
+} from "lucide-react";
 import { toast } from "sonner";
-import { ageFromBirthdate, PRACTICE_LABELS } from "@/lib/profile";
+import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 
@@ -20,23 +23,29 @@ type Props = {
   hideHeader?: boolean;
 };
 
-/** Pile de profils façon Tinder : glisser à droite pour aimer, à gauche pour passer. */
+/** Libellé « Actif ... » à partir de la dernière activité. */
+function activeLabel(lastActive: string | null | undefined): string {
+  if (!lastActive) return "Actif récemment";
+  const diff = Date.now() - new Date(lastActive).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 15) return "En ligne";
+  if (min < 60) return `Actif il y a ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `Actif il y a ${h} h`;
+  const d = Math.floor(h / 24);
+  if (d === 1) return "Actif hier";
+  if (d < 30) return `Actif il y a ${d} jours`;
+  return "Actif il y a longtemps";
+}
+
+/** Fiche plein écran : photo + infos, détails en dessous, décision par boutons. */
 export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
-  const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [isDeciding, setIsDeciding] = useState(false);
-  const [showHint, setShowHint] = useState(true);
-  const startX = useRef<number | null>(null);
   const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
   const current = profiles.find((profile) => !dismissedSet.has(profile.id));
-
-  useEffect(() => {
-    if (!showHint) return;
-    const t = setTimeout(() => setShowHint(false), 4500);
-    return () => clearTimeout(t);
-  }, [showHint]);
 
   const { data: sentLikes } = useQuery({
     queryKey: ["sent-likes", userId],
@@ -45,6 +54,13 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       if (error) throw error;
       return data ?? [];
     },
+  });
+
+  const { data: photos } = useQuery({
+    queryKey: ["deck-photos", current?.id],
+    enabled: !!current?.id,
+    queryFn: async () =>
+      (await supabase.from("photos").select("*").eq("user_id", current.id).order("position")).data ?? [],
   });
 
   const likedIds = useMemo(
@@ -58,14 +74,21 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
   const currentBlurred = isBlurred(current, me, graph);
   const currentCanMessage = canMessage(me, current, graph);
 
+  async function refresh() {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["passes", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["sent-likes", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["likes-sent", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] }),
+    ]);
+  }
 
   async function decide(like: boolean) {
     if (!current || isDeciding) return;
     const decidedProfile = current;
     setIsDeciding(true);
 
-    // Toute décision est conservée dans profile_passes afin qu'un profil ne soit
-    // proposé qu'une seule fois. Un « oui » crée également le like correspondant.
     const [swipeResult, likeResult] = await Promise.all([
       persistPass
         ? supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id })
@@ -87,37 +110,34 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
     }
 
     if (like) {
-      setLocalLikedIds((ids) => ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]);
+      setLocalLikedIds((ids) => (ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]));
       toast.success(`Vous avez aimé ${decidedProfile.pseudo}`);
     }
-    setDismissedIds((ids) => ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]);
-    setDrag(0);
+    setDismissedIds((ids) => (ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]));
     setIsDeciding(false);
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["passes", userId] }),
-      queryClient.invalidateQueries({ queryKey: ["sent-likes", userId] }),
-      queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] }),
-      queryClient.invalidateQueries({ queryKey: ["likes-sent", userId] }),
-      queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] }),
-    ]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    await refresh();
   }
 
-  function onPointerDown(e: React.PointerEvent) {
-    startX.current = e.clientX;
-    setShowHint(false);
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  /** Annule la dernière décision : le profil revient dans la pile. */
+  async function undo() {
+    if (isDeciding || dismissedIds.length === 0) return;
+    const lastId = dismissedIds[dismissedIds.length - 1];
+    setIsDeciding(true);
+    if (persistPass) {
+      await supabase.from("profile_passes").delete().eq("user_id", userId).eq("target_id", lastId);
+    }
+    if (localLikedIds.includes(lastId)) {
+      await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", lastId);
+      setLocalLikedIds((ids) => ids.filter((id) => id !== lastId));
+    }
+    setDismissedIds((ids) => ids.slice(0, -1));
+    setIsDeciding(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    await refresh();
   }
-  function onPointerMove(e: React.PointerEvent) {
-    if (startX.current == null) return;
-    setDrag(e.clientX - startX.current);
-  }
-  function onPointerUp() {
-    if (startX.current == null) return;
-    const d = drag;
-    startX.current = null;
-    if (Math.abs(d) > 110) decide(d > 0);
-    else setDrag(0);
-  }
+
+  const extraPhotos = (photos ?? []).filter((p: any) => p.url && p.url !== current?.primary_photo_url);
 
   return (
     <div className="space-y-4">
@@ -136,28 +156,10 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
           <Button className="mt-4" variant="outline" onClick={onBack}>Revenir aux sélections</Button>
         </div>
       ) : (
-        <div className="mx-auto max-w-sm select-none">
-          <div
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            style={{ transform: `translateX(${drag}px) rotate(${drag / 25}deg)`, transition: startX.current == null ? "transform .2s" : "none" }}
-            className="relative bg-card rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] touch-none cursor-grab active:cursor-grabbing"
-          >
-            {showHint && (
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/30 pointer-events-none animate-in fade-in duration-500">
-                <div className="relative flex items-center gap-8">
-                  <ChevronLeft className="h-10 w-10 text-destructive/80 animate-pulse" />
-                  <div className="flex flex-col items-center">
-                    <Hand className="h-10 w-10 text-primary drop-shadow-md" />
-                    <span className="mt-2 text-xs font-semibold text-primary bg-background/80 px-2 py-1 rounded-full">Glissez pour choisir</span>
-                  </div>
-                  <ChevronRight className="h-10 w-10 text-primary/80 animate-pulse" />
-                </div>
-              </div>
-            )}
-            <div className="h-[42vh] max-h-[420px] min-h-[220px] sm:h-auto sm:max-h-none sm:aspect-[3/4] bg-secondary relative">
+        <div className="mx-auto max-w-md">
+          {/* Photo principale plein cadre avec les infos en surimpression */}
+          <div className="relative rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] bg-secondary">
+            <div className="relative h-[68vh] max-h-[640px] min-h-[380px]">
               {current.primary_photo_url ? (
                 <img
                   src={current.primary_photo_url}
@@ -168,91 +170,164 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>
               )}
-              {typeof current._matchPercent === "number" && (
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
-                  <span className="text-[10px] uppercase tracking-wider text-primary-foreground/90 font-semibold drop-shadow-sm">Compatibilité</span>
-                  <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-10 w-10 shadow-md border-2 border-background">
-                    {current._matchPercent}%
+
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
+                <span className="rounded-full bg-black/45 backdrop-blur px-3 py-1 text-[11px] font-medium text-white">
+                  {activeLabel(current.last_active)}
+                </span>
+                {typeof current._matchPercent === "number" && (
+                  <span className="flex flex-col items-center">
+                    <span className="text-[9px] uppercase tracking-wider text-white/90 font-semibold drop-shadow">Compatibilité</span>
+                    <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-10 w-10 shadow-md border-2 border-white/70">
+                      {current._matchPercent}%
+                    </span>
                   </span>
-                </div>
-              )}
-              {drag > 40 && (
-                <span className="absolute top-5 left-5 rounded-lg border-2 border-primary px-3 py-1 font-bold text-primary rotate-[-12deg]">OUI</span>
-              )}
-              {drag < -40 && (
-                <span className="absolute top-5 right-5 rounded-lg border-2 border-destructive px-3 py-1 font-bold text-destructive rotate-[12deg]">NON</span>
-              )}
-            </div>
-            <div className="p-3 sm:p-4">
-              <div className="flex items-baseline justify-between">
-                <span className="font-serif text-lg text-primary truncate">{current.pseudo}</span>
-                <span className="text-sm text-muted-foreground">{ageFromBirthdate(current.birthdate)} ans</span>
+                )}
               </div>
-              <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                <MapPin className="h-3 w-3" />
-                {current.city || current.country || "—"}
-                {typeof current._distance === "number" && <span>· {Math.round(current._distance)} km</span>}
-              </div>
-              {current.religious_practice && (
-                <div className="mt-2 text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
-                  {PRACTICE_LABELS[current.religious_practice]}
+
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-5 pt-16 text-white">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-serif text-2xl truncate">{current.pseudo}</span>
+                  <span className="text-xl font-light">{ageFromBirthdate(current.birthdate)}</span>
                 </div>
-              )}
-              {current.bio && <p className="mt-2 text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">{current.bio}</p>}
+                <div className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wider text-white/90">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {typeof current._distance === "number" && <span>À {Math.round(current._distance)} km,</span>}
+                  <span className="truncate">{[current.city, current.country].filter(Boolean).join(", ") || "—"}</span>
+                </div>
+                <div className="mt-2 space-y-1 text-sm text-white/90">
+                  {current.country_origin && (
+                    <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-[color:var(--gold)]" /> Origine : {current.country_origin}</div>
+                  )}
+                  {current.profession && (
+                    <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[color:var(--gold)]" /> {current.profession}</div>
+                  )}
+                  {current.religious_practice && (
+                    <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-[color:var(--gold)]" /> {PRACTICE_LABELS[current.religious_practice]}</div>
+                  )}
+                </div>
+                <div className="mt-3 flex items-center justify-center gap-1 text-[11px] text-white/70">
+                  <ChevronDown className="h-4 w-4 animate-bounce" /> Faites défiler pour voir les détails
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-3 sm:mt-5 flex-wrap">
-            <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" disabled={isDeciding} onClick={() => decide(false)}>
-              <X className="h-6 w-6" />
-            </Button>
-            <Link
-              to="/profile/$pseudo"
-              params={{ pseudo: current.pseudo }}
-              className="text-sm underline text-muted-foreground"
+          {/* Actions : retour en arrière, refuser, valider */}
+          <div className="flex items-center justify-center gap-5 mt-4">
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-full h-12 w-12 p-0"
+              aria-label="Revenir au profil précédent"
+              disabled={isDeciding || dismissedIds.length === 0}
+              onClick={undo}
             >
-              Voir la fiche
-            </Link>
+              <Undo2 className="h-5 w-5" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-full h-16 w-16 p-0 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              aria-label="Passer"
+              disabled={isDeciding}
+              onClick={() => decide(false)}
+            >
+              <X className="h-7 w-7" />
+            </Button>
+            <Button
+              size="lg"
+              className="rounded-full h-16 w-16 p-0 bg-primary text-primary-foreground hover:bg-primary/90"
+              aria-label="Valider ce profil"
+              disabled={isDeciding}
+              onClick={() => decide(true)}
+            >
+              <Check className="h-7 w-7" />
+            </Button>
             {currentCanMessage ? (
               <Link to="/messages/$pseudo" params={{ pseudo: current.pseudo }}>
-                <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0 border-[color:var(--gold)] text-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-primary-foreground" aria-label="Envoyer un message">
-                  <MessageCircle className="h-6 w-6" />
+                <Button size="lg" variant="outline" className="rounded-full h-12 w-12 p-0 border-[color:var(--gold)] text-[color:var(--gold)]" aria-label="Envoyer un message">
+                  <MessageCircle className="h-5 w-5" />
                 </Button>
               </Link>
             ) : (
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full h-14 w-14 p-0 opacity-50"
+                className="rounded-full h-12 w-12 p-0 opacity-50"
                 aria-label={MESSAGE_BLOCKED_HINT}
                 title={MESSAGE_BLOCKED_HINT}
                 onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
               >
-                <MessageCircle className="h-6 w-6" />
+                <MessageCircle className="h-5 w-5" />
               </Button>
             )}
-            <Button
-              size="lg"
-              variant={currentLiked ? "default" : "outline"}
-              className={`rounded-full h-14 w-14 p-0 transition-colors ${currentLiked ? "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary" : "bg-background/90 text-muted-foreground border-border hover:text-primary hover:border-primary"}`}
-              aria-label={currentLiked ? "Déjà aimé" : "J'aime"}
-                disabled={isDeciding}
-              onClick={() => decide(true)}
-            >
-              <Heart className={`h-6 w-6 ${currentLiked ? "fill-current" : ""}`} />
-            </Button>
           </div>
-          <div className="mt-3 flex items-center justify-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
-              <ChevronLeft className="h-3.5 w-3.5 text-destructive" /> Passer
-            </span>
-            <span className="font-medium">{Math.min(dismissedIds.length + 1, profiles.length)} / {profiles.length}</span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card px-3 py-1.5">
-              Aimer <ChevronRight className="h-3.5 w-3.5 text-primary" />
-            </span>
+
+          <div className="mt-2 text-center text-xs text-muted-foreground">
+            {Math.min(dismissedIds.length + 1, profiles.length)} / {profiles.length}
+          </div>
+
+          {/* Détails du profil */}
+          <div className="mt-5 space-y-4">
+            {current.bio && (
+              <section className="bg-card rounded-2xl border border-border/60 p-4">
+                <h3 className="font-serif text-primary mb-2">À propos</h3>
+                <p className="text-sm text-muted-foreground break-words [overflow-wrap:anywhere] whitespace-pre-line">{current.bio}</p>
+              </section>
+            )}
+
+            <section className="bg-card rounded-2xl border border-border/60 p-4">
+              <h3 className="font-serif text-primary mb-3">Informations</h3>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
+                <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
+                <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
+                <Info icon={<Users className="h-4 w-4" />} label="Enfants" value={current.has_children === null || current.has_children === undefined ? null : current.has_children ? `Oui${current.children_count ? ` (${current.children_count})` : ""}` : "Non"} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité" value={current.personality} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Objectif" value={current.objective} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={current.activities} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={current.smoker === null || current.smoker === undefined ? null : current.smoker ? "Oui" : "Non"} />
+              </dl>
+            </section>
+
+            {extraPhotos.length > 0 && (
+              <section className="bg-card rounded-2xl border border-border/60 p-4">
+                <h3 className="font-serif text-primary mb-3">Ses photos</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {extraPhotos.map((photo: any) => (
+                    <div key={photo.id} className="aspect-square rounded-xl overflow-hidden bg-secondary">
+                      <img
+                        src={photo.url}
+                        alt={current.pseudo}
+                        className={`w-full h-full object-cover ${currentBlurred || photo.blurred ? "blur-md scale-110" : ""}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <div className="text-center">
+              <Link to="/profile/$pseudo" params={{ pseudo: current.pseudo }} className="text-sm underline text-muted-foreground">
+                Voir la fiche complète
+              </Link>
+            </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function Info({ icon, label, value }: { icon: React.ReactNode; label: string; value?: string | null }) {
+  if (!value) return null;
+  return (
+    <div className="min-w-0">
+      <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+        <span className="text-[color:var(--gold)]">{icon}</span> {label}
+      </dt>
+      <dd className="text-sm text-foreground break-words [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }

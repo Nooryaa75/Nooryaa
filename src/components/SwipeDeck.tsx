@@ -183,7 +183,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <span className="absolute top-5 right-5 rounded-lg border-2 border-destructive px-3 py-1 font-bold text-destructive rotate-[12deg]">NON</span>
               )}
             </div>
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <div className="flex items-baseline justify-between">
                 <span className="font-serif text-lg text-primary truncate">{current.pseudo}</span>
                 <span className="text-sm text-muted-foreground">{ageFromBirthdate(current.birthdate)} ans</span>

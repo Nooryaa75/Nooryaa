@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
   GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
+  Shield, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
@@ -43,8 +44,6 @@ function boolLabel(value: boolean | null | undefined, yes = "Oui", no = "Non"): 
   if (value === null || value === undefined) return null;
   return value ? yes : no;
 }
-
-
 /** Fiche plein écran : photo + infos, détails en dessous, décision par boutons. */
 export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
@@ -54,6 +53,10 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({ about: true });
   const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
   const current = profiles.find((profile) => !dismissedSet.has(profile.id));
+
+  function toggleSection(id: string) {
+    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
 
   const { data: sentLikes } = useQuery({
     queryKey: ["sent-likes", userId],
@@ -277,31 +280,26 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
           </div>
 
           {/* Détails du profil */}
-          <div className="mt-5 space-y-4">
-            {current.bio && (
-              <section className="bg-card rounded-2xl border border-border/60 p-4">
-                <h3 className="font-serif text-primary mb-2">À propos</h3>
+          <div className="mt-5 space-y-3">
+            <AccordionSection
+              icon={<BookOpen className="h-5 w-5" />}
+              title="À propos"
+              open={openSections.about}
+              onToggle={() => toggleSection("about")}
+            >
+              {current.bio ? (
                 <p className="text-sm text-muted-foreground break-words [overflow-wrap:anywhere] whitespace-pre-line">{current.bio}</p>
-              </section>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Aucune bio renseignée.</p>
+              )}
+            </AccordionSection>
 
-            <section className="bg-card rounded-2xl border border-border/60 p-4">
-              <h3 className="font-serif text-primary mb-3">Informations</h3>
-              <dl className="grid grid-cols-2 gap-3 text-sm">
-                <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
-                <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
-                <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
-                <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
-                <Info icon={<Briefcase className="h-4 w-4" />} label="Profession" value={current.profession} />
-                <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité" value={current.personality} />
-                <Info icon={<BookOpen className="h-4 w-4" />} label="Objectif" value={current.objective} />
-                <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={current.activities} />
-                <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={boolLabel(current.smoker, "Oui", "Non")} />
-              </dl>
-            </section>
-
-            <section className="bg-card rounded-2xl border border-border/60 p-4">
-              <h3 className="font-serif text-primary mb-3">Pratique religieuse</h3>
+            <AccordionSection
+              icon={<Shield className="h-5 w-5" />}
+              title="Pratique religieuse"
+              open={openSections.religious}
+              onToggle={() => toggleSection("religious")}
+            >
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <Info icon={<BookOpen className="h-4 w-4" />} label="Religion" value={current.religion} />
                 <Info icon={<BookOpen className="h-4 w-4" />} label="Pratique" value={current.religious_practice ? PRACTICE_LABELS[current.religious_practice] : null} />
@@ -313,10 +311,33 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                   <Info icon={<BookOpen className="h-4 w-4" />} label="Porte le voile" value={boolLabel(current.porte_voile)} />
                 )}
               </dl>
-            </section>
+            </AccordionSection>
 
-            <section className="bg-card rounded-2xl border border-border/60 p-4">
-              <h3 className="font-serif text-primary mb-3">Famille</h3>
+            <AccordionSection
+              icon={<Sparkles className="h-5 w-5" />}
+              title="Mode de vie"
+              open={openSections.lifestyle}
+              onToggle={() => toggleSection("lifestyle")}
+            >
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
+                <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
+                <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
+                <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
+                <Info icon={<Briefcase className="h-4 w-4" />} label="Profession" value={current.profession} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité" value={current.personality} />
+                <Info icon={<BookOpen className="h-4 w-4" />} label="Objectif" value={current.objective} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={current.activities} />
+                <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={boolLabel(current.smoker, "Oui", "Non")} />
+              </dl>
+            </AccordionSection>
+
+            <AccordionSection
+              icon={<Users className="h-5 w-5" />}
+              title="Famille"
+              open={openSections.family}
+              onToggle={() => toggleSection("family")}
+            >
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <Info icon={<Users className="h-4 w-4" />} label="A des enfants" value={boolLabel(current.has_children)} />
                 {current.has_children && (
@@ -324,12 +345,24 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 )}
                 <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={boolLabel(current.wants_children)} />
               </dl>
-            </section>
+            </AccordionSection>
 
+            <AccordionSection
+              icon={<Search className="h-5 w-5" />}
+              title="Ce que je recherche"
+              open={openSections.searching}
+              onToggle={() => toggleSection("searching")}
+            >
+              <SearchingFor profile={current} />
+            </AccordionSection>
 
             {extraPhotos.length > 0 && (
-              <section className="bg-card rounded-2xl border border-border/60 p-4">
-                <h3 className="font-serif text-primary mb-3">Ses photos</h3>
+              <AccordionSection
+                icon={<User className="h-5 w-5" />}
+                title="Ses photos"
+                open={openSections.photos}
+                onToggle={() => toggleSection("photos")}
+              >
                 <div className="grid grid-cols-3 gap-2">
                   {extraPhotos.map((photo: any) => (
                     <div key={photo.id} className="aspect-square rounded-xl overflow-hidden bg-secondary">
@@ -341,7 +374,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                     </div>
                   ))}
                 </div>
-              </section>
+              </AccordionSection>
             )}
           </div>
 
@@ -360,5 +393,75 @@ function Info({ icon, label, value }: { icon: React.ReactNode; label: string; va
       </dt>
       <dd className="text-sm text-foreground break-words [overflow-wrap:anywhere]">{value}</dd>
     </div>
+  );
+}
+
+function AccordionSection({
+  icon,
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  open?: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-card rounded-2xl border border-border/60 overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-3 p-4 text-left"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-[color:var(--gold)]">{icon}</span>
+          <span className="font-serif text-primary">{title}</span>
+        </div>
+        <span className="text-muted-foreground">
+          {open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        </span>
+      </button>
+      {open && <div className="px-4 pt-4 pb-4 border-t border-border/40">{children}</div>}
+    </div>
+  );
+}
+
+function SearchingFor({ profile }: { profile: any }) {
+  const prefs = profile?.preferences ?? {};
+  const hasPrefs = Object.keys(prefs).length > 0;
+  if (!hasPrefs) return <p className="text-sm text-muted-foreground italic">Aucun critère de recherche renseigné.</p>;
+
+  const tri = (v: any) => (v === true ? "Oui" : v === false ? "Non" : null);
+  const range = (min?: number | null, max?: number | null) => {
+    if (min && max) return `Entre ${min} et ${max}`;
+    if (min) return `À partir de ${min}`;
+    if (max) return `Jusqu'à ${max}`;
+    return null;
+  };
+
+  return (
+    <dl className="grid grid-cols-2 gap-3 text-sm">
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Âge recherché" value={range(prefs.age_min, prefs.age_max)} />
+      <Info icon={<Ruler className="h-4 w-4" />} label="Taille recherchée" value={range(prefs.height_min, prefs.height_max)} />
+      <Info icon={<MapPin className="h-4 w-4" />} label="Distance max" value={prefs.distance_km ? `${prefs.distance_km} km` : null} />
+      <Info icon={<Globe className="h-4 w-4" />} label="Pays de résidence" value={prefs.country} />
+      <Info icon={<Globe className="h-4 w-4" />} label="Pays d'origine" value={prefs.country_origin} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Situation" value={prefs.marital_status} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Pratique religieuse" value={prefs.religious_practice} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité recherchée" value={prefs.personality} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={prefs.activities} />
+      <Info icon={<Users className="h-4 w-4" />} label="A des enfants" value={tri(prefs.has_children)} />
+      <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={tri(prefs.wants_children)} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={tri(prefs.smoker)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Salat quotidienne" value={tri(prefs.salat_quotidienne)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Ramadan" value={tri(prefs.ramadan)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Hadj" value={tri(prefs.hadj)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Omra" value={tri(prefs.omra)} />
+      {profile.gender !== "femme" && <Info icon={<BookOpen className="h-4 w-4" />} label="Porte le voile" value={tri(prefs.porte_voile)} />}
+    </dl>
   );
 }

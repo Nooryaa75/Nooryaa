@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,16 +16,13 @@ import {
   PROFESSIONS,
   OBJECTIVES,
   PERSONALITY_OPTIONS,
-  ageFromBirthdate,
-  PRACTICE_LABELS,
 } from "@/lib/profile";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
-import { Trash2, Star, User, MapPin, Heart, Layers } from "lucide-react";
+import { Trash2, Star } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { useMyProfile } from "@/lib/match";
-import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
   head: () => ({
@@ -58,121 +55,19 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
   );
 }
 
-function ProfileCard({ profile, userId, liked, onToggleLike }: { profile: any; userId: string; liked: boolean; onToggleLike: (profileId: string, nextLiked: boolean) => void }) {
-  const age = ageFromBirthdate(profile.birthdate);
-  const distance = typeof profile._distance === "number" ? `${Math.round(profile._distance)} km` : null;
-  const { data: me } = useMyProfile(userId);
-  const { data: graph } = useLikeGraph(userId);
-  const blurred = isBlurred(profile, me, graph);
-
-  async function like(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (liked) {
-      const { error } = await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", profile.id);
-      if (error) toast.error(error.message);
-      else {
-        onToggleLike(profile.id, false);
-        toast.success(`Vous n'aimez plus ${profile.pseudo}`);
-      }
-      return;
-    }
-    const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
-    if (error && !error.message.includes("duplicate")) toast.error(error.message);
-    else {
-      onToggleLike(profile.id, true);
-      toast.success(`Vous avez aimé ${profile.pseudo}`);
-    }
-  }
-
-
-  return (
-    <div className="group bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300">
-      <div className="relative aspect-[4/5] bg-secondary">
-        {profile.primary_photo_url ? (
-          <img
-            src={profile.primary_photo_url}
-            alt={profile.pseudo}
-            className={`w-full h-full object-cover ${blurred ? "blur-md scale-110" : ""}`}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <User className="h-16 w-16 text-muted-foreground/30" />
-          </div>
-        )}
-        {typeof profile._matchPercent === "number" && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className="inline-flex items-center justify-center rounded-full bg-[color:var(--gold)] text-primary font-bold text-xs h-9 w-9 shadow-md border-2 border-background">
-              {profile._matchPercent}%
-            </span>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={like}
-          className={`absolute bottom-3 right-3 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${liked ? "bg-primary border-primary text-primary-foreground" : "bg-background/90 border-border/60 text-muted-foreground hover:text-primary hover:border-primary"}`}
-          aria-label={liked ? "Retirer mon like" : "J'aime"}
-        >
-          <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
-        </button>
-      </div>
-      <div className="p-4 space-y-2">
-        <div className="flex items-baseline justify-between">
-          <h3 className="font-serif text-lg text-primary truncate">{profile.pseudo}</h3>
-          {age != null && <span className="text-sm text-muted-foreground whitespace-nowrap">{age} ans</span>}
-        </div>
-        <div className="text-xs text-muted-foreground flex items-center gap-1">
-          <MapPin className="h-3 w-3" />
-          {profile.city || profile.country || "—"}
-          {distance && <span>· {distance}</span>}
-        </div>
-        {profile.religious_practice && (
-          <p className="text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
-            {PRACTICE_LABELS[profile.religious_practice]}
-          </p>
-        )}
-        {profile.bio && <p className="text-sm text-muted-foreground line-clamp-2 break-words [overflow-wrap:anywhere]">{profile.bio}</p>}
-        <Link
-          to="/profile/$pseudo"
-          params={{ pseudo: profile.pseudo }}
-          className="inline-block text-sm font-medium text-primary underline-offset-4 hover:underline mt-1"
-        >
-          Voir la fiche
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
-  const [view, setView] = useState<"grid" | "swipe">("swipe");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
-  const [optimisticLikes, setOptimisticLikes] = useState<Record<string, boolean>>({});
   const set = (patch: Partial<Filters>) => {
     setActiveSearchName(null);
     setFilters((f) => ({ ...f, ...patch }));
   };
 
   const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
-
-  const { data: sentLikes } = useQuery({
-    queryKey: ["sent-likes", ctx.userId],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("likes").select("to_user").eq("from_user", ctx.userId);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const likedIds = new Set(
-    (sentLikes ?? []).map((row) => row.to_user).filter((id) => optimisticLikes[id] !== false),
-  );
-  for (const [id, v] of Object.entries(optimisticLikes)) if (v) likedIds.add(id);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],
@@ -212,24 +107,19 @@ function Recherche() {
   }
 
   const originMissing = filters.radiusEnabled && (originLat == null || originLng == null);
-  const immersive = tab === "resultats" && view === "swipe";
 
   return (
-    <div className={immersive ? "space-y-2" : "space-y-6"}>
-      {!immersive && (
-        <div>
-          <h1 className="text-3xl font-serif text-primary">Recherche</h1>
-        </div>
-      )}
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-serif text-primary">Recherche</h1>
+      </div>
 
-      <Tabs value={tab} onValueChange={setTab} className={immersive ? "space-y-2" : "space-y-6"}>
-        {!immersive && (
-          <TabsList>
-            <TabsTrigger value="resultats">Profils</TabsTrigger>
-            <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
-            <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
-          </TabsList>
-        )}
+      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="resultats">Profils</TabsTrigger>
+          <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
+          <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="filtres" className="space-y-4">
           <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 space-y-5">
@@ -441,74 +331,39 @@ function Recherche() {
         </TabsContent>
 
         <TabsContent value="resultats">
+          {activeSearchName && (
+            <div className="flex items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
+                Recherche : {activeSearchName}
+                <button
+                  type="button"
+                  onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
+                  className="hover:text-primary transition-colors"
+                  aria-label="Effacer la recherche"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          )}
           {isLoading ? (
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
           ) : !profiles || profiles.length === 0 ? (
             <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
-              <User className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+              <Star className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
               <p className="text-muted-foreground">Aucun profil ne correspond à vos critères.</p>
               <Button className="mt-4" variant="outline" onClick={() => setTab("filtres")}>Modifier les filtres</Button>
             </div>
           ) : (
-            <>
-              <div className={`flex-wrap items-center justify-between gap-3 mb-4 ${immersive ? "hidden" : "flex"}`}>
-                <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
-                <div className="flex items-center gap-2">
-                  {activeSearchName && (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
-                      Recherche : {activeSearchName}
-                      <button
-                        type="button"
-                        onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
-                        className="hover:text-primary transition-colors"
-                        aria-label="Effacer la recherche"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  <Button size="sm" variant={view === "swipe" ? "default" : "outline"} onClick={() => setView(view === "swipe" ? "grid" : "swipe")}>
-                    <Layers className="h-4 w-4 mr-1" /> {view === "swipe" ? "Vue grille" : "Mode swipe"}
-                  </Button>
-                </div>
-              </div>
-              {view === "swipe" ? (
-                <>
-                <SwipeDeck
-                  title="Résultats de recherche"
-                  profiles={profiles}
-                  userId={ctx.userId}
-                  onBack={() => setView("grid")}
-                  persistPass={false}
-                  hideHeader
-                />
-                <div className="mt-6 text-center">
-                  <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setView("grid")}>
-                    <Layers className="h-4 w-4 mr-1" /> Vue grille et filtres
-                  </Button>
-                </div>
-                </>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {profiles.map((p) => (
-                    <ProfileCard
-                      key={p.id}
-                      profile={p}
-                      userId={ctx.userId}
-                      liked={likedIds.has(p.id)}
-                      onToggleLike={(profileId, nextLiked) => {
-                        setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
-                        qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
-                        qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
-                        qc.invalidateQueries({ queryKey: ["unread-counts"] });
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+            <SwipeDeck
+              title="Résultats de recherche"
+              profiles={profiles}
+              userId={ctx.userId}
+              onBack={() => setTab("filtres")}
+              persistPass={false}
+              hideHeader
+            />
           )}
-
         </TabsContent>
       </Tabs>
     </div>

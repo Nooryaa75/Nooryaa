@@ -17,7 +17,7 @@ type Props = {
   title: string;
   profiles: any[];
   userId: string;
-  onBack: () => void;
+  onBack?: () => void;
   /** Enregistre le passage en base (l'Accueil ne re-propose plus le profil). */
   persistPass?: boolean;
   /** Masque l'en-tête « Retour » quand le deck est déjà dans une page dédiée. */
@@ -154,9 +154,11 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
     <div className="space-y-4">
       {!hideHeader && (
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> Retour
-          </Button>
+          {onBack && (
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="h-4 w-4 mr-1" /> Retour
+            </Button>
+          )}
           <h2 className="font-serif text-xl text-primary">{title}</h2>
         </div>
       )}
@@ -164,7 +166,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       {!current ? (
         <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
           <p className="text-muted-foreground">Plus de profils dans cette sélection pour le moment.</p>
-          <Button className="mt-4" variant="outline" onClick={onBack}>Revenir aux sélections</Button>
+          {onBack && <Button className="mt-4" variant="outline" onClick={onBack}>Revenir aux sélections</Button>}
         </div>
       ) : (
         <div className="mx-auto max-w-md">

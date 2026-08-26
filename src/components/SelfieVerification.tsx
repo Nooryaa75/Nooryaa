@@ -105,7 +105,13 @@ export function SelfieVerification({ userId }: { userId: string }) {
         )}
       </Button>
 
-      <CameraCapture open={open} onClose={() => setOpen(false)} onCapture={onCapture} />
+      <CameraCapture
+        open={open}
+        onClose={() => setOpen(false)}
+        onCapture={onCapture}
+        faceGuide
+        hint="Placez votre visage dans le cercle — une seule personne visible."
+      />
     </div>
   );
 }

@@ -6,14 +6,22 @@ import { Button } from "@/components/ui/button";
  * Prise de photo via la caméra de l'appareil (web app + webview native).
  * Utilise getUserMedia ; l'appelant gère le repli <input capture> si indisponible.
  */
+/** Part du cadre occupée par le cercle de cadrage du visage. */
+const GUIDE_RATIO = 0.74;
+
 export function CameraCapture({
   open,
   onClose,
   onCapture,
+  faceGuide = false,
+  hint,
 }: {
   open: boolean;
   onClose: () => void;
   onCapture: (file: File) => void;
+  /** Affiche un cercle de cadrage : seul le contenu du cercle est conservé. */
+  faceGuide?: boolean;
+  hint?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -74,6 +82,31 @@ export function CameraCapture({
       ctx.scale(-1, 1);
     }
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    if (faceGuide) {
+      // On ne conserve que le disque de cadrage : tout visage hors du cercle est masqué.
+      const side = Math.min(canvas.width, canvas.height);
+      const d = Math.round(side * GUIDE_RATIO);
+      const sx = Math.round((canvas.width - d) / 2);
+      const sy = Math.round((canvas.height - d) / 2);
+      const out = document.createElement("canvas");
+      out.width = d;
+      out.height = d;
+      const octx = out.getContext("2d")!;
+      octx.fillStyle = "#000000";
+      octx.fillRect(0, 0, d, d);
+      octx.save();
+      octx.beginPath();
+      octx.arc(d / 2, d / 2, d / 2, 0, Math.PI * 2);
+      octx.clip();
+      octx.drawImage(canvas, sx, sy, d, d, 0, 0, d, d);
+      octx.restore();
+      setShot(out.toDataURL("image/jpeg", 0.9));
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      return;
+    }
+
     setShot(canvas.toDataURL("image/jpeg", 0.9));
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
@@ -108,6 +141,24 @@ export function CameraCapture({
             muted
             className={`h-full w-full object-cover ${facing === "user" ? "scale-x-[-1]" : ""}`}
           />
+        )}
+        {faceGuide && !shot && !error && (
+          <div className="pointer-events-none absolute inset-0">
+            <div
+              className="absolute inset-0 bg-black/60"
+              style={{
+                maskImage: `radial-gradient(circle at 50% 50%, transparent ${GUIDE_RATIO * 50}%, black ${GUIDE_RATIO * 50}%)`,
+                WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent ${GUIDE_RATIO * 50}%, black ${GUIDE_RATIO * 50}%)`,
+              }}
+            />
+            <div
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-primary/80"
+              style={{ width: `${GUIDE_RATIO * 100}%`, height: `${GUIDE_RATIO * 100}%` }}
+            />
+            <p className="absolute inset-x-0 bottom-3 text-center text-xs text-white/90">
+              {hint ?? "Placez votre visage dans le cercle — une seule personne."}
+            </p>
+          </div>
         )}
         {error && (
           <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-white">

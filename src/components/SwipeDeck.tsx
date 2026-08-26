@@ -284,7 +284,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
           {/* Détails du profil */}
           <div className="mt-5 space-y-3">
             <AccordionSection
-              id="about"
+             
               icon={<BookOpen className="h-5 w-5" />}
               title="À propos"
               open={openSections.about}
@@ -298,7 +298,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-              id="religious"
+             
               icon={<Shield className="h-5 w-5" />}
               title="Pratique religieuse"
               open={openSections.religious}
@@ -318,7 +318,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-              id="lifestyle"
+             
               icon={<Sparkles className="h-5 w-5" />}
               title="Mode de vie"
               open={openSections.lifestyle}
@@ -338,7 +338,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-              id="family"
+             
               icon={<Users className="h-5 w-5" />}
               title="Famille"
               open={openSections.family}
@@ -354,7 +354,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </AccordionSection>
 
             <AccordionSection
-              id="searching"
+             
               icon={<Search className="h-5 w-5" />}
               title="Ce que je recherche"
               open={openSections.searching}
@@ -365,7 +365,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
             {extraPhotos.length > 0 && (
               <AccordionSection
-                id="photos"
+               
                 icon={<User className="h-5 w-5" />}
                 title="Ses photos"
                 open={openSections.photos}

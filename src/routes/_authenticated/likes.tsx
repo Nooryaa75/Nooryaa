@@ -35,24 +35,34 @@ function Likes() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <Section title="Personnes qui vous ont liké·e" items={received} me={me} graph={graph} />
-      <Section title="Vos likes envoyés" items={sent} me={me} graph={graph} />
+      <Section title="Personnes qui vous ont liké·e" items={received} me={me} graph={graph} userId={ctx.userId} />
+      <Section title="Vos likes envoyés" items={sent} me={me} graph={graph} userId={ctx.userId} />
     </div>
   );
 }
 
-function Section({ title, items, me, graph }: { title: string; items: any[] | undefined; me: any; graph: any }) {
+function Section({ title, items, me, graph, userId }: { title: string; items: any[] | undefined; me: any; graph: any; userId: string }) {
+  const [view, setView] = useState<"grid" | "swipe">("grid");
+  const profiles = (items ?? []).map((it: any) => it.profiles).filter(Boolean).map((p: any) => ({ ...p, _matchPercent: matchPercent(me, p) ?? 0 }));
+
   return (
     <div>
-      <h2 className="text-xl font-serif text-primary mb-4 flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
-      {!items || items.length === 0 ? (
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="text-xl font-serif text-primary flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
+        {profiles.length > 0 && (
+          <Button size="sm" variant={view === "swipe" ? "default" : "outline"} onClick={() => setView(view === "swipe" ? "grid" : "swipe")}>
+            <Layers className="h-4 w-4 mr-1" /> {view === "swipe" ? "Vue grille" : "Mode swipe"}
+          </Button>
+        )}
+      </div>
+      {profiles.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border/60 p-8 text-center text-muted-foreground">Aucun pour le moment.</div>
+      ) : view === "swipe" ? (
+        <SwipeDeck title={title} profiles={profiles} userId={userId} onBack={() => setView("grid")} />
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {items.map((it: any, i) => {
-            const p = it.profiles;
-            if (!p) return null;
-            const pct = matchPercent(me, p);
+          {profiles.map((p: any, i: number) => {
+            const pct = p._matchPercent;
             return (
               <Link key={i} to="/profile/$pseudo" params={{ pseudo: p.pseudo }} className="bg-card rounded-xl overflow-hidden border border-border/60">
                 <div className="aspect-square bg-secondary relative">
@@ -75,3 +85,4 @@ function Section({ title, items, me, graph }: { title: string; items: any[] | un
     </div>
   );
 }
+

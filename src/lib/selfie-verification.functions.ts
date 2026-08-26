@@ -158,6 +158,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           const parsed = JSON.parse(match[0]);
           result = {
             verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
+            single_face: safeEnum(parsed.single_face, ["yes", "no", "unknown"] as const, "unknown"),
             same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
             live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
             reason: typeof parsed.reason === "string" ? parsed.reason : "",

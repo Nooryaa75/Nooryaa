@@ -161,7 +161,13 @@ function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">
-        <Link to="/" className="block text-center text-2xl font-serif text-primary mb-3">Nooryaa</Link>
+        <Link to="/" className="block text-center mb-3">
+          <img
+            src="/__l5e/assets-v1/1945ad1c-b9e7-447d-89a2-ada383884aa7/nooryaa-logo.jpg"
+            alt="Nooryaa"
+            className="mx-auto h-16 w-auto object-contain"
+          />
+        </Link>
         <h1 className="text-2xl font-serif text-center text-primary mb-1">
           {mode === "signup" ? "Créer un compte" : "Connexion"}
         </h1>

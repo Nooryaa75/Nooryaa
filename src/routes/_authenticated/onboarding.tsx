@@ -327,6 +327,10 @@ function Onboarding() {
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <PhotoManager userId={ctx.userId} />
         </div>
+        <SelfieVerification userId={ctx.userId} />
+        <p className="text-xs text-muted-foreground">
+          La vérification par selfie est obligatoire : votre fiche ne peut pas être enregistrée tant qu'elle n'est pas validée.
+        </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}
         </Button>

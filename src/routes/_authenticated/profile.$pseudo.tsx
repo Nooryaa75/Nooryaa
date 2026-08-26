@@ -280,6 +280,7 @@ function ProfileView() {
                 <div className="grid grid-cols-2 gap-3 pb-2">
                   <Info label="Situation" value={profile.marital_status ? MARITAL_LABELS[profile.marital_status] : undefined} />
                   <Info label="Origine" value={profile.country_origin} />
+                  <Info label="A grandi" value={(profile as any).grew_up} />
                   <Info label="Profession" value={profile.profession} />
                   <Info label="Études" value={profile.education_level} />
                   <Info label="Personnalité" value={profile.personality} />

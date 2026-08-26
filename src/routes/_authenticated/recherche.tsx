@@ -333,74 +333,39 @@ function Recherche() {
         </TabsContent>
 
         <TabsContent value="resultats">
+          {activeSearchName && (
+            <div className="flex items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
+                Recherche : {activeSearchName}
+                <button
+                  type="button"
+                  onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
+                  className="hover:text-primary transition-colors"
+                  aria-label="Effacer la recherche"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          )}
           {isLoading ? (
             <div className="text-center text-muted-foreground py-12">Chargement...</div>
           ) : !profiles || profiles.length === 0 ? (
             <div className="text-center py-16 bg-card rounded-2xl border border-border/60">
-              <User className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+              <Star className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
               <p className="text-muted-foreground">Aucun profil ne correspond à vos critères.</p>
               <Button className="mt-4" variant="outline" onClick={() => setTab("filtres")}>Modifier les filtres</Button>
             </div>
           ) : (
-            <>
-              <div className={`flex-wrap items-center justify-between gap-3 mb-4 ${immersive ? "hidden" : "flex"}`}>
-                <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
-                <div className="flex items-center gap-2">
-                  {activeSearchName && (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
-                      Recherche : {activeSearchName}
-                      <button
-                        type="button"
-                        onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
-                        className="hover:text-primary transition-colors"
-                        aria-label="Effacer la recherche"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  <Button size="sm" variant={view === "swipe" ? "default" : "outline"} onClick={() => setView(view === "swipe" ? "grid" : "swipe")}>
-                    <Layers className="h-4 w-4 mr-1" /> {view === "swipe" ? "Vue grille" : "Mode swipe"}
-                  </Button>
-                </div>
-              </div>
-              {view === "swipe" ? (
-                <>
-                <SwipeDeck
-                  title="Résultats de recherche"
-                  profiles={profiles}
-                  userId={ctx.userId}
-                  onBack={() => setView("grid")}
-                  persistPass={false}
-                  hideHeader
-                />
-                <div className="mt-6 text-center">
-                  <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setView("grid")}>
-                    <Layers className="h-4 w-4 mr-1" /> Vue grille et filtres
-                  </Button>
-                </div>
-                </>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {profiles.map((p) => (
-                    <ProfileCard
-                      key={p.id}
-                      profile={p}
-                      userId={ctx.userId}
-                      liked={likedIds.has(p.id)}
-                      onToggleLike={(profileId, nextLiked) => {
-                        setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
-                        qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
-                        qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
-                        qc.invalidateQueries({ queryKey: ["unread-counts"] });
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+            <SwipeDeck
+              title="Résultats de recherche"
+              profiles={profiles}
+              userId={ctx.userId}
+              onBack={() => setTab("filtres")}
+              persistPass={false}
+              hideHeader
+            />
           )}
-
         </TabsContent>
       </Tabs>
     </div>

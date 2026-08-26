@@ -129,9 +129,54 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function useScreenshotProtection() {
+  useEffect(() => {
+    // Bloque le clic droit (hors champs de saisie pour garder coller/copier utiles)
+    const onContextMenu = (e: MouseEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      e.preventDefault();
+    };
+    // Intercepte la touche Impr. écran et vide le presse-papiers
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "PrintScreen") {
+        e.preventDefault();
+        try { navigator.clipboard?.writeText(""); } catch { /* ignore */ }
+      }
+    };
+    // Bloque les raccourcis de copie/sauvegarde/impression de page
+    const onKeyDown = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const inField = !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+      if ((e.ctrlKey || e.metaKey) && ["s", "p"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c" && !inField) {
+        e.preventDefault();
+      }
+    };
+    // Empêche le glisser-déposer des images vers le bureau
+    const onDragStart = (e: DragEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && t.tagName === "IMG") e.preventDefault();
+    };
+    document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("keyup", onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("dragstart", onDragStart);
+    return () => {
+      document.removeEventListener("contextmenu", onContextMenu);
+      document.removeEventListener("keyup", onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("dragstart", onDragStart);
+    };
+  }, []);
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  useScreenshotProtection();
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {

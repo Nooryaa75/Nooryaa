@@ -6,14 +6,22 @@ import { Button } from "@/components/ui/button";
  * Prise de photo via la caméra de l'appareil (web app + webview native).
  * Utilise getUserMedia ; l'appelant gère le repli <input capture> si indisponible.
  */
+/** Part du cadre occupée par le cercle de cadrage du visage. */
+const GUIDE_RATIO = 0.74;
+
 export function CameraCapture({
   open,
   onClose,
   onCapture,
+  faceGuide = false,
+  hint,
 }: {
   open: boolean;
   onClose: () => void;
   onCapture: (file: File) => void;
+  /** Affiche un cercle de cadrage : seul le contenu du cercle est conservé. */
+  faceGuide?: boolean;
+  hint?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);

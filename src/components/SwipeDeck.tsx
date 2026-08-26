@@ -335,13 +335,8 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 </div>
               </section>
             )}
-
-            <div className="text-center">
-              <Link to="/profile/$pseudo" params={{ pseudo: current.pseudo }} className="text-sm underline text-muted-foreground">
-                Voir la fiche complète
-              </Link>
-            </div>
           </div>
+
         </div>
       )}
     </div>

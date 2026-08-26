@@ -61,31 +61,15 @@ function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
-  const [view, setView] = useState<"grid" | "swipe">("swipe");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
-  const [optimisticLikes, setOptimisticLikes] = useState<Record<string, boolean>>({});
   const set = (patch: Partial<Filters>) => {
     setActiveSearchName(null);
     setFilters((f) => ({ ...f, ...patch }));
   };
 
   const { me, isLoading, profiles, originLat, originLng } = useDiscovery(ctx.userId, filters);
-
-  const { data: sentLikes } = useQuery({
-    queryKey: ["sent-likes", ctx.userId],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("likes").select("to_user").eq("from_user", ctx.userId);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const likedIds = new Set(
-    (sentLikes ?? []).map((row) => row.to_user).filter((id) => optimisticLikes[id] !== false),
-  );
-  for (const [id, v] of Object.entries(optimisticLikes)) if (v) likedIds.add(id);
 
   const { data: savedSearches } = useQuery({
     queryKey: ["saved-searches", ctx.userId],

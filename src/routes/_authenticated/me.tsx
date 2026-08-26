@@ -48,6 +48,7 @@ function MyProfile() {
         birthdate: form.birthdate || null,
         height_cm: form.height_cm ? Number(form.height_cm) : null,
         city: form.city, country: form.country, country_origin: form.country_origin,
+        grew_up: form.grew_up || null,
         latitude: form.latitude ?? null, longitude: form.longitude ?? null,
         marital_status: form.marital_status,
         salat_quotidienne: form.salat_quotidienne ?? null,
@@ -142,6 +143,13 @@ function MyProfile() {
           <div>
             <Label>Pays d'origine</Label>
             <Select value={form.country_origin ?? ""} onValueChange={(v) => setForm({ ...form, country_origin: v })}>
+              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+              <SelectContent>{COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Où as-tu grandi ?</Label>
+            <Select value={form.grew_up ?? ""} onValueChange={(v) => setForm({ ...form, grew_up: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>{COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
             </Select>

@@ -76,7 +76,8 @@ export function SelfieVerification({ userId }: { userId: string }) {
 
       <p className="text-sm text-muted-foreground">
         Prenez un selfie en direct : il est comparé à vos photos de profil pour confirmer que
-        c'est bien vous. Les autres membres verront alors un badge « Photo vérifiée ».
+        c'est bien vous. Le selfie n'est pas enregistré dans votre fiche, seul le résultat de
+        la vérification est conservé.
       </p>
 
       {status === "rejected" && !verified && (

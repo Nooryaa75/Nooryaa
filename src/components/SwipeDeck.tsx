@@ -17,7 +17,7 @@ type Props = {
   title: string;
   profiles: any[];
   userId: string;
-  onBack: () => void;
+  onBack?: () => void;
   /** Enregistre le passage en base (l'Accueil ne re-propose plus le profil). */
   persistPass?: boolean;
   /** Masque l'en-tête « Retour » quand le deck est déjà dans une page dédiée. */

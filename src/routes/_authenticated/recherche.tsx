@@ -20,8 +20,9 @@ import {
   PRACTICE_LABELS,
 } from "@/lib/profile";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
-import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
+import { Trash2, Star, User, MapPin, Heart, Layers } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred } from "@/lib/reveal";

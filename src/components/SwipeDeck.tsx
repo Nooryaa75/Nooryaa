@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
-  GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown,
+  GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
@@ -51,6 +51,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [isDeciding, setIsDeciding] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ about: true });
   const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
   const current = profiles.find((profile) => !dismissedSet.has(profile.id));
 

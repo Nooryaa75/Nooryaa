@@ -157,7 +157,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 </div>
               </div>
             )}
-            <div className="aspect-[3/4] bg-secondary relative">
+            <div className="h-[42vh] max-h-[420px] min-h-[220px] sm:h-auto sm:max-h-none sm:aspect-[3/4] bg-secondary relative">
               {current.primary_photo_url ? (
                 <img
                   src={current.primary_photo_url}

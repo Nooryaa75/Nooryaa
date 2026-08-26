@@ -157,7 +157,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 </div>
               </div>
             )}
-            <div className="aspect-[3/4] bg-secondary relative">
+            <div className="h-[42vh] max-h-[420px] min-h-[220px] sm:h-auto sm:max-h-none sm:aspect-[3/4] bg-secondary relative">
               {current.primary_photo_url ? (
                 <img
                   src={current.primary_photo_url}
@@ -183,7 +183,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <span className="absolute top-5 right-5 rounded-lg border-2 border-destructive px-3 py-1 font-bold text-destructive rotate-[12deg]">NON</span>
               )}
             </div>
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <div className="flex items-baseline justify-between">
                 <span className="font-serif text-lg text-primary truncate">{current.pseudo}</span>
                 <span className="text-sm text-muted-foreground">{ageFromBirthdate(current.birthdate)} ans</span>
@@ -198,11 +198,11 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                   {PRACTICE_LABELS[current.religious_practice]}
                 </div>
               )}
-              {current.bio && <p className="mt-2 text-sm text-muted-foreground line-clamp-3 break-words [overflow-wrap:anywhere]">{current.bio}</p>}
+              {current.bio && <p className="mt-2 text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">{current.bio}</p>}
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
+          <div className="flex items-center justify-center gap-3 mt-3 sm:mt-5 flex-wrap">
             <Button size="lg" variant="outline" className="rounded-full h-14 w-14 p-0" aria-label="Passer" disabled={isDeciding} onClick={() => decide(false)}>
               <X className="h-6 w-6" />
             </Button>

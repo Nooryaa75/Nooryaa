@@ -72,7 +72,7 @@ function Splash() {
           {SITE_TAGLINE}
         </p>
         <p className="mt-3 text-sm text-muted-foreground max-w-sm">
-          Pour une relation sincère tournée vers le dîn — abonnement gratuit.
+          Pour une relation sincère tournée vers le dîn.
         </p>
 
         <div className="mt-10 flex gap-1.5" aria-label="Chargement">

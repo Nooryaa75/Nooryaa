@@ -161,12 +161,9 @@ function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">
-        <Link to="/" className="block text-center text-2xl font-serif text-primary mb-1">Nooryaa</Link>
-        <div className="text-center mb-3">
-          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[color:var(--gold)]/15 text-[color:var(--gold)] font-medium">Abonnement gratuit</span>
-        </div>
+        <Link to="/" className="block text-center text-2xl font-serif text-primary mb-3">Nooryaa</Link>
         <h1 className="text-2xl font-serif text-center text-primary mb-1">
-          {mode === "signup" ? "Créer un compte" : "Bon retour"}
+          {mode === "signup" ? "Créer un compte" : "Connexion"}
         </h1>
         <p className="text-center text-sm text-muted-foreground mb-6">
           {mode === "signup" ? "Commencez votre recherche aujourd'hui — c'est gratuit." : "Connectez-vous à votre profil"}

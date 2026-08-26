@@ -148,7 +148,7 @@ function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [view, setView] = useState<"grid" | "swipe">("grid");
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
   const [optimisticLikes, setOptimisticLikes] = useState<Record<string, boolean>>({});

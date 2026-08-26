@@ -39,7 +39,7 @@ function Splash() {
           .maybeSingle();
         target = { to: profile?.onboarded ? "/browse" : "/onboarding" };
       }
-      const wait = Math.max(0, 2200 - (Date.now() - start));
+      const wait = Math.max(0, 5000 - (Date.now() - start));
       setTimeout(() => {
         if (!cancelled) navigate({ ...target, replace: true } as any);
       }, wait);

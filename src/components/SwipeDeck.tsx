@@ -198,7 +198,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                   {PRACTICE_LABELS[current.religious_practice]}
                 </div>
               )}
-              {current.bio && <p className="mt-2 text-sm text-muted-foreground line-clamp-3 break-words [overflow-wrap:anywhere]">{current.bio}</p>}
+              {current.bio && <p className="mt-2 text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 break-words [overflow-wrap:anywhere]">{current.bio}</p>}
             </div>
           </div>
 

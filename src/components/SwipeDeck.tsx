@@ -163,7 +163,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                   src={current.primary_photo_url}
                   alt={current.pseudo}
                   draggable={false}
-                  className={`w-full h-full object-cover object-top ${currentBlurred ? "blur-md scale-110" : ""}`}
+                  className={`w-full h-full object-cover object-center ${currentBlurred ? "blur-md scale-110" : ""}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>

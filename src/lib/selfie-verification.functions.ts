@@ -16,17 +16,18 @@ On te donne le SELFIE de vérification pris en direct par la personne, puis une 
 Sois TRÈS STRICT : en cas de doute, ne valide pas. Compare précisément la morphologie du visage (forme du visage, écartement et forme des yeux, nez, bouche, mâchoire, oreilles, grains de beauté), l'âge apparent et le genre apparent. Une simple ressemblance générale (même couleur de cheveux, même type physique, même voile) NE SUFFIT PAS : réponds "no" si un seul trait morphologique diffère nettement.
 
 Analyse :
-1. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
-2. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
-3. Le selfie doit rester conforme (pas de nudité, pas de contenu choquant) : sinon verdict "rejected".
+1. single_face : le selfie doit contenir EXACTEMENT UNE SEULE tête/personne visible. "yes" si une seule personne est clairement visible, "no" si plusieurs personnes ou plusieurs visages sont présents, "unknown" si aucun visage n'est détecté ou si le visage est trop flou/caché.
+2. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
+3. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
+4. Le selfie doit rester conforme (pas de nudité, pas de contenu choquant) : sinon verdict "rejected".
 
 Verdict :
-- "verified" si same_person = yes ET live_capture = yes.
-- "rejected" si same_person = no, ou live_capture = no, ou contenu non conforme.
+- "verified" si single_face = yes ET same_person = yes ET live_capture = yes.
+- "rejected" si single_face = no, ou same_person = no, ou live_capture = no, ou contenu non conforme.
 - "review" dans les autres cas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"verified|review|rejected","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte en français adressée à la personne"}`;
+{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte en français adressée à la personne"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;

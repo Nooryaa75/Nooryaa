@@ -154,9 +154,15 @@ export const verifySelfie = createServerFn({ method: "POST" })
       // on garde le verdict "review"
     }
 
-    // Garde-fous côté serveur
-    if (result.same_person === "no" || result.live_capture === "no") result.verdict = "rejected";
-    else if (result.verdict === "verified" && (result.same_person !== "yes" || !result.gesture_ok)) {
+    // Garde-fous côté serveur (stricts : le doute ne valide jamais)
+    if (result.same_person === "no" || result.live_capture === "no") {
+      result.verdict = "rejected";
+      if (!result.reason) result.reason = "Le selfie ne correspond pas à votre photo de profil.";
+    } else if (
+      result.same_person !== "yes" ||
+      result.live_capture !== "yes" ||
+      !result.gesture_ok
+    ) {
       result.verdict = "review";
     }
 

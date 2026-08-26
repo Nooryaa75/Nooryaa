@@ -433,7 +433,7 @@ function AccordionSection({
           {open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
         </span>
       </button>
-      {open && <div className="px-4 pb-4 border-t border-border/40">{children}</div>}
+      {open && <div className="px-4 pt-4 pb-4 border-t border-border/40">{children}</div>}
     </div>
   );
 }

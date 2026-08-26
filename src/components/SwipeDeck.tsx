@@ -67,7 +67,9 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
     // Toute décision est conservée dans profile_passes afin qu'un profil ne soit
     // proposé qu'une seule fois. Un « oui » crée également le like correspondant.
     const [swipeResult, likeResult] = await Promise.all([
-      supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id }),
+      persistPass
+        ? supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id })
+        : Promise.resolve({ error: null }),
       like && !currentLiked
         ? supabase.from("likes").insert({ from_user: userId, to_user: decidedProfile.id })
         : Promise.resolve({ error: null }),

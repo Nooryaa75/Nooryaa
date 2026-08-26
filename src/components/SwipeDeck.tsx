@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
-  GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown,
+  GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";

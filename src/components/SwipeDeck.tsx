@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
   GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
-  Shield, Search,
+  Shield, Search, BadgeCheck, ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
@@ -197,9 +197,18 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
               </div>
 
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-5 pt-16 text-white">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="font-serif text-2xl truncate">{current.pseudo}</span>
                   <span className="text-xl font-light">{ageFromBirthdate(current.birthdate)}</span>
+                  {(current as any).photo_verified ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--gold)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                      <BadgeCheck className="h-3 w-3" /> Vérifié
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/70">
+                      <ShieldAlert className="h-3 w-3" /> Non vérifié
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wider text-white/90">

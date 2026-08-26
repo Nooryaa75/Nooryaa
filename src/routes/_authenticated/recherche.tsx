@@ -473,6 +473,7 @@ function Recherche() {
                 </div>
               </div>
               {view === "swipe" ? (
+                <>
                 <SwipeDeck
                   title="Résultats de recherche"
                   profiles={profiles}

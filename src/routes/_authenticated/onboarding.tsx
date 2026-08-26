@@ -32,6 +32,7 @@ function Onboarding() {
     city: "",
     country: "France",
     country_origin: "",
+    grew_up: "",
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
     salat_quotidienne: null as boolean | null,
     ramadan: null as boolean | null,
@@ -118,6 +119,7 @@ function Onboarding() {
       longitude: (form as any).longitude ?? null,
       country: form.country || null,
       country_origin: form.country_origin || null,
+      grew_up: form.grew_up || null,
       marital_status: form.marital_status as any,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
@@ -246,6 +248,15 @@ function Onboarding() {
           <div>
             <Label>Pays d'origine *</Label>
             <Select value={form.country_origin} onValueChange={(v) => setForm({ ...form, country_origin: v })}>
+              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Où as-tu grandi ?</Label>
+            <Select value={form.grew_up} onValueChange={(v) => setForm({ ...form, grew_up: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
                 {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}

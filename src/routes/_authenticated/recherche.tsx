@@ -16,14 +16,12 @@ import {
   PROFESSIONS,
   OBJECTIVES,
   PERSONALITY_OPTIONS,
-  ANY,
-  type Filters,
 } from "@/lib/profile";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { Trash2, Star } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
-import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
+import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { useMyProfile } from "@/lib/match";
 
 export const Route = createFileRoute("/_authenticated/recherche")({

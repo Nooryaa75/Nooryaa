@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,16 +16,15 @@ import {
   PROFESSIONS,
   OBJECTIVES,
   PERSONALITY_OPTIONS,
-  ageFromBirthdate,
-  PRACTICE_LABELS,
+  ANY,
+  type Filters,
 } from "@/lib/profile";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
-import { Trash2, Star, User, MapPin, Heart, Layers } from "lucide-react";
+import { Trash2, Star } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
-import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
+import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
 import { useMyProfile } from "@/lib/match";
-import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
   head: () => ({

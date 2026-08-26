@@ -210,6 +210,9 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                   {current.country_origin && (
                     <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-[color:var(--gold)]" /> Origine : {current.country_origin}</div>
                   )}
+                  {current.grew_up && (
+                    <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[color:var(--gold)]" /> A grandi : {current.grew_up}</div>
+                  )}
                   {current.profession && (
                     <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[color:var(--gold)]" /> {current.profession}</div>
                   )}
@@ -324,6 +327,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
                 <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
                 <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
+                <Info icon={<MapPin className="h-4 w-4" />} label="A grandi" value={current.grew_up} />
                 <Info icon={<Briefcase className="h-4 w-4" />} label="Profession" value={current.profession} />
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité" value={current.personality} />
                 <Info icon={<BookOpen className="h-4 w-4" />} label="Objectif" value={current.objective} />

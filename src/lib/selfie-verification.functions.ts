@@ -170,10 +170,15 @@ export const verifySelfie = createServerFn({ method: "POST" })
     }
 
     // Garde-fous côté serveur (stricts : le doute ne valide jamais)
-    if (result.same_person === "no" || result.live_capture === "no") {
+    if (result.single_face === "no" || result.same_person === "no" || result.live_capture === "no") {
       result.verdict = "rejected";
-      if (!result.reason) result.reason = "Le selfie ne correspond pas à vos photos de profil.";
-    } else if (result.same_person !== "yes" || result.live_capture !== "yes") {
+      if (!result.reason) {
+        result.reason =
+          result.single_face === "no"
+            ? "Le selfie doit montrer une seule personne. Plusieurs visages ou absence de visage entraînent un refus."
+            : "Le selfie ne correspond pas à vos photos de profil.";
+      }
+    } else if (result.single_face !== "yes" || result.same_person !== "yes" || result.live_capture !== "yes") {
       result.verdict = "review";
     }
 

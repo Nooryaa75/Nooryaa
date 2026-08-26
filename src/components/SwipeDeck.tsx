@@ -51,6 +51,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [isDeciding, setIsDeciding] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ about: true });
   const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
   const current = profiles.find((profile) => !dismissedSet.has(profile.id));
 

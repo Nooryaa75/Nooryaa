@@ -14,10 +14,14 @@ type Props = {
   profiles: any[];
   userId: string;
   onBack: () => void;
+  /** Enregistre le passage en base (l'Accueil ne re-propose plus le profil). */
+  persistPass?: boolean;
+  /** Masque l'en-tête « Retour » quand le deck est déjà dans une page dédiée. */
+  hideHeader?: boolean;
 };
 
 /** Pile de profils façon Tinder : glisser à droite pour aimer, à gauche pour passer. */
-export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
+export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);

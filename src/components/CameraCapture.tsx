@@ -82,6 +82,31 @@ export function CameraCapture({
       ctx.scale(-1, 1);
     }
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    if (faceGuide) {
+      // On ne conserve que le disque de cadrage : tout visage hors du cercle est masqué.
+      const side = Math.min(canvas.width, canvas.height);
+      const d = Math.round(side * GUIDE_RATIO);
+      const sx = Math.round((canvas.width - d) / 2);
+      const sy = Math.round((canvas.height - d) / 2);
+      const out = document.createElement("canvas");
+      out.width = d;
+      out.height = d;
+      const octx = out.getContext("2d")!;
+      octx.fillStyle = "#000000";
+      octx.fillRect(0, 0, d, d);
+      octx.save();
+      octx.beginPath();
+      octx.arc(d / 2, d / 2, d / 2, 0, Math.PI * 2);
+      octx.clip();
+      octx.drawImage(canvas, sx, sy, d, d, 0, 0, d, d);
+      octx.restore();
+      setShot(out.toDataURL("image/jpeg", 0.9));
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      return;
+    }
+
     setShot(canvas.toDataURL("image/jpeg", 0.9));
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;

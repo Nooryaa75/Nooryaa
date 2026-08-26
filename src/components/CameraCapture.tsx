@@ -142,6 +142,24 @@ export function CameraCapture({
             className={`h-full w-full object-cover ${facing === "user" ? "scale-x-[-1]" : ""}`}
           />
         )}
+        {faceGuide && !shot && !error && (
+          <div className="pointer-events-none absolute inset-0">
+            <div
+              className="absolute inset-0 bg-black/60"
+              style={{
+                maskImage: `radial-gradient(circle at 50% 50%, transparent ${GUIDE_RATIO * 50}%, black ${GUIDE_RATIO * 50}%)`,
+                WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent ${GUIDE_RATIO * 50}%, black ${GUIDE_RATIO * 50}%)`,
+              }}
+            />
+            <div
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-primary/80"
+              style={{ width: `${GUIDE_RATIO * 100}%`, height: `${GUIDE_RATIO * 100}%` }}
+            />
+            <p className="absolute inset-x-0 bottom-3 text-center text-xs text-white/90">
+              {hint ?? "Placez votre visage dans le cercle — une seule personne."}
+            </p>
+          </div>
+        )}
         {error && (
           <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-white">
             {error}

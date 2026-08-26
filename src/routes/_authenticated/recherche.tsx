@@ -212,19 +212,24 @@ function Recherche() {
   }
 
   const originMissing = filters.radiusEnabled && (originLat == null || originLng == null);
+  const immersive = tab === "resultats" && view === "swipe";
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-serif text-primary">Recherche</h1>
-      </div>
+    <div className={immersive ? "space-y-2" : "space-y-6"}>
+      {!immersive && (
+        <div>
+          <h1 className="text-3xl font-serif text-primary">Recherche</h1>
+        </div>
+      )}
 
-      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="resultats">Profils</TabsTrigger>
-          <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
-          <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
-        </TabsList>
+      <Tabs value={tab} onValueChange={setTab} className={immersive ? "space-y-2" : "space-y-6"}>
+        {!immersive && (
+          <TabsList>
+            <TabsTrigger value="resultats">Profils</TabsTrigger>
+            <TabsTrigger value="filtres">Affiner ma recherche</TabsTrigger>
+            <TabsTrigger value="enregistrees">Mes recherches</TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="filtres" className="space-y-4">
           <div className="bg-card rounded-2xl p-5 shadow-[var(--shadow-card)] border border-border/60 space-y-5">
@@ -446,7 +451,7 @@ function Recherche() {
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className={`flex-wrap items-center justify-between gap-3 mb-4 ${immersive ? "hidden" : "flex"}`}>
                 <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
                 <div className="flex items-center gap-2">
                   {activeSearchName && (
@@ -468,6 +473,7 @@ function Recherche() {
                 </div>
               </div>
               {view === "swipe" ? (
+                <>
                 <SwipeDeck
                   title="Résultats de recherche"
                   profiles={profiles}
@@ -476,6 +482,12 @@ function Recherche() {
                   persistPass={false}
                   hideHeader
                 />
+                <div className="mt-6 text-center">
+                  <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setView("grid")}>
+                    <Layers className="h-4 w-4 mr-1" /> Vue grille et filtres
+                  </Button>
+                </div>
+                </>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {profiles.map((p) => (

@@ -50,18 +50,27 @@ function Section({ title, items, me, graph, userId }: { title: string; items: an
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <h2 className="text-xl font-serif text-primary flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
-        {profiles.length > 0 && (
-          <Button size="sm" variant={view === "swipe" ? "default" : "outline"} onClick={() => setView(view === "swipe" ? "grid" : "swipe")}>
-            <Layers className="h-4 w-4 mr-1" /> {view === "swipe" ? "Vue grille" : "Mode swipe"}
-          </Button>
-        )}
-      </div>
+      {view !== "swipe" && (
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h2 className="text-xl font-serif text-primary flex items-center gap-2"><Heart className="h-5 w-5 text-[color:var(--gold)]" /> {title}</h2>
+          {profiles.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setView("swipe")}>
+              <Layers className="h-4 w-4 mr-1" /> Mode swipe
+            </Button>
+          )}
+        </div>
+      )}
       {profiles.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border/60 p-8 text-center text-muted-foreground">Aucun pour le moment.</div>
       ) : view === "swipe" ? (
-        <SwipeDeck title={title} profiles={profiles} userId={userId} onBack={() => setView("grid")} persistPass={false} />
+        <>
+          <SwipeDeck title={title} profiles={profiles} userId={userId} onBack={() => setView("grid")} persistPass={false} hideHeader />
+          <div className="mt-6 text-center">
+            <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setView("grid")}>
+              <Layers className="h-4 w-4 mr-1" /> Vue grille
+            </Button>
+          </div>
+        </>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {profiles.map((p: any, i: number) => {

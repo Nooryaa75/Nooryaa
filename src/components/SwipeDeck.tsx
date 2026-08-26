@@ -403,3 +403,73 @@ function Info({ icon, label, value }: { icon: React.ReactNode; label: string; va
     </div>
   );
 }
+
+function AccordionSection({
+  icon,
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  open?: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-card rounded-2xl border border-border/60 overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-3 p-4 text-left"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-[color:var(--gold)]">{icon}</span>
+          <span className="font-serif text-primary">{title}</span>
+        </div>
+        <span className="text-muted-foreground">
+          {open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        </span>
+      </button>
+      {open && <div className="px-4 pb-4 border-t border-border/40">{children}</div>}
+    </div>
+  );
+}
+
+function SearchingFor({ profile }: { profile: any }) {
+  const prefs = profile?.preferences ?? {};
+  const hasPrefs = Object.keys(prefs).length > 0;
+  if (!hasPrefs) return <p className="text-sm text-muted-foreground italic">Aucun critère de recherche renseigné.</p>;
+
+  const tri = (v: any) => (v === true ? "Oui" : v === false ? "Non" : null);
+  const range = (min?: number | null, max?: number | null) => {
+    if (min && max) return `Entre ${min} et ${max}`;
+    if (min) return `À partir de ${min}`;
+    if (max) return `Jusqu'à ${max}`;
+    return null;
+  };
+
+  return (
+    <dl className="grid grid-cols-2 gap-3 text-sm">
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Âge recherché" value={range(prefs.age_min, prefs.age_max)} />
+      <Info icon={<Ruler className="h-4 w-4" />} label="Taille recherchée" value={range(prefs.height_min, prefs.height_max)} />
+      <Info icon={<MapPin className="h-4 w-4" />} label="Distance max" value={prefs.distance_km ? `${prefs.distance_km} km` : null} />
+      <Info icon={<Globe className="h-4 w-4" />} label="Pays de résidence" value={prefs.country} />
+      <Info icon={<Globe className="h-4 w-4" />} label="Pays d'origine" value={prefs.country_origin} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Situation" value={prefs.marital_status} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Pratique religieuse" value={prefs.religious_practice} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Personnalité recherchée" value={prefs.personality} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Activités" value={prefs.activities} />
+      <Info icon={<Users className="h-4 w-4" />} label="A des enfants" value={tri(prefs.has_children)} />
+      <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={tri(prefs.wants_children)} />
+      <Info icon={<Sparkles className="h-4 w-4" />} label="Fumeur" value={tri(prefs.smoker)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Salat quotidienne" value={tri(prefs.salat_quotidienne)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Ramadan" value={tri(prefs.ramadan)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Hadj" value={tri(prefs.hadj)} />
+      <Info icon={<BookOpen className="h-4 w-4" />} label="Omra" value={tri(prefs.omra)} />
+      {profile.gender !== "femme" && <Info icon={<BookOpen className="h-4 w-4" />} label="Porte le voile" value={tri(prefs.porte_voile)} />}
+    </dl>
+  );
+}

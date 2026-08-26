@@ -20,8 +20,9 @@ import {
   PRACTICE_LABELS,
 } from "@/lib/profile";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
-import { Trash2, Star, User, MapPin, Heart } from "lucide-react";
+import { Trash2, Star, User, MapPin, Heart, Layers } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred } from "@/lib/reveal";
@@ -147,6 +148,7 @@ function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
+  const [view, setView] = useState<"grid" | "swipe">("grid");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
@@ -446,38 +448,53 @@ function Recherche() {
             <>
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <p className="text-sm text-muted-foreground">{profiles.length} profil{profiles.length > 1 ? "s" : ""} trouvé{profiles.length > 1 ? "s" : ""}</p>
-                {activeSearchName && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
-                    Recherche : {activeSearchName}
-                    <button
-                      type="button"
-                      onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
-                      className="hover:text-primary transition-colors"
-                      aria-label="Effacer la recherche"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {activeSearchName && (
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--gold)]/10 text-[color:var(--gold)] text-xs font-medium border border-[color:var(--gold)]/20">
+                      Recherche : {activeSearchName}
+                      <button
+                        type="button"
+                        onClick={() => { setFilters(DEFAULT_FILTERS); setActiveSearchName(null); }}
+                        className="hover:text-primary transition-colors"
+                        aria-label="Effacer la recherche"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  <Button size="sm" variant={view === "swipe" ? "default" : "outline"} onClick={() => setView(view === "swipe" ? "grid" : "swipe")}>
+                    <Layers className="h-4 w-4 mr-1" /> {view === "swipe" ? "Vue grille" : "Mode swipe"}
+                  </Button>
+                </div>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {profiles.map((p) => (
-                  <ProfileCard
-                    key={p.id}
-                    profile={p}
-                    userId={ctx.userId}
-                    liked={likedIds.has(p.id)}
-                    onToggleLike={(profileId, nextLiked) => {
-                      setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
-                      qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
-                      qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
-                      qc.invalidateQueries({ queryKey: ["unread-counts"] });
-                    }}
-                  />
-                ))}
-              </div>
+              {view === "swipe" ? (
+                <SwipeDeck
+                  title="Résultats de recherche"
+                  profiles={profiles}
+                  userId={ctx.userId}
+                  onBack={() => setView("grid")}
+                />
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {profiles.map((p) => (
+                    <ProfileCard
+                      key={p.id}
+                      profile={p}
+                      userId={ctx.userId}
+                      liked={likedIds.has(p.id)}
+                      onToggleLike={(profileId, nextLiked) => {
+                        setOptimisticLikes((m) => ({ ...m, [profileId]: nextLiked }));
+                        qc.invalidateQueries({ queryKey: ["sent-likes", ctx.userId] });
+                        qc.invalidateQueries({ queryKey: ["like-graph", ctx.userId] });
+                        qc.invalidateQueries({ queryKey: ["unread-counts"] });
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </>
           )}
+
         </TabsContent>
       </Tabs>
     </div>

@@ -12,6 +12,7 @@ import { YesNoRadio } from "@/components/YesNoRadio";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
+import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 
 
@@ -105,6 +106,11 @@ function Onboarding() {
     }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
+    }
+    const { data: me } = await supabase.from("profiles").select("photo_verified").eq("id", ctx.userId).single();
+    if (!(me as any)?.photo_verified) {
+      toast.error("Vérification par selfie obligatoire : ajoutez vos photos puis lancez la vérification en direct avant d'enregistrer.");
+      return;
     }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
@@ -321,6 +327,10 @@ function Onboarding() {
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <PhotoManager userId={ctx.userId} />
         </div>
+        <SelfieVerification userId={ctx.userId} />
+        <p className="text-xs text-muted-foreground">
+          La vérification par selfie est obligatoire : votre fiche ne peut pas être enregistrée tant qu'elle n'est pas validée.
+        </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}
         </Button>

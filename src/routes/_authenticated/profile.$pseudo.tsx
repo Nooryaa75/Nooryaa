@@ -162,6 +162,15 @@ function ProfileView() {
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <h1 className="text-3xl font-serif text-primary break-words">{profile.pseudo}</h1>
+                  {(profile as any).photo_verified ? (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-[color:var(--gold)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                      <ShieldCheck className="h-3.5 w-3.5" /> Profil vérifié
+                    </span>
+                  ) : (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <ShieldCheck className="h-3.5 w-3.5" /> Profil non vérifié
+                    </span>
+                  )}
                 </div>
                 {!isMe && typeof matchPercent(me, profile) === "number" && (
                   <div className="flex flex-col items-center shrink-0">

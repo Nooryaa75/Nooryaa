@@ -56,6 +56,10 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
   const dismissedSet = useMemo(() => new Set(dismissedIds), [dismissedIds]);
   const current = profiles.find((profile) => !dismissedSet.has(profile.id));
 
+  function toggleSection(id: string) {
+    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
   const { data: sentLikes } = useQuery({
     queryKey: ["sent-likes", userId],
     queryFn: async () => {

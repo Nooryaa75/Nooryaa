@@ -61,7 +61,7 @@ function Section({ title, items, me, graph, userId }: { title: string; items: an
       {profiles.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border/60 p-8 text-center text-muted-foreground">Aucun pour le moment.</div>
       ) : view === "swipe" ? (
-        <SwipeDeck title={title} profiles={profiles} userId={userId} onBack={() => setView("grid")} />
+        <SwipeDeck title={title} profiles={profiles} userId={userId} onBack={() => setView("grid")} persistPass={false} />
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {profiles.map((p: any, i: number) => {

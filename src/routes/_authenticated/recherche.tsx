@@ -148,7 +148,7 @@ function Recherche() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
-  const [view, setView] = useState<"grid" | "swipe">("grid");
+  const [view, setView] = useState<"grid" | "swipe">("swipe");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchName, setSearchName] = useState("");
   const [activeSearchName, setActiveSearchName] = useState<string | null>(null);
@@ -473,6 +473,8 @@ function Recherche() {
                   profiles={profiles}
                   userId={ctx.userId}
                   onBack={() => setView("grid")}
+                  persistPass={false}
+                  hideHeader
                 />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

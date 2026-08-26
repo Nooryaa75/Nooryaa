@@ -14,10 +14,14 @@ type Props = {
   profiles: any[];
   userId: string;
   onBack: () => void;
+  /** Enregistre le passage en base (l'Accueil ne re-propose plus le profil). */
+  persistPass?: boolean;
+  /** Masque l'en-tête « Retour » quand le deck est déjà dans une page dédiée. */
+  hideHeader?: boolean;
 };
 
 /** Pile de profils façon Tinder : glisser à droite pour aimer, à gauche pour passer. */
-export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
+export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
   const [drag, setDrag] = useState(0);
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
@@ -63,7 +67,9 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
     // Toute décision est conservée dans profile_passes afin qu'un profil ne soit
     // proposé qu'une seule fois. Un « oui » crée également le like correspondant.
     const [swipeResult, likeResult] = await Promise.all([
-      supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id }),
+      persistPass
+        ? supabase.from("profile_passes").insert({ user_id: userId, target_id: decidedProfile.id })
+        : Promise.resolve({ error: null }),
       like && !currentLiked
         ? supabase.from("likes").insert({ from_user: userId, to_user: decidedProfile.id })
         : Promise.resolve({ error: null }),
@@ -115,12 +121,14 @@ export function SwipeDeck({ title, profiles, userId, onBack }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Retour
-        </Button>
-        <h2 className="font-serif text-xl text-primary">{title}</h2>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Retour
+          </Button>
+          <h2 className="font-serif text-xl text-primary">{title}</h2>
+        </div>
+      )}
 
       {!current ? (
         <div className="text-center py-16 bg-card rounded-2xl border border-border/60">

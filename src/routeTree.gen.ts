@@ -34,6 +34,7 @@ import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
 import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authenticated/messages.$pseudo'
+import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -161,6 +162,12 @@ const AuthenticatedMessagesPseudoRoute =
     path: '/$pseudo',
     getParentRoute: () => AuthenticatedMessagesRoute,
   } as any)
+const AuthenticatedCompteProfilRoute =
+  AuthenticatedCompteProfilRouteImport.update({
+    id: '/profil',
+    path: '/profil',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -169,7 +176,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/compte': typeof AuthenticatedCompteRoute
+  '/compte': typeof AuthenticatedCompteRouteWithChildren
   '/likes': typeof AuthenticatedLikesRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
+  '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -195,7 +203,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/compte': typeof AuthenticatedCompteRoute
+  '/compte': typeof AuthenticatedCompteRouteWithChildren
   '/likes': typeof AuthenticatedLikesRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -207,6 +215,7 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin': typeof AdminIndexRoute
+  '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -223,7 +232,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
-  '/_authenticated/compte': typeof AuthenticatedCompteRoute
+  '/_authenticated/compte': typeof AuthenticatedCompteRouteWithChildren
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -235,6 +244,7 @@ export interface FileRoutesById {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/_authenticated/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
+    | '/compte/profil'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin'
+    | '/compte/profil'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -316,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
+    | '/_authenticated/compte/profil'
     | '/_authenticated/messages/$pseudo'
     | '/_authenticated/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -519,8 +532,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesPseudoRouteImport
       parentRoute: typeof AuthenticatedMessagesRoute
     }
+    '/_authenticated/compte/profil': {
+      id: '/_authenticated/compte/profil'
+      path: '/profil'
+      fullPath: '/compte/profil'
+      preLoaderRoute: typeof AuthenticatedCompteProfilRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
   }
 }
+
+interface AuthenticatedCompteRouteChildren {
+  AuthenticatedCompteProfilRoute: typeof AuthenticatedCompteProfilRoute
+}
+
+const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
+  AuthenticatedCompteProfilRoute: AuthenticatedCompteProfilRoute,
+}
+
+const AuthenticatedCompteRouteWithChildren =
+  AuthenticatedCompteRoute._addFileChildren(AuthenticatedCompteRouteChildren)
 
 interface AuthenticatedMessagesRouteChildren {
   AuthenticatedMessagesPseudoRoute: typeof AuthenticatedMessagesPseudoRoute
@@ -538,7 +569,7 @@ const AuthenticatedMessagesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlockedRoute: typeof AuthenticatedBlockedRoute
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
-  AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
+  AuthenticatedCompteRoute: typeof AuthenticatedCompteRouteWithChildren
   AuthenticatedLikesRoute: typeof AuthenticatedLikesRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
@@ -550,7 +581,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlockedRoute: AuthenticatedBlockedRoute,
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
-  AuthenticatedCompteRoute: AuthenticatedCompteRoute,
+  AuthenticatedCompteRoute: AuthenticatedCompteRouteWithChildren,
   AuthenticatedLikesRoute: AuthenticatedLikesRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,

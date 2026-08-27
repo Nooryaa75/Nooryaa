@@ -11,7 +11,7 @@ const links = [
   { to: "/recherche", label: "Recherche", icon: Search },
   { to: "/likes", label: "Likes", icon: Heart },
   { to: "/messages", label: "Messages", icon: MessageCircle },
-  { to: "/me", label: "Profil", icon: User },
+  { to: "/compte/profil", label: "Compte", icon: User },
 ] as const;
 
 function Badge({ count }: { count: number }) {

@@ -1,7 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { BadgeCheck, Check, CreditCard, Sparkles } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { suspendAccount, deleteAccount } from "@/lib/account.functions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   head: () => ({ meta: [{ title: "Mon abonnement — Nooryaa" }] }),

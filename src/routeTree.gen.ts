@@ -25,6 +25,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
+import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
@@ -113,6 +114,11 @@ const AuthenticatedLikesRoute = AuthenticatedLikesRouteImport.update({
   path: '/likes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/compte': typeof AuthenticatedCompteRoute
   '/likes': typeof AuthenticatedLikesRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/compte': typeof AuthenticatedCompteRoute
   '/likes': typeof AuthenticatedLikesRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
+  '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
+    | '/compte'
     | '/likes'
     | '/me'
     | '/messages'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
+    | '/compte'
     | '/likes'
     | '/me'
     | '/messages'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
+    | '/_authenticated/compte'
     | '/_authenticated/likes'
     | '/_authenticated/me'
     | '/_authenticated/messages'
@@ -444,6 +456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLikesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/compte': {
+      id: '/_authenticated/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof AuthenticatedCompteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/browse': {
       id: '/_authenticated/browse'
       path: '/browse'
@@ -519,6 +538,7 @@ const AuthenticatedMessagesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlockedRoute: typeof AuthenticatedBlockedRoute
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
+  AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedLikesRoute: typeof AuthenticatedLikesRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
@@ -530,6 +550,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlockedRoute: AuthenticatedBlockedRoute,
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
+  AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedLikesRoute: AuthenticatedLikesRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Bell, Heart, MessageCircle, ShieldCheck, Megaphone } from "lucide-react";
+import { Bell, Heart, MessageCircle, ShieldCheck, Megaphone, Mail, Monitor, Smartphone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
@@ -10,7 +10,14 @@ export const Route = createFileRoute("/_authenticated/compte/notifications")({
   component: NotificationsPage,
 });
 
-type NotifKey = "likes" | "messages" | "verifications" | "news";
+type NotifKey =
+  | "likes"
+  | "messages"
+  | "verifications"
+  | "news"
+  | "email_info"
+  | "push_in_app"
+  | "push_mobile";
 
 function NotificationsPage() {
   const [prefs, setPrefs] = useState<Record<NotifKey, boolean>>({
@@ -18,6 +25,9 @@ function NotificationsPage() {
     messages: true,
     verifications: true,
     news: false,
+    email_info: true,
+    push_in_app: true,
+    push_mobile: false,
   });
 
   const items: { key: NotifKey; label: string; description: string; icon: any }[] = [
@@ -25,6 +35,9 @@ function NotificationsPage() {
     { key: "messages", label: "Nouveaux messages", description: "Être notifié quand vous recevez un message.", icon: MessageCircle },
     { key: "verifications", label: "Vérification & modération", description: "Statut de vos photos et de votre vérification selfie.", icon: ShieldCheck },
     { key: "news", label: "Actualités Nooryaa", description: "Nouveautés, conseils et événements de la communauté.", icon: Megaphone },
+    { key: "email_info", label: "Notifications par email", description: "Informations, nouveautés et offres envoyées sur votre adresse email.", icon: Mail },
+    { key: "push_in_app", label: "Notifications push in apps", description: "Alertes affichées directement dans l’application Nooryaa.", icon: Monitor },
+    { key: "push_mobile", label: "Notifications push mobile", description: "Alertes envoyées sur votre téléphone, même hors de l’application.", icon: Smartphone },
   ];
 
   return (

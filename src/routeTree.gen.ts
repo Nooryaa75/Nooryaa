@@ -35,6 +35,10 @@ import { Route as AdminConversationsPairRouteImport } from './routes/admin.conve
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
 import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authenticated/messages.$pseudo'
 import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
+import { Route as AuthenticatedCompteNotificationsRouteImport } from './routes/_authenticated/compte.notifications'
+import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes/_authenticated/compte.confidentialite'
+import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
+import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -168,6 +172,29 @@ const AuthenticatedCompteProfilRoute =
     path: '/profil',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
+const AuthenticatedCompteNotificationsRoute =
+  AuthenticatedCompteNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
+const AuthenticatedCompteConfidentialiteRoute =
+  AuthenticatedCompteConfidentialiteRouteImport.update({
+    id: '/confidentialite',
+    path: '/confidentialite',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
+const AuthenticatedCompteCguRoute = AuthenticatedCompteCguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => AuthenticatedCompteRoute,
+} as any)
+const AuthenticatedCompteAbonnementRoute =
+  AuthenticatedCompteAbonnementRouteImport.update({
+    id: '/abonnement',
+    path: '/abonnement',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -188,6 +215,10 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
+  '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
+  '/compte/cgu': typeof AuthenticatedCompteCguRoute
+  '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
@@ -215,6 +246,10 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin': typeof AdminIndexRoute
+  '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
+  '/compte/cgu': typeof AuthenticatedCompteCguRoute
+  '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
@@ -244,6 +279,10 @@ export interface FileRoutesById {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
+  '/_authenticated/compte/cgu': typeof AuthenticatedCompteCguRoute
+  '/_authenticated/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/_authenticated/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/_authenticated/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/_authenticated/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
@@ -273,6 +312,10 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
+    | '/compte/abonnement'
+    | '/compte/cgu'
+    | '/compte/confidentialite'
+    | '/compte/notifications'
     | '/compte/profil'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
@@ -300,6 +343,10 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin'
+    | '/compte/abonnement'
+    | '/compte/cgu'
+    | '/compte/confidentialite'
+    | '/compte/notifications'
     | '/compte/profil'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
@@ -328,6 +375,10 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/'
+    | '/_authenticated/compte/abonnement'
+    | '/_authenticated/compte/cgu'
+    | '/_authenticated/compte/confidentialite'
+    | '/_authenticated/compte/notifications'
     | '/_authenticated/compte/profil'
     | '/_authenticated/messages/$pseudo'
     | '/_authenticated/profile/$pseudo'
@@ -539,14 +590,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteProfilRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
+    '/_authenticated/compte/notifications': {
+      id: '/_authenticated/compte/notifications'
+      path: '/notifications'
+      fullPath: '/compte/notifications'
+      preLoaderRoute: typeof AuthenticatedCompteNotificationsRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/confidentialite': {
+      id: '/_authenticated/compte/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/compte/confidentialite'
+      preLoaderRoute: typeof AuthenticatedCompteConfidentialiteRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/cgu': {
+      id: '/_authenticated/compte/cgu'
+      path: '/cgu'
+      fullPath: '/compte/cgu'
+      preLoaderRoute: typeof AuthenticatedCompteCguRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/abonnement': {
+      id: '/_authenticated/compte/abonnement'
+      path: '/abonnement'
+      fullPath: '/compte/abonnement'
+      preLoaderRoute: typeof AuthenticatedCompteAbonnementRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
   }
 }
 
 interface AuthenticatedCompteRouteChildren {
+  AuthenticatedCompteAbonnementRoute: typeof AuthenticatedCompteAbonnementRoute
+  AuthenticatedCompteCguRoute: typeof AuthenticatedCompteCguRoute
+  AuthenticatedCompteConfidentialiteRoute: typeof AuthenticatedCompteConfidentialiteRoute
+  AuthenticatedCompteNotificationsRoute: typeof AuthenticatedCompteNotificationsRoute
   AuthenticatedCompteProfilRoute: typeof AuthenticatedCompteProfilRoute
 }
 
 const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
+  AuthenticatedCompteAbonnementRoute: AuthenticatedCompteAbonnementRoute,
+  AuthenticatedCompteCguRoute: AuthenticatedCompteCguRoute,
+  AuthenticatedCompteConfidentialiteRoute:
+    AuthenticatedCompteConfidentialiteRoute,
+  AuthenticatedCompteNotificationsRoute: AuthenticatedCompteNotificationsRoute,
   AuthenticatedCompteProfilRoute: AuthenticatedCompteProfilRoute,
 }
 

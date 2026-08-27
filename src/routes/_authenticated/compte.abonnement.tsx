@@ -116,7 +116,43 @@ const plans: Plan[] = [
 
 function AbonnementPage() {
   const [current, setCurrent] = useState("gratuit");
+  const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
+  const [suspendOpen, setSuspendOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const router = useRouter();
+  const doSuspend = useServerFn(suspendAccount);
+  const doDelete = useServerFn(deleteAccount);
   const currentPlan = plans.find((p) => p.id === current)!;
+
+  async function handleSuspend() {
+    setLoading("suspend");
+    try {
+      await doSuspend();
+      toast.success("Votre compte est suspendu. Vous allez être déconnecté.");
+      await supabase.auth.signOut();
+      router.navigate({ to: "/" });
+    } catch (e: any) {
+      toast.error(e.message || "La suspension a échoué.");
+    } finally {
+      setLoading(null);
+      setSuspendOpen(false);
+    }
+  }
+
+  async function handleDelete() {
+    setLoading("delete");
+    try {
+      await doDelete();
+      toast.success("Votre compte a été supprimé.");
+      await supabase.auth.signOut();
+      router.navigate({ to: "/" });
+    } catch (e: any) {
+      toast.error(e.message || "La suppression a échoué.");
+    } finally {
+      setLoading(null);
+      setDeleteOpen(false);
+    }
+  }
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -216,6 +252,74 @@ function AbonnementPage() {
         Vous pouvez changer ou résilier votre formule à tout moment. Rien ne vous sera facturé sans
         votre accord.
       </p>
+
+      <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <h3 className="text-lg font-serif text-destructive">Gestion du compte</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Ces actions affectent votre compte Nooryaa. La suspension est réversible en contactant le
+          support ; la suppression est définitive.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <AlertDialog open={suspendOpen} onOpenChange={setSuspendOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
+                <PauseCircle className="h-4 w-4" />
+                Suspendre mon compte
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Suspendre votre compte ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Votre profil sera masqué et vous ne pourrez plus utiliser Nooryaa. Vous pourrez
+                  réactiver votre compte ultérieurement en nous contactant.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={loading === "suspend"}>Annuler</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleSuspend}
+                  disabled={loading === "suspend"}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {loading === "suspend" ? "Suspension…" : "Oui, suspendre"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
+                <Trash2 className="h-4 w-4" />
+                Supprimer mon compte
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Supprimer votre compte ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action est irréversible. Toutes vos données (profil, photos, messages, likes,
+                  recherches) seront définitivement effacées.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={loading === "delete"}>Annuler</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={loading === "delete"}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {loading === "delete" ? "Suppression…" : "Oui, supprimer"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
     </div>
   );
 }

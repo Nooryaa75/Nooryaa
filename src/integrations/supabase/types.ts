@@ -632,6 +632,7 @@ export type Database = {
         Args: { _receiver: string; _sender: string }
         Returns: boolean
       }
+      delete_own_account: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

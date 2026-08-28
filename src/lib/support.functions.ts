@@ -14,10 +14,12 @@ export const categories = [
 
 export const createSupportTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(z.object({
-    category: z.enum(categories),
-    message: z.string().trim().min(10).max(2000),
-  }))
+  .inputValidator((data: { category: (typeof categories)[number]; message: string }) =>
+    z.object({
+      category: z.enum(categories),
+      message: z.string().trim().min(10).max(2000),
+    }).parse(data),
+  )
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase.from("support_tickets").insert({
       user_id: context.userId,

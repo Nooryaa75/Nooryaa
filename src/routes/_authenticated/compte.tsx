@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
-import { User, Bell, CreditCard, FileText, ShieldCheck } from "lucide-react";
+import { User, Bell, CreditCard, FileText, ShieldCheck, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte")({
   head: () => ({ meta: [{ title: "Mon compte — Nooryaa" }] }),

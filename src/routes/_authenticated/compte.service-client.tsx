@@ -48,7 +48,7 @@ function ServiceClientPage() {
     }
     setLoading(true);
     try {
-      await submit({ category: category as (typeof categories)[number], message: message.trim() });
+      await submit({ data: { category: category as (typeof categories)[number], message: message.trim() } });
       toast.success("Votre message a bien été envoyé à notre équipe.");
       setCategory("");
       setMessage("");

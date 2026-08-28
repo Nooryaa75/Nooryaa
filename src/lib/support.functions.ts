@@ -19,11 +19,11 @@ export const createSupportTicket = createServerFn({ method: "POST" })
     message: z.string().trim().min(10).max(2000),
   }))
   .handler(async ({ context, data }) => {
-    const { error } = await (context.supabase.from("support_tickets" as any) as any).insert({
+    const { error } = await context.supabase.from("support_tickets").insert({
       user_id: context.userId,
       category: data.category,
       message: data.message,
-    } as any);
+    });
     if (error) throw error;
     return { ok: true };
   });

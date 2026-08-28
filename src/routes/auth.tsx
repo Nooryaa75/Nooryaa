@@ -27,6 +27,7 @@ async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
 }
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   validateSearch: searchSchema,
   head: () => ({ meta: [{ title: "Connexion — Nooryaa (Abonnement gratuit)" }] }),
   component: AuthPage,

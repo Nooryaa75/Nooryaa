@@ -34,6 +34,7 @@ import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
 import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authenticated/messages.$pseudo'
+import { Route as AuthenticatedCompteReglesRouteImport } from './routes/_authenticated/compte.regles'
 import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
 import { Route as AuthenticatedCompteNotificationsRouteImport } from './routes/_authenticated/compte.notifications'
 import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes/_authenticated/compte.confidentialite'
@@ -166,6 +167,12 @@ const AuthenticatedMessagesPseudoRoute =
     path: '/$pseudo',
     getParentRoute: () => AuthenticatedMessagesRoute,
   } as any)
+const AuthenticatedCompteReglesRoute =
+  AuthenticatedCompteReglesRouteImport.update({
+    id: '/regles',
+    path: '/regles',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
 const AuthenticatedCompteProfilRoute =
   AuthenticatedCompteProfilRouteImport.update({
     id: '/profil',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
   '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
+  '/compte/regles': typeof AuthenticatedCompteReglesRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
   '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
+  '/compte/regles': typeof AuthenticatedCompteReglesRoute
   '/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
   '/_authenticated/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/_authenticated/compte/profil': typeof AuthenticatedCompteProfilRoute
+  '/_authenticated/compte/regles': typeof AuthenticatedCompteReglesRoute
   '/_authenticated/messages/$pseudo': typeof AuthenticatedMessagesPseudoRoute
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/compte/confidentialite'
     | '/compte/notifications'
     | '/compte/profil'
+    | '/compte/regles'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/compte/confidentialite'
     | '/compte/notifications'
     | '/compte/profil'
+    | '/compte/regles'
     | '/messages/$pseudo'
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/compte/confidentialite'
     | '/_authenticated/compte/notifications'
     | '/_authenticated/compte/profil'
+    | '/_authenticated/compte/regles'
     | '/_authenticated/messages/$pseudo'
     | '/_authenticated/profile/$pseudo'
     | '/admin/conversations/$pair'
@@ -583,6 +596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesPseudoRouteImport
       parentRoute: typeof AuthenticatedMessagesRoute
     }
+    '/_authenticated/compte/regles': {
+      id: '/_authenticated/compte/regles'
+      path: '/regles'
+      fullPath: '/compte/regles'
+      preLoaderRoute: typeof AuthenticatedCompteReglesRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
     '/_authenticated/compte/profil': {
       id: '/_authenticated/compte/profil'
       path: '/profil'
@@ -627,6 +647,7 @@ interface AuthenticatedCompteRouteChildren {
   AuthenticatedCompteConfidentialiteRoute: typeof AuthenticatedCompteConfidentialiteRoute
   AuthenticatedCompteNotificationsRoute: typeof AuthenticatedCompteNotificationsRoute
   AuthenticatedCompteProfilRoute: typeof AuthenticatedCompteProfilRoute
+  AuthenticatedCompteReglesRoute: typeof AuthenticatedCompteReglesRoute
 }
 
 const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
@@ -636,6 +657,7 @@ const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
     AuthenticatedCompteConfidentialiteRoute,
   AuthenticatedCompteNotificationsRoute: AuthenticatedCompteNotificationsRoute,
   AuthenticatedCompteProfilRoute: AuthenticatedCompteProfilRoute,
+  AuthenticatedCompteReglesRoute: AuthenticatedCompteReglesRoute,
 }
 
 const AuthenticatedCompteRouteWithChildren =

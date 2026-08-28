@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
-import { User, Bell, CreditCard, FileText, ShieldCheck, Users } from "lucide-react";
+import { User, Bell, CreditCard, FileText, ShieldCheck, Users, Headphones } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte")({
   head: () => ({ meta: [{ title: "Mon compte — Nooryaa" }] }),
@@ -10,6 +10,7 @@ const menu = [
   { to: "/compte/profil", label: "Mon profil", icon: User },
   { to: "/compte/notifications", label: "Mes notifications", icon: Bell },
   { to: "/compte/abonnement", label: "Mon abonnement", icon: CreditCard },
+  { to: "/compte/service-client", label: "Service client", icon: Headphones },
   { to: "/compte/regles", label: "Règles communauté", icon: Users },
   { to: "/compte/cgu", label: "CGU", icon: FileText },
   { to: "/compte/confidentialite", label: "Politique de confidentialité", icon: ShieldCheck },

@@ -10,6 +10,7 @@ const menu = [
   { to: "/compte/profil", label: "Mon profil", icon: User },
   { to: "/compte/notifications", label: "Mes notifications", icon: Bell },
   { to: "/compte/abonnement", label: "Mon abonnement", icon: CreditCard },
+  { to: "/compte/regles", label: "Règles communauté", icon: Users },
   { to: "/compte/cgu", label: "CGU", icon: FileText },
   { to: "/compte/confidentialite", label: "Politique de confidentialité", icon: ShieldCheck },
 ] as const;

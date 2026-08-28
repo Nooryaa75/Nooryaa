@@ -12,6 +12,17 @@ const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).catch("signin"),
 });
 
+function frenchAuthError(message?: string) {
+  const m = message || "";
+  if (/invalid login credentials/i.test(m)) return "Email ou mot de passe incorrect.";
+  if (/email not confirmed/i.test(m)) return "Votre email n'est pas encore confirmé. Vérifiez votre boîte mail.";
+  if (/user already registered/i.test(m)) return "Cet email est déjà utilisé.";
+  if (/rate limit|too many/i.test(m)) return "Trop de tentatives. Merci de réessayer dans quelques minutes.";
+  if (/network|fetch/i.test(m)) return "Connexion au serveur impossible. Vérifiez votre réseau.";
+  return m || "Une erreur est survenue";
+}
+
+
 async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) {

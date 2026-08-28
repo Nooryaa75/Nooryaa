@@ -99,7 +99,8 @@ function AuthPage() {
         await redirectAfterAuth(navigate);
       }
     } catch (err: any) {
-      toast.error(err.message || "Une erreur est survenue");
+      toast.error(frenchAuthError(err?.message));
+
     } finally {
       setLoading(false);
     }

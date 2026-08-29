@@ -61,9 +61,17 @@ function Conversation() {
       const rows = (data ?? []).filter((m: any) => !(m.hidden_for ?? []).includes(ctx.userId));
       // Resolve signed URLs for any attached photos
       const withImg = await Promise.all(rows.map(async (m: any) => {
-        if (!m.image_path || m.deleted_at) return m;
-        const { data: s } = await supabase.storage.from("message-photos").createSignedUrl(m.image_path, 3600);
-        return { ...m, image_url: s?.signedUrl };
+        if (m.deleted_at) return m;
+        let out = m;
+        if (m.image_path) {
+          const { data: s } = await supabase.storage.from("message-photos").createSignedUrl(m.image_path, 3600);
+          out = { ...out, image_url: s?.signedUrl };
+        }
+        if (m.audio_path) {
+          const { data: a } = await supabase.storage.from("message-audio").createSignedUrl(m.audio_path, 3600);
+          out = { ...out, audio_url: a?.signedUrl };
+        }
+        return out;
       }));
       return withImg;
     },

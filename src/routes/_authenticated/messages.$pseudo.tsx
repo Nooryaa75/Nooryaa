@@ -247,6 +247,29 @@ function Conversation() {
     }
   }
 
+  async function handleVoice(blob: Blob, duration: number) {
+    if (!peer) return;
+    if (blob.size > 10 * 1024 * 1024) { toast.error("Vocal trop lourd (max 10 Mo)"); return; }
+    setSendingVoice(true);
+    try {
+      const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+      const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("message-audio").upload(path, blob, { contentType: blob.type });
+      if (upErr) throw upErr;
+      const { error } = await supabase.from("messages").insert({
+        sender: ctx.userId, receiver: peer.id, audio_path: path, audio_duration: duration,
+        ...(replyTo ? { reply_to: replyTo.id } : {}),
+      } as any);
+      if (error) throw error;
+      setReplyTo(null);
+      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSendingVoice(false);
+    }
+  }
+
   if (!peer) return <div className="m-auto text-muted-foreground">Chargement...</div>;
 
   const byId = new Map((messages ?? []).map((m: any) => [m.id, m]));

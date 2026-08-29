@@ -11,6 +11,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { moderateMessage } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -31,6 +32,7 @@ function Conversation() {
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [sendingVoice, setSendingVoice] = useState(false);
   const [replyTo, setReplyTo] = useState<any | null>(null);
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
@@ -165,7 +167,7 @@ function Conversation() {
   const removeMessage = useMutation({
     mutationFn: async (m: any) => {
       const { error } = await supabase.from("messages")
-        .update({ deleted_at: new Date().toISOString(), content: null, image_path: null } as any)
+        .update({ deleted_at: new Date().toISOString(), content: null, image_path: null, audio_path: null } as any)
         .eq("id", m.id);
       if (error) throw error;
     },
@@ -326,13 +328,23 @@ function Conversation() {
                     {parent && (
                       <div className={`mx-2 mt-2 px-3 py-1.5 rounded-lg text-xs border-l-2 ${mine ? "bg-primary-foreground/10 border-primary-foreground/50" : "bg-background/60 border-[color:var(--gold)]"}`}>
                         <div className="opacity-70">{parent.sender === ctx.userId ? "Vous" : peer.pseudo}</div>
-                        <div className="truncate">{parent.deleted_at ? "Message supprimé" : parent.content || "Photo"}</div>
+                        <div className="truncate">{parent.deleted_at ? "Message supprimé" : parent.content || (parent.audio_path ? "Message vocal" : "Photo")}</div>
                       </div>
                     )}
                     {m.image_url && (
                       <a href={m.image_url} target="_blank" rel="noopener noreferrer">
                         <img src={m.image_url} alt="Photo partagée" className="max-h-72 w-auto object-cover" />
                       </a>
+                    )}
+                    {m.audio_url && (
+                      <div className="px-3 py-2 flex items-center gap-2">
+                        <audio src={m.audio_url} controls preload="metadata" className="h-9 max-w-[220px]" />
+                        {m.audio_duration ? (
+                          <span className="text-[11px] opacity-70 tabular-nums">
+                            {Math.floor(m.audio_duration / 60)}:{String(m.audio_duration % 60).padStart(2, "0")}
+                          </span>
+                        ) : null}
+                      </div>
                     )}
                     {m.content && <div className="px-4 py-2 whitespace-pre-wrap break-words">{m.content}</div>}
                     {m.edited_at && <div className="px-4 pb-1 text-[10px] opacity-70">modifié</div>}
@@ -358,7 +370,7 @@ function Conversation() {
         <div className="px-3 pt-2 flex items-center gap-2 text-xs text-muted-foreground">
           <div className="flex-1 truncate border-l-2 border-[color:var(--gold)] pl-2">
             {editing ? "Modification du message : " : "Réponse à : "}
-            {(editing ?? replyTo)?.content || "Photo"}
+            {(editing ?? replyTo)?.content || ((editing ?? replyTo)?.audio_path ? "Message vocal" : "Photo")}
           </div>
           <button type="button" onClick={() => { setReplyTo(null); setEditing(null); setText(""); }} aria-label="Annuler"><X className="h-4 w-4" /></button>
         </div>
@@ -375,6 +387,7 @@ function Conversation() {
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
         </Button>
         <EmojiPicker onPick={(e) => setText((t) => t + e)} />
+        <VoiceRecorder onSend={handleVoice} sending={sendingVoice} />
         <Input
           value={text}
           onChange={(e) => { setText(e.target.value); notifyTyping(); }}

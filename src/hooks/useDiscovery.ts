@@ -194,7 +194,7 @@ export function useDiscovery(userId: string, filters: Filters) {
         .filter((p) => new Date(p.created_at ?? 0).getTime() >= sevenDaysAgo)
         .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()),
     } as Record<DeckKey, any[]>;
-  }, [profiles, me, originLat, originLng, sentLikes, passes]);
+  }, [visibleProfiles, me, originLat, originLng]);
 
-  return { me, profiles, isLoading, decks, deckList, originLat, originLng };
+  return { me, profiles: visibleProfiles, allProfiles: profiles, isLoading, decks, deckList, originLat, originLng };
 }

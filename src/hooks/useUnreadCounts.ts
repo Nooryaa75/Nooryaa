@@ -4,22 +4,45 @@ import { supabase } from "@/integrations/supabase/client";
 
 const LIKES_SEEN_KEY = "nooryaa:likes-seen-at";
 
-export function getLikesSeenAt() {
+function localSeenAt(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(LIKES_SEEN_KEY);
 }
 
-export function markLikesSeen() {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(LIKES_SEEN_KEY, new Date().toISOString());
+/** Date de dernière consultation des coups de cœur (persistée en base, repli local). */
+export async function getLikesSeenAt(userId?: string): Promise<string | null> {
+  const local = localSeenAt();
+  if (!userId) return local;
+  const { data } = await supabase.from("profiles").select("preferences").eq("id", userId).maybeSingle();
+  const remote = (data?.preferences as any)?.likes_seen_at as string | undefined;
+  if (remote && local) return new Date(remote) > new Date(local) ? remote : local;
+  return remote ?? local;
 }
 
-/** Marks likes as seen when the likes page is mounted, and refreshes badges. */
+/** Marque les coups de cœur comme vus (base + local). */
+export async function markLikesSeen() {
+  const now = new Date().toISOString();
+  if (typeof window !== "undefined") window.localStorage.setItem(LIKES_SEEN_KEY, now);
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  const { data } = await supabase.from("profiles").select("preferences").eq("id", userId).maybeSingle();
+  const prefs = { ...((data?.preferences as any) ?? {}), likes_seen_at: now };
+  await supabase.from("profiles").update({ preferences: prefs as any }).eq("id", userId);
+}
+
+/** Marque les likes comme vus à l'ouverture de la page, puis rafraîchit les pastilles. */
 export function useMarkLikesSeen() {
   const queryClient = useQueryClient();
   useEffect(() => {
-    markLikesSeen();
-    queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+    let cancelled = false;
+    (async () => {
+      await markLikesSeen();
+      if (!cancelled) queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [queryClient]);
 }
 
@@ -35,7 +58,7 @@ export function useUnreadCounts() {
       const userId = auth.user?.id;
       if (!userId) return { likes: 0, messages: 0 };
 
-      const since = getLikesSeenAt();
+      const since = await getLikesSeenAt(userId);
       let likesQuery = supabase
         .from("likes")
         .select("id", { count: "exact", head: true })

@@ -171,6 +171,9 @@ function Conversation() {
         .update({ deleted_at: new Date().toISOString(), content: null, image_path: null, audio_path: null } as any)
         .eq("id", m.id);
       if (error) throw error;
+      // Supprime aussi les fichiers du stockage (photo / vocal)
+      if (m.image_path) await supabase.storage.from("message-photos").remove([m.image_path]);
+      if (m.audio_path) await supabase.storage.from("message-audio").remove([m.audio_path]);
     },
     onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
     onError: (e: any) => toast.error(e.message),

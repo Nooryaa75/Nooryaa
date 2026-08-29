@@ -33,6 +33,7 @@ function Conversation() {
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sendingVoice, setSendingVoice] = useState(false);
+  const [voiceActive, setVoiceActive] = useState(false);
   const [replyTo, setReplyTo] = useState<any | null>(null);
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);

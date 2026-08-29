@@ -38,6 +38,7 @@ function Conversation() {
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [actionFor, setActionFor] = useState<string | null>(null);
   const [reportReason, setReportReason] = useState("");
   const [peerTyping, setPeerTyping] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);

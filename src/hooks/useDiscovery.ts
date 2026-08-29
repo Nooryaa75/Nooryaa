@@ -163,10 +163,15 @@ export function useDiscovery(userId: string, filters: Filters) {
 
   const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
 
-  const decks = useMemo(() => {
+  // Profils encore « à décider » : ni likés, ni refusés.
+  const visibleProfiles = useMemo(() => {
     const likedIds = new Set((sentLikes ?? []).map((r) => r.to_user));
     const passedIds = new Set((passes ?? []).map((r: any) => r.target_id));
-    const rows: any[] = (profiles ?? []).filter((p) => !likedIds.has(p.id) && !passedIds.has(p.id));
+    return (profiles ?? []).filter((p: any) => !likedIds.has(p.id) && !passedIds.has(p.id));
+  }, [profiles, sentLikes, passes]);
+
+  const decks = useMemo(() => {
+    const rows: any[] = visibleProfiles;
     const withPercent = (p: any) => ({
       ...p,
       _matchPercent: matchPercent(me, p) ?? 0,

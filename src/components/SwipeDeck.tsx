@@ -91,7 +91,9 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       queryClient.invalidateQueries({ queryKey: ["sent-likes", userId] }),
       queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] }),
       queryClient.invalidateQueries({ queryKey: ["likes-sent", userId] }),
-      queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["unread-counts"] }),
+      queryClient.invalidateQueries({ queryKey: ["like-graph", userId] }),
+      queryClient.invalidateQueries({ queryKey: ["likes-received", userId] }),
     ]);
   }
 

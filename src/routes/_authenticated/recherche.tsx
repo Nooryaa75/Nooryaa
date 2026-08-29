@@ -360,7 +360,7 @@ function Recherche() {
               profiles={profiles}
               userId={ctx.userId}
               onBack={() => setTab("filtres")}
-              persistPass={false}
+              persistPass
               hideHeader
             />
           )}

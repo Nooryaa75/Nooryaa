@@ -317,15 +317,17 @@ function Conversation() {
           return (
             <div key={m.id} className={`flex items-center gap-1 group ${mine ? "justify-end" : "justify-start"}`}>
               {mine && !m.deleted_at && (
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                  <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>
+                <div className={`transition-opacity flex gap-1 ${actionFor === m.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                  <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>
                   {m.content && (
-                    <button type="button" title="Modifier" onClick={() => { setEditing(m); setReplyTo(null); setText(m.content); }} className="text-muted-foreground hover:text-primary"><Pencil className="h-4 w-4" /></button>
+                    <button type="button" title="Modifier" onClick={() => { setEditing(m); setReplyTo(null); setText(m.content); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Pencil className="h-4 w-4" /></button>
                   )}
-                  <button type="button" title="Supprimer" onClick={() => removeMessage.mutate(m)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                  <button type="button" title="Supprimer" onClick={() => { removeMessage.mutate(m); setActionFor(null); }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
                 </div>
               )}
-              <div className={`max-w-[75%] rounded-2xl overflow-hidden text-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
+              <div
+                onClick={() => { if (mine && !m.deleted_at) setActionFor(actionFor === m.id ? null : m.id); }}
+                className={`max-w-[75%] rounded-2xl overflow-hidden text-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "bg-primary text-primary-foreground cursor-pointer" : "bg-secondary text-secondary-foreground"}`}>
                 {m.deleted_at ? (
                   <div className="px-4 py-2">Message supprimé</div>
                 ) : (

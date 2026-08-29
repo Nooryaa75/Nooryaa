@@ -1,0 +1,2 @@
+ALTER TABLE public.messages DROP CONSTRAINT IF EXISTS messages_content_or_image;
+ALTER TABLE public.messages ADD CONSTRAINT messages_content_or_image CHECK (content IS NOT NULL OR image_path IS NOT NULL OR audio_path IS NOT NULL);

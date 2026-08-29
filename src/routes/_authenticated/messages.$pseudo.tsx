@@ -33,6 +33,7 @@ function Conversation() {
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sendingVoice, setSendingVoice] = useState(false);
+  const [voiceActive, setVoiceActive] = useState(false);
   const [replyTo, setReplyTo] = useState<any | null>(null);
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
@@ -383,20 +384,28 @@ function Conversation() {
       ) : (
       <form onSubmit={(e) => { e.preventDefault(); send.mutate(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
-        <Button type="button" size="icon" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
-        </Button>
-        <EmojiPicker onPick={(e) => setText((t) => t + e)} />
-        <VoiceRecorder onSend={handleVoice} sending={sendingVoice} />
-        <Input
-          value={text}
-          onChange={(e) => { setText(e.target.value); notifyTyping(); }}
-          placeholder={editing ? "Modifier votre message..." : "Votre message..."}
-          maxLength={2000}
-        />
-        <Button type="submit" size="icon" disabled={!text.trim() || send.isPending}>
-          {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
-        </Button>
+        {!voiceActive && (
+          <>
+            <Button type="button" size="icon" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            </Button>
+            <EmojiPicker onPick={(e) => setText((t) => t + e)} />
+          </>
+        )}
+        <VoiceRecorder onSend={handleVoice} sending={sendingVoice} onActiveChange={setVoiceActive} />
+        {!voiceActive && (
+          <>
+            <Input
+              value={text}
+              onChange={(e) => { setText(e.target.value); notifyTyping(); }}
+              placeholder={editing ? "Modifier votre message..." : "Votre message..."}
+              maxLength={2000}
+            />
+            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending}>
+              {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+            </Button>
+          </>
+        )}
       </form>
       )}
 

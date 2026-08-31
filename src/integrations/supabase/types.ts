@@ -397,6 +397,7 @@ export type Database = {
           activities: string | null
           bio: string | null
           birthdate: string | null
+          body_type: string | null
           children_count: number | null
           city: string | null
           country: string | null
@@ -447,6 +448,7 @@ export type Database = {
           activities?: string | null
           bio?: string | null
           birthdate?: string | null
+          body_type?: string | null
           children_count?: number | null
           city?: string | null
           country?: string | null
@@ -497,6 +499,7 @@ export type Database = {
           activities?: string | null
           bio?: string | null
           birthdate?: string | null
+          body_type?: string | null
           children_count?: number | null
           city?: string | null
           country?: string | null

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
+import { BODY_TYPES, EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
@@ -29,6 +29,7 @@ function Onboarding() {
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
     height_cm: "",
+    body_type: "",
     phone: "",
     city: "",
     country: "France",
@@ -119,6 +120,7 @@ function Onboarding() {
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
       height_cm: form.height_cm ? Number(form.height_cm) : null,
+      body_type: form.body_type || null,
       phone: form.phone || null,
       city: form.city || null,
       latitude: (form as any).latitude ?? null,
@@ -207,6 +209,13 @@ function Onboarding() {
           <div>
             <Label htmlFor="height_cm">Taille (cm)</Label>
             <Input id="height_cm" type="number" min={120} max={230} value={form.height_cm} onChange={(e) => setForm({ ...form, height_cm: e.target.value })} placeholder="Ex. 175" />
+          </div>
+          <div>
+            <Label>Corpulence</Label>
+            <Select value={form.body_type || undefined} onValueChange={(v) => setForm({ ...form, body_type: v })}>
+              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+              <SelectContent>{BODY_TYPES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Situation *</Label>

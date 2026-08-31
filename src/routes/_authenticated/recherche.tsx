@@ -13,6 +13,7 @@ import {
   EDUCATION_LEVELS,
   COUNTRIES,
   CITIES,
+  BODY_TYPES,
   PROFESSIONS,
   OBJECTIVES,
   PERSONALITY_OPTIONS,
@@ -139,6 +140,16 @@ function Recherche() {
               <div>
                 <Label className="text-xs">Taille max (cm)</Label>
                 <Input type="number" min={120} max={230} value={filters.heightMax ?? ""} onChange={(e) => set({ heightMax: e.target.value ? Number(e.target.value) : null })} placeholder="Indifférent" />
+              </div>
+              <div>
+                <Label className="text-xs">Corpulence</Label>
+                <Select value={filters.bodyType} onValueChange={(v) => set({ bodyType: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ANY}>Indifférent</SelectItem>
+                    {BODY_TYPES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label className="text-xs">Ville / région</Label>

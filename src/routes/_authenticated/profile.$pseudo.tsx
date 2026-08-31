@@ -297,6 +297,7 @@ function ProfileView() {
                   <Info label="Personnalité" value={profile.personality} />
                   <Info label="Fumeur" value={boolLabel(profile.smoker, "Oui", "Non")} />
                   <Info label="Taille" value={(profile as any).height_cm ? `${(profile as any).height_cm} cm` : undefined} />
+                  <Info label="Corpulence" value={(profile as any).body_type ?? undefined} />
                   {profile.activities && <div className="col-span-2"><Info label="Activités" value={profile.activities} /></div>}
                 </div>
               </AccordionContent>

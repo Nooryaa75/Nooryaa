@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, ageFromBirthdate, isAdult } from "@/lib/profile";
+import { BODY_TYPES, EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, ageFromBirthdate, isAdult } from "@/lib/profile";
 import { Link } from "@tanstack/react-router";
 import { YesNoRadio } from "@/components/YesNoRadio";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
@@ -48,6 +48,7 @@ function MyProfile() {
       const { error } = await supabase.from("profiles").update({
         birthdate: form.birthdate || null,
         height_cm: form.height_cm ? Number(form.height_cm) : null,
+        body_type: form.body_type || null,
         city: form.city, country: form.country, country_origin: form.country_origin,
         grew_up: form.grew_up || null,
         latitude: form.latitude ?? null, longitude: form.longitude ?? null,
@@ -120,6 +121,13 @@ function MyProfile() {
           <div>
             <Label>Taille (cm)</Label>
             <Input type="number" min={120} max={230} value={form.height_cm ?? ""} onChange={(e) => setForm({ ...form, height_cm: e.target.value ? Number(e.target.value) : null })} placeholder="Ex. 175" />
+          </div>
+          <div>
+            <Label>Corpulence</Label>
+            <Select value={form.body_type ?? ""} onValueChange={(v) => setForm({ ...form, body_type: v })}>
+              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+              <SelectContent>{BODY_TYPES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Profession</Label>

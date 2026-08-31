@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
-import { COUNTRIES, EDUCATION_LEVELS, OBJECTIVES, PROFESSIONS } from "@/lib/profile";
+import { BODY_TYPES, COUNTRIES, EDUCATION_LEVELS, OBJECTIVES, PROFESSIONS } from "@/lib/profile";
 
 export type Preferences = Record<string, any>;
 
@@ -87,6 +87,7 @@ export function SearchPreferences({
                 <Label>Taille maximum (cm)</Label>
                 <Input type="number" min={120} max={230} value={p.height_max ?? ""} onChange={(e) => set("height_max", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
               </div>
+              <OptionalSelect label="Corpulence" value={p.body_type} onChange={(v) => set("body_type", v)} options={BODY_TYPES} />
               <OptionalSelect label="Pays de résidence" value={p.country} onChange={(v) => set("country", v)} options={COUNTRIES} />
               <OptionalSelect label="Pays d'origine" value={p.country_origin} onChange={(v) => set("country_origin", v)} options={COUNTRIES} />
             </div>

@@ -339,6 +339,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
                 <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
+                <Info icon={<Ruler className="h-4 w-4" />} label="Corpulence" value={(current as any).body_type ?? null} />
                 <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
                 <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
                 <Info icon={<MapPin className="h-4 w-4" />} label="A grandi" value={current.grew_up} />

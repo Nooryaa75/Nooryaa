@@ -16,6 +16,16 @@ export const GENDER_LABELS: Record<string, string> = {
   femme: "Femme",
 };
 
+export const BODY_TYPES = [
+  "Mince",
+  "Svelte",
+  "Athlétique",
+  "Normale",
+  "Quelques rondeurs",
+  "Ronde",
+  "Forte",
+] as const;
+
 export const EDUCATION_LEVELS = [
   "Sans diplôme",
   "Secondaire / Brevet",

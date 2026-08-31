@@ -101,6 +101,10 @@ const euro = (n: number) =>
 
 function AbonnementPage() {
   const [current, setCurrent] = useState("gratuit");
+  const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
+  const [autoRenew, setAutoRenew] = useState(false);
+  const [renewsAt, setRenewsAt] = useState<Date | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState<Record<string, DurationId>>({
     noor: "1m",
     aya: "1m",

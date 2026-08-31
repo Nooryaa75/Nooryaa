@@ -256,12 +256,15 @@ function AbonnementPage() {
                 </button>
 
                 <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
+                  {plan.features.map((f, idx) => {
+                    const label = typeof f === "function" ? f(duration) : f;
+                    return (
+                      <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{label}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             );

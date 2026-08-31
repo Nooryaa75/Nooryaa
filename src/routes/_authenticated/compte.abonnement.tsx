@@ -31,14 +31,22 @@ const durations: { id: DurationId; label: string; days: number }[] = [
   { id: "1m", label: "1 mois", days: 30 },
 ];
 
+type Feature = string | ((duration: DurationId) => string);
+
 type Plan = {
   id: string;
   emoji: string;
   name: string;
   tagline: string;
-  features: string[];
+  features: Feature[];
   highlight?: boolean;
   prices?: Record<DurationId, number>;
+};
+
+const ayaBoosts: Record<DurationId, string> = {
+  "24h": "1 Boost",
+  "7j": "2 Boosts",
+  "1m": "4 Boosts",
 };
 
 const plans: Plan[] = [
@@ -76,7 +84,7 @@ const plans: Plan[] = [
     features: [
       "Toute la formule NOOR",
       "Priorité maximale dans les recherches",
-      "2 Boosts",
+      (d) => ayaBoosts[d],
       "Super Likes",
     ],
   },

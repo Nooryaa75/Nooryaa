@@ -67,41 +67,43 @@
 
 :root {
   --radius: 0.875rem;
-  /* Charte issue du visuel hero Nooryaa : sable doré, vert profond, or chaud */
-  --background: oklch(0.91 0.028 82);
-  --foreground: oklch(0.32 0.048 156);
-  --card: oklch(0.965 0.018 85);
-  --card-foreground: oklch(0.32 0.048 156);
-  --popover: oklch(0.965 0.018 85);
-  --popover-foreground: oklch(0.32 0.048 156);
-  --primary: oklch(0.32 0.048 156);
-  --primary-foreground: oklch(0.965 0.018 85);
-  --secondary: oklch(0.85 0.045 82);
-  --secondary-foreground: oklch(0.32 0.048 156);
-  --muted: oklch(0.82 0.035 82);
-  --muted-foreground: oklch(0.45 0.04 150);
-  --accent: oklch(0.74 0.1007 82.7);
-  --accent-foreground: oklch(0.32 0.048 156);
-  --destructive: oklch(0.55 0.19 25);
-  --destructive-foreground: oklch(0.96 0.01 85);
-  --border: oklch(0.78 0.03 80);
-  --input: oklch(0.78 0.03 80);
-  --ring: oklch(0.74 0.1007 82.7);
-  --gold: oklch(0.74 0.1007 82.7);
-  --gold-deep: oklch(0.58 0.092 80);
-  --gold-light: oklch(0.92 0.045 88);
-  --sage: oklch(0.55 0.06 155);
-  --sage-deep: oklch(0.35 0.05 157);
-  --emerald-deep: oklch(0.28 0.045 156);
-  --hero-bg: oklch(0.16 0.018 150);
-  --cream: oklch(0.965 0.018 85);
-  --sand: oklch(0.88 0.035 80);
-  --gradient-romantic: radial-gradient(120% 100% at 50% 0%, oklch(0.85 0.04 82), oklch(0.91 0.028 82) 70%);
-  --gradient-warm: linear-gradient(135deg, oklch(0.965 0.018 85), oklch(0.88 0.035 80));
-  --gradient-gold: linear-gradient(105deg, oklch(0.58 0.092 80) 0%, oklch(0.92 0.045 88) 22%, oklch(0.72 0.098 83) 42%, oklch(0.96 0.04 88) 62%, oklch(0.64 0.095 80) 100%);
-  --shadow-soft: 0 24px 60px -22px oklch(0 0 0 / 0.25);
-  --shadow-card: 0 8px 30px -10px oklch(0 0 0 / 0.18);
-  --glow-gold: 0 0 0 1px color-mix(in oklab, var(--gold) 35%, transparent), 0 10px 40px -12px color-mix(in oklab, var(--gold) 35%, transparent);
+  /* Charte Nooryaa : indigo #5D2A8C, magenta #E83E8C, corail #FF6B6B, pêche #FFB6A3 */
+  --background: oklch(0.985 0.003 300);        /* #FAFAFC */
+  --foreground: oklch(0.26 0.028 275);         /* #1F2230 */
+  --card: oklch(1 0 0);                        /* #FFFFFF */
+  --card-foreground: oklch(0.26 0.028 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.26 0.028 275);
+  --primary: oklch(0.38 0.155 305);            /* #5D2A8C */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.945 0.032 305);         /* #F3E8FF */
+  --secondary-foreground: oklch(0.38 0.155 305);
+  --muted: oklch(0.93 0.006 285);              /* #E6E8EE */
+  --muted-foreground: oklch(0.56 0.028 285);   /* #71768D */
+  --accent: oklch(0.62 0.222 355);             /* #E83E8C */
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.68 0.19 22);          /* #FF6B6B */
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.90 0.008 285);
+  --input: oklch(0.90 0.008 285);
+  --ring: oklch(0.62 0.222 355);
+  /* Alias conservés (anciens noms « gold ») repointés sur la nouvelle charte */
+  --gold: oklch(0.62 0.222 355);               /* magenta */
+  --gold-deep: oklch(0.38 0.155 305);          /* indigo */
+  --gold-light: oklch(0.82 0.095 33);          /* pêche */
+  --sage: oklch(0.68 0.19 22);                 /* corail */
+  --sage-deep: oklch(0.38 0.155 305);
+  --emerald-deep: oklch(0.26 0.028 275);
+  --hero-bg: oklch(0.26 0.028 275);
+  --cream: oklch(0.985 0.003 300);
+  --sand: oklch(0.945 0.032 305);
+  --gradient-romantic: radial-gradient(120% 100% at 50% 0%, oklch(0.945 0.032 305), oklch(0.985 0.003 300) 70%);
+  --gradient-warm: linear-gradient(135deg, oklch(0.68 0.19 22), oklch(0.82 0.095 33));
+  --gradient-gold: linear-gradient(105deg, oklch(0.38 0.155 305) 0%, oklch(0.62 0.222 355) 55%, oklch(0.38 0.155 305) 100%);
+  --shadow-soft: 0 24px 60px -22px oklch(0.26 0.028 275 / 0.22);
+  --shadow-card: 0 8px 30px -10px oklch(0.26 0.028 275 / 0.14);
+  --glow-gold: 0 0 0 1px color-mix(in oklab, var(--gold) 30%, transparent), 0 10px 40px -12px color-mix(in oklab, var(--gold) 40%, transparent);
+
 
 
 

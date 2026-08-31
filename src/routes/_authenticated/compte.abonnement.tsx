@@ -91,7 +91,7 @@ const plans: Plan[] = [
       "Toute la formule NOOR",
       "Priorité maximale dans les recherches",
       (d) => ayaBoosts[d],
-      "Super Likes",
+      (d) => ayaSuperLikes[d],
     ],
   },
 ];

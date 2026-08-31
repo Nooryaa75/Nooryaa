@@ -278,10 +278,6 @@ function AbonnementPage() {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        Plus la durée choisie est longue, moins le tarif journalier est élevé. Vous pouvez changer ou
-        résilier votre formule à tout moment. Rien ne vous sera facturé sans votre accord.
-      </p>
 
 
       <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">

@@ -174,10 +174,10 @@
 @utility arabesque {
   background-color: var(--background);
   background-image:
-    radial-gradient(circle at 0 0, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
-    radial-gradient(circle at 100% 0, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
-    radial-gradient(circle at 0 100%, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%),
-    radial-gradient(circle at 100% 100%, transparent 68%, color-mix(in oklab, var(--gold) 22%, transparent) 69% 71%, transparent 72%);
+    radial-gradient(circle at 0 0, transparent 68%, color-mix(in oklab, var(--gold) 12%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 100% 0, transparent 68%, color-mix(in oklab, var(--gold) 12%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 0 100%, transparent 68%, color-mix(in oklab, var(--gold) 12%, transparent) 69% 71%, transparent 72%),
+    radial-gradient(circle at 100% 100%, transparent 68%, color-mix(in oklab, var(--gold) 12%, transparent) 69% 71%, transparent 72%);
   background-size: 44px 44px;
 }
 
@@ -242,22 +242,22 @@
 @utility mosaic {
   background-color: var(--background);
   background-image:
-    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 34%, transparent) 32px 33px, transparent 33px);
+    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 14%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 14%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 14%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 14%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 14%, transparent) 32px 33px, transparent 33px);
   background-size: 64px 64px;
 }
 
 @utility mosaic-soft {
   background-color: var(--background);
   background-image:
-    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px),
-    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 18%, transparent) 32px 33px, transparent 33px);
+    radial-gradient(circle 34px at 0 0, transparent 32px, color-mix(in oklab, var(--gold) 8%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 0, transparent 32px, color-mix(in oklab, var(--gold) 8%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 0 100%, transparent 32px, color-mix(in oklab, var(--gold) 8%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 100% 100%, transparent 32px, color-mix(in oklab, var(--gold) 8%, transparent) 32px 33px, transparent 33px),
+    radial-gradient(circle 34px at 50% 50%, transparent 32px, color-mix(in oklab, var(--gold) 8%, transparent) 32px 33px, transparent 33px);
   background-size: 64px 64px;
 }
 

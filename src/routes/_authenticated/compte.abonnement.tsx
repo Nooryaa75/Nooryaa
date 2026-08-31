@@ -23,15 +23,22 @@ export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   component: AbonnementPage,
 });
 
+type DurationId = "24h" | "7j" | "1m";
+
+const durations: { id: DurationId; label: string; days: number }[] = [
+  { id: "24h", label: "24 heures", days: 1 },
+  { id: "7j", label: "1 semaine", days: 7 },
+  { id: "1m", label: "1 mois", days: 30 },
+];
+
 type Plan = {
   id: string;
   emoji: string;
   name: string;
-  price: string;
-  period: string;
-  tagline?: string;
+  tagline: string;
   features: string[];
   highlight?: boolean;
+  prices?: Record<DurationId, number>;
 };
 
 const plans: Plan[] = [
@@ -39,83 +46,51 @@ const plans: Plan[] = [
     id: "gratuit",
     emoji: "🟢",
     name: "Gratuit",
-    price: "0 €",
-    period: "",
-    tagline: "Options de base",
+    tagline: "Pour découvrir Nooryaa",
     features: [
-      "Création du profil",
-      "Consultation des profils limitée",
-      "Nombre limité de likes",
-      "Matchs limités",
-      "Messagerie avec les matchs limitée",
-    ],
-  },
-  {
-    id: "24h",
-    emoji: "🔵",
-    name: "24H",
-    price: "2,99 €",
-    period: "/ 24 heures",
-    tagline: "Essentiel pendant 24 heures",
-    features: [
-      "Likes supplémentaires ou illimités",
-      "Filtres avancés",
-      "Voir qui a aimé le profil",
-      "Profil davantage visible",
-    ],
-  },
-  {
-    id: "essentiel",
-    emoji: "🟣",
-    name: "Essentiel",
-    price: "6,99 €",
-    period: "/ 7 jours",
-    tagline: "Accès Premium pendant 7 jours",
-    features: [
-      "Likes illimités",
-      "Filtres avancés",
-      "Voir qui a aimé le profil",
-      "Revenir sur un profil précédent",
-      "1 Boost",
+      "Accès à tout",
+      "Nombre de likes limité à la journée",
+      "Fonctionnalités de la messagerie limitées",
     ],
   },
   {
     id: "noor",
     emoji: "🌙",
     name: "NOOR",
-    price: "14,99 €",
-    period: "/ mois",
-    tagline: "Tout Essentiel, et plus",
+    tagline: "L'essentiel pour aller plus loin",
     highlight: true,
+    prices: { "24h": 2.99, "7j": 6.99, "1m": 14.99 },
     features: [
       "Likes illimités",
       "Filtres avancés complets",
-      "Voir qui a aimé le profil",
+      "Voir qui a liké le profil",
       "Mode incognito",
-      "3 Boosts / mois",
-      "Profil prioritaire",
     ],
   },
   {
-    id: "aya-plus",
+    id: "aya",
     emoji: "✨",
-    name: "AYA+",
-    price: "19,99 €",
-    period: "/ mois",
-    tagline: "Tout NOOR, et plus",
+    name: "AYA",
+    tagline: "Tout NOOR, et plus encore",
+    prices: { "24h": 3.99, "7j": 9.99, "1m": 19.99 },
     features: [
+      "Toute la formule NOOR",
       "Priorité maximale dans les recherches",
-      "5 Boosts / mois",
+      "2 Boosts",
       "Super Likes",
-      "Filtres exclusifs",
-      "Badge Premium",
-      "Support prioritaire",
     ],
   },
 ];
 
+const euro = (n: number) =>
+  n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+
 function AbonnementPage() {
   const [current, setCurrent] = useState("gratuit");
+  const [selectedDuration, setSelectedDuration] = useState<Record<string, DurationId>>({
+    noor: "1m",
+    aya: "1m",
+  });
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -155,22 +130,22 @@ function AbonnementPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-5xl">
       <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-primary" />
           <h2 className="text-xl font-serif text-primary">Mon abonnement</h2>
         </div>
-        <div className="flex items-center justify-between rounded-xl border border-primary/40 bg-secondary/50 p-4">
-          <div>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
+          <div className="min-w-0">
             <p className="font-semibold text-primary flex items-center gap-2">
-              {currentPlan.emoji} {currentPlan.name} <BadgeCheck className="h-4 w-4" />
+              {currentPlan.emoji} {currentPlan.name} <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
               Votre formule actuelle — modifiable à tout moment, sans engagement.
             </p>
           </div>
-          <span className="text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
+          <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
             Actif
           </span>
         </div>
@@ -180,13 +155,16 @@ function AbonnementPage() {
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3 items-start">
           {plans.map((plan) => {
             const active = plan.id === current;
+            const duration = selectedDuration[plan.id] ?? "1m";
+            const price = plan.prices?.[duration];
+            const days = durations.find((d) => d.id === duration)!.days;
             return (
               <div
                 key={plan.id}
-                className={`rounded-2xl border p-5 flex flex-col gap-3 bg-card transition-colors ${
+                className={`rounded-2xl border bg-card p-6 flex flex-col gap-4 transition-colors ${
                   active
                     ? "border-primary shadow-[var(--shadow-card)]"
                     : plan.highlight
@@ -194,26 +172,82 @@ function AbonnementPage() {
                       : "border-border/60"
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-serif text-lg text-primary">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-serif text-xl text-primary">
                       {plan.emoji} {plan.name}
                     </p>
-                    {plan.tagline && (
-                      <p className="text-xs text-muted-foreground">{plan.tagline}</p>
-                    )}
+                    <p className="text-sm text-muted-foreground">{plan.tagline}</p>
                   </div>
                   {active && (
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
+                    <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
                       Actuel
                     </span>
                   )}
                 </div>
-                <p className="text-2xl font-semibold text-foreground">
-                  {plan.price}
-                  <span className="text-sm font-normal text-muted-foreground"> {plan.period}</span>
-                </p>
-                <ul className="space-y-1.5 text-sm flex-1">
+
+                <div>
+                  <p className="text-3xl font-semibold text-foreground">
+                    {price === undefined ? "0 €" : euro(price)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {price === undefined
+                      ? "Gratuit, pour toujours"
+                      : `soit ${euro(price / days)} / jour`}
+                  </p>
+                </div>
+
+                {plan.prices ? (
+                  <select
+                    value={duration}
+                    onChange={(e) =>
+                      setSelectedDuration((s) => ({
+                        ...s,
+                        [plan.id]: e.target.value as DurationId,
+                      }))
+                    }
+                    aria-label={`Durée de la formule ${plan.name}`}
+                    className="w-full rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground"
+                  >
+                    {durations.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.label} — {euro(plan.prices![d.id])}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="w-full rounded-xl border border-dashed border-border/60 px-3 py-2.5 text-sm text-muted-foreground">
+                    Sans durée ni engagement
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  disabled={active && !plan.prices}
+                  onClick={() => {
+                    if (!plan.prices) {
+                      setCurrent(plan.id);
+                      toast.success("Vous êtes revenu à la formule Gratuit.");
+                    } else {
+                      toast.info(
+                        `Paiement sécurisé bientôt disponible : ${plan.name} — ${
+                          durations.find((d) => d.id === duration)!.label
+                        }.`,
+                      );
+                    }
+                  }}
+                  className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold border transition-colors ${
+                    active && !plan.prices
+                      ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
+                      : plan.highlight
+                        ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
+                        : "bg-background text-primary border-primary/50 hover:bg-primary/10"
+                  }`}
+                >
+                  {active && !plan.prices ? "Formule actuelle" : "Sélectionner"}
+                </button>
+
+                <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2">
                       <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -221,27 +255,6 @@ function AbonnementPage() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  disabled={active}
-                  onClick={() => {
-                    if (plan.id === "gratuit") {
-                      setCurrent(plan.id);
-                      toast.success("Vous êtes revenu à la formule Gratuit.");
-                    } else {
-                      toast.info(
-                        "Le paiement sécurisé arrive bientôt : cette formule sera activable ici.",
-                      );
-                    }
-                  }}
-                  className={`w-full rounded-full px-4 py-2 text-sm font-semibold border transition-colors ${
-                    active
-                      ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
-                      : "bg-primary text-primary-foreground border-primary hover:opacity-90"
-                  }`}
-                >
-                  {active ? "Formule actuelle" : "Choisir cette formule"}
-                </button>
               </div>
             );
           })}
@@ -249,9 +262,10 @@ function AbonnementPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Vous pouvez changer ou résilier votre formule à tout moment. Rien ne vous sera facturé sans
-        votre accord.
+        Plus la durée choisie est longue, moins le tarif journalier est élevé. Vous pouvez changer ou
+        résilier votre formule à tout moment. Rien ne vous sera facturé sans votre accord.
       </p>
+
 
       <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">
         <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle } from "lucide-react";
+import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle, XCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
@@ -95,6 +95,9 @@ const plans: Plan[] = [
     ],
   },
 ];
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
 const euro = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
@@ -307,8 +310,17 @@ function AbonnementPage() {
                   onClick={() => {
                     if (!plan.prices) {
                       setCurrent(plan.id);
+                      setCurrentDuration(null);
+                      setAutoRenew(false);
+                      setRenewsAt(null);
                       toast.success("Vous êtes revenu à la formule Gratuit.");
                     } else {
+                      const end = new Date();
+                      end.setDate(end.getDate() + days);
+                      setCurrent(plan.id);
+                      setCurrentDuration(duration);
+                      setRenewsAt(end);
+                      setAutoRenew(true);
                       toast.info(
                         `Paiement sécurisé bientôt disponible : ${plan.name} — ${
                           durations.find((d) => d.id === duration)!.label

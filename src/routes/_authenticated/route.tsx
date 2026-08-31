@@ -4,16 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/_authenticated")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    return { userId: data.user?.id ?? "" };
+  },
   component: AuthenticatedLayout,
 });
 
 /**
- * Le contrôle d'accès est fait après l'hydratation (et non dans beforeLoad)
- * afin que le rendu serveur et le premier rendu client soient identiques :
- * une redirection pendant l'hydratation provoquait une "hydration mismatch"
- * (écran blanc / "Uncaught undefined").
+ * La redirection est faite après l'hydratation (et non via `throw redirect`
+ * dans beforeLoad) : changer de route pendant l'hydratation provoquait une
+ * "hydration mismatch" React (écran blanc / "Uncaught undefined").
  */
 function AuthenticatedLayout() {
+  const { userId } = Route.useRouteContext();
   const navigate = useNavigate();
   const [status, setStatus] = useState<"checking" | "ok">("checking");
 
@@ -21,10 +26,7 @@ function AuthenticatedLayout() {
     let cancelled = false;
 
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (cancelled) return;
-
-      if (!data.user) {
+      if (!userId) {
         navigate({ to: "/auth", search: { mode: "signin" }, replace: true });
         return;
       }
@@ -32,7 +34,7 @@ function AuthenticatedLayout() {
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarded")
-        .eq("id", data.user.id)
+        .eq("id", userId)
         .maybeSingle();
       if (cancelled) return;
 
@@ -47,7 +49,7 @@ function AuthenticatedLayout() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [userId, navigate]);
 
   if (status === "checking") {
     return (

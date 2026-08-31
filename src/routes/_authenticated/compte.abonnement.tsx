@@ -49,6 +49,12 @@ const ayaBoosts: Record<DurationId, string> = {
   "1m": "4 Boosts",
 };
 
+const ayaSuperLikes: Record<DurationId, string> = {
+  "24h": "2 Super Likes",
+  "7j": "10 Super Likes",
+  "1m": "20 Super Likes",
+};
+
 const plans: Plan[] = [
   {
     id: "gratuit",
@@ -85,7 +91,7 @@ const plans: Plan[] = [
       "Toute la formule NOOR",
       "Priorité maximale dans les recherches",
       (d) => ayaBoosts[d],
-      "Super Likes",
+      (d) => ayaSuperLikes[d],
     ],
   },
 ];

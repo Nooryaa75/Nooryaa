@@ -147,6 +147,16 @@ function AbonnementPage() {
     }
   }
 
+  function handleCancelSubscription() {
+    setAutoRenew(false);
+    setCancelOpen(false);
+    toast.success(
+      renewsAt
+        ? `Renouvellement automatique annulé. Vous gardez votre formule jusqu'au ${formatDate(renewsAt)}.`
+        : "Renouvellement automatique annulé.",
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
@@ -157,16 +167,68 @@ function AbonnementPage() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
           <div className="min-w-0">
             <p className="font-semibold text-primary flex items-center gap-2">
-              {currentPlan.emoji} {currentPlan.name} <BadgeCheck className="h-4 w-4 shrink-0" />
+              {currentPlan.emoji} {currentPlan.name}
+              {currentDuration ? ` — ${durations.find((d) => d.id === currentDuration)!.label}` : ""}
+              <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
-              Votre formule actuelle — modifiable à tout moment, sans engagement.
+              {!currentPlan.prices
+                ? "Votre formule actuelle — modifiable à tout moment, sans engagement."
+                : autoRenew
+                  ? `Renouvellement automatique actif${renewsAt ? ` — prochaine échéance le ${formatDate(renewsAt)}` : ""}.`
+                  : `Renouvellement automatique annulé${renewsAt ? ` — accès conservé jusqu'au ${formatDate(renewsAt)}` : ""}.`}
             </p>
           </div>
           <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
-            Actif
+            {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
           </span>
         </div>
+
+        {currentPlan.prices && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {autoRenew ? (
+              <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary/10"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Annuler mon abonnement
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Annuler le renouvellement automatique ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Votre formule {currentPlan.name} restera active
+                      {renewsAt ? ` jusqu'au ${formatDate(renewsAt)}` : " jusqu'à son échéance"}, puis
+                      votre compte repassera automatiquement en formule Gratuit. Aucun nouveau
+                      prélèvement ne sera effectué.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Garder mon abonnement</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancelSubscription}>
+                      Oui, annuler
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <Button
+                className="rounded-full gap-2"
+                onClick={() => {
+                  setAutoRenew(true);
+                  toast.success("Renouvellement automatique réactivé.");
+                }}
+              >
+                <RefreshCw className="h-4 w-4" />
+                Réactiver le renouvellement
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <div>

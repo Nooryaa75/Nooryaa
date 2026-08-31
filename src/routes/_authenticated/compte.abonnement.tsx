@@ -31,14 +31,22 @@ const durations: { id: DurationId; label: string; days: number }[] = [
   { id: "1m", label: "1 mois", days: 30 },
 ];
 
+type Feature = string | ((duration: DurationId) => string);
+
 type Plan = {
   id: string;
   emoji: string;
   name: string;
   tagline: string;
-  features: string[];
+  features: Feature[];
   highlight?: boolean;
   prices?: Record<DurationId, number>;
+};
+
+const ayaBoosts: Record<DurationId, string> = {
+  "24h": "1 Boost",
+  "7j": "2 Boosts",
+  "1m": "4 Boosts",
 };
 
 const plans: Plan[] = [
@@ -76,7 +84,7 @@ const plans: Plan[] = [
     features: [
       "Toute la formule NOOR",
       "Priorité maximale dans les recherches",
-      "2 Boosts",
+      (d) => ayaBoosts[d],
       "Super Likes",
     ],
   },
@@ -248,12 +256,15 @@ function AbonnementPage() {
                 </button>
 
                 <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
+                  {plan.features.map((f, idx) => {
+                    const label = typeof f === "function" ? f(duration) : f;
+                    return (
+                      <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{label}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             );

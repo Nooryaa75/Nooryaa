@@ -325,38 +325,43 @@ function Recherche() {
           </div>
 
           {/* Âge */}
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <SectionTitle>Âge</SectionTitle>
-              <span className="text-sm font-medium">{filters.ageMin} - {filters.ageMax} ans</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <Label className="text-xs">Minimum</Label>
-                  <span className="font-medium">{filters.ageMin} ans</span>
-                </div>
-                <Slider
-                  value={[filters.ageMin]}
-                  min={18}
-                  max={90}
-                  step={1}
-                  onValueChange={([a]) => set({ ageMin: Math.min(a, filters.ageMax) })}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <Label className="text-xs">Maximum</Label>
-                  <span className="font-medium">{filters.ageMax} ans</span>
-                </div>
-                <Slider
-                  value={[filters.ageMax]}
-                  min={18}
-                  max={90}
-                  step={1}
-                  onValueChange={([b]) => set({ ageMax: Math.max(b, filters.ageMin) })}
-                />
-              </div>
+          <div className="space-y-2">
+            <SectionTitle>Âge</SectionTitle>
+            <div className="grid grid-cols-2 gap-3">
+              <Select
+                value={String(filters.ageMin)}
+                onValueChange={(v) => {
+                  const min = Number(v);
+                  set({ ageMin: min <= filters.ageMax ? min : filters.ageMax });
+                }}
+              >
+                <SelectTrigger className="rounded-full justify-center gap-2">
+                  <span className="text-xs text-muted-foreground">Min</span>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 90 - 18 + 1 }, (_, i) => 18 + i).map((a) => (
+                    <SelectItem key={a} value={String(a)}>{a} ans</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={String(filters.ageMax)}
+                onValueChange={(v) => {
+                  const max = Number(v);
+                  set({ ageMax: max >= filters.ageMin ? max : filters.ageMin });
+                }}
+              >
+                <SelectTrigger className="rounded-full justify-center gap-2">
+                  <span className="text-xs text-muted-foreground">Max</span>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 90 - 18 + 1 }, (_, i) => 18 + i).map((a) => (
+                    <SelectItem key={a} value={String(a)}>{a} ans</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

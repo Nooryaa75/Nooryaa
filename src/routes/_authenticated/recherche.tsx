@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { toast } from "sonner";
 import {
   EDUCATION_LEVELS,

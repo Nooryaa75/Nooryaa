@@ -91,6 +91,7 @@ export function DualRangeSlider({
           innerRef={minRef}
           label={minLabel}
           value={safeA}
+          unit={unit}
           style={
             centers
               ? { left: `${centers.a}px`, transform: "translateX(-50%)" }
@@ -101,6 +102,7 @@ export function DualRangeSlider({
           innerRef={maxRef}
           label={maxLabel}
           value={safeB}
+          unit={unit}
           style={
             centers
               ? { left: `${centers.b}px`, transform: "translateX(-50%)" }

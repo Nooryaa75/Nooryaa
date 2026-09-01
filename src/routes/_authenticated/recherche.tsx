@@ -337,26 +337,31 @@ function Recherche() {
             />
           </div>
 
-          {/* Taille & corpulence */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">Taille min (cm)</Label>
-              <Input className="rounded-xl" type="number" min={120} max={230} value={filters.heightMin ?? ""} onChange={(e) => set({ heightMin: e.target.value ? Number(e.target.value) : null })} placeholder="Indifférent" />
-            </div>
-            <div>
-              <Label className="text-xs">Taille max (cm)</Label>
-              <Input className="rounded-xl" type="number" min={120} max={230} value={filters.heightMax ?? ""} onChange={(e) => set({ heightMax: e.target.value ? Number(e.target.value) : null })} placeholder="Indifférent" />
-            </div>
-            <div className="col-span-2">
-              <Label className="text-xs">Corpulence</Label>
-              <Select value={filters.bodyType} onValueChange={(v) => set({ bodyType: v })}>
-                <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ANY}>Indifférent</SelectItem>
-                  {BODY_TYPES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Taille */}
+          <div className="space-y-2">
+            <SectionTitle>Taille</SectionTitle>
+            <DualRangeSlider
+              value={[filters.heightMin ?? 120, filters.heightMax ?? 230]}
+              min={120}
+              max={230}
+              step={1}
+              unit="cm"
+              minLabel="Taille min"
+              maxLabel="Taille max"
+              onValueChange={([a, b]) => set({ heightMin: a, heightMax: b })}
+            />
+          </div>
+
+          {/* Corpulence */}
+          <div>
+            <Label className="text-xs">Corpulence</Label>
+            <Select value={filters.bodyType} onValueChange={(v) => set({ bodyType: v })}>
+              <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ANY}>Indifférent</SelectItem>
+                {BODY_TYPES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Religion & pratique */}

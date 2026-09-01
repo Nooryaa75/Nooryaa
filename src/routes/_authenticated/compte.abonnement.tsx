@@ -319,6 +319,7 @@ function AbonnementPage() {
                       setCurrentDuration(null);
                       setAutoRenew(false);
                       setRenewsAt(null);
+                      void saveSubscription({ data: { planCode: plan.id, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
                       toast.success("Vous êtes revenu à la formule Gratuit.");
                     } else {
                       const end = new Date();
@@ -327,6 +328,9 @@ function AbonnementPage() {
                       setCurrentDuration(duration);
                       setRenewsAt(end);
                       setAutoRenew(true);
+                      void saveSubscription({
+                        data: { planCode: plan.id, amountTtc: price ?? 0, days, autoRenew: true },
+                      }).catch(() => {});
                       toast.info(
                         `Paiement sécurisé bientôt disponible : ${plan.name} — ${
                           durations.find((d) => d.id === duration)!.label

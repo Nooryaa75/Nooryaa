@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).catch("signin"),

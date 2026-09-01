@@ -94,8 +94,11 @@ function MyProfile() {
 
   if (!form) return <div className="text-center py-12">Chargement...</div>;
 
-  const activities: string[] = form.activities ?? [];
-  const valeurs: string[] = form.valeurs ?? [];
+  // `activities` est stocké en base sous forme de texte « A, B, C ».
+  const activities: string[] = Array.isArray(form.activities)
+    ? form.activities
+    : String(form.activities ?? "").split(",").map((s: string) => s.trim()).filter(Boolean);
+  const valeurs: string[] = Array.isArray(form.valeurs) ? form.valeurs : [];
 
   const toggleValeur = (v: string) =>
     setForm({ ...form, valeurs: valeurs.includes(v) ? valeurs.filter((x) => x !== v) : [...valeurs, v] });
@@ -250,7 +253,7 @@ function MyProfile() {
           {activities.map((a: string) => (
             <span key={a} className="inline-flex items-center gap-1.5 rounded-full bg-secondary text-secondary-foreground px-3.5 py-1.5 text-sm font-medium">
               {a}
-              <button type="button" aria-label={`Retirer ${a}`} onClick={() => setForm({ ...form, activities: activities.filter((x) => x !== a) })}>
+              <button type="button" aria-label={`Retirer ${a}`} onClick={() => setForm({ ...form, activities: activities.filter((x) => x !== a).join(", ") })}>
                 <X className="h-3.5 w-3.5" />
               </button>
             </span>

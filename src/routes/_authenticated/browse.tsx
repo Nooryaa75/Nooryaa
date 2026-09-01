@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Heart, Quote, User, MessageCircle } from "lucide-react";
+import { Heart, Quote, User, MessageCircle, BadgeCheck } from "lucide-react";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
@@ -38,22 +38,25 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { decks, sentLikes, me, profiles, isLoading } = useDiscovery(20);
+  const { decks, deckList, me, profiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
-  // Likes reçus → matchs = likes croisés (sent ∩ received)
-  const { data: receivedLikeIds = [] } = useQuery({
-    queryKey: ["received-likes", ctx.userId],
+  // Likes envoyés + reçus → matchs = likes croisés (sent ∩ received)
+  const { data: likeGraph = { sent: [] as string[], received: [] as string[] } } = useQuery({
+    queryKey: ["match-likes", ctx.userId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("likes")
-        .select("from_user")
-        .eq("to_user", ctx.userId);
-      return (data ?? []).map((l: any) => l.from_user as string);
+      const [{ data: sent }, { data: received }] = await Promise.all([
+        supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
+        supabase.from("likes").select("from_user").eq("to_user", ctx.userId),
+      ]);
+      return {
+        sent: (sent ?? []).map((l: any) => l.to_user as string),
+        received: (received ?? []).map((l: any) => l.from_user as string),
+      };
     },
   });
 
-  const matches = profiles.filter(
-    (p: any) => sentLikes.includes(p.id) && receivedLikeIds.includes(p.id),
+  const matches = (profiles ?? []).filter(
+    (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
   );
 
   if (deck) {

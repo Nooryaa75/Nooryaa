@@ -284,14 +284,17 @@ function Conversation() {
   return (
     <>
       <div className="px-4 py-3 border-b border-border/60 flex items-center gap-3">
-        <Link to="/messages" className="md:hidden text-muted-foreground"><ArrowLeft className="h-5 w-5" /></Link>
+        <Link to="/messages" className="text-primary"><ArrowLeft className="h-5 w-5" /></Link>
         <Link to="/profile/$pseudo" params={{ pseudo: peer.pseudo }} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="h-9 w-9 rounded-full bg-secondary overflow-hidden">
+          <div className="h-10 w-10 rounded-full bg-secondary overflow-hidden shrink-0">
             {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
           </div>
           <span className="min-w-0">
-            <span className="font-serif text-primary block truncate">{peer.pseudo}</span>
-            {peerTyping && <span className="text-xs text-[color:var(--gold)]">est en train d'écrire…</span>}
+            <span className="font-bold text-foreground flex items-center gap-1.5">
+              <span className="truncate">{peer.pseudo}</span>
+              <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+            </span>
+            <span className="text-xs text-muted-foreground block">{peerTyping ? "est en train d'écrire…" : "En ligne"}</span>
           </span>
         </Link>
         <DropdownMenu>

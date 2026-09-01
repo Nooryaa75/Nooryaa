@@ -325,37 +325,38 @@ function Recherche() {
           </div>
 
           {/* Âge */}
-          <div className="space-y-5">
-            <SectionTitle>Âge</SectionTitle>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <Label className="text-xs">Âge minimum</Label>
-                <span className="font-medium">{filters.ageMin} ans</span>
-              </div>
-              <Slider
-                value={[filters.ageMin]}
-                min={18}
-                max={90}
-                step={1}
-                onValueChange={([a]) => set({ ageMin: Math.min(a, filters.ageMax) })}
-                className="mt-2"
-              />
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <SectionTitle>Âge</SectionTitle>
+              <span className="text-sm font-medium">{filters.ageMin} - {filters.ageMax} ans</span>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <Label className="text-xs">Âge maximum</Label>
-                <span className="font-medium">{filters.ageMax} ans</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <Label className="text-xs">Minimum</Label>
+                  <span className="font-medium">{filters.ageMin} ans</span>
+                </div>
+                <Slider
+                  value={[filters.ageMin]}
+                  min={18}
+                  max={90}
+                  step={1}
+                  onValueChange={([a]) => set({ ageMin: Math.min(a, filters.ageMax) })}
+                />
               </div>
-              <Slider
-                value={[filters.ageMax]}
-                min={18}
-                max={90}
-                step={1}
-                onValueChange={([b]) => set({ ageMax: Math.max(b, filters.ageMin) })}
-                className="mt-2"
-              />
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <Label className="text-xs">Maximum</Label>
+                  <span className="font-medium">{filters.ageMax} ans</span>
+                </div>
+                <Slider
+                  value={[filters.ageMax]}
+                  min={18}
+                  max={90}
+                  step={1}
+                  onValueChange={([b]) => set({ ageMax: Math.max(b, filters.ageMin) })}
+                />
+              </div>
             </div>
           </div>
 

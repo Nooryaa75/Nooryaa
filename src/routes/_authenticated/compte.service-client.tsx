@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Headphones, Send } from "lucide-react";
+import { Headphones, Send, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createSupportTicket } from "@/lib/support.functions";
 import { Button } from "@/components/ui/button";
@@ -60,11 +60,17 @@ function ServiceClientPage() {
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-6 max-w-3xl">
-      <div className="flex items-center gap-2">
-        <Headphones className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-serif text-primary">Service client</h2>
+    <div className="space-y-4">
+      <div className="relative flex items-center justify-center">
+        <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+        <h1 className="text-lg font-bold text-primary flex items-center gap-2">
+          <Headphones className="h-5 w-5" />
+          Service client
+        </h1>
       </div>
+    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-6">
       <p className="text-sm text-muted-foreground">
         Une question, un problème ou une suggestion ? Envoyez-nous un message, notre équipe vous répondra dans les meilleurs délais.
       </p>
@@ -103,6 +109,7 @@ function ServiceClientPage() {
           {loading ? "Envoi…" : "Envoyer mon message"}
         </Button>
       </form>
+    </div>
     </div>
   );
 }

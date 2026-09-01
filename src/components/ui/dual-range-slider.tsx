@@ -10,17 +10,20 @@ interface DualRangeSliderProps {
   step?: number;
   minLabel?: string;
   maxLabel?: string;
+  unit?: string;
   className?: string;
 }
 
 function Bubble({
   label,
   value,
+  unit,
   innerRef,
   style,
 }: {
   label: string;
   value: number;
+  unit: string;
   innerRef: React.Ref<HTMLDivElement>;
   style: React.CSSProperties;
 }) {
@@ -29,7 +32,7 @@ function Bubble({
       <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
       <div className="relative mt-1 rounded-xl border border-border bg-card px-3 py-1 shadow-sm">
         <span className="text-lg font-bold text-primary">{value}</span>
-        <span className="ml-1 text-sm font-medium text-muted-foreground">ans</span>
+        <span className="ml-1 text-sm font-medium text-muted-foreground">{unit}</span>
         <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
       </div>
     </div>
@@ -44,6 +47,7 @@ export function DualRangeSlider({
   step = 1,
   minLabel = "Âge minimum",
   maxLabel = "Âge maximum",
+  unit = "ans",
   className,
 }: DualRangeSliderProps) {
   const [a, b] = value;
@@ -87,6 +91,7 @@ export function DualRangeSlider({
           innerRef={minRef}
           label={minLabel}
           value={safeA}
+          unit={unit}
           style={
             centers
               ? { left: `${centers.a}px`, transform: "translateX(-50%)" }
@@ -97,6 +102,7 @@ export function DualRangeSlider({
           innerRef={maxRef}
           label={maxLabel}
           value={safeB}
+          unit={unit}
           style={
             centers
               ? { left: `${centers.b}px`, transform: "translateX(-50%)" }

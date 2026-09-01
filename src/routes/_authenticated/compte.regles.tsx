@@ -73,7 +73,7 @@ function ReglesPage() {
         </Link>
         <h1 className="text-base font-bold text-primary flex items-center gap-2">
           <Users className="h-5 w-5" />
-          Règles de communauté
+          Règles de la communauté
         </h1>
       </div>
 

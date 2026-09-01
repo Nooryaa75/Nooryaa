@@ -88,12 +88,15 @@ function ReglesPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {rules.map((r) => {
+          {rules.map((r, i) => {
             const Icon = r.icon;
+            const isLastOdd = i === rules.length - 1 && rules.length % 2 !== 0;
             return (
               <section
                 key={r.title}
-                className="flex items-start gap-2.5 p-2.5 rounded-xl bg-secondary/30 border border-border/40"
+                className={`flex items-start gap-2.5 p-2.5 rounded-xl bg-secondary/30 border border-border/40 ${
+                  isLastOdd ? "sm:col-span-2" : ""
+                }`}
               >
                 <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-4 w-4" />

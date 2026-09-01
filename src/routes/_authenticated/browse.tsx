@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Heart, BadgeCheck, User, Quote } from "lucide-react";
+import { Heart, BadgeCheck, User, Quote, Bell } from "lucide-react";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
@@ -60,13 +60,19 @@ function Home() {
   const recommended = decks.match.slice(0, 4);
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-7 pb-8">
+      {/* Titre de page */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+        <Bell className="h-6 w-6 text-primary" />
+      </div>
+
       {/* Bienvenue */}
       <div>
-        <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+        <p className="text-xl font-bold text-primary flex items-center gap-2">
           Bienvenue sur Nooryaa <Heart className="h-5 w-5 text-[#E83E8C] fill-[#E83E8C]" />
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        </p>
+        <p className="text-sm text-muted-foreground mt-1.5 leading-snug">
           Un espace dédié aux célibataires sérieux en quête d'une relation halal et durable.
         </p>
       </div>
@@ -78,7 +84,7 @@ function Home() {
           {/* Vos sélections du moment */}
           <section>
             <h2 className="text-base font-bold text-primary mb-3">Vos sélections du moment</h2>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-3 gap-3">
               {deckList.map((meta) => (
                 <DeckCard key={meta.key} meta={meta} profiles={decks[meta.key]} onClick={() => setDeck(meta.key)} />
               ))}
@@ -93,13 +99,13 @@ function Home() {
                 <button
                   type="button"
                   onClick={() => setDeck("match")}
-                  className="text-sm font-semibold text-primary hover:underline"
+                  className="text-sm text-primary hover:underline"
                 >
                   Voir tout
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                {recommended.map((p: any) => (
+                {recommended.slice(0, 2).map((p: any) => (
                   <RecommendedCard key={p.id} profile={p} userId={ctx.userId} />
                 ))}
               </div>
@@ -109,34 +115,15 @@ function Home() {
           {/* Conseil du jour */}
           <section>
             <h2 className="text-base font-bold text-primary mb-3">Conseil du jour</h2>
-            <div className="bg-card rounded-2xl border border-border/60 p-5 flex items-start gap-3 shadow-[var(--shadow-card)]">
-              <Quote className="h-6 w-6 text-primary shrink-0 rotate-180" />
+            <div className="bg-[#F3E8FF] rounded-2xl p-5 flex items-start gap-3">
+              <Quote className="h-5 w-5 text-primary shrink-0 rotate-180" />
               <div className="flex-1">
                 <p className="font-semibold text-sm text-primary">La sincérité attire la sérénité.</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground mt-1 leading-snug">
                   Soyez authentique, la bonne personne appréciera votre vérité.
                 </p>
               </div>
-              <Heart className="h-5 w-5 text-primary shrink-0" />
-            </div>
-          </section>
-
-          {/* Bannière Premium */}
-          <section>
-            <div className="rounded-3xl bg-gradient-to-r from-[#5D2A8C] to-[#E83E8C] p-6 text-white relative overflow-hidden shadow-[var(--shadow-soft)]">
-              <div className="relative z-10 max-w-[70%]">
-                <p className="font-bold text-lg">Passez à Nooryaa Premium</p>
-                <p className="text-sm text-white/85 mt-1">
-                  Accédez à plus de fonctionnalités et multipliez vos chances de trouver la bonne personne.
-                </p>
-                <Link
-                  to="/compte/abonnement"
-                  className="inline-block mt-4 bg-white text-primary font-semibold text-sm px-5 py-2.5 rounded-full hover:bg-white/90 transition-colors"
-                >
-                  Découvrir Premium
-                </Link>
-              </div>
-              <span className="absolute right-6 top-1/2 -translate-y-1/2 text-7xl select-none" aria-hidden="true">👑</span>
+              <Heart className="h-5 w-5 text-primary shrink-0 self-center" />
             </div>
           </section>
         </>

@@ -19,6 +19,7 @@ import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminConfigRouteImport } from './routes/admin.config'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
@@ -96,6 +97,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AdminFinanceRoute = AdminFinanceRouteImport.update({
   id: '/admin/finance',
   path: '/admin/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCreditsRoute = AdminCreditsRouteImport.update({
+  id: '/admin/credits',
+  path: '/admin/credits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContactRoute = AdminContactRouteImport.update({
@@ -271,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
@@ -394,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
     | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
@@ -433,6 +443,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
     | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
@@ -474,6 +485,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
     | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
@@ -507,6 +519,7 @@ export interface RootRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminConfigRoute: typeof AdminConfigRoute
   AdminContactRoute: typeof AdminContactRoute
+  AdminCreditsRoute: typeof AdminCreditsRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminModerationRoute: typeof AdminModerationRoute
@@ -590,6 +603,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/finance'
       fullPath: '/admin/finance'
       preLoaderRoute: typeof AdminFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/credits': {
+      id: '/admin/credits'
+      path: '/admin/credits'
+      fullPath: '/admin/credits'
+      preLoaderRoute: typeof AdminCreditsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/contact': {
@@ -876,6 +896,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminConfigRoute: AdminConfigRoute,
   AdminContactRoute: AdminContactRoute,
+  AdminCreditsRoute: AdminCreditsRoute,
   AdminFinanceRoute: AdminFinanceRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminModerationRoute: AdminModerationRoute,

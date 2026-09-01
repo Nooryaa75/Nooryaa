@@ -13,10 +13,27 @@ interface DualRangeSliderProps {
   className?: string;
 }
 
-function bubbleTransform(percent: number) {
-  if (percent <= 5) return "translateX(0)";
-  if (percent >= 95) return "translateX(-100%)";
-  return "translateX(-50%)";
+function Bubble({
+  label,
+  value,
+  innerRef,
+  style,
+}: {
+  label: string;
+  value: number;
+  innerRef: React.Ref<HTMLDivElement>;
+  style: React.CSSProperties;
+}) {
+  return (
+    <div ref={innerRef} className="absolute top-0 flex flex-col items-center" style={style}>
+      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
+      <div className="relative mt-1 rounded-xl border border-border bg-card px-3 py-1 shadow-sm">
+        <span className="text-lg font-bold text-primary">{value}</span>
+        <span className="ml-1 text-sm font-medium text-muted-foreground">ans</span>
+        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
+      </div>
+    </div>
+  );
 }
 
 export function DualRangeSlider({
@@ -35,34 +52,57 @@ export function DualRangeSlider({
   const pctA = ((safeA - min) / (max - min)) * 100;
   const pctB = ((safeB - min) / (max - min)) * 100;
 
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+  const minRef = React.useRef<HTMLDivElement>(null);
+  const maxRef = React.useRef<HTMLDivElement>(null);
+  const [centers, setCenters] = React.useState<{ a: number; b: number } | null>(null);
+
+  React.useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    const minEl = minRef.current;
+    const maxEl = maxRef.current;
+    if (!wrap || !minEl || !maxEl) return;
+    const W = wrap.clientWidth;
+    const wA = minEl.offsetWidth;
+    const wB = maxEl.offsetWidth;
+    const gap = 8;
+    let cA = (pctA / 100) * W;
+    let cB = (pctB / 100) * W;
+    // Prevent overlap: push bubbles apart symmetrically if too close
+    if (cB - wB / 2 < cA + wA / 2 + gap) {
+      const overlap = cA + wA / 2 + gap - (cB - wB / 2);
+      cA -= overlap / 2;
+      cB += overlap / 2;
+    }
+    // Keep bubbles fully inside the container
+    cA = Math.max(wA / 2, Math.min(W - wA / 2, cA));
+    cB = Math.max(wB / 2, Math.min(W - wB / 2, cB));
+    setCenters({ a: cA, b: cB });
+  }, [pctA, pctB, safeA, safeB]);
+
   return (
     <div className={cn("w-full", className)}>
-      <div className="relative h-14 mb-1">
-        {/* Left bubble */}
-        <div
-          className="absolute top-0 flex flex-col items-center"
-          style={{ left: `${pctA}%`, transform: bubbleTransform(pctA) }}
-        >
-          <span className="text-xs text-muted-foreground whitespace-nowrap">{minLabel}</span>
-          <div className="relative mt-1 rounded-xl border border-border bg-card px-3 py-1 shadow-sm">
-            <span className="text-lg font-bold text-primary">{safeA}</span>
-            <span className="ml-1 text-sm font-medium text-muted-foreground">ans</span>
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
-          </div>
-        </div>
-
-        {/* Right bubble */}
-        <div
-          className="absolute top-0 flex flex-col items-center"
-          style={{ left: `${pctB}%`, transform: bubbleTransform(pctB) }}
-        >
-          <span className="text-xs text-muted-foreground whitespace-nowrap">{maxLabel}</span>
-          <div className="relative mt-1 rounded-xl border border-border bg-card px-3 py-1 shadow-sm">
-            <span className="text-lg font-bold text-primary">{safeB}</span>
-            <span className="ml-1 text-sm font-medium text-muted-foreground">ans</span>
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
-          </div>
-        </div>
+      <div ref={wrapRef} className="relative h-14 mb-1">
+        <Bubble
+          innerRef={minRef}
+          label={minLabel}
+          value={safeA}
+          style={
+            centers
+              ? { left: `${centers.a}px`, transform: "translateX(-50%)" }
+              : { left: `${pctA}%`, transform: "translateX(-50%)", visibility: "hidden" }
+          }
+        />
+        <Bubble
+          innerRef={maxRef}
+          label={maxLabel}
+          value={safeB}
+          style={
+            centers
+              ? { left: `${centers.b}px`, transform: "translateX(-50%)" }
+              : { left: `${pctB}%`, transform: "translateX(-50%)", visibility: "hidden" }
+          }
+        />
       </div>
 
       <SliderPrimitive.Root

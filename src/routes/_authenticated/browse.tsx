@@ -55,7 +55,7 @@ function Home() {
     },
   });
 
-  const matches = (profiles ?? []).filter(
+  const matches = (allProfiles ?? []).filter(
     (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
   );
 

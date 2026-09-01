@@ -313,6 +313,7 @@ function Conversation() {
 
         </DropdownMenu>
       </div>
+      <PrayerChatNotice />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {/* Bandeau sécurité */}

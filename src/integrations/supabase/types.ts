@@ -595,6 +595,7 @@ export type Database = {
           created_at: string
           filters: Json
           id: string
+          last_notified_at: string
           name: string
           user_id: string
         }
@@ -602,6 +603,7 @@ export type Database = {
           created_at?: string
           filters?: Json
           id?: string
+          last_notified_at?: string
           name: string
           user_id: string
         }
@@ -609,6 +611,7 @@ export type Database = {
           created_at?: string
           filters?: Json
           id?: string
+          last_notified_at?: string
           name?: string
           user_id?: string
         }

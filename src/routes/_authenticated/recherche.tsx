@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,7 @@ import {
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
+import { getSavedSearchCounts } from "@/lib/search.functions";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -122,12 +124,29 @@ function Recherche() {
     },
   });
 
+  const getCounts = useServerFn(getSavedSearchCounts);
+
+  const { data: searchCounts } = useQuery({
+    queryKey: ["saved-search-counts", ctx.userId, savedSearches?.map((s: any) => s.id).join(",")],
+    enabled: !!savedSearches && savedSearches.length > 0,
+    queryFn: () =>
+      getCounts({
+        data: {
+          searches: (savedSearches ?? []).map((s: any) => ({
+            id: s.id,
+            filters: s.filters,
+            last_notified_at: (s as any).last_notified_at ?? null,
+          })),
+        },
+      }),
+  });
+
   async function saveCurrentSearch() {
     const name = searchName.trim();
     if (!name) { toast.error("Donnez un nom à votre recherche"); return; }
     const { error } = await supabase.from("saved_searches").insert({
-      user_id: ctx.userId, name, filters: filters as any,
-    });
+      user_id: ctx.userId, name, filters: filters as any, last_notified_at: new Date().toISOString(),
+    } as any);
     if (error) { toast.error(error.message); return; }
     setSearchName("");
     toast.success("Recherche enregistrée");
@@ -140,11 +159,16 @@ function Recherche() {
     qc.invalidateQueries({ queryKey: ["saved-searches", ctx.userId] });
   }
 
-  function applySearch(row: any) {
+  async function applySearch(row: any) {
     setFilters({ ...DEFAULT_FILTERS, ...(row.filters ?? {}) });
     setActiveSearchName(row.name ?? null);
     setTab("resultats");
     toast.success(`Recherche « ${row.name} » appliquée`);
+    await supabase
+      .from("saved_searches")
+      .update({ last_notified_at: new Date().toISOString() } as any)
+      .eq("id", row.id);
+    qc.invalidateQueries({ queryKey: ["saved-search-counts", ctx.userId] });
   }
 
   const originMissing = filters.radiusEnabled && (originLat == null || originLng == null);
@@ -495,27 +519,43 @@ function Recherche() {
             <ul className="space-y-3">
               {savedSearches.map((s: any, i: number) => {
                 const Icon = SEARCH_ICONS[i % SEARCH_ICONS.length];
+                const counts = (searchCounts ?? {})[s.id] as { total?: number; new?: number } | undefined;
+                const total = counts?.total ?? 0;
+                const newCount = counts?.new ?? 0;
                 return (
-                  <li key={s.id} className="flex items-center gap-4 bg-card rounded-3xl border border-border/60 shadow-[var(--shadow-card)] px-5 py-4">
-                    <span className="h-12 w-12 shrink-0 rounded-full bg-accent/10 flex items-center justify-center">
+                  <li key={s.id} className="flex items-center gap-3 bg-card rounded-3xl border border-border/60 shadow-[var(--shadow-card)] px-4 py-3.5">
+                    <span className="h-11 w-11 shrink-0 rounded-full bg-accent/10 flex items-center justify-center">
                       <Icon className="h-5 w-5 text-accent" />
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-foreground truncate">{s.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="font-bold text-foreground truncate text-sm">{s.name}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
                         {s.filters?.ageMin}–{s.filters?.ageMax} ans
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground">
                         {s.filters?.city || s.filters?.originLabel || "Partout"}
                         {s.filters?.radiusEnabled ? ` • Rayon ${s.filters.radiusKm} km` : ""}
                       </p>
                     </div>
-                    <button type="button" aria-label="Notifications" className="text-accent hover:text-primary transition-colors">
+                    <span className="shrink-0 inline-flex items-center justify-center rounded-full bg-accent/10 text-accent text-[11px] font-semibold px-2.5 py-1">
+                      {total} profil{total > 1 ? "s" : ""}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Notifications"
+                      onClick={() => applySearch(s)}
+                      className="relative shrink-0 text-accent hover:text-primary transition-colors"
+                    >
                       <Bell className="h-5 w-5" />
+                      {newCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E83E8C] px-1 text-[9px] font-bold text-white shadow-sm">
+                          {newCount > 99 ? "99+" : newCount}
+                        </span>
+                      )}
                     </button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button type="button" aria-label="Options" className="text-muted-foreground hover:text-primary transition-colors">
+                        <button type="button" aria-label="Options" className="shrink-0 text-muted-foreground hover:text-primary transition-colors">
                           <MoreVertical className="h-5 w-5" />
                         </button>
                       </DropdownMenuTrigger>

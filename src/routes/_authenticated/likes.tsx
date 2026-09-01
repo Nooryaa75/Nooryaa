@@ -65,7 +65,7 @@ function Section({ title, items, me, userId }: { title: string; items: any[] | u
       {profiles.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border/60 p-8 text-center text-muted-foreground">Aucun pour le moment.</div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {profiles.map((p: any) => (
             <ProfileVignette key={p.id} profile={p} userId={userId} />
           ))}

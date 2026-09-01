@@ -181,7 +181,10 @@ function AdminConfig() {
             </div>
           </section>
         )}
+
+        <SocialSection />
       </main>
+
     </div>
   );
 }

@@ -30,6 +30,7 @@ import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
 import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
+import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
 import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
@@ -146,6 +147,12 @@ const AdminConversationsIndexRoute = AdminConversationsIndexRouteImport.update({
   path: '/admin/conversations/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCompteIndexRoute =
+  AuthenticatedCompteIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
 const AdminProfilesIdRoute = AdminProfilesIdRouteImport.update({
   id: '/admin/profiles/$id',
   path: '/admin/profiles/$id',
@@ -240,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
 }
@@ -250,7 +258,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/compte': typeof AuthenticatedCompteRouteWithChildren
   '/likes': typeof AuthenticatedLikesRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/compte': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
 }
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/_authenticated/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
 }
@@ -343,6 +352,7 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
   fileRoutesByTo: FileRoutesByTo
@@ -353,7 +363,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
-    | '/compte'
     | '/likes'
     | '/me'
     | '/messages'
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/compte'
     | '/admin/conversations'
     | '/admin/profiles'
   id:
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/_authenticated/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
   fileRoutesById: FileRoutesById
@@ -581,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConversationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/compte/': {
+      id: '/_authenticated/compte/'
+      path: '/'
+      fullPath: '/compte/'
+      preLoaderRoute: typeof AuthenticatedCompteIndexRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
     '/admin/profiles/$id': {
       id: '/admin/profiles/$id'
       path: '/admin/profiles/$id'
@@ -669,6 +687,7 @@ interface AuthenticatedCompteRouteChildren {
   AuthenticatedCompteProfilRoute: typeof AuthenticatedCompteProfilRoute
   AuthenticatedCompteReglesRoute: typeof AuthenticatedCompteReglesRoute
   AuthenticatedCompteServiceClientRoute: typeof AuthenticatedCompteServiceClientRoute
+  AuthenticatedCompteIndexRoute: typeof AuthenticatedCompteIndexRoute
 }
 
 const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
@@ -680,6 +699,7 @@ const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
   AuthenticatedCompteProfilRoute: AuthenticatedCompteProfilRoute,
   AuthenticatedCompteReglesRoute: AuthenticatedCompteReglesRoute,
   AuthenticatedCompteServiceClientRoute: AuthenticatedCompteServiceClientRoute,
+  AuthenticatedCompteIndexRoute: AuthenticatedCompteIndexRoute,
 }
 
 const AuthenticatedCompteRouteWithChildren =

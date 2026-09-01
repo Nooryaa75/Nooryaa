@@ -1,128 +1,92 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
-import { Bell, Heart, MessageCircle, Megaphone, Mail, Monitor, Smartphone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/compte/notifications")({
   head: () => ({ meta: [{ title: "Mes notifications — Nooryaa" }] }),
   component: NotificationsPage,
 });
 
-type TypeKey = "likes" | "messages" | "news";
-type ChannelKey = "email" | "push_in_app" | "push_mobile";
+type Group = {
+  title: string;
+  items: { key: string; label: string; description: string }[];
+};
 
-const TYPES: { key: TypeKey; label: string; description: string; icon: any }[] = [
-  { key: "likes", label: "Like reçu", description: "Quand un profil vous like.", icon: Heart },
-  { key: "messages", label: "Nouveau message", description: "Quand vous recevez un message.", icon: MessageCircle },
-  { key: "news", label: "Actualités Nooryaa", description: "Nouveautés, conseils et offres.", icon: Megaphone },
+const GROUPS: Group[] = [
+  {
+    title: "Activité",
+    items: [
+      { key: "messages", label: "Nouveaux messages", description: "Quand vous recevez un message" },
+      { key: "likes", label: "Nouveaux likes", description: "Quand quelqu'un vous like" },
+      { key: "matchs", label: "Nouveaux matchs", description: "Quand vous avez un match" },
+      { key: "visites", label: "Visites de profil", description: "Quand quelqu'un visite votre profil" },
+    ],
+  },
+  {
+    title: "Rappels",
+    items: [
+      { key: "suggestions", label: "Suggestions quotidiennes", description: "Recevoir vos suggestions de profils" },
+      { key: "activite", label: "Rappels d'activité", description: "Rappels pour rester actif" },
+    ],
+  },
+  {
+    title: "Notifications par email",
+    items: [
+      { key: "emails", label: "Recevoir les emails importants", description: "Mises à jour, sécurité et abonnements" },
+    ],
+  },
 ];
 
-const CHANNELS: { key: ChannelKey; label: string; short: string; icon: any }[] = [
-  { key: "email", label: "Notifications par email", short: "Email", icon: Mail },
-  { key: "push_in_app", label: "Notifications push in app", short: "In app", icon: Monitor },
-  { key: "push_mobile", label: "Notifications push mobile", short: "Mobile", icon: Smartphone },
-];
-
-type Prefs = Record<TypeKey, Record<ChannelKey, boolean>>;
+const DEFAULTS: Record<string, boolean> = {
+  messages: true,
+  likes: true,
+  matchs: true,
+  visites: false,
+  suggestions: true,
+  activite: true,
+  emails: true,
+};
 
 function NotificationsPage() {
-  const [prefs, setPrefs] = useState<Prefs>({
-    likes: { email: true, push_in_app: true, push_mobile: false },
-    messages: { email: true, push_in_app: true, push_mobile: false },
-    news: { email: false, push_in_app: false, push_mobile: false },
-  });
+  const [prefs, setPrefs] = useState<Record<string, boolean>>(DEFAULTS);
 
-  const toggle = (t: TypeKey, c: ChannelKey, v: boolean) =>
-    setPrefs((p) => ({ ...p, [t]: { ...p[t], [c]: v } }));
+  const toggle = (key: string, v: boolean) => {
+    setPrefs((p) => ({ ...p, [key]: v }));
+    toast.success("Préférence enregistrée");
+  };
 
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5 max-w-3xl">
-      <div className="flex items-center gap-2">
-        <Bell className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-serif text-primary">Mes notifications</h2>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        Choisissez, pour chaque type de notification, les canaux sur lesquels vous souhaitez être averti.
-      </p>
-
-      {/* Desktop table */}
-      <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-muted-foreground">
-              <th className="text-left font-medium py-3">Type de notification</th>
-              {CHANNELS.map((c) => (
-                <th key={c.key} className="font-medium py-3 px-2 text-center whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1.5">
-                    <c.icon className="h-4 w-4 text-primary" />
-                    {c.short}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/60">
-            {TYPES.map((t) => (
-              <tr key={t.key}>
-                <td className="py-4 pr-4">
-                  <div className="flex items-start gap-3">
-                    <t.icon className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="font-medium">{t.label}</p>
-                      <p className="text-xs text-muted-foreground">{t.description}</p>
-                    </div>
-                  </div>
-                </td>
-                {CHANNELS.map((c) => (
-                  <td key={c.key} className="py-4 px-2 text-center">
-                    <Switch
-                      aria-label={`${t.label} — ${c.label}`}
-                      checked={prefs[t.key][c.key]}
-                      onCheckedChange={(v) => toggle(t.key, c.key, v)}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-6">
+      {/* En-tête */}
+      <div className="relative flex items-center justify-center">
+        <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+        <h1 className="text-lg font-bold text-primary">Mes notifications</h1>
       </div>
 
-      {/* Mobile stacked */}
-      <div className="sm:hidden divide-y divide-border/60">
-        {TYPES.map((t) => (
-          <div key={t.key} className="py-4 space-y-3">
-            <div className="flex items-start gap-3">
-              <t.icon className="h-5 w-5 text-primary mt-0.5" />
-              <div>
-                <p className="font-medium">{t.label}</p>
-                <p className="text-xs text-muted-foreground">{t.description}</p>
-              </div>
-            </div>
-            <div className="space-y-2 pl-8">
-              {CHANNELS.map((c) => (
-                <div key={c.key} className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-muted-foreground inline-flex items-center gap-2">
-                    <c.icon className="h-4 w-4 text-primary" />
-                    {c.short}
-                  </span>
-                  <Switch
-                    aria-label={`${t.label} — ${c.label}`}
-                    checked={prefs[t.key][c.key]}
-                    onCheckedChange={(v) => toggle(t.key, c.key, v)}
-                  />
+      {GROUPS.map((g) => (
+        <section key={g.title}>
+          <h2 className="text-sm font-bold text-foreground mb-2">{g.title}</h2>
+          <div className="bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] divide-y divide-border/60 overflow-hidden">
+            {g.items.map((item) => (
+              <div key={item.key} className="flex items-center justify-between gap-4 px-4 py-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">{item.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
                 </div>
-              ))}
-            </div>
+                <Switch
+                  aria-label={item.label}
+                  checked={prefs[item.key]}
+                  onCheckedChange={(v) => toggle(item.key, v)}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <Button className="rounded-full" onClick={() => toast.success("Préférences enregistrées")}>
-        Enregistrer
-      </Button>
+        </section>
+      ))}
     </div>
   );
 }

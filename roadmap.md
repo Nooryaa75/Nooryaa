@@ -1,4 +1,4 @@
-# Nooryaa task roadmap
+# Roadmap
 
-- [x] Mes recherches : afficher le nombre de personnes du segment et un badge de nouveaux profils sur la cloche.
-- [ ] Compte karim@nooryaa.com : faire apparaître les profils test partout (découvertes, likes, messages, etc.) — en attente de création du compte.
+- [ ] Accueil : n'afficher que les 4 derniers matchs + lien « Voir tout » vers une page listant tous les matchs (/matchs)
+- [ ] Composant vignette profil réutilisable (style « Recommandé pour vous ») et l'utiliser pour les vignettes profil du site (Likes, Matchs)

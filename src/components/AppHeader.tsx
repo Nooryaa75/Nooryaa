@@ -16,7 +16,7 @@ const links = [
 
 const mobileLinks = [
   { to: "/browse", label: "Accueil", icon: Home, fillActive: true },
-  { to: "/recherche", label: "Découvrir", icon: Heart, fillActive: false },
+  { to: "/recherche", label: "Découvrir", icon: Search, fillActive: false },
   { to: "/likes", label: "Likes", icon: Heart, fillActive: false },
   { to: "/messages", label: "Messages", icon: MessageCircle, fillActive: false },
   { to: "/compte", label: "Compte", icon: User, fillActive: false },

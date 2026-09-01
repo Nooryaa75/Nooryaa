@@ -12,6 +12,7 @@ import { moderateMessage } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
+import { PrayerChatNotice } from "@/components/PrayerChatNotice";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -312,6 +313,7 @@ function Conversation() {
 
         </DropdownMenu>
       </div>
+      <PrayerChatNotice />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {/* Bandeau sécurité */}

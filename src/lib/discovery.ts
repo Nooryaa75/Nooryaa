@@ -15,7 +15,7 @@ export type Filters = {
 };
 
 export const DEFAULT_FILTERS: Filters = {
-  ageMin: 18, ageMax: 60, heightMin: null, heightMax: null, city: "", country: ANY, countryOrigin: ANY,
+  ageMin: 18, ageMax: 60, heightMin: 120, heightMax: 230, city: "", country: ANY, countryOrigin: ANY,
   bodyType: ANY,
   profession: ANY, marital: ANY, education: ANY, objective: ANY,
   activity: ANY, activities: "", personality: ANY,

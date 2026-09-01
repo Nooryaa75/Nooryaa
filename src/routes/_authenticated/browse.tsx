@@ -38,7 +38,23 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { isLoading, decks, deckList, me, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { decks, sentLikes, me, profiles, isLoading } = useDiscovery(20);
+
+  // Likes reçus → matchs = likes croisés (sent ∩ received)
+  const { data: receivedLikeIds = [] } = useQuery({
+    queryKey: ["received-likes", ctx.userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("likes")
+        .select("from_user")
+        .eq("to_user", ctx.userId);
+      return (data ?? []).map((l: any) => l.from_user as string);
+    },
+  });
+
+  const matches = profiles.filter(
+    (p: any) => sentLikes.includes(p.id) && receivedLikeIds.includes(p.id),
+  );
 
   if (deck) {
     return (

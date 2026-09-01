@@ -43,11 +43,17 @@ const sections = [
 
 function CguPage() {
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5 max-w-3xl">
-      <div className="flex items-center gap-2">
-        <FileText className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-serif text-primary">Conditions Générales d'Utilisation</h2>
+    <div className="space-y-4">
+      <div className="relative flex items-center justify-center">
+        <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+        <h1 className="text-lg font-bold text-primary flex items-center gap-2">
+          <FileText className="h-5 w-5" />
+          CGU
+        </h1>
       </div>
+    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5">
       <p className="text-xs text-muted-foreground">Dernière mise à jour : août 2026</p>
       {sections.map((s) => (
         <section key={s.title} className="space-y-1.5">
@@ -55,6 +61,7 @@ function CguPage() {
           <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
         </section>
       ))}
+    </div>
     </div>
   );
 }

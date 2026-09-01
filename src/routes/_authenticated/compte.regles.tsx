@@ -51,5 +51,6 @@ function ReglesPage() {
         </p>
       </div>
     </div>
+    </div>
   );
 }

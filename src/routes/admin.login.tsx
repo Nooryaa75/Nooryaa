@@ -5,7 +5,7 @@ import { adminLogin, adminCheckAuth } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/login")({
@@ -42,7 +42,7 @@ function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center mosaic px-4">
       <form onSubmit={submit} className="w-full max-w-sm bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 gold-frame space-y-4">
         <div className="flex flex-col items-center gap-2">
-          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-14 w-14 rounded-full object-cover gold-glow" />
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-14 w-14 rounded-xl object-cover shadow-sm" />
           <div className="gold-rule w-24" />
           <h1 className="text-xl font-serif gold-text tracking-[0.12em] uppercase">Espace administration</h1>
           <p className="text-xs text-muted-foreground">Accès réservé à l'équipe Nooryaa</p>

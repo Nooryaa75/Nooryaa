@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
-import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const links = [
   { to: "/browse", label: "Accueil", icon: Home },
@@ -47,7 +47,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
       <div className="container mx-auto flex items-start justify-between px-4 pt-2 pb-2 max-w-6xl">
         <Link to="/browse" className="flex items-start gap-2.5 -mt-1">
-          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-10 w-10 rounded-full object-cover gold-glow -mt-0.5" />
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-10 w-10 rounded-xl object-cover shadow-sm -mt-0.5" />
           <div className="flex flex-col leading-none justify-center">
             <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
           </div>

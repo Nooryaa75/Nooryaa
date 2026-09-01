@@ -175,9 +175,9 @@ function AuthPage() {
       <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60">
         <Link to="/" className="block text-center mb-3">
           <img
-            src="/__l5e/assets-v1/1945ad1c-b9e7-447d-89a2-ada383884aa7/nooryaa-logo.jpg"
+            src={logoAsset.url}
             alt="Nooryaa"
-            className="mx-auto h-16 w-auto object-contain"
+            className="mx-auto h-28 w-auto rounded-2xl object-contain"
           />
         </Link>
         <h1 className="text-2xl font-serif text-center text-primary mb-1">

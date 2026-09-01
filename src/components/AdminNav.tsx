@@ -46,12 +46,17 @@ export function AdminNav() {
 
   return (
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
-      <div className="container mx-auto flex items-center justify-between gap-2 px-4 py-3 max-w-6xl">
+      <div className="container mx-auto flex items-center justify-between gap-2 px-4 pt-3 max-w-7xl">
         <Link to="/admin" className="flex items-center gap-2.5 shrink-0">
           <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-xl object-cover shadow-sm" />
-          <span className="text-lg font-serif font-semibold tracking-[0.14em] uppercase gold-text hidden lg:inline">Administration</span>
+          <span className="text-lg font-serif font-semibold tracking-[0.14em] uppercase gold-text">Administration</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-1 overflow-x-auto flex-1 min-w-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <Button onClick={handleLogout} variant="ghost" size="sm" className="gap-1.5 shrink-0">
+          <LogOut className="h-4 w-4" /> Déconnexion
+        </Button>
+      </div>
+      <nav className="hidden md:block border-t border-border/40 mt-2">
+        <div className="container mx-auto max-w-7xl px-2 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 py-1.5">
           {links.map((l) => {
             const active = l.exact ? pathname === l.to : pathname.startsWith(l.to);
             const n = badgeValue((l as any).badge);
@@ -59,7 +64,7 @@ export function AdminNav() {
               <Link
                 key={l.to}
                 to={l.to}
-                className={`relative flex items-center gap-1.5 px-2.5 py-2 rounded-full text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
+                className={`relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                   active ? "bg-secondary text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -71,11 +76,8 @@ export function AdminNav() {
               </Link>
             );
           })}
-        </nav>
-        <Button onClick={handleLogout} variant="ghost" size="sm" className="gap-1.5 shrink-0">
-          <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Déconnexion</span>
-        </Button>
-      </div>
+        </div>
+      </nav>
       <nav className="md:hidden border-t border-border/60 flex justify-around py-1.5 overflow-x-auto">
         {links.map((l) => {
           const active = l.exact ? pathname === l.to : pathname.startsWith(l.to);

@@ -24,7 +24,7 @@ import {
   MoreVertical, Plus, RotateCcw, ChevronLeft,
 } from "lucide-react";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
-import { SwipeDeck } from "@/components/SwipeDeck";
+import { ProfileVignette } from "@/components/ProfileVignette";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { getSavedSearchCounts } from "@/lib/search.functions";
 import {
@@ -256,14 +256,11 @@ function Recherche() {
               </Button>
             </div>
           ) : (
-            <SwipeDeck
-              title="Résultats de recherche"
-              profiles={profiles}
-              userId={ctx.userId}
-              onBack={() => setTab("filtres")}
-              persistPass
-              hideHeader
-            />
+            <div className="grid grid-cols-2 gap-3">
+              {profiles.map((p) => (
+                <ProfileVignette key={p.id} profile={p} userId={ctx.userId} likeable />
+              ))}
+            </div>
           )}
         </div>
       )}

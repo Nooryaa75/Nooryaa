@@ -5,6 +5,7 @@ import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTria
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
+import { recordSubscription } from "@/lib/subscription.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,6 +104,7 @@ const euro = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
 function AbonnementPage() {
+  const saveSubscription = useServerFn(recordSubscription);
   const [current, setCurrent] = useState("gratuit");
   const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);
@@ -319,6 +321,7 @@ function AbonnementPage() {
                       setCurrentDuration(null);
                       setAutoRenew(false);
                       setRenewsAt(null);
+                      void saveSubscription({ data: { planCode: plan.id, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
                       toast.success("Vous êtes revenu à la formule Gratuit.");
                     } else {
                       const end = new Date();
@@ -327,6 +330,9 @@ function AbonnementPage() {
                       setCurrentDuration(duration);
                       setRenewsAt(end);
                       setAutoRenew(true);
+                      void saveSubscription({
+                        data: { planCode: plan.id, amountTtc: price ?? 0, days, autoRenew: true },
+                      }).catch(() => {});
                       toast.info(
                         `Paiement sécurisé bientôt disponible : ${plan.name} — ${
                           durations.find((d) => d.id === duration)!.label

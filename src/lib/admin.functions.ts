@@ -25,10 +25,11 @@ export const adminLogout = createServerFn({ method: "POST" }).handler(async () =
 });
 
 export const adminCheckAuth = createServerFn({ method: "GET" }).handler(async () => {
-  const { getAdminSession } = await import("./admin-session.server");
-  const session = await getAdminSession();
-  return { authed: !!session.data.authed };
+  const { getAdminIdentity } = await import("./admin-session.server");
+  const identity = await getAdminIdentity();
+  return { authed: !!identity, email: identity?.email ?? null, via: identity?.via ?? null };
 });
+
 
 export const adminStats = createServerFn({ method: "GET" }).handler(async () => {
   const { requireAdminOrThrow } = await import("./admin-session.server");

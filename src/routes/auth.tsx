@@ -30,6 +30,16 @@ async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
     navigate({ to: "/auth", search: { mode: "signin" } });
     return;
   }
+  // Les comptes administrateurs arrivent directement dans le back-office.
+  const { data: roles } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .eq("role", "admin");
+  if (roles && roles.length > 0) {
+    navigate({ to: "/admin" });
+    return;
+  }
   const { data: profile } = await supabase
     .from("profiles")
     .select("onboarded")
@@ -37,6 +47,7 @@ async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
     .maybeSingle();
   navigate({ to: profile?.onboarded ? "/browse" : "/onboarding" });
 }
+
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,

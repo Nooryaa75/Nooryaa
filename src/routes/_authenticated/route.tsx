@@ -51,6 +51,21 @@ function AuthenticatedLayout() {
     };
   }, [userId, navigate]);
 
+  // Présence temps réel : on rafraîchit last_seen toutes les 2 minutes.
+  useEffect(() => {
+    if (!userId) return;
+    const ping = () => {
+      supabase
+        .from("profiles")
+        .update({ last_seen: new Date().toISOString() } as never)
+        .eq("id", userId)
+        .then(() => {});
+    };
+    ping();
+    const t = setInterval(ping, 120000);
+    return () => clearInterval(t);
+  }, [userId]);
+
   if (status === "checking") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

@@ -18,7 +18,12 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
+import { Route as AdminConfigRouteImport } from './routes/admin.config'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -29,9 +34,11 @@ import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
+import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
 import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
+import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
 import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
@@ -88,9 +95,34 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFinanceRoute = AdminFinanceRouteImport.update({
+  id: '/admin/finance',
+  path: '/admin/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCreditsRoute = AdminCreditsRouteImport.update({
+  id: '/admin/credits',
+  path: '/admin/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminContactRoute = AdminContactRouteImport.update({
   id: '/admin/contact',
   path: '/admin/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfigRoute = AdminConfigRouteImport.update({
+  id: '/admin/config',
+  path: '/admin/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAdsRoute = AdminAdsRouteImport.update({
@@ -143,6 +175,11 @@ const AuthenticatedBlockedRoute = AuthenticatedBlockedRouteImport.update({
   path: '/blocked',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AdminSupportIndexRoute = AdminSupportIndexRouteImport.update({
+  id: '/admin/support/',
+  path: '/admin/support/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProfilesIndexRoute = AdminProfilesIndexRouteImport.update({
   id: '/admin/profiles/',
   path: '/admin/profiles/',
@@ -159,6 +196,11 @@ const AuthenticatedCompteIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
+const AdminSupportIdRoute = AdminSupportIdRouteImport.update({
+  id: '/admin/support/$id',
+  path: '/admin/support/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProfilesIdRoute = AdminProfilesIdRouteImport.update({
   id: '/admin/profiles/$id',
   path: '/admin/profiles/$id',
@@ -238,7 +280,12 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -254,9 +301,11 @@ export interface FileRoutesByFullPath {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
+  '/admin/support/': typeof AdminSupportIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -272,7 +321,12 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -288,9 +342,11 @@ export interface FileRoutesByTo {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/compte': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
+  '/admin/support': typeof AdminSupportIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -309,7 +365,12 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -325,9 +386,11 @@ export interface FileRoutesById {
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/_authenticated/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
+  '/admin/support/': typeof AdminSupportIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -346,7 +409,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -362,9 +430,11 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
+    | '/admin/support/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -380,7 +450,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -396,9 +471,11 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/compte'
     | '/admin/conversations'
     | '/admin/profiles'
+    | '/admin/support'
   id:
     | '__root__'
     | '/'
@@ -416,7 +493,12 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
+    | '/admin/audit'
+    | '/admin/config'
     | '/admin/contact'
+    | '/admin/credits'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -432,9 +514,11 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/_authenticated/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
+    | '/admin/support/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -444,15 +528,22 @@ export interface RootRouteChildren {
   NotreDifferenceRoute: typeof NotreDifferenceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminConfigRoute: typeof AdminConfigRoute
   AdminContactRoute: typeof AdminContactRoute
+  AdminCreditsRoute: typeof AdminCreditsRoute
+  AdminFinanceRoute: typeof AdminFinanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminModerationRoute: typeof AdminModerationRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
+  AdminSupportIdRoute: typeof AdminSupportIdRoute
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
+  AdminSupportIndexRoute: typeof AdminSupportIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -520,11 +611,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/finance': {
+      id: '/admin/finance'
+      path: '/admin/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AdminFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/credits': {
+      id: '/admin/credits'
+      path: '/admin/credits'
+      fullPath: '/admin/credits'
+      preLoaderRoute: typeof AdminCreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/contact': {
       id: '/admin/contact'
       path: '/admin/contact'
       fullPath: '/admin/contact'
       preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/config': {
+      id: '/admin/config'
+      path: '/admin/config'
+      fullPath: '/admin/config'
+      preLoaderRoute: typeof AdminConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/ads': {
@@ -597,6 +723,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBlockedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/admin/support/': {
+      id: '/admin/support/'
+      path: '/admin/support'
+      fullPath: '/admin/support/'
+      preLoaderRoute: typeof AdminSupportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/profiles/': {
       id: '/admin/profiles/'
       path: '/admin/profiles'
@@ -617,6 +750,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/compte/'
       preLoaderRoute: typeof AuthenticatedCompteIndexRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/admin/support/$id': {
+      id: '/admin/support/$id'
+      path: '/admin/support/$id'
+      fullPath: '/admin/support/$id'
+      preLoaderRoute: typeof AdminSupportIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/profiles/$id': {
       id: '/admin/profiles/$id'
@@ -773,15 +913,22 @@ const rootRouteChildren: RootRouteChildren = {
   NotreDifferenceRoute: NotreDifferenceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuditRoute: AdminAuditRoute,
+  AdminConfigRoute: AdminConfigRoute,
   AdminContactRoute: AdminContactRoute,
+  AdminCreditsRoute: AdminCreditsRoute,
+  AdminFinanceRoute: AdminFinanceRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminModerationRoute: AdminModerationRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,
   AdminProfilesIdRoute: AdminProfilesIdRoute,
+  AdminSupportIdRoute: AdminSupportIdRoute,
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
+  AdminSupportIndexRoute: AdminSupportIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

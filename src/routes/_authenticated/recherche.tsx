@@ -177,7 +177,7 @@ function Recherche() {
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
-            className={`flex-1 min-w-0 rounded-full px-1.5 py-2 text-xs font-semibold transition-all whitespace-nowrap truncate sm:px-3 sm:text-sm ${
+            className={`flex-1 min-w-0 rounded-full px-1.5 py-2 text-xs font-semibold leading-tight text-center transition-all sm:px-3 sm:text-sm ${
               tab === t.key
                 ? "text-white shadow-md"
                 : "text-secondary-foreground hover:text-primary"

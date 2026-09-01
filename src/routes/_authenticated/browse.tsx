@@ -6,7 +6,7 @@ import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
 import { SwipeDeck } from "@/components/SwipeDeck";
-import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
+import { useDiscovery, DEFAULT_FILTERS, distanceKm } from "@/hooks/useDiscovery";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 

@@ -8,10 +8,18 @@ import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const links = [
   { to: "/browse", label: "Accueil", icon: Home },
-  { to: "/recherche", label: "Recherche", icon: Search },
+  { to: "/recherche", label: "Découvrir", icon: Search },
   { to: "/likes", label: "Likes", icon: Heart },
   { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/compte", label: "Compte", icon: User },
+] as const;
+
+const mobileLinks = [
+  { to: "/browse", label: "Accueil", icon: Home, fillActive: true },
+  { to: "/recherche", label: "Découvrir", icon: Heart, fillActive: false },
+  { to: "/likes", label: "Likes", icon: Heart, fillActive: false },
+  { to: "/messages", label: "Messages", icon: MessageCircle, fillActive: false },
+  { to: "/compte", label: "Compte", icon: User, fillActive: false },
 ] as const;
 
 function Badge({ count }: { count: number }) {

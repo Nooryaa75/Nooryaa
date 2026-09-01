@@ -30,10 +30,19 @@ function Likes() {
     },
   });
 
+  // Les likes mutuels deviennent des matchs (affichés sur l'accueil) : on les retire d'ici.
+  const mutual = new Set(
+    (received ?? [])
+      .map((r: any) => r.from_user as string)
+      .filter((id) => (sent ?? []).some((s: any) => s.to_user === id)),
+  );
+  const receivedOnly = (received ?? []).filter((r: any) => !mutual.has(r.from_user));
+  const sentOnly = (sent ?? []).filter((s: any) => !mutual.has(s.to_user));
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <Section title="Personnes qui vous ont liké·e" items={received} me={me} />
-      <Section title="Vos likes envoyés" items={sent} me={me} />
+      <Section title="Personnes qui vous ont liké·e" items={receivedOnly} me={me} />
+      <Section title="Vos likes envoyés" items={sentOnly} me={me} />
     </div>
   );
 }

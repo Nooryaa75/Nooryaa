@@ -161,6 +161,44 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_events: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string
@@ -356,6 +394,63 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          active: boolean
+          boosts: number
+          code: string
+          created_at: string
+          duration_days: number
+          features: string[]
+          highlight: boolean
+          id: string
+          likes_per_day: number
+          name: string
+          price_ttc: number
+          sort_order: number
+          super_likes: number
+          tagline: string | null
+          updated_at: string
+          vat_rate: number
+        }
+        Insert: {
+          active?: boolean
+          boosts?: number
+          code: string
+          created_at?: string
+          duration_days?: number
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          likes_per_day?: number
+          name: string
+          price_ttc?: number
+          sort_order?: number
+          super_likes?: number
+          tagline?: string | null
+          updated_at?: string
+          vat_rate?: number
+        }
+        Update: {
+          active?: boolean
+          boosts?: number
+          code?: string
+          created_at?: string
+          duration_days?: number
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          likes_per_day?: number
+          name?: string
+          price_ttc?: number
+          sort_order?: number
+          super_likes?: number
+          tagline?: string | null
+          updated_at?: string
+          vat_rate?: number
+        }
+        Relationships: []
+      }
       profile_passes: {
         Row: {
           created_at: string
@@ -415,6 +510,7 @@ export type Database = {
           identity_key: string | null
           last_active: string
           last_name: string | null
+          last_seen: string
           latitude: number | null
           longitude: number | null
           looking_for: Database["public"]["Enums"]["gender"] | null
@@ -466,6 +562,7 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          last_seen?: string
           latitude?: number | null
           longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
@@ -517,6 +614,7 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          last_seen?: string
           latitude?: number | null
           longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
@@ -617,35 +715,176 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          amount_ttc: number
+          auto_renew: boolean
+          cancelled_at: string | null
+          created_at: string
+          ends_at: string | null
+          id: string
+          payment_method: string
+          plan_code: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+          vat_rate: number
+        }
+        Insert: {
+          amount_ttc?: number
+          auto_renew?: boolean
+          cancelled_at?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          payment_method?: string
+          plan_code: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          vat_rate?: number
+        }
+        Update: {
+          amount_ttc?: number
+          auto_renew?: boolean
+          cancelled_at?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          payment_method?: string
+          plan_code?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vat_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_tickets: {
         Row: {
+          assigned_to: string | null
           category: string
           created_at: string
           id: string
+          last_reply_at: string | null
           message: string
+          priority: string
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          assigned_to?: string | null
           category: string
           created_at?: string
           id?: string
+          last_reply_at?: string | null
           message: string
+          priority?: string
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          assigned_to?: string | null
           category?: string
           created_at?: string
           id?: string
+          last_reply_at?: string | null
           message?: string
+          priority?: string
           status?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      ticket_replies: {
+        Row: {
+          author: string
+          author_id: string | null
+          content: string
+          created_at: string
+          id: string
+          internal: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author?: string
+          author_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          internal?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author?: string
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          internal?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_replies_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_credits: {
+        Row: {
+          boosts: number
+          likes_balance: number
+          likes_used_today: number
+          reset_at: string
+          super_likes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          boosts?: number
+          likes_balance?: number
+          likes_used_today?: number
+          reset_at?: string
+          super_likes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          boosts?: number
+          likes_balance?: number
+          likes_used_today?: number
+          reset_at?: string
+          super_likes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

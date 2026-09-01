@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { toast } from "sonner";
 import {
   EDUCATION_LEVELS,
@@ -327,42 +328,13 @@ function Recherche() {
           {/* Âge */}
           <div className="space-y-2">
             <SectionTitle>Âge</SectionTitle>
-            <div className="grid grid-cols-2 gap-3">
-              <Select
-                value={String(filters.ageMin)}
-                onValueChange={(v) => {
-                  const min = Number(v);
-                  set({ ageMin: min <= filters.ageMax ? min : filters.ageMax });
-                }}
-              >
-                <SelectTrigger className="rounded-full justify-center gap-2">
-                  <span className="text-xs text-muted-foreground">Min</span>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 90 - 18 + 1 }, (_, i) => 18 + i).map((a) => (
-                    <SelectItem key={a} value={String(a)}>{a} ans</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={String(filters.ageMax)}
-                onValueChange={(v) => {
-                  const max = Number(v);
-                  set({ ageMax: max >= filters.ageMin ? max : filters.ageMin });
-                }}
-              >
-                <SelectTrigger className="rounded-full justify-center gap-2">
-                  <span className="text-xs text-muted-foreground">Max</span>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 90 - 18 + 1 }, (_, i) => 18 + i).map((a) => (
-                    <SelectItem key={a} value={String(a)}>{a} ans</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DualRangeSlider
+              value={[filters.ageMin, filters.ageMax]}
+              min={18}
+              max={90}
+              step={1}
+              onValueChange={([a, b]) => set({ ageMin: a, ageMax: b })}
+            />
           </div>
 
           {/* Taille & corpulence */}

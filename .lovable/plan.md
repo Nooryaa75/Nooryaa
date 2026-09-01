@@ -1,69 +1,71 @@
+# Plan — Back-office Nooryaa v2
 
-## Plan — Nooryaa v2
+## 1. Comptes admin (connexion via l'interface classique)
+- Création des deux comptes : `brahim@nooryaa.com` et `karim@nooryaa.com` (mot de passe `Zittoun33!`, email confirmé), avec le rôle `admin` dans la table des rôles.
+- À la connexion sur `/auth`, si le compte est admin → redirection automatique vers `/admin` (au lieu de l'accueil membre). Un bouton « Espace membre » permet de basculer.
+- La porte actuelle par mot de passe partagé reste en secours, mais l'accès admin est désormais basé sur le rôle du compte connecté (plus sûr, traçable par personne).
+- Toutes les actions admin restent journalisées avec l'identité de l'admin.
 
-### 1. Renommage Nikah → Nooryaa
-- `AppHeader`, `index.tsx` (landing), `auth.tsx`, balises `<title>` / meta description / OG.
+## 2. Nouvelles données à créer
+- **Formules & tarifs** (`plans`) : identifiant, nom, durée, prix TTC, taux de TVA, quotas inclus (likes/jour, super likes, boosts), actif/inactif, ordre. Alimente à la fois la page « Mon abonnement » côté membre et l'onglet Configurateur côté admin (aujourd'hui les prix sont codés en dur dans la page).
+- **Abonnements** (`subscriptions`) : membre, formule, date début/fin, statut (actif, annulé, expiré), montant TTC payé, moyen de paiement. Sert au CA.
+- **Consommation** (`user_credits` + `credit_events`) : solde et historique de likes, super likes, boosts par membre ; chaque octroi/retrait admin est historisé.
+- **Support** : la table des tickets existe ; ajout du statut étendu (nouveau, en cours, traité, fermé), de la priorité, de l'assignation et d'une table de réponses (historique des échanges admin ↔ membre).
+- **Présence** : `last_seen` rafraîchi côté app pour compter les connectés en temps réel (fenêtre 5 min).
 
-### 2. Nouveaux champs profil
-Migration ajoutant à `profiles` :
-- `phone TEXT UNIQUE NOT NULL` (vérifié côté inscription)
-- `profession TEXT`
-- `country_origin TEXT` (pays d'origine, distinct de `country` actuel = pays de résidence)
-- `religion TEXT` (par défaut "Islam", éditable — sunnite/chiite/etc.)
-- `activities TEXT` (loisirs / centres d'intérêt)
-- `education_level TEXT` (enum: aucun, secondaire, bac, bac+2, bac+3, bac+5, doctorat)
-- `objective TEXT` (objectif sur le site : mariage rapide, connaissance, etc.)
-- `status TEXT DEFAULT 'active'` (active | suspended | banned) — pour modération
-- `email` déjà unique côté `auth.users` — ajout d'un index UNIQUE sur `profiles.email` pour double sécurité
+## 3. Tableau de bord (indicateurs)
+- Compteurs : inscrits, actifs, connectés maintenant (temps réel, rafraîchi automatiquement), nouveaux sur la période.
+- Sélecteur de période (jour / semaine / mois / plage libre) appliqué à tous les graphiques.
+- Courbe d'inscriptions cumulées et par jour, répartition homme/femme, pyramide des âges, top villes/pays, répartition par critères de la fiche profil (statut marital, pratique religieuse, niveau d'études, enfants, fumeur, corpulence, objectif…).
+- Engagement : likes, matchs, messages, taux de réponse, profils vérifiés.
 
-Onboarding et page `/me` mis à jour avec tous ces champs (formulaire complet, validation Zod).
+## 4. Onglet Finance
+- CA TTC (et HT + TVA) par jour / semaine / mois, par formule, par genre.
+- Abonnés actifs par formule, ARPU, taux de conversion gratuit → payant, churn, valeur moyenne, prévisionnel des renouvellements.
+- Export CSV de la période.
 
-### 3. Inscription
-- `auth.tsx` : ajout champ téléphone (format E.164 simple regex `+\d{8,15}`), validation côté client + erreur serveur claire si email/téléphone déjà utilisés.
-- Trigger `handle_new_user` mis à jour pour recevoir le téléphone via `raw_user_meta_data`.
+## 5. Onglet Utilisateurs (enrichi)
+- Liste filtrable et triable : genre, âge, ville, statut, formule, date d'inscription, dernière connexion, vérifié.
+- Actions : suspendre, réactiver, bannir, supprimer, forcer la vérification, voir la fiche 360.
+- Fiche membre : profil complet, photos, abonnement en cours, consommation, tickets, signalements, blocages, conversations.
 
-### 4. Messagerie directe (plus de prérequis "like mutuel")
-- Politique RLS `messages` : autoriser envoi vers tout profil **non bloqué** et **non banni**, peu importe le like.
-- Bouton "Ajouter en coup de cœur" + "Envoyer un message" visibles directement sur chaque carte/profil.
-- Au clic sur "Message", création automatique du like (coup de cœur) puis redirection vers le thread.
+## 6. Onglet Modération temps réel
+- Flux des alertes (mots/tonalité, photos, signalements) rafraîchi en continu, avec pastille de notification.
+- Action en un clic : avertir, masquer la photo, suspendre, bannir, classer sans suite. Chaque décision historisée.
 
-### 5. Blocage
-Nouvelle table `blocks (blocker uuid, blocked uuid, created_at)` + RLS (chacun gère ses blocages).
-- Filtrage automatique : un profil bloqué n'apparaît plus dans `/browse`, ne peut plus envoyer de message, et le bloqueur disparaît aussi de ses recherches.
-- Helper SQL `is_blocked_between(a, b)`.
-- Bouton "Bloquer / Débloquer" sur la fiche profil ; page `/me/blocked` listant les blocages.
+## 7. Onglet Support / Tickets
+- Liste avec statut (non traité / en cours / traité / fermé), priorité, ancienneté, catégorie.
+- Fil de discussion : l'admin répond, le membre voit la réponse dans « Service client ». Historique complet conservé.
+- Lien direct ticket ↔ fiche membre ↔ signalement associé.
 
-### 6. Signalement
-Déjà en place — j'ajoute une raison structurée (enum: contenu_inapproprie, faux_profil, harcelement, autre) et expose dans l'admin.
+## 8. Onglet Configurateur
+- Édition des formules : nom, prix TTC par durée, TVA, quotas inclus, avantages affichés, mise en avant, activation/désactivation.
+- Les changements se répercutent immédiatement sur la page « Mon abonnement ».
+- Réglages plateforme : quotas du plan gratuit (likes/jour), rayon par défaut, seuils de modération.
 
-### 7. Espace administration `/admin` (mdp partagé = 2325)
-- Gate par cookie de session chiffré (`useSession` côté serveur, `SESSION_SECRET` généré). Mot de passe `2325` comparé en `timingSafeEqual` dans un `createServerFn`. Aucun lien public visible — accès direct par URL `/admin`.
-- Page `/admin/login` : formulaire simple, redirige vers `/admin` si OK.
-- `/admin` (dashboard) : stats (nb profils, profils actifs aujourd'hui, signalements ouverts, blocages).
-- `/admin/profiles` : liste paginée + recherche par pseudo/email/téléphone. Filtre statut. Actions : voir fiche complète, suspendre, bannir, réactiver, supprimer (cascade), forcer changement de pseudo.
-- `/admin/profiles/$id` : fiche complète (toutes les infos + photos + historique likes + historique messages + signalements reçus + blocages). C'est le « suivi de chaque profil » demandé.
-- `/admin/reports` : liste des signalements, statut (ouvert / traité / rejeté), action en un clic (suspendre le profil signalé).
-- `/admin/messages` : navigation des conversations entre deux pseudos (pour modération de harcèlement).
-- Toutes les opérations passent par `createServerFn` qui vérifient le cookie admin puis utilisent `supabaseAdmin` (service role) — RLS contourné légitimement côté admin.
+## 9. Onglet Consommation
+- Par membre : likes utilisés/restants, super likes, boosts, historique daté.
+- Boutons pour créditer ou débiter (geste commercial), avec motif obligatoire et trace dans l'historique.
 
-### 8. Badge « 100% gratuit »
-- Bandeau sur landing + header + page d'inscription : « Inscription et messagerie 100 % gratuites ».
+## 10. Analytics plateforme
+- Entonnoir inscription → onboarding complété → photo vérifiée → premier like → premier message → abonnement.
+- Rétention J1/J7/J30, activité par heure et par jour, ratio hommes/femmes actifs, temps de réponse moyen aux messages.
 
-### 9. Correctif technique
-- Erreur d'hydratation actuelle sur `/` : retirer la div parente directe du `<Suspense>` ou utiliser `<ClientOnly>` autour du bloc problématique. À diagnostiquer rapidement en début d'implémentation.
+## Suggestions complémentaires (incluses)
+- Score de risque par membre (signalements + modération + comportement) pour prioriser la modération.
+- Détection de doublons/faux profils (téléphone, similarité photos, IP d'inscription).
+- Envoi d'un message d'annonce à un segment de membres depuis l'admin.
+- Journal d'audit consultable de toutes les actions admin.
 
-### 10. Sécurité
-- `SESSION_SECRET` généré via `generate_secret` (64 chars).
-- Le mot de passe admin `2325` est lu depuis un secret `ADMIN_PASSWORD` (stocké via `set_secret` à la valeur `2325`) plutôt que codé en dur, pour que tu puisses le changer plus tard sans redéploiement.
-- Toutes les actions admin loguées dans une table `admin_actions (action, target_user, details, created_at)`.
+## Notes techniques
+- Toutes les lectures/écritures admin passent par des fonctions serveur protégées par le rôle admin (jamais depuis le navigateur).
+- Nouvelles tables avec RLS stricte : lecture membre limitée à ses propres lignes, accès complet réservé au service admin.
+- Aucun paiement réel n'est branché : le CA est calculé sur les abonnements enregistrés ; le branchement Stripe pourra être ajouté ensuite.
 
-### Détails techniques
-- Stack inchangée : TanStack Start + Lovable Cloud + RLS.
-- Migrations en deux temps : (1) ajout colonnes + tables + grants + RLS ; (2) trigger `handle_new_user` mis à jour.
-- Pas de changement de design système (palette sauge/crème/or conservée).
-- Realtime messagerie conservé.
-
-### Hors scope (à confirmer si tu veux les ajouter ensuite)
-- Vérification téléphone par SMS (Twilio) — pour l'instant le téléphone est juste stocké et unique.
-- Système de Wali / tuteur.
-- Notifications email.
+## Livraison par étapes
+1. Comptes admin + redirection + rôles.
+2. Migrations (formules, abonnements, crédits, tickets, présence).
+3. Tableau de bord + Utilisateurs enrichis.
+4. Finance + Analytics.
+5. Support + Modération temps réel.
+6. Configurateur + Consommation.

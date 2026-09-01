@@ -57,28 +57,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <p className="text-sm font-bold text-primary">{children}</p>;
 }
 
-/** Pilule sélectionnable Homme / Femme. */
-function GenderPills({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex gap-2">
-      {["Homme", "Femme"].map((g) => (
-        <button
-          key={g}
-          type="button"
-          onClick={() => onChange(g)}
-          className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all ${
-            value === g
-              ? "text-white shadow-md"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/70"
-          }`}
-          style={value === g ? { background: "var(--gradient-gold)" } : undefined}
-        >
-          {g}
-        </button>
-      ))}
-    </div>
-  );
-}
+
+
 
 /** Filtre tri-état oui / non / indifférent, reprend les questions de la fiche profil. */
 function TriFilter({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -274,18 +254,15 @@ function Recherche() {
       {/* ===== Onglet Affiner ma recherche ===== */}
       {tab === "filtres" && (
         <div className="space-y-6">
-          {/* Je recherche */}
-          <div className="space-y-3">
+          {/* Je recherche (déterminé automatiquement par le sexe) */}
+          <div className="space-y-2">
             <SectionTitle>Je recherche</SectionTitle>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Je suis</p>
-              <GenderPills value={myGenderLabel} onChange={() => {}} />
-            </div>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Je recherche</p>
-              <GenderPills value={seekingLabel} onChange={() => {}} />
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Vous êtes {myGenderLabel.toLowerCase()}&nbsp;: vous verrez uniquement des profils{" "}
+              {seekingLabel === "Femme" ? "femmes" : "hommes"}.
+            </p>
           </div>
+
 
           {/* Localisation */}
           <div className="space-y-3">

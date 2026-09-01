@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Heart, BadgeCheck, User, Quote } from "lucide-react";
+import { Heart, BadgeCheck, User, Quote, Bell } from "lucide-react";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";

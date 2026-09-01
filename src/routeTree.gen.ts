@@ -20,6 +20,7 @@ import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -97,6 +98,11 @@ const AdminFinanceRoute = AdminFinanceRouteImport.update({
 const AdminContactRoute = AdminContactRouteImport.update({
   id: '/admin/contact',
   path: '/admin/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAdsRoute = AdminAdsRouteImport.update({
@@ -244,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -355,6 +364,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/recherche'
     | '/admin/ads'
+    | '/admin/analytics'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -456,6 +468,7 @@ export interface RootRouteChildren {
   NotreDifferenceRoute: typeof NotreDifferenceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/contact'
       fullPath: '/admin/contact'
       preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/ads': {
@@ -793,6 +813,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotreDifferenceRoute: NotreDifferenceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminContactRoute: AdminContactRoute,
   AdminFinanceRoute: AdminFinanceRoute,
   AdminLoginRoute: AdminLoginRoute,

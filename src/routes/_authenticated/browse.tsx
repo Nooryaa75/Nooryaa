@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Sparkles, Navigation, Clock, Heart, BadgeCheck, User, Quote } from "lucide-react";
+import { Heart, BadgeCheck, User, Quote } from "lucide-react";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
@@ -36,7 +36,7 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { me, isLoading, decks, deckList } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { isLoading, decks, deckList } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
   if (deck) {
     return (
@@ -198,7 +198,7 @@ function RecommendedCard({ profile, userId }: { profile: any; userId: string }) 
           onClick={() => likeMutation.mutate()}
           className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
         >
-          <Heart className={`h-4.5 w-4.5 h-5 w-5 transition-colors ${liked ? "text-[#E83E8C] fill-[#E83E8C]" : "text-[#E83E8C]"}`} />
+          <Heart className={`h-5 w-5 transition-colors ${liked ? "text-[#E83E8C] fill-[#E83E8C]" : "text-[#E83E8C]"}`} />
         </button>
       </div>
       <div className="p-3">
@@ -206,7 +206,7 @@ function RecommendedCard({ profile, userId }: { profile: any; userId: string }) 
           <span className="font-bold text-sm text-foreground truncate">
             {profile.pseudo}{age ? `, ${age} ans` : ""}
           </span>
-          {profile.selfie_verified && <BadgeCheck className="h-4 w-4 text-primary fill-primary text-white shrink-0" />}
+          {profile.selfie_verified && <BadgeCheck className="h-4 w-4 text-primary shrink-0" />}
         </Link>
         <p className="text-xs text-muted-foreground mt-0.5 truncate">
           {profile.city ?? ""}{profile.country ? `, ${profile.country}` : ""}{distance != null ? ` • ${distance} km` : ""}

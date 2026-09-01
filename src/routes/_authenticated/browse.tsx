@@ -84,7 +84,7 @@ function Home() {
           {/* Vos sélections du moment */}
           <section>
             <h2 className="text-base font-bold text-primary mb-3">Vos sélections du moment</h2>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="flex flex-col gap-3">
               {deckList.map((meta) => (
                 <DeckCard key={meta.key} meta={meta} profiles={decks[meta.key]} onClick={() => setDeck(meta.key)} />
               ))}

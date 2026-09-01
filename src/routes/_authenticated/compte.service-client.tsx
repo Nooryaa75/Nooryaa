@@ -110,5 +110,6 @@ function ServiceClientPage() {
         </Button>
       </form>
     </div>
+    </div>
   );
 }

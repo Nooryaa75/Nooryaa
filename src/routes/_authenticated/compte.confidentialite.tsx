@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ShieldCheck, ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/confidentialite")({
   head: () => ({ meta: [{ title: "Politique de confidentialité — Nooryaa" }] }),

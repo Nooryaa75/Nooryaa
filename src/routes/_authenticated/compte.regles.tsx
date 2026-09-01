@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Users } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Users, ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/regles")({
   head: () => ({ meta: [{ title: "Nos règles de communauté — Nooryaa" }] }),
@@ -18,11 +18,17 @@ const rules = [
 
 function ReglesPage() {
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-6 max-w-3xl">
-      <div className="flex items-center gap-2">
-        <Users className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-serif text-primary">Nos règles de communauté</h2>
+    <div className="space-y-4">
+      <div className="relative flex items-center justify-center">
+        <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+        <h1 className="text-lg font-bold text-primary flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          Règles communauté
+        </h1>
       </div>
+    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-6">
 
       <div className="space-y-4">
         {rules.map((r) => (

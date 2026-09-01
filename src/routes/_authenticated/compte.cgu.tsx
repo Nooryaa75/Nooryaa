@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { FileText } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FileText, ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/cgu")({
   head: () => ({ meta: [{ title: "Conditions Générales d'Utilisation — Nooryaa" }] }),

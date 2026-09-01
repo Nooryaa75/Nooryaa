@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Headphones, Send } from "lucide-react";
+import { Headphones, Send, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createSupportTicket } from "@/lib/support.functions";
 import { Button } from "@/components/ui/button";

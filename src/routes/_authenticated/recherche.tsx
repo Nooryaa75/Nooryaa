@@ -161,7 +161,12 @@ function Recherche() {
   }
 
   async function applySearch(row: any) {
-    setFilters({ ...DEFAULT_FILTERS, ...(row.filters ?? {}) });
+    const applied = { ...DEFAULT_FILTERS, ...(row.filters ?? {}) };
+    setFilters({
+      ...applied,
+      heightMin: applied.heightMin ?? 120,
+      heightMax: applied.heightMax ?? 230,
+    });
     setActiveSearchName(row.name ?? null);
     setTab("resultats");
     toast.success(`Recherche « ${row.name} » appliquée`);

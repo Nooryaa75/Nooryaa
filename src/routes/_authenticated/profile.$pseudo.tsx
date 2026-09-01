@@ -131,7 +131,10 @@ function ProfileView() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => router.history.back()}
+        onClick={() => {
+          if (window.history.length > 1) router.history.back();
+          else navigate({ to: "/browse" });
+        }}
         className="gap-2 text-muted-foreground hover:text-primary -ml-2"
       >
         <ArrowLeft className="h-4 w-4" /> Retour

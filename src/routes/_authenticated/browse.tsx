@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Heart, BadgeCheck, User, Quote } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Heart, Quote, User, MessageCircle, BadgeCheck } from "lucide-react";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
@@ -38,7 +38,26 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { isLoading, decks, deckList, me, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { decks, deckList, me, profiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+
+  // Likes envoyés + reçus → matchs = likes croisés (sent ∩ received)
+  const { data: likeGraph = { sent: [] as string[], received: [] as string[] } } = useQuery({
+    queryKey: ["match-likes", ctx.userId],
+    queryFn: async () => {
+      const [{ data: sent }, { data: received }] = await Promise.all([
+        supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
+        supabase.from("likes").select("from_user").eq("to_user", ctx.userId),
+      ]);
+      return {
+        sent: (sent ?? []).map((l: any) => l.to_user as string),
+        received: (received ?? []).map((l: any) => l.from_user as string),
+      };
+    },
+  });
+
+  const matches = (profiles ?? []).filter(
+    (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
+  );
 
   if (deck) {
     return (
@@ -113,6 +132,53 @@ function Home() {
             </div>
           </section>
 
+          {/* Mes matchs */}
+          {matches.length > 0 && (
+            <section>
+              <h2 className="text-base font-bold text-primary mb-3 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-[#E83E8C] fill-[#E83E8C]" />
+                Mes matchs
+              </h2>
+              <div className="bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] p-4">
+                <p className="text-xs text-muted-foreground mb-3">
+                  Vous vous êtes likés mutuellement — discutez ensemble 💞
+                </p>
+                <div className="flex gap-4 overflow-x-auto pb-1">
+                  {matches.map((p: any) => (
+                    <Link
+                      key={p.id}
+                      to="/messages/$pseudo"
+                      params={{ pseudo: p.pseudo }}
+                      className="flex flex-col items-center gap-1.5 shrink-0 group"
+                    >
+                      <div className="relative">
+                        <div className="h-16 w-16 rounded-full overflow-hidden ring-2 ring-[#E83E8C]/40 group-hover:ring-[#E83E8C] transition">
+                          {p.primary_photo_url ? (
+                            <img
+                              src={p.primary_photo_url}
+                              alt={p.pseudo}
+                              className={`w-full h-full object-cover ${p.primary_photo_blurred ? "blur-md scale-110" : ""}`}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-secondary flex items-center justify-center">
+                              <User className="h-6 w-6 text-muted-foreground/40" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-[#5D2A8C] to-[#E83E8C] flex items-center justify-center shadow">
+                          <MessageCircle className="h-3.5 w-3.5 text-white" />
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-foreground max-w-[72px] truncate">
+                        {p.pseudo}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Recommandé pour vous */}
           {recommended.length > 0 && (
             <section>
@@ -174,6 +240,7 @@ function RecommendedCard({ profile, userId }: { profile: any; userId: string }) 
       setLiked(!liked);
       queryClient.invalidateQueries({ queryKey: ["browse", userId] });
       queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] });
+      queryClient.invalidateQueries({ queryKey: ["match-likes", userId] });
       queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] });
       if (!liked) toast.success(`Vous avez liké ${profile.pseudo} 💜`);
     },

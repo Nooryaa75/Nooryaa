@@ -24,6 +24,7 @@ import { Route as AuthenticatedRechercheRouteImport } from './routes/_authentica
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
+import { Route as AuthenticatedMatchsRouteImport } from './routes/_authenticated/matchs'
 import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
@@ -115,6 +116,11 @@ const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
 const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMatchsRoute = AuthenticatedMatchsRouteImport.update({
+  id: '/matchs',
+  path: '/matchs',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLikesRoute = AuthenticatedLikesRouteImport.update({
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof AuthenticatedBrowseRoute
   '/compte': typeof AuthenticatedCompteRouteWithChildren
   '/likes': typeof AuthenticatedLikesRoute
+  '/matchs': typeof AuthenticatedMatchsRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/likes': typeof AuthenticatedLikesRoute
+  '/matchs': typeof AuthenticatedMatchsRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRouteWithChildren
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
+  '/_authenticated/matchs': typeof AuthenticatedMatchsRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -331,6 +340,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/compte'
     | '/likes'
+    | '/matchs'
     | '/me'
     | '/messages'
     | '/onboarding'
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/blocked'
     | '/browse'
     | '/likes'
+    | '/matchs'
     | '/me'
     | '/messages'
     | '/onboarding'
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/_authenticated/browse'
     | '/_authenticated/compte'
     | '/_authenticated/likes'
+    | '/_authenticated/matchs'
     | '/_authenticated/me'
     | '/_authenticated/messages'
     | '/_authenticated/onboarding'
@@ -548,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof AuthenticatedMeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/matchs': {
+      id: '/_authenticated/matchs'
+      path: '/matchs'
+      fullPath: '/matchs'
+      preLoaderRoute: typeof AuthenticatedMatchsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/likes': {
@@ -723,6 +742,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRouteWithChildren
   AuthenticatedLikesRoute: typeof AuthenticatedLikesRoute
+  AuthenticatedMatchsRoute: typeof AuthenticatedMatchsRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -735,6 +755,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRouteWithChildren,
   AuthenticatedLikesRoute: AuthenticatedLikesRoute,
+  AuthenticatedMatchsRoute: AuthenticatedMatchsRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,

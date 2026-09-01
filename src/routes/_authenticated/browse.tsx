@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Heart, Quote, User, MessageCircle, BadgeCheck } from "lucide-react";
+import { Heart, Quote } from "lucide-react";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, distanceKm } from "@/hooks/useDiscovery";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useMatches } from "@/hooks/useMatches";
+import { ProfileVignette, ageFrom } from "@/components/ProfileVignette";
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({

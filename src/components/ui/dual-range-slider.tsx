@@ -10,6 +10,7 @@ interface DualRangeSliderProps {
   step?: number;
   minLabel?: string;
   maxLabel?: string;
+  unit?: string;
   className?: string;
 }
 

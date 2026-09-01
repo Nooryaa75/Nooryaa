@@ -188,3 +188,62 @@ function AdminConfig() {
     </div>
   );
 }
+
+function SocialSection() {
+  const qc = useQueryClient();
+  const list = useServerFn(adminListSocialLinks);
+  const save = useServerFn(adminSaveSocialLink);
+  const { data } = useQuery({ queryKey: ["admin-social-links"], queryFn: () => list() });
+  const [urls, setUrls] = useState<Record<string, string>>({});
+
+  const mut = useMutation({
+    mutationFn: (p: { id: string; url?: string; active?: boolean }) => save({ data: p }),
+    onSuccess: () => {
+      toast.success("Réseau social mis à jour");
+      qc.invalidateQueries({ queryKey: ["admin-social-links"] });
+      qc.invalidateQueries({ queryKey: ["social-links"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+  });
+
+  return (
+    <section className="bg-card rounded-2xl p-5 border border-border/60 space-y-4">
+      <div>
+        <h2 className="text-lg font-serif text-primary">Réseaux sociaux</h2>
+        <p className="text-sm text-muted-foreground">
+          Activez ou désactivez chaque réseau : les logos apparaissent (ou disparaissent) immédiatement sur la page d'accueil.
+        </p>
+      </div>
+      <div className="space-y-3">
+        {(data ?? []).map((s) => (
+          <div key={s.id} className="flex flex-wrap items-center gap-3 border border-border/50 rounded-xl p-3">
+            <div className="w-28 font-medium">{s.label}</div>
+            <Input
+              className="flex-1 min-w-[220px]"
+              placeholder="https://..."
+              value={urls[s.id] ?? s.url}
+              onChange={(e) => setUrls({ ...urls, [s.id]: e.target.value })}
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full"
+              disabled={mut.isPending}
+              onClick={() => mut.mutate({ id: s.id, url: urls[s.id] ?? s.url })}
+            >
+              Enregistrer
+            </Button>
+            <label className="flex items-center gap-2 text-sm">
+              <Switch
+                checked={s.active}
+                onCheckedChange={(v) => mut.mutate({ id: s.id, active: v })}
+                aria-label={`Activer ${s.label}`}
+              />
+              {s.active ? "Activé" : "Désactivé"}
+            </label>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

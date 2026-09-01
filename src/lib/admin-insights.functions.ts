@@ -409,7 +409,7 @@ export const adminUpdateTicket = createServerFn({ method: "POST" })
     if (data.status) patch.status = data.status;
     if (data.priority) patch.priority = data.priority;
     if (data.assigned_to !== undefined) patch.assigned_to = data.assigned_to;
-    const { error } = await supabaseAdmin.from("support_tickets").update(patch).eq("id", data.id);
+    const { error } = await supabaseAdmin.from("support_tickets").update(patch as never).eq("id", data.id);
     if (error) throw error;
     return { ok: true };
   });
@@ -457,9 +457,9 @@ export const adminAdjustCredits = createServerFn({ method: "POST" })
     const current = existing ? Number((existing as any)[column] ?? 0) : 0;
     const next = Math.max(0, current + data.amount);
     if (existing) {
-      await supabaseAdmin.from("user_credits").update({ [column]: next, updated_at: new Date().toISOString() }).eq("user_id", data.userId);
+      await supabaseAdmin.from("user_credits").update({ [column]: next, updated_at: new Date().toISOString() } as never).eq("user_id", data.userId);
     } else {
-      await supabaseAdmin.from("user_credits").insert({ user_id: data.userId, [column]: next });
+      await supabaseAdmin.from("user_credits").insert({ user_id: data.userId, [column]: next } as never);
     }
     await supabaseAdmin.from("credit_events").insert({
       user_id: data.userId,

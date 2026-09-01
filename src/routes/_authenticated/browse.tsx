@@ -23,40 +23,14 @@ export const Route = createFileRoute("/_authenticated/browse")({
   component: Home,
 });
 
-function ageFrom(birthdate?: string | null) {
-  if (!birthdate) return null;
-  const d = new Date(birthdate);
-  if (isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
-  return age;
-}
-
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { decks, deckList, me, allProfiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { decks, deckList, me, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
-  // Likes envoyés + reçus → matchs = likes croisés (sent ∩ received)
-  const { data: likeGraph = { sent: [] as string[], received: [] as string[] } } = useQuery({
-    queryKey: ["match-likes", ctx.userId],
-    queryFn: async () => {
-      const [{ data: sent }, { data: received }] = await Promise.all([
-        supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
-        supabase.from("likes").select("from_user").eq("to_user", ctx.userId),
-      ]);
-      return {
-        sent: (sent ?? []).map((l: any) => l.to_user as string),
-        received: (received ?? []).map((l: any) => l.from_user as string),
-      };
-    },
-  });
+  // Matchs = likes croisés, triés du plus récent au plus ancien
+  const { data: matches = [] } = useMatches(ctx.userId);
 
-  const matches = (allProfiles ?? []).filter(
-    (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
-  );
 
   if (deck) {
     return (

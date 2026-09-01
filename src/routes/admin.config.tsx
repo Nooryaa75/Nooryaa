@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
-import { adminListPlans, adminSavePlan, adminDeletePlan, type PlanInput } from "@/lib/admin-insights.functions";
+import { adminListPlans, adminSavePlan, adminDeletePlan, adminListSocialLinks, adminSaveSocialLink, type PlanInput } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

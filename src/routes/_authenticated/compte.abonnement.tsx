@@ -5,6 +5,7 @@ import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTria
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
+import { recordSubscription } from "@/lib/subscription.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,6 +104,7 @@ const euro = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
 function AbonnementPage() {
+  const saveSubscription = useServerFn(recordSubscription);
   const [current, setCurrent] = useState("gratuit");
   const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);

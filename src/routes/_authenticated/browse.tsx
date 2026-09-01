@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Heart } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
+import { SocialLinks } from "@/components/SocialLinks";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
@@ -159,6 +160,11 @@ function Home() {
 
           {/* Rappel du jour */}
           <DailyReminder />
+
+          {/* Réseaux sociaux */}
+          <SocialLinks />
+
+
 
         </>
       )}

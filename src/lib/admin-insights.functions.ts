@@ -495,3 +495,35 @@ export const adminAuditLog = createServerFn({ method: "GET" }).handler(async () 
   const { data } = await supabaseAdmin.from("admin_actions").select("*").order("created_at", { ascending: false }).limit(200);
   return data ?? [];
 });
+
+// ---------------- Réseaux sociaux ----------------
+
+export type SocialLinkRow = { id: string; network: string; label: string; url: string; active: boolean; sort_order: number };
+
+export const adminListSocialLinks = createServerFn({ method: "GET" }).handler(async () => {
+  const { requireAdminOrThrow } = await import("./admin-session.server");
+  await requireAdminOrThrow();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await (supabaseAdmin.from("social_links" as any) as any)
+    .select("*")
+    .order("sort_order", { ascending: true });
+  return (data ?? []) as SocialLinkRow[];
+});
+
+export const adminSaveSocialLink = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; url?: string; active?: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    const who = await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (typeof data.url === "string") patch.url = data.url;
+    if (typeof data.active === "boolean") patch.active = data.active;
+    const { error } = await (supabaseAdmin.from("social_links" as any) as any).update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await (supabaseAdmin.from("admin_actions" as any) as any).insert({
+      action: "social_link_update",
+      details: { id: data.id, ...patch, by: who.email ?? who.via },
+    });
+    return { ok: true };
+  });

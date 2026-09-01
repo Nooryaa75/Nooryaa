@@ -46,7 +46,7 @@ const rules = [
   {
     icon: Heart,
     title: "Intentions sincères",
-    body: "Soyez honnête et respectueux dans vos démarches.",
+    body: "Soyez honnêtes et respectueux dans vos démarches.",
   },
   {
     icon: Flag,

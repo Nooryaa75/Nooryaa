@@ -38,7 +38,7 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { isLoading, decks, deckList } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { isLoading, decks, deckList, me, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
   if (deck) {
     return (
@@ -59,7 +59,26 @@ function Home() {
     );
   }
 
-  const recommended = decks.match.slice(0, 4);
+  // Recommandé pour vous : ≥ 60 % de compatibilité, ±10 ans d'écart d'âge, triés du plus proche au plus loin.
+  const myAge = ageFrom((me as any)?.birthdate);
+  const recommended = decks.match
+    .filter((p: any) => (p._matchPercent ?? 0) >= 60)
+    .filter((p: any) => {
+      if (myAge == null) return true;
+      const age = ageFrom(p.birthdate);
+      return age == null || Math.abs(age - myAge) <= 10;
+    })
+    .map((p: any) => {
+      const d =
+        typeof p._distance === "number"
+          ? p._distance
+          : originLat != null && originLng != null && p.latitude != null && p.longitude != null
+            ? distanceKm(originLat, originLng, p.latitude, p.longitude)
+            : null;
+      return { ...p, _distance: d };
+    })
+    .sort((a: any, b: any) => (a._distance ?? Infinity) - (b._distance ?? Infinity))
+    .slice(0, 4);
 
   return (
     <div className="space-y-7 pb-8">

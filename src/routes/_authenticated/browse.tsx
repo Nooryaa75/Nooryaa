@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Heart, BadgeCheck, User, Quote, Bell } from "lucide-react";
+import { Heart, BadgeCheck, User, Quote } from "lucide-react";
+import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
+
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS } from "@/hooks/useDiscovery";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,10 +64,11 @@ function Home() {
   return (
     <div className="space-y-7 pb-8">
       {/* Titre de page */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-primary">Accueil</h1>
-        <Bell className="h-6 w-6 text-primary" />
+        <PrayerTimeBadge />
       </div>
+
 
       {/* Bienvenue */}
       <div>

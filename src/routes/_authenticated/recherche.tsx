@@ -274,18 +274,15 @@ function Recherche() {
       {/* ===== Onglet Affiner ma recherche ===== */}
       {tab === "filtres" && (
         <div className="space-y-6">
-          {/* Je recherche */}
-          <div className="space-y-3">
+          {/* Je recherche (déterminé automatiquement par le sexe) */}
+          <div className="space-y-2">
             <SectionTitle>Je recherche</SectionTitle>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Je suis</p>
-              <GenderPills value={myGenderLabel} onChange={() => {}} />
-            </div>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Je recherche</p>
-              <GenderPills value={seekingLabel} onChange={() => {}} />
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Vous êtes {myGenderLabel.toLowerCase()}&nbsp;: vous verrez uniquement des profils{" "}
+              {seekingLabel === "Femme" ? "femmes" : "hommes"}.
+            </p>
           </div>
+
 
           {/* Localisation */}
           <div className="space-y-3">

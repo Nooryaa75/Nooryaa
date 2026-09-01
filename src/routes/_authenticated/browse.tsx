@@ -240,6 +240,7 @@ function RecommendedCard({ profile, userId }: { profile: any; userId: string }) 
       setLiked(!liked);
       queryClient.invalidateQueries({ queryKey: ["browse", userId] });
       queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] });
+      queryClient.invalidateQueries({ queryKey: ["match-likes", userId] });
       queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] });
       if (!liked) toast.success(`Vous avez liké ${profile.pseudo} 💜`);
     },

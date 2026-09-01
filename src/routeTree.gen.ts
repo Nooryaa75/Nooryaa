@@ -18,6 +18,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
@@ -86,6 +87,11 @@ const AdminModerationRoute = AdminModerationRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFinanceRoute = AdminFinanceRouteImport.update({
+  id: '/admin/finance',
+  path: '/admin/finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContactRoute = AdminContactRouteImport.update({
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/admin/ads'
     | '/admin/contact'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/admin/ads'
     | '/admin/contact'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/_authenticated/recherche'
     | '/admin/ads'
     | '/admin/contact'
+    | '/admin/finance'
     | '/admin/login'
     | '/admin/moderation'
     | '/admin/reports'
@@ -445,6 +457,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminContactRoute: typeof AdminContactRoute
+  AdminFinanceRoute: typeof AdminFinanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminModerationRoute: typeof AdminModerationRoute
   AdminReportsRoute: typeof AdminReportsRoute
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/finance': {
+      id: '/admin/finance'
+      path: '/admin/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AdminFinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/contact': {
@@ -774,6 +794,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminContactRoute: AdminContactRoute,
+  AdminFinanceRoute: AdminFinanceRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminModerationRoute: AdminModerationRoute,
   AdminReportsRoute: AdminReportsRoute,

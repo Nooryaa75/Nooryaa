@@ -47,7 +47,7 @@ function Matchs() {
           Aucun match pour le moment. Continuez à liker des profils 💜
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {matches.map((p: any) => (
             <ProfileVignette
               key={p.id}

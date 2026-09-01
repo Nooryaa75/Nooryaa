@@ -23,40 +23,14 @@ export const Route = createFileRoute("/_authenticated/browse")({
   component: Home,
 });
 
-function ageFrom(birthdate?: string | null) {
-  if (!birthdate) return null;
-  const d = new Date(birthdate);
-  if (isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
-  return age;
-}
-
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { decks, deckList, me, allProfiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { decks, deckList, me, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
-  // Likes envoyés + reçus → matchs = likes croisés (sent ∩ received)
-  const { data: likeGraph = { sent: [] as string[], received: [] as string[] } } = useQuery({
-    queryKey: ["match-likes", ctx.userId],
-    queryFn: async () => {
-      const [{ data: sent }, { data: received }] = await Promise.all([
-        supabase.from("likes").select("to_user").eq("from_user", ctx.userId),
-        supabase.from("likes").select("from_user").eq("to_user", ctx.userId),
-      ]);
-      return {
-        sent: (sent ?? []).map((l: any) => l.to_user as string),
-        received: (received ?? []).map((l: any) => l.from_user as string),
-      };
-    },
-  });
+  // Matchs = likes croisés, triés du plus récent au plus ancien
+  const { data: matches = [] } = useMatches(ctx.userId);
 
-  const matches = (allProfiles ?? []).filter(
-    (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
-  );
 
   if (deck) {
     return (
@@ -131,49 +105,32 @@ function Home() {
             </div>
           </section>
 
-          {/* Mes matchs */}
+          {/* Mes matchs — les 4 derniers */}
           {matches.length > 0 && (
             <section>
-              <h2 className="text-base font-bold text-primary mb-3 flex items-center gap-2">
-                <Heart className="h-4 w-4 text-[#E83E8C] fill-[#E83E8C]" />
-                Mes matchs
-              </h2>
-              <div className="bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] p-4">
-                <p className="text-xs text-muted-foreground mb-3">
-                  Vous vous êtes likés mutuellement — discutez ensemble 💞
-                </p>
-                <div className="flex gap-4 overflow-x-auto pb-1">
-                  {matches.map((p: any) => (
-                    <Link
-                      key={p.id}
-                      to="/messages/$pseudo"
-                      params={{ pseudo: p.pseudo }}
-                      className="flex flex-col items-center gap-1.5 shrink-0 group"
-                    >
-                      <div className="relative">
-                        <div className="h-16 w-16 rounded-full overflow-hidden ring-2 ring-[#E83E8C]/40 group-hover:ring-[#E83E8C] transition">
-                          {p.primary_photo_url ? (
-                            <img
-                              src={p.primary_photo_url}
-                              alt={p.pseudo}
-                              className={`w-full h-full object-cover ${p.primary_photo_blurred ? "blur-md scale-110" : ""}`}
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-secondary flex items-center justify-center">
-                              <User className="h-6 w-6 text-muted-foreground/40" />
-                            </div>
-                          )}
-                        </div>
-                        <span className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-[#5D2A8C] to-[#E83E8C] flex items-center justify-center shadow">
-                          <MessageCircle className="h-3.5 w-3.5 text-white" />
-                        </span>
-                      </div>
-                      <span className="text-xs font-semibold text-foreground max-w-[72px] truncate">
-                        {p.pseudo}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-bold text-primary flex items-center gap-2">
+                  <Heart className="h-4 w-4 text-[#E83E8C] fill-[#E83E8C]" />
+                  Mes matchs
+                </h2>
+                {matches.length > 4 && (
+                  <Link to="/matchs" className="text-sm text-primary hover:underline">
+                    Voir les autres ({matches.length})
+                  </Link>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Vous vous êtes likés mutuellement — discutez ensemble 💞
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {matches.slice(0, 4).map((p: any) => (
+                  <ProfileVignette key={p.id} profile={p} chatBadge />
+                ))}
+              </div>
+              <div className="mt-3 text-center">
+                <Link to="/matchs" className="text-sm font-medium text-primary hover:underline">
+                  Voir tous mes matchs
+                </Link>
               </div>
             </section>
           )}
@@ -193,7 +150,7 @@ function Home() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {recommended.slice(0, 2).map((p: any) => (
-                  <RecommendedCard key={p.id} profile={p} userId={ctx.userId} />
+                  <ProfileVignette key={p.id} profile={p} userId={ctx.userId} likeable />
                 ))}
               </div>
             </section>
@@ -215,92 +172,6 @@ function Home() {
           </section>
         </>
       )}
-    </div>
-  );
-}
-
-function RecommendedCard({ profile, userId }: { profile: any; userId: string }) {
-  const queryClient = useQueryClient();
-  const [liked, setLiked] = useState(false);
-  const age = ageFrom(profile.birthdate);
-  const distance = typeof profile._distance === "number" ? Math.round(profile._distance) : null;
-
-  const likeMutation = useMutation({
-    mutationFn: async () => {
-      if (liked) {
-        const { error } = await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", profile.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("likes").insert({ from_user: userId, to_user: profile.id });
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      setLiked(!liked);
-      queryClient.invalidateQueries({ queryKey: ["browse", userId] });
-      queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] });
-      queryClient.invalidateQueries({ queryKey: ["match-likes", userId] });
-      queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] });
-      if (!liked) toast.success(`Vous avez liké ${profile.pseudo} 💜`);
-    },
-    onError: () => toast.error("Une erreur est survenue"),
-  });
-
-  const tags: { label: string; tone: "pink" | "lavender" }[] = [];
-  if (profile.personality) tags.push({ label: profile.personality, tone: "pink" });
-  if (profile.porte_voile === true) tags.push({ label: "Voilée", tone: "lavender" });
-  else if (profile.objective) tags.push({ label: profile.objective, tone: "lavender" });
-
-  return (
-    <div className="bg-card rounded-2xl border border-border/60 overflow-hidden shadow-[var(--shadow-card)]">
-      <div className="relative aspect-[4/5] bg-secondary">
-        <Link to="/profile/$pseudo" params={{ pseudo: profile.pseudo }} className="block w-full h-full">
-          {profile.primary_photo_url ? (
-            <img
-              src={profile.primary_photo_url}
-              alt={profile.pseudo}
-              className={`w-full h-full object-cover ${profile.primary_photo_blurred ? "blur-md scale-110" : ""}`}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <User className="h-12 w-12 text-muted-foreground/40" />
-            </div>
-          )}
-        </Link>
-        <button
-          type="button"
-          aria-label={liked ? "Retirer le like" : "Liker"}
-          onClick={() => likeMutation.mutate()}
-          className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
-        >
-          <Heart className={`h-5 w-5 transition-colors ${liked ? "text-[#E83E8C] fill-[#E83E8C]" : "text-[#E83E8C]"}`} />
-        </button>
-      </div>
-      <div className="p-3">
-        <Link to="/profile/$pseudo" params={{ pseudo: profile.pseudo }} className="flex items-center gap-1.5">
-          <span className="font-bold text-sm text-foreground truncate">
-            {profile.pseudo}{age ? `, ${age} ans` : ""}
-          </span>
-          {profile.selfie_verified && <BadgeCheck className="h-4 w-4 text-primary shrink-0" />}
-        </Link>
-        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-          {profile.city ?? ""}{profile.country ? `, ${profile.country}` : ""}{distance != null ? ` • ${distance} km` : ""}
-        </p>
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {tags.slice(0, 2).map((t) => (
-              <span
-                key={t.label}
-                className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${
-                  t.tone === "pink" ? "bg-[#E83E8C]/10 text-[#E83E8C]" : "bg-[#5D2A8C]/10 text-[#5D2A8C]"
-                }`}
-              >
-                {t.label}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }

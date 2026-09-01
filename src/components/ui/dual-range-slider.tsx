@@ -47,6 +47,7 @@ export function DualRangeSlider({
   step = 1,
   minLabel = "Âge minimum",
   maxLabel = "Âge maximum",
+  unit = "ans",
   className,
 }: DualRangeSliderProps) {
   const [a, b] = value;

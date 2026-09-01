@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, Flag } from "lucide-react";
+import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -415,8 +415,8 @@ function Conversation() {
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         {!voiceActive && (
           <>
-            <Button type="button" size="icon" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
-              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            <Button type="button" size="icon" variant="outline" className="rounded-full h-10 w-10 shrink-0" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-5 w-5" />}
             </Button>
             <EmojiPicker onPick={(e) => setText((t) => t + e)} />
           </>
@@ -427,10 +427,11 @@ function Conversation() {
             <Input
               value={text}
               onChange={(e) => { setText(e.target.value); notifyTyping(); }}
-              placeholder={editing ? "Modifier votre message..." : "Votre message..."}
+              placeholder={editing ? "Modifier votre message..." : "Écrire un message..."}
               maxLength={2000}
+              className="rounded-full h-11 bg-card"
             />
-            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending}>
+            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending} className="rounded-full h-11 w-11 shrink-0">
               {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             </Button>
           </>

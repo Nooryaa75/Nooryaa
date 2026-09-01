@@ -33,7 +33,7 @@ function currentPrayer(timings: Timings) {
   return { cur, next };
 }
 
-export function PrayerTimeBadge() {
+export function PrayerTimeBadge({ compact = false }: { compact?: boolean }) {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {

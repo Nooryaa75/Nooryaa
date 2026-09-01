@@ -13,7 +13,16 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/regles")({
-  head: () => ({ meta: [{ title: "Nos règles de communauté — Nooryaa" }] }),
+  head: () => ({
+    meta: [
+      { title: "Nos règles de la communauté — Nooryaa" },
+      { name: "description", content: "Les règles de la communauté Nooryaa : respect, sincérité, confidentialité et bienveillance au service de rencontres sereines." },
+      { property: "og:title", content: "Nos règles de la communauté — Nooryaa" },
+      { property: "og:description", content: "Respect, sincérité, confidentialité et bienveillance au service de rencontres sereines." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ReglesPage,
 });
 

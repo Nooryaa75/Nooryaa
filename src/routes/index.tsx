@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
-import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
+
 import { SITE_TAGLINE } from "@/lib/site";
 
 export const Route = createFileRoute("/")({

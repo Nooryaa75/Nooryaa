@@ -20,6 +20,7 @@ import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
+import { Route as AdminConfigRouteImport } from './routes/admin.config'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
@@ -100,6 +101,11 @@ const AdminFinanceRoute = AdminFinanceRouteImport.update({
 const AdminContactRoute = AdminContactRouteImport.update({
   id: '/admin/contact',
   path: '/admin/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfigRoute = AdminConfigRouteImport.update({
+  id: '/admin/config',
+  path: '/admin/config',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/config': typeof AdminConfigRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/login': typeof AdminLoginRoute
@@ -383,6 +392,7 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/admin/ads'
     | '/admin/analytics'
+    | '/admin/config'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/admin/ads'
     | '/admin/analytics'
+    | '/admin/config'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -461,6 +472,7 @@ export interface FileRouteTypes {
     | '/_authenticated/recherche'
     | '/admin/ads'
     | '/admin/analytics'
+    | '/admin/config'
     | '/admin/contact'
     | '/admin/finance'
     | '/admin/login'
@@ -493,6 +505,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminConfigRoute: typeof AdminConfigRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -584,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/contact'
       fullPath: '/admin/contact'
       preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/config': {
+      id: '/admin/config'
+      path: '/admin/config'
+      fullPath: '/admin/config'
+      preLoaderRoute: typeof AdminConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/analytics': {
@@ -854,6 +874,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminConfigRoute: AdminConfigRoute,
   AdminContactRoute: AdminContactRoute,
   AdminFinanceRoute: AdminFinanceRoute,
   AdminLoginRoute: AdminLoginRoute,

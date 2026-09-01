@@ -31,6 +31,7 @@ import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
+import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
 import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
@@ -155,6 +156,11 @@ const AuthenticatedBlockedRoute = AuthenticatedBlockedRouteImport.update({
   path: '/blocked',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AdminSupportIndexRoute = AdminSupportIndexRouteImport.update({
+  id: '/admin/support/',
+  path: '/admin/support/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProfilesIndexRoute = AdminProfilesIndexRouteImport.update({
   id: '/admin/profiles/',
   path: '/admin/profiles/',
@@ -271,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
+  '/admin/support/': typeof AdminSupportIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/compte': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
+  '/admin/support': typeof AdminSupportIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/_authenticated/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
+  '/admin/support/': typeof AdminSupportIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
+    | '/admin/support/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/compte'
     | '/admin/conversations'
     | '/admin/profiles'
+    | '/admin/support'
   id:
     | '__root__'
     | '/'
@@ -459,6 +470,7 @@ export interface FileRouteTypes {
     | '/_authenticated/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
+    | '/admin/support/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -479,6 +491,7 @@ export interface RootRouteChildren {
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
+  AdminSupportIndexRoute: typeof AdminSupportIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -636,6 +649,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blocked'
       preLoaderRoute: typeof AuthenticatedBlockedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/support/': {
+      id: '/admin/support/'
+      path: '/admin/support'
+      fullPath: '/admin/support/'
+      preLoaderRoute: typeof AdminSupportIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/profiles/': {
       id: '/admin/profiles/'
@@ -824,6 +844,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProfilesIdRoute: AdminProfilesIdRoute,
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
+  AdminSupportIndexRoute: AdminSupportIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

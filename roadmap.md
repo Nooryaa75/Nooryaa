@@ -1,4 +1,4 @@
 # Roadmap
 
-- [x] Accueil : 4 derniers matchs + lien « Voir les autres » vers /matchs (liste complète)
-- [x] Vignette profil réutilisable (style « Recommandé pour vous ») utilisée sur Accueil, Matchs et Likes
+- [x] Corriger le plantage « Mon profil » (activities texte vs tableau)
+- [x] Notifications : choix par type (email / push in-app / push mobile), suppression du bloc « Notifications par email »

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
 import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const links = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
@@ -42,7 +42,7 @@ export function AdminNav() {
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-6xl">
         <Link to="/admin" className="flex items-center gap-2.5">
-          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-full object-cover gold-glow" />
+          <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-xl object-cover shadow-sm" />
           <span className="text-lg font-serif font-semibold tracking-[0.14em] uppercase gold-text">Administration</span>
         </Link>
         <nav className="hidden md:flex items-center gap-1">

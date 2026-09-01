@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
-import heroFullAsset from "@/assets/nooryaa-hero-full.jpg";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+
 import { SITE_TAGLINE } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
@@ -50,28 +50,23 @@ function Splash() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background flex items-center justify-center">
-      <img
-        src={heroFullAsset}
-        alt=""
+      <div
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover opacity-25"
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(93,42,140,0.14), transparent 70%), radial-gradient(ellipse 70% 55% at 50% 100%, rgba(232,62,140,0.12), transparent 70%), linear-gradient(180deg, #F3E8FF 0%, #FAFAFC 55%, #FFB6A322 100%)",
+        }}
       />
-      <div className="absolute inset-0 bg-background/70" />
 
       <main className="relative z-10 flex flex-col items-center text-center px-6 animate-in fade-in zoom-in-95 duration-1000">
         <img
           src={logoAsset.url}
           alt="Logo Nooryaa"
-          className="h-28 w-28 md:h-32 md:w-32 rounded-full object-cover gold-glow"
+          className="w-64 md:w-80 rounded-3xl shadow-2xl"
         />
-        <h1 className="mt-6 font-serif text-4xl md:text-5xl tracking-[0.18em] uppercase gold-text">
-          Nooryaa
-        </h1>
-        <div className="gold-rule w-28 my-5" />
-        <p className="font-serif text-lg md:text-xl text-[color:var(--gold-deep)] max-w-md">
-          {SITE_TAGLINE}
-        </p>
-        <p className="mt-3 text-sm text-muted-foreground max-w-sm">
+        <h1 className="sr-only">Nooryaa — {SITE_TAGLINE}</h1>
+        <p className="mt-6 text-sm text-muted-foreground max-w-sm">
           Pour une relation sincère tournée vers le dîn.
         </p>
 

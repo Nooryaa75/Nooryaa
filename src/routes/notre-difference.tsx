@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/nooryaa-logo.jpg.asset.json";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 export const Route = createFileRoute("/notre-difference")({
   head: () => ({
@@ -23,7 +23,7 @@ function NotreDifferencePage() {
       <header className="sticky top-0 z-30 bg-background/90 backdrop-blur border-b border-border/60">
         <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-full object-cover gold-glow" />
+            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-9 w-9 rounded-xl object-cover shadow-sm" />
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/">

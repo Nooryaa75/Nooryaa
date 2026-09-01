@@ -48,7 +48,7 @@ function MyProfile() {
   const [form, setForm] = useState<any>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   useEffect(() => {
-    if (profile && !form) setForm({ ...profile, valeurs: profile.preferences?.valeurs ?? [] });
+    if (profile && !form) setForm({ ...profile, valeurs: (profile.preferences as any)?.valeurs ?? [] });
   }, [profile, form]);
 
   const save = useMutation({

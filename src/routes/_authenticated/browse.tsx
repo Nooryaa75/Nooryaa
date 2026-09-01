@@ -38,7 +38,7 @@ function ageFrom(birthdate?: string | null) {
 function Home() {
   const ctx = Route.useRouteContext();
   const [deck, setDeck] = useState<DeckKey | null>(null);
-  const { decks, deckList, me, profiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
+  const { decks, deckList, me, allProfiles, isLoading, originLat, originLng } = useDiscovery(ctx.userId, DEFAULT_FILTERS);
 
   // Likes envoyés + reçus → matchs = likes croisés (sent ∩ received)
   const { data: likeGraph = { sent: [] as string[], received: [] as string[] } } = useQuery({
@@ -55,7 +55,7 @@ function Home() {
     },
   });
 
-  const matches = (profiles ?? []).filter(
+  const matches = (allProfiles ?? []).filter(
     (p: any) => likeGraph.sent.includes(p.id) && likeGraph.received.includes(p.id),
   );
 

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, Flag } from "lucide-react";
+import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -284,14 +284,17 @@ function Conversation() {
   return (
     <>
       <div className="px-4 py-3 border-b border-border/60 flex items-center gap-3">
-        <Link to="/messages" className="md:hidden text-muted-foreground"><ArrowLeft className="h-5 w-5" /></Link>
+        <Link to="/messages" className="text-primary"><ArrowLeft className="h-5 w-5" /></Link>
         <Link to="/profile/$pseudo" params={{ pseudo: peer.pseudo }} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="h-9 w-9 rounded-full bg-secondary overflow-hidden">
+          <div className="h-10 w-10 rounded-full bg-secondary overflow-hidden shrink-0">
             {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
           </div>
           <span className="min-w-0">
-            <span className="font-serif text-primary block truncate">{peer.pseudo}</span>
-            {peerTyping && <span className="text-xs text-[color:var(--gold)]">est en train d'écrire…</span>}
+            <span className="font-bold text-foreground flex items-center gap-1.5">
+              <span className="truncate">{peer.pseudo}</span>
+              <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+            </span>
+            <span className="text-xs text-muted-foreground block">{peerTyping ? "est en train d'écrire…" : "En ligne"}</span>
           </span>
         </Link>
         <DropdownMenu>
@@ -310,12 +313,27 @@ function Conversation() {
         </DropdownMenu>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+        {/* Bandeau sécurité */}
+        <div className="mx-1 rounded-2xl bg-secondary px-4 py-3 flex gap-3 items-start">
+          <ShieldCheck className="h-8 w-8 text-accent shrink-0" />
+          <div>
+            <p className="text-sm font-bold text-accent">Votre sécurité est notre priorité</p>
+            <p className="text-xs text-foreground/80">Ne partagez jamais d'informations personnelles.</p>
+            <Link to="/compte/regles" className="text-xs font-semibold text-primary underline underline-offset-2">En savoir plus</Link>
+          </div>
+        </div>
+        <p className="text-center text-xs text-muted-foreground py-1">Aujourd'hui</p>
         {messages?.map((m: any) => {
           const mine = m.sender === ctx.userId;
           const parent = m.reply_to ? byId.get(m.reply_to) : null;
           return (
-            <div key={m.id} className={`flex items-center gap-1 group ${mine ? "justify-end" : "justify-start"}`}>
+            <div key={m.id} className={`flex items-end gap-2 group ${mine ? "justify-end" : "justify-start"}`}>
+              {!mine && (
+                <div className="h-8 w-8 rounded-full bg-secondary overflow-hidden shrink-0">
+                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+                </div>
+              )}
               {mine && !m.deleted_at && (
                 <div className={`transition-opacity flex gap-1 ${actionFor === m.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                   <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>
@@ -327,7 +345,8 @@ function Conversation() {
               )}
               <div
                 onClick={() => { if (mine && !m.deleted_at) setActionFor(actionFor === m.id ? null : m.id); }}
-                className={`max-w-[75%] rounded-2xl overflow-hidden text-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "bg-primary text-primary-foreground cursor-pointer" : "bg-secondary text-secondary-foreground"}`}>
+                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
+                style={!m.deleted_at && mine ? { backgroundImage: "var(--gradient-gold)" } : undefined}>
                 {m.deleted_at ? (
                   <div className="px-4 py-2">Message supprimé</div>
                 ) : (
@@ -353,8 +372,12 @@ function Conversation() {
                         ) : null}
                       </div>
                     )}
-                    {m.content && <div className="px-4 py-2 whitespace-pre-wrap break-words">{m.content}</div>}
-                    {m.edited_at && <div className="px-4 pb-1 text-[10px] opacity-70">modifié</div>}
+                    {m.content && <div className="px-4 pt-2.5 whitespace-pre-wrap break-words">{m.content}</div>}
+                    <div className={`px-4 pb-1.5 pt-0.5 text-[10px] flex items-center gap-1 ${mine ? "justify-end opacity-80" : "text-muted-foreground"}`}>
+                      {m.edited_at && "modifié · "}
+                      {new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                      {mine && <CheckCheck className="h-3.5 w-3.5" />}
+                    </div>
                   </>
                 )}
               </div>
@@ -392,8 +415,8 @@ function Conversation() {
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         {!voiceActive && (
           <>
-            <Button type="button" size="icon" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
-              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            <Button type="button" size="icon" variant="outline" className="rounded-full h-10 w-10 shrink-0" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-5 w-5" />}
             </Button>
             <EmojiPicker onPick={(e) => setText((t) => t + e)} />
           </>
@@ -404,10 +427,11 @@ function Conversation() {
             <Input
               value={text}
               onChange={(e) => { setText(e.target.value); notifyTyping(); }}
-              placeholder={editing ? "Modifier votre message..." : "Votre message..."}
+              placeholder={editing ? "Modifier votre message..." : "Écrire un message..."}
               maxLength={2000}
+              className="rounded-full h-11 bg-card"
             />
-            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending}>
+            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending} className="rounded-full h-11 w-11 shrink-0">
               {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             </Button>
           </>

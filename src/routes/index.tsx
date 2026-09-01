@@ -63,7 +63,7 @@ function Splash() {
         <img
           src={logoAsset.url}
           alt="Logo Nooryaa"
-          className="w-64 md:w-80 rounded-3xl shadow-2xl ring-1 ring-border/40"
+          className="w-64 md:w-80 rounded-3xl shadow-2xl"
         />
         <h1 className="sr-only">Nooryaa — {SITE_TAGLINE}</h1>
         <p className="mt-6 text-sm text-muted-foreground max-w-sm">

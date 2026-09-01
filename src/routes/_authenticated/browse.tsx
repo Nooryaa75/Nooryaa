@@ -156,20 +156,9 @@ function Home() {
             </section>
           )}
 
-          {/* Conseil du jour */}
-          <section>
-            <h2 className="text-base font-bold text-primary mb-3">Conseil du jour</h2>
-            <div className="bg-[#F3E8FF] rounded-2xl p-5 flex items-start gap-3">
-              <Quote className="h-5 w-5 text-primary shrink-0 rotate-180" />
-              <div className="flex-1">
-                <p className="font-semibold text-sm text-primary">La sincérité attire la sérénité.</p>
-                <p className="text-sm text-muted-foreground mt-1 leading-snug">
-                  Soyez authentique, la bonne personne appréciera votre vérité.
-                </p>
-              </div>
-              <Heart className="h-5 w-5 text-primary shrink-0 self-center" />
-            </div>
-          </section>
+          {/* Rappel du jour */}
+          <DailyReminder />
+
         </>
       )}
     </div>

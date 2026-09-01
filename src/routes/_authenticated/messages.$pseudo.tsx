@@ -345,7 +345,8 @@ function Conversation() {
               )}
               <div
                 onClick={() => { if (mine && !m.deleted_at) setActionFor(actionFor === m.id ? null : m.id); }}
-                className={`max-w-[75%] rounded-2xl overflow-hidden text-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "bg-primary text-primary-foreground cursor-pointer" : "bg-secondary text-secondary-foreground"}`}>
+                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
+                style={!m.deleted_at && mine ? { backgroundImage: "var(--gradient-gold)" } : undefined}>
                 {m.deleted_at ? (
                   <div className="px-4 py-2">Message supprimé</div>
                 ) : (
@@ -371,8 +372,12 @@ function Conversation() {
                         ) : null}
                       </div>
                     )}
-                    {m.content && <div className="px-4 py-2 whitespace-pre-wrap break-words">{m.content}</div>}
-                    {m.edited_at && <div className="px-4 pb-1 text-[10px] opacity-70">modifié</div>}
+                    {m.content && <div className="px-4 pt-2.5 whitespace-pre-wrap break-words">{m.content}</div>}
+                    <div className={`px-4 pb-1.5 pt-0.5 text-[10px] flex items-center gap-1 ${mine ? "justify-end opacity-80" : "text-muted-foreground"}`}>
+                      {m.edited_at && "modifié · "}
+                      {new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                      {mine && <CheckCheck className="h-3.5 w-3.5" />}
+                    </div>
                   </>
                 )}
               </div>

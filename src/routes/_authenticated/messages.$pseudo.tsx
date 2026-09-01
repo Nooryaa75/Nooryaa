@@ -313,12 +313,27 @@ function Conversation() {
         </DropdownMenu>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+        {/* Bandeau sécurité */}
+        <div className="mx-1 rounded-2xl bg-secondary px-4 py-3 flex gap-3 items-start">
+          <ShieldCheck className="h-8 w-8 text-accent shrink-0" />
+          <div>
+            <p className="text-sm font-bold text-accent">Votre sécurité est notre priorité</p>
+            <p className="text-xs text-foreground/80">Ne partagez jamais d'informations personnelles.</p>
+            <Link to="/compte/regles" className="text-xs font-semibold text-primary underline underline-offset-2">En savoir plus</Link>
+          </div>
+        </div>
+        <p className="text-center text-xs text-muted-foreground py-1">Aujourd'hui</p>
         {messages?.map((m: any) => {
           const mine = m.sender === ctx.userId;
           const parent = m.reply_to ? byId.get(m.reply_to) : null;
           return (
-            <div key={m.id} className={`flex items-center gap-1 group ${mine ? "justify-end" : "justify-start"}`}>
+            <div key={m.id} className={`flex items-end gap-2 group ${mine ? "justify-end" : "justify-start"}`}>
+              {!mine && (
+                <div className="h-8 w-8 rounded-full bg-secondary overflow-hidden shrink-0">
+                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+                </div>
+              )}
               {mine && !m.deleted_at && (
                 <div className={`transition-opacity flex gap-1 ${actionFor === m.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                   <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>

@@ -35,6 +35,7 @@ import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.in
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
 import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
+import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
 import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
 import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
@@ -177,6 +178,11 @@ const AuthenticatedCompteIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
+const AdminSupportIdRoute = AdminSupportIdRouteImport.update({
+  id: '/admin/support/$id',
+  path: '/admin/support/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProfilesIdRoute = AdminProfilesIdRouteImport.update({
   id: '/admin/profiles/$id',
   path: '/admin/profiles/$id',
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/compte': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/$pseudo': typeof AuthenticatedProfilePseudoRoute
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
+  '/admin/support/$id': typeof AdminSupportIdRoute
   '/_authenticated/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/compte'
     | '/admin/conversations'
     | '/admin/profiles'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/$pseudo'
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
+    | '/admin/support/$id'
     | '/_authenticated/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
@@ -489,6 +501,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
+  AdminSupportIdRoute: typeof AdminSupportIdRoute
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
   AdminSupportIndexRoute: typeof AdminSupportIndexRoute
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteIndexRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
+    '/admin/support/$id': {
+      id: '/admin/support/$id'
+      path: '/admin/support/$id'
+      fullPath: '/admin/support/$id'
+      preLoaderRoute: typeof AdminSupportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/profiles/$id': {
       id: '/admin/profiles/$id'
       path: '/admin/profiles/$id'
@@ -842,6 +862,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,
   AdminProfilesIdRoute: AdminProfilesIdRoute,
+  AdminSupportIdRoute: AdminSupportIdRoute,
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
   AdminSupportIndexRoute: AdminSupportIndexRoute,

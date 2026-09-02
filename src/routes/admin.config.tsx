@@ -3,14 +3,15 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
-import { adminListPlans, adminSavePlan, adminDeletePlan, adminListSocialLinks, adminSaveSocialLink, type PlanInput } from "@/lib/admin-insights.functions";
+import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, type PlanInput } from "@/lib/admin-insights.functions";
+import { ACCESS_KEYS } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/config")({
@@ -37,7 +38,9 @@ const EMPTY: PlanInput = {
   highlight: false,
   active: true,
   sort_order: 10,
+  access: {},
 };
+
 
 function AdminConfig() {
   const qc = useQueryClient();

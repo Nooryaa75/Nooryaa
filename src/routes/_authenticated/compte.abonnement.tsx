@@ -170,14 +170,14 @@ function AbonnementPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
       <div className="relative flex items-center justify-center">
         <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
           <ChevronLeft className="h-6 w-6" />
         </Link>
         <h1 className="text-lg font-bold text-primary">Mon abonnement</h1>
       </div>
-      <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
+      <div className="bg-card rounded-2xl border border-primary/30 p-4 shadow-[var(--shadow-card)] space-y-4 sm:p-5 lg:p-6">
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-primary" />
           <h2 className="text-xl font-serif text-primary">Mon abonnement</h2>

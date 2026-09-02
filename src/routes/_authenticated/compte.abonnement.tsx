@@ -120,7 +120,12 @@ function AbonnementPage() {
   const router = useRouter();
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
+  const { data: dbPlans, isLoading: plansLoading } = useActivePlans();
+  const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
+  const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
+  const visiblePlans = plans.filter((p) => activeCodes.has(p.id.toLowerCase()));
   const currentPlan = plans.find((p) => p.id === current)!;
+
 
   async function handleSuspend() {
     setLoading("suspend");

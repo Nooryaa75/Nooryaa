@@ -407,8 +407,8 @@ function AbonnementPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <AlertDialog open={suspendOpen} onOpenChange={setSuspendOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
-                <PauseCircle className="h-4 w-4" />
+              <Button variant="outline" className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 sm:w-auto w-full">
+                <PauseCircle className="h-4 w-4 shrink-0" />
                 Suspendre mon compte
               </Button>
             </AlertDialogTrigger>

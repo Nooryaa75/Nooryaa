@@ -268,7 +268,7 @@ function AbonnementPage() {
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
-        <div className="grid gap-4 md:grid-cols-3 items-start">
+        <div className="grid grid-cols-1 gap-4 items-start md:grid-cols-2 lg:grid-cols-3">
           {visiblePlans.map((plan) => {
 
             const active = plan.id === current;
@@ -278,7 +278,7 @@ function AbonnementPage() {
             return (
               <div
                 key={plan.id}
-                className={`rounded-2xl border bg-card p-6 flex flex-col gap-4 transition-colors ${
+                className={`rounded-2xl border bg-card p-4 flex flex-col gap-4 transition-colors sm:p-5 lg:p-6 ${
                   active
                     ? "border-primary shadow-[var(--shadow-card)]"
                     : plan.highlight

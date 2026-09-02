@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
 import { recordSubscription } from "@/lib/subscription.functions";
+import { useActivePlans } from "@/lib/entitlements";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -120,7 +122,12 @@ function AbonnementPage() {
   const router = useRouter();
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
+  const { data: dbPlans, isLoading: plansLoading } = useActivePlans();
+  const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
+  const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
+  const visiblePlans = plans.filter((p) => activeCodes.has(p.id.toLowerCase()));
   const currentPlan = plans.find((p) => p.id === current)!;
+
 
   async function handleSuspend() {
     setLoading("suspend");
@@ -242,12 +249,24 @@ function AbonnementPage() {
         )}
       </div>
 
+      {subscriptionsDisabled ? (
+        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-5">
+          <h3 className="text-lg font-serif text-primary mb-1 flex items-center gap-2">
+            <Sparkles className="h-4 w-4" /> Accès complet offert
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Aucune formule n'est proposée actuellement : vous accédez à l'intégralité de Nooryaa,
+            sans restriction ni abonnement.
+          </p>
+        </div>
+      ) : (
       <div>
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
         <div className="grid gap-4 md:grid-cols-3 items-start">
-          {plans.map((plan) => {
+          {visiblePlans.map((plan) => {
+
             const active = plan.id === current;
             const duration = selectedDuration[plan.id] ?? "1m";
             const price = plan.prices?.[duration];
@@ -367,6 +386,8 @@ function AbonnementPage() {
           })}
         </div>
       </div>
+      )}
+
 
 
 

@@ -202,6 +202,22 @@ function AdminConfig() {
               <Label>Avantages (un par ligne)</Label>
               <Textarea rows={4} value={draft.features.join("\n")} onChange={(e) => setDraft({ ...draft, features: e.target.value.split("\n").filter(Boolean) })} />
             </div>
+            <div>
+              <Label>Fonctionnalités & accès inclus</Label>
+              <div className="grid sm:grid-cols-2 gap-2 pt-2">
+                {ACCESS_KEYS.map((a) => (
+                  <label key={a.key} className="flex items-center gap-2 text-sm border border-border/50 rounded-xl px-3 py-2">
+                    <Switch
+                      checked={draft.access?.[a.key] === true}
+                      onCheckedChange={(v) => setDraft({ ...draft, access: { ...(draft.access ?? {}), [a.key]: v } })}
+                      aria-label={a.label}
+                    />
+                    {a.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="flex flex-wrap items-center gap-6">
               <label className="flex items-center gap-2 text-sm">
                 <Switch checked={draft.active} onCheckedChange={(v) => setDraft({ ...draft, active: v })} aria-label="Formule active" /> Active

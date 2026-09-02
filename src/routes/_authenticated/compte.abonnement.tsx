@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
 import { recordSubscription } from "@/lib/subscription.functions";
+import { useActivePlans } from "@/lib/entitlements";
+
 import {
   AlertDialog,
   AlertDialogAction,

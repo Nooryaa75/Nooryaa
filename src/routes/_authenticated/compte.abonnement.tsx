@@ -363,7 +363,7 @@ function AbonnementPage() {
                       );
                     }
                   }}
-                  className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold border transition-colors ${
+                  className={`w-full whitespace-normal rounded-full px-4 py-2.5 text-sm font-semibold leading-tight border transition-colors ${
                     active && !plan.prices
                       ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
                       : plan.highlight
@@ -380,7 +380,7 @@ function AbonnementPage() {
                     return (
                       <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
                         <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span>{label}</span>
+                        <span className="min-w-0 break-words">{label}</span>
                       </li>
                     );
                   })}

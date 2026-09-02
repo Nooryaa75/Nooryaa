@@ -239,13 +239,13 @@ function AbonnementPage() {
               </AlertDialog>
             ) : (
               <Button
-                className="rounded-full gap-2"
+                className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2"
                 onClick={() => {
                   setAutoRenew(true);
                   toast.success("Renouvellement automatique réactivé.");
                 }}
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 shrink-0" />
                 Réactiver le renouvellement
               </Button>
             )}

@@ -242,12 +242,24 @@ function AbonnementPage() {
         )}
       </div>
 
+      {subscriptionsDisabled ? (
+        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-5">
+          <h3 className="text-lg font-serif text-primary mb-1 flex items-center gap-2">
+            <Sparkles className="h-4 w-4" /> Accès complet offert
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Aucune formule n'est proposée actuellement : vous accédez à l'intégralité de Nooryaa,
+            sans restriction ni abonnement.
+          </p>
+        </div>
+      ) : (
       <div>
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
         <div className="grid gap-4 md:grid-cols-3 items-start">
-          {plans.map((plan) => {
+          {visiblePlans.map((plan) => {
+
             const active = plan.id === current;
             const duration = selectedDuration[plan.id] ?? "1m";
             const price = plan.prices?.[duration];

@@ -395,7 +395,7 @@ function AbonnementPage() {
 
 
 
-      <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">
+      <div className="bg-card rounded-2xl border border-destructive/30 p-4 shadow-[var(--shadow-card)] space-y-4 sm:p-5 lg:p-6">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-destructive" />
           <h3 className="text-lg font-serif text-destructive">Gestion du compte</h3>
@@ -404,7 +404,7 @@ function AbonnementPage() {
           Ces actions affectent votre compte Nooryaa. La suspension est réversible en contactant le
           support ; la suppression est définitive.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <AlertDialog open={suspendOpen} onOpenChange={setSuspendOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">

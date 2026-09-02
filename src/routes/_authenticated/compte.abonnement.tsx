@@ -1,24 +1,11 @@
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  BadgeCheck,
-  Check,
-  CreditCard,
-  Sparkles,
-  PauseCircle,
-  Trash2,
-  AlertTriangle,
-  XCircle,
-  ChevronLeft,
-  ShieldCheck,
-} from "lucide-react";
+import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle, XCircle, RefreshCw, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { suspendAccount, deleteAccount } from "@/lib/account.functions";
-import { recordSubscription, cancelSubscription } from "@/lib/subscription.functions";
-import { useActivePlans, ACCESS_KEYS, type PublicPlan } from "@/lib/entitlements";
+import { recordSubscription } from "@/lib/subscription.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,88 +24,103 @@ export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   component: AbonnementPage,
 });
 
+type DurationId = "24h" | "7j" | "1m";
+
+const durations: { id: DurationId; label: string; days: number }[] = [
+  { id: "24h", label: "24 heures", days: 1 },
+  { id: "7j", label: "1 semaine", days: 7 },
+  { id: "1m", label: "1 mois", days: 30 },
+];
+
+type Feature = string | ((duration: DurationId) => string);
+
+type Plan = {
+  id: string;
+  emoji: string;
+  name: string;
+  tagline: string;
+  features: Feature[];
+  highlight?: boolean;
+  prices?: Record<DurationId, number>;
+};
+
+const ayaBoosts: Record<DurationId, string> = {
+  "24h": "1 Boost",
+  "7j": "2 Boosts",
+  "1m": "4 Boosts",
+};
+
+const ayaSuperLikes: Record<DurationId, string> = {
+  "24h": "2 Super Likes",
+  "7j": "10 Super Likes",
+  "1m": "20 Super Likes",
+};
+
+const plans: Plan[] = [
+  {
+    id: "gratuit",
+    emoji: "🟢",
+    name: "Gratuit",
+    tagline: "Pour découvrir Nooryaa",
+    features: [
+      "Accès à tout",
+      "Nombre de likes limité à la journée",
+      "Fonctionnalités de la messagerie limitées",
+    ],
+  },
+  {
+    id: "noor",
+    emoji: "🌙",
+    name: "NOOR",
+    tagline: "L'essentiel pour aller plus loin",
+    highlight: true,
+    prices: { "24h": 2.99, "7j": 6.99, "1m": 14.99 },
+    features: [
+      "Likes illimités",
+      "Filtres avancés complets",
+      "Voir qui a liké le profil",
+      "Mode incognito",
+    ],
+  },
+  {
+    id: "aya",
+    emoji: "✨",
+    name: "AYA",
+    tagline: "Tout NOOR, et plus encore",
+    prices: { "24h": 3.99, "7j": 9.99, "1m": 19.99 },
+    features: [
+      "Toute la formule NOOR",
+      "Priorité maximale dans les recherches",
+      (d) => ayaBoosts[d],
+      (d) => ayaSuperLikes[d],
+    ],
+  },
+];
+
 const formatDate = (d: Date) =>
   d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
 const euro = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
-const durationLabel = (days: number) =>
-  days <= 0 ? "sans durée" : days === 1 ? "24 heures" : days === 7 ? "1 semaine" : `${days} jours`;
-
 function AbonnementPage() {
-  const qc = useQueryClient();
-  const router = useRouter();
   const saveSubscription = useServerFn(recordSubscription);
-  const cancelSub = useServerFn(cancelSubscription);
-  const doSuspend = useServerFn(suspendAccount);
-  const doDelete = useServerFn(deleteAccount);
-
-  const { data: plans, isLoading } = useActivePlans();
-  const subscriptionsDisabled = !isLoading && (plans?.length ?? 0) === 0;
-
-  const { data: currentSub } = useQuery({
-    queryKey: ["my-subscription"],
-    queryFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return null;
-      const { data } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", auth.user.id)
-        .eq("status", "active")
-        .order("started_at", { ascending: false })
-        .limit(1);
-      return data?.[0] ?? null;
-    },
-  });
-
+  const [current, setCurrent] = useState("gratuit");
+  const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
+  const [autoRenew, setAutoRenew] = useState(false);
+  const [renewsAt, setRenewsAt] = useState<Date | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState<Record<string, DurationId>>({
+    noor: "1m",
+    aya: "1m",
+  });
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
-  const currentPlan: PublicPlan | null =
-    (plans ?? []).find((p) => p.code === currentSub?.plan_code) ?? null;
-  const renewsAt = currentSub?.ends_at ? new Date(currentSub.ends_at as string) : null;
-  const autoRenew = Boolean(currentSub?.auto_renew) && !currentSub?.cancelled_at;
-
-  async function choosePlan(plan: PublicPlan) {
-    try {
-      await saveSubscription({
-        data: {
-          planCode: plan.code,
-          amountTtc: plan.price_ttc,
-          days: plan.duration_days,
-          autoRenew: plan.price_ttc > 0,
-        },
-      });
-      qc.invalidateQueries({ queryKey: ["my-subscription"] });
-      toast.success(
-        plan.price_ttc > 0
-          ? `Formule ${plan.name} activée — ${durationLabel(plan.duration_days)}.`
-          : `Vous êtes passé à la formule ${plan.name}.`,
-      );
-    } catch (e: any) {
-      toast.error(e?.message ?? "Le changement de formule a échoué.");
-    }
-  }
-
-  async function handleCancelSubscription() {
-    try {
-      await cancelSub();
-      qc.invalidateQueries({ queryKey: ["my-subscription"] });
-      toast.success(
-        renewsAt
-          ? `Renouvellement annulé. Accès conservé jusqu'au ${formatDate(renewsAt)}.`
-          : "Renouvellement automatique annulé.",
-      );
-    } catch (e: any) {
-      toast.error(e?.message ?? "L'annulation a échoué.");
-    } finally {
-      setCancelOpen(false);
-    }
-  }
+  const router = useRouter();
+  const doSuspend = useServerFn(suspendAccount);
+  const doDelete = useServerFn(deleteAccount);
+  const currentPlan = plans.find((p) => p.id === current)!;
 
   async function handleSuspend() {
     setLoading("suspend");
@@ -150,6 +152,16 @@ function AbonnementPage() {
     }
   }
 
+  function handleCancelSubscription() {
+    setAutoRenew(false);
+    setCancelOpen(false);
+    toast.success(
+      renewsAt
+        ? `Renouvellement automatique annulé. Vous gardez votre formule jusqu'au ${formatDate(renewsAt)}.`
+        : "Renouvellement automatique annulé.",
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="relative flex items-center justify-center">
@@ -158,56 +170,40 @@ function AbonnementPage() {
         </Link>
         <h1 className="text-lg font-bold text-primary">Mon abonnement</h1>
       </div>
-
-      {subscriptionsDisabled ? (
-        <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-3">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-serif text-primary">Accès complet offert</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Aucun abonnement n'est actuellement proposé : vous profitez de l'intégralité de Nooryaa,
-            sans limite ni restriction.
-          </p>
-          <ul className="grid sm:grid-cols-2 gap-2 text-sm">
-            {ACCESS_KEYS.map((a) => (
-              <li key={a.key} className="flex gap-2">
-                <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <span>{a.label}</span>
-              </li>
-            ))}
-          </ul>
+      <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-primary" />
+          <h2 className="text-xl font-serif text-primary">Mon abonnement</h2>
         </div>
-      ) : (
-        <>
-          <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-serif text-primary">Ma formule actuelle</h2>
-            </div>
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
-              <div className="min-w-0">
-                <p className="font-semibold text-primary flex items-center gap-2">
-                  {currentPlan?.name ?? "Aucune formule"}
-                  <BadgeCheck className="h-4 w-4 shrink-0" />
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {!currentPlan
-                    ? "Choisissez une formule ci-dessous — modifiable à tout moment."
-                    : autoRenew
-                      ? `Renouvellement automatique actif${renewsAt ? ` — prochaine échéance le ${formatDate(renewsAt)}` : ""}.`
-                      : `Renouvellement annulé${renewsAt ? ` — accès conservé jusqu'au ${formatDate(renewsAt)}` : ""}.`}
-                </p>
-              </div>
-              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
-                {currentPlan ? (autoRenew ? "Actif" : "Se termine") : "—"}
-              </span>
-            </div>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
+          <div className="min-w-0">
+            <p className="font-semibold text-primary flex items-center gap-2">
+              {currentPlan.emoji} {currentPlan.name}
+              {currentDuration ? ` — ${durations.find((d) => d.id === currentDuration)!.label}` : ""}
+              <BadgeCheck className="h-4 w-4 shrink-0" />
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {!currentPlan.prices
+                ? "Votre formule actuelle — modifiable à tout moment, sans engagement."
+                : autoRenew
+                  ? `Renouvellement automatique actif${renewsAt ? ` — prochaine échéance le ${formatDate(renewsAt)}` : ""}.`
+                  : `Renouvellement automatique annulé${renewsAt ? ` — accès conservé jusqu'au ${formatDate(renewsAt)}` : ""}.`}
+            </p>
+          </div>
+          <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
+            {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
+          </span>
+        </div>
 
-            {currentPlan && currentPlan.price_ttc > 0 && autoRenew && (
+        {currentPlan.prices && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {autoRenew ? (
               <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary/10">
+                  <Button
+                    variant="outline"
+                    className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary/10"
+                  >
                     <XCircle className="h-4 w-4" />
                     Annuler mon abonnement
                   </Button>
@@ -217,103 +213,162 @@ function AbonnementPage() {
                     <AlertDialogTitle>Annuler le renouvellement automatique ?</AlertDialogTitle>
                     <AlertDialogDescription>
                       Votre formule {currentPlan.name} restera active
-                      {renewsAt ? ` jusqu'au ${formatDate(renewsAt)}` : " jusqu'à son échéance"}.
-                      Aucun nouveau prélèvement ne sera effectué.
+                      {renewsAt ? ` jusqu'au ${formatDate(renewsAt)}` : " jusqu'à son échéance"}, puis
+                      votre compte repassera automatiquement en formule Gratuit. Aucun nouveau
+                      prélèvement ne sera effectué.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Garder mon abonnement</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelSubscription}>Oui, annuler</AlertDialogAction>
+                    <AlertDialogAction onClick={handleCancelSubscription}>
+                      Oui, annuler
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+            ) : (
+              <Button
+                className="rounded-full gap-2"
+                onClick={() => {
+                  setAutoRenew(true);
+                  toast.success("Renouvellement automatique réactivé.");
+                }}
+              >
+                <RefreshCw className="h-4 w-4" />
+                Réactiver le renouvellement
+              </Button>
             )}
           </div>
+        )}
+      </div>
 
-          <div>
-            <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
-              <Sparkles className="h-4 w-4" /> Formules d'abonnement
-            </h3>
-            <div className="grid gap-4 md:grid-cols-3 items-start">
-              {(plans ?? []).map((plan) => {
-                const isCurrent = plan.code === currentSub?.plan_code;
-                const granted = ACCESS_KEYS.filter((a) => plan.access?.[a.key]);
-                return (
-                  <div
-                    key={plan.id}
-                    className={`rounded-2xl border bg-card p-6 flex flex-col gap-4 transition-colors ${
-                      isCurrent
-                        ? "border-primary shadow-[var(--shadow-card)]"
-                        : plan.highlight
-                          ? "border-primary/50"
-                          : "border-border/60"
-                    }`}
-                  >
-                    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-                      <div className="min-w-0">
-                        <p className="font-serif text-xl text-primary">{plan.name}</p>
-                        <p className="text-sm text-muted-foreground">{plan.tagline}</p>
-                      </div>
-                      {isCurrent && (
-                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
-                          Actuel
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <p className="text-3xl font-semibold text-foreground">{euro(plan.price_ttc)}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {plan.price_ttc === 0
-                          ? "Gratuit, sans engagement"
-                          : `${durationLabel(plan.duration_days)}${plan.duration_days > 0 ? ` — soit ${euro(plan.price_ttc / plan.duration_days)} / jour` : ""}`}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={isCurrent}
-                      onClick={() => choosePlan(plan)}
-                      className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold border transition-colors ${
-                        isCurrent
-                          ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
-                          : plan.highlight
-                            ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
-                            : "bg-background text-primary border-primary/50 hover:bg-primary/10"
-                      }`}
-                    >
-                      {isCurrent ? "Formule actuelle" : "Sélectionner"}
-                    </button>
-
-                    <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                      {plan.likes_per_day > 0 && (
-                        <li className="flex gap-2">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span>
-                            {plan.likes_per_day >= 9999 ? "Likes illimités" : `${plan.likes_per_day} likes par jour`}
-                          </span>
-                        </li>
-                      )}
-                      {plan.features.map((f, idx) => (
-                        <li key={`${plan.id}-f-${idx}`} className="flex gap-2">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                      {granted.map((a) => (
-                        <li key={`${plan.id}-${a.key}`} className="flex gap-2">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span>{a.label}</span>
-                        </li>
-                      ))}
-                    </ul>
+      <div>
+        <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
+          <Sparkles className="h-4 w-4" /> Formules d'abonnement
+        </h3>
+        <div className="grid gap-4 md:grid-cols-3 items-start">
+          {plans.map((plan) => {
+            const active = plan.id === current;
+            const duration = selectedDuration[plan.id] ?? "1m";
+            const price = plan.prices?.[duration];
+            const days = durations.find((d) => d.id === duration)!.days;
+            return (
+              <div
+                key={plan.id}
+                className={`rounded-2xl border bg-card p-6 flex flex-col gap-4 transition-colors ${
+                  active
+                    ? "border-primary shadow-[var(--shadow-card)]"
+                    : plan.highlight
+                      ? "border-primary/50"
+                      : "border-border/60"
+                }`}
+              >
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-serif text-xl text-primary">
+                      {plan.emoji} {plan.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{plan.tagline}</p>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+                  {active && (
+                    <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
+                      Actuel
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-3xl font-semibold text-foreground">
+                    {price === undefined ? "0 €" : euro(price)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {price === undefined
+                      ? "Gratuit, pour toujours"
+                      : `soit ${euro(price / days)} / jour`}
+                  </p>
+                </div>
+
+                {plan.prices ? (
+                  <select
+                    value={duration}
+                    onChange={(e) =>
+                      setSelectedDuration((s) => ({
+                        ...s,
+                        [plan.id]: e.target.value as DurationId,
+                      }))
+                    }
+                    aria-label={`Durée de la formule ${plan.name}`}
+                    className="w-full rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground"
+                  >
+                    {durations.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.label} — {euro(plan.prices![d.id])}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="w-full rounded-xl border border-dashed border-border/60 px-3 py-2.5 text-sm text-muted-foreground">
+                    Sans durée ni engagement
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  disabled={active && !plan.prices}
+                  onClick={() => {
+                    if (!plan.prices) {
+                      setCurrent(plan.id);
+                      setCurrentDuration(null);
+                      setAutoRenew(false);
+                      setRenewsAt(null);
+                      void saveSubscription({ data: { planCode: plan.id, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
+                      toast.success("Vous êtes revenu à la formule Gratuit.");
+                    } else {
+                      const end = new Date();
+                      end.setDate(end.getDate() + days);
+                      setCurrent(plan.id);
+                      setCurrentDuration(duration);
+                      setRenewsAt(end);
+                      setAutoRenew(true);
+                      void saveSubscription({
+                        data: { planCode: plan.id, amountTtc: price ?? 0, days, autoRenew: true },
+                      }).catch(() => {});
+                      toast.info(
+                        `Paiement sécurisé bientôt disponible : ${plan.name} — ${
+                          durations.find((d) => d.id === duration)!.label
+                        }.`,
+                      );
+                    }
+                  }}
+                  className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold border transition-colors ${
+                    active && !plan.prices
+                      ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
+                      : plan.highlight
+                        ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
+                        : "bg-background text-primary border-primary/50 hover:bg-primary/10"
+                  }`}
+                >
+                  {active && !plan.prices ? "Formule actuelle" : "Sélectionner"}
+                </button>
+
+                <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
+                  {plan.features.map((f, idx) => {
+                    const label = typeof f === "function" ? f(duration) : f;
+                    return (
+                      <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{label}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+
 
       <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">
         <div className="flex items-center gap-2">

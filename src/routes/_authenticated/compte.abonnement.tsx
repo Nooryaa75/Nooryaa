@@ -213,9 +213,9 @@ function AbonnementPage() {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary/10"
+                    className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-primary/40 text-primary hover:bg-primary/10"
                   >
-                    <XCircle className="h-4 w-4" />
+                    <XCircle className="h-4 w-4 shrink-0" />
                     Annuler mon abonnement
                   </Button>
                 </AlertDialogTrigger>

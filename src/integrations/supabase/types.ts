@@ -396,6 +396,7 @@ export type Database = {
       }
       plans: {
         Row: {
+          access: Json
           active: boolean
           boosts: number
           code: string
@@ -414,6 +415,7 @@ export type Database = {
           vat_rate: number
         }
         Insert: {
+          access?: Json
           active?: boolean
           boosts?: number
           code: string
@@ -432,6 +434,7 @@ export type Database = {
           vat_rate?: number
         }
         Update: {
+          access?: Json
           active?: boolean
           boosts?: number
           code?: string

@@ -435,8 +435,8 @@ function AbonnementPage() {
 
           <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
-                <Trash2 className="h-4 w-4" />
+              <Button variant="outline" className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 sm:w-auto w-full">
+                <Trash2 className="h-4 w-4 shrink-0" />
                 Supprimer mon compte
               </Button>
             </AlertDialogTrigger>

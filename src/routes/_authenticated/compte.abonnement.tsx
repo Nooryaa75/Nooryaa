@@ -182,11 +182,15 @@ function AbonnementPage() {
           <CreditCard className="h-5 w-5 text-primary" />
           <h2 className="text-xl font-serif text-primary">Mon abonnement</h2>
         </div>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-primary/40 bg-secondary/50 p-4 sm:items-center sm:gap-4">
           <div className="min-w-0">
-            <p className="font-semibold text-primary flex items-center gap-2">
-              {currentPlan.emoji} {currentPlan.name}
-              {currentDuration ? ` — ${durations.find((d) => d.id === currentDuration)!.label}` : ""}
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-primary">
+              <span className="shrink-0">{currentPlan.emoji} {currentPlan.name}</span>
+              {currentDuration && (
+                <span className="text-muted-foreground font-medium">
+                  — {durations.find((d) => d.id === currentDuration)!.label}
+                </span>
+              )}
               <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
@@ -197,7 +201,7 @@ function AbonnementPage() {
                   : `Renouvellement automatique annulé${renewsAt ? ` — accès conservé jusqu'au ${formatDate(renewsAt)}` : ""}.`}
             </p>
           </div>
-          <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
+          <span className="shrink-0 self-center text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
             {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
           </span>
         </div>

@@ -3,14 +3,15 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
-import { adminListPlans, adminSavePlan, adminDeletePlan, adminListSocialLinks, adminSaveSocialLink, type PlanInput } from "@/lib/admin-insights.functions";
+import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, type PlanInput } from "@/lib/admin-insights.functions";
+import { ACCESS_KEYS } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/config")({
@@ -37,15 +38,21 @@ const EMPTY: PlanInput = {
   highlight: false,
   active: true,
   sort_order: 10,
+  access: {},
 };
+
 
 function AdminConfig() {
   const qc = useQueryClient();
   const list = useServerFn(adminListPlans);
   const save = useServerFn(adminSavePlan);
   const remove = useServerFn(adminDeletePlan);
+  const toggle = useServerFn(adminTogglePlan);
   const { data } = useQuery({ queryKey: ["admin-plans"], queryFn: () => list() });
   const [draft, setDraft] = useState<PlanInput | null>(null);
+
+  const plans = data ?? [];
+  const noneActive = plans.length > 0 && plans.every((p) => !p.active);
 
   const saveMut = useMutation({
     mutationFn: (p: PlanInput) => save({ data: p }),
@@ -65,6 +72,15 @@ function AdminConfig() {
     },
   });
 
+  const toggleMut = useMutation({
+    mutationFn: (p: { id: string; active: boolean }) => toggle({ data: p }),
+    onSuccess: (_r, v) => {
+      toast.success(v.active ? "Formule activée" : "Formule désactivée");
+      qc.invalidateQueries({ queryKey: ["admin-plans"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+  });
+
   return (
     <div className="min-h-screen mosaic-soft">
       <AdminNav />
@@ -72,47 +88,74 @@ function AdminConfig() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-serif gold-text tracking-wide">Configurateur</h1>
-            <p className="text-sm text-muted-foreground">Prix, durées et quotas des formules — appliqués immédiatement côté membre.</p>
+            <p className="text-sm text-muted-foreground">Prix, durées, quotas et accès des formules — appliqués immédiatement côté membre.</p>
           </div>
           <Button onClick={() => setDraft({ ...EMPTY })} className="rounded-full gap-1.5">
             <Plus className="h-4 w-4" /> Nouvelle formule
           </Button>
         </div>
 
+        {(noneActive || plans.length === 0) && (
+          <div className="flex items-start gap-3 rounded-2xl border border-primary/40 bg-primary/5 p-4">
+            <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <p className="text-sm">
+              <strong className="text-primary">Abonnements désactivés.</strong> Aucune formule active :
+              tous les membres accèdent actuellement à l'intégralité du site, sans restriction.
+            </p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-4">
-          {(data ?? []).map((p) => (
-            <div key={p.id} className="bg-card rounded-2xl p-5 border border-border/60 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-serif text-lg text-primary">
-                    {p.name} <span className="text-xs text-muted-foreground">({p.code})</span>
+          {plans.map((p) => {
+            const access = ((p as any).access ?? {}) as Record<string, boolean>;
+            const granted = ACCESS_KEYS.filter((a) => access[a.key]);
+            return (
+              <div key={p.id} className={`bg-card rounded-2xl p-5 border space-y-2 ${p.active ? "border-border/60" : "border-dashed border-border/60 opacity-70"}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-serif text-lg text-primary">
+                      {p.name} <span className="text-xs text-muted-foreground">({p.code})</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{p.tagline}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">{p.tagline}</p>
+                  <div className="text-right">
+                    <div className="text-xl font-serif text-primary">{Number(p.price_ttc).toFixed(2)} €</div>
+                    <div className="text-[11px] text-muted-foreground">TTC / {p.duration_days} j</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xl font-serif text-primary">{Number(p.price_ttc).toFixed(2)} €</div>
-                  <div className="text-[11px] text-muted-foreground">TTC / {p.duration_days} j</div>
+                <div className="text-xs text-muted-foreground">
+                  {p.likes_per_day} likes/j · {p.super_likes} super likes · {p.boosts} boosts · TVA {Number(p.vat_rate)}%
+                </div>
+                {granted.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {granted.map((a) => (
+                      <span key={a.key} className="text-[11px] rounded-full bg-secondary px-2 py-0.5">{a.label}</span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-2 pt-2">
+                  <label className="flex items-center gap-2 text-xs">
+                    <Switch
+                      checked={p.active}
+                      onCheckedChange={(v) => toggleMut.mutate({ id: p.id, active: v })}
+                      aria-label={`Activer la formule ${p.name}`}
+                    />
+                    {p.active ? "Active" : "Inactive"}
+                  </label>
+                  {p.highlight && <span className="text-xs rounded-full bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] px-2 py-0.5">Mise en avant</span>}
+                  <div className="flex-1" />
+                  <Button size="sm" variant="outline" className="rounded-full" onClick={() => setDraft({ ...(p as unknown as PlanInput), access, id: p.id })}>
+                    Modifier
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => delMut.mutate(p.id)} aria-label={`Supprimer ${p.name}`}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="text-xs text-muted-foreground">
-                {p.likes_per_day} likes/j · {p.super_likes} super likes · {p.boosts} boosts · TVA {Number(p.vat_rate)}%
-              </div>
-              <div className="flex items-center gap-2 pt-2">
-                <span className={`text-xs rounded-full px-2 py-0.5 ${p.active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                  {p.active ? "Active" : "Inactive"}
-                </span>
-                {p.highlight && <span className="text-xs rounded-full bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] px-2 py-0.5">Mise en avant</span>}
-                <div className="flex-1" />
-                <Button size="sm" variant="outline" className="rounded-full" onClick={() => setDraft({ ...(p as unknown as PlanInput), id: p.id })}>
-                  Modifier
-                </Button>
-                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => delMut.mutate(p.id)} aria-label={`Supprimer ${p.name}`}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+
 
         {draft && (
           <section className="bg-card rounded-2xl p-5 border border-primary/40 space-y-4">
@@ -159,6 +202,22 @@ function AdminConfig() {
               <Label>Avantages (un par ligne)</Label>
               <Textarea rows={4} value={draft.features.join("\n")} onChange={(e) => setDraft({ ...draft, features: e.target.value.split("\n").filter(Boolean) })} />
             </div>
+            <div>
+              <Label>Fonctionnalités & accès inclus</Label>
+              <div className="grid sm:grid-cols-2 gap-2 pt-2">
+                {ACCESS_KEYS.map((a) => (
+                  <label key={a.key} className="flex items-center gap-2 text-sm border border-border/50 rounded-xl px-3 py-2">
+                    <Switch
+                      checked={draft.access?.[a.key] === true}
+                      onCheckedChange={(v) => setDraft({ ...draft, access: { ...(draft.access ?? {}), [a.key]: v } })}
+                      aria-label={a.label}
+                    />
+                    {a.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="flex flex-wrap items-center gap-6">
               <label className="flex items-center gap-2 text-sm">
                 <Switch checked={draft.active} onCheckedChange={(v) => setDraft({ ...draft, active: v })} aria-label="Formule active" /> Active

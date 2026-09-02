@@ -1,0 +1,1 @@
+ALTER TABLE public.plans ADD COLUMN IF NOT EXISTS access jsonb NOT NULL DEFAULT '{}'::jsonb;

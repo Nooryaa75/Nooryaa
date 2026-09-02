@@ -303,7 +303,25 @@ export type PlanInput = {
   highlight: boolean;
   active: boolean;
   sort_order: number;
+  access?: Record<string, boolean>;
 };
+
+/** Active ou désactive une formule sans passer par l'éditeur complet. */
+export const adminTogglePlan = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; active: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    const who = await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("plans").update({ active: data.active }).eq("id", data.id);
+    if (error) throw error;
+    await supabaseAdmin.from("admin_actions").insert({
+      action: data.active ? "plan_enable" : "plan_disable",
+      details: { id: data.id, by: who.email ?? who.via },
+    });
+    return { ok: true };
+  });
+
 
 export const adminSavePlan = createServerFn({ method: "POST" })
   .inputValidator((data: PlanInput) => data)

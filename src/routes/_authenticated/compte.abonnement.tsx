@@ -288,10 +288,10 @@ function AbonnementPage() {
               >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                   <div className="min-w-0">
-                    <p className="font-serif text-xl text-primary">
+                    <p className="break-words font-serif text-xl text-primary">
                       {plan.emoji} {plan.name}
                     </p>
-                    <p className="text-sm text-muted-foreground">{plan.tagline}</p>
+                    <p className="break-words text-sm text-muted-foreground">{plan.tagline}</p>
                   </div>
                   {active && (
                     <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
@@ -300,11 +300,11 @@ function AbonnementPage() {
                   )}
                 </div>
 
-                <div>
-                  <p className="text-3xl font-semibold text-foreground">
+                <div className="min-w-0">
+                  <p className="break-words text-3xl font-semibold text-foreground">
                     {price === undefined ? "0 €" : euro(price)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="break-words text-sm text-muted-foreground">
                     {price === undefined
                       ? "Gratuit, pour toujours"
                       : `soit ${euro(price / days)} / jour`}

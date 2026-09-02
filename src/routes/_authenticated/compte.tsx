@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_authenticated/compte")({
 
 function CompteLayout() {
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto md:max-w-5xl">
       <Outlet />
     </div>
   );

@@ -170,23 +170,27 @@ function AbonnementPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
       <div className="relative flex items-center justify-center">
         <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
           <ChevronLeft className="h-6 w-6" />
         </Link>
         <h1 className="text-lg font-bold text-primary">Mon abonnement</h1>
       </div>
-      <div className="bg-card rounded-2xl p-6 border border-primary/30 shadow-[var(--shadow-card)] space-y-4">
+      <div className="bg-card rounded-2xl border border-primary/30 p-4 shadow-[var(--shadow-card)] space-y-4 sm:p-5 lg:p-6">
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-primary" />
           <h2 className="text-xl font-serif text-primary">Mon abonnement</h2>
         </div>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-primary/40 bg-secondary/50 p-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-primary/40 bg-secondary/50 p-4 sm:items-center sm:gap-4">
           <div className="min-w-0">
-            <p className="font-semibold text-primary flex items-center gap-2">
-              {currentPlan.emoji} {currentPlan.name}
-              {currentDuration ? ` — ${durations.find((d) => d.id === currentDuration)!.label}` : ""}
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-primary">
+              <span className="shrink-0">{currentPlan.emoji} {currentPlan.name}</span>
+              {currentDuration && (
+                <span className="text-muted-foreground font-medium">
+                  — {durations.find((d) => d.id === currentDuration)!.label}
+                </span>
+              )}
               <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
@@ -197,7 +201,7 @@ function AbonnementPage() {
                   : `Renouvellement automatique annulé${renewsAt ? ` — accès conservé jusqu'au ${formatDate(renewsAt)}` : ""}.`}
             </p>
           </div>
-          <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
+          <span className="shrink-0 self-center text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
             {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
           </span>
         </div>
@@ -209,9 +213,9 @@ function AbonnementPage() {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary/10"
+                    className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-primary/40 text-primary hover:bg-primary/10"
                   >
-                    <XCircle className="h-4 w-4" />
+                    <XCircle className="h-4 w-4 shrink-0" />
                     Annuler mon abonnement
                   </Button>
                 </AlertDialogTrigger>
@@ -235,13 +239,13 @@ function AbonnementPage() {
               </AlertDialog>
             ) : (
               <Button
-                className="rounded-full gap-2"
+                className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2"
                 onClick={() => {
                   setAutoRenew(true);
                   toast.success("Renouvellement automatique réactivé.");
                 }}
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 shrink-0" />
                 Réactiver le renouvellement
               </Button>
             )}
@@ -264,7 +268,7 @@ function AbonnementPage() {
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
-        <div className="grid gap-4 md:grid-cols-3 items-start">
+        <div className="grid grid-cols-1 gap-4 items-start md:grid-cols-2 lg:grid-cols-3">
           {visiblePlans.map((plan) => {
 
             const active = plan.id === current;
@@ -274,7 +278,7 @@ function AbonnementPage() {
             return (
               <div
                 key={plan.id}
-                className={`rounded-2xl border bg-card p-6 flex flex-col gap-4 transition-colors ${
+                className={`rounded-2xl border bg-card p-4 flex flex-col gap-4 transition-colors sm:p-5 lg:p-6 ${
                   active
                     ? "border-primary shadow-[var(--shadow-card)]"
                     : plan.highlight
@@ -284,10 +288,10 @@ function AbonnementPage() {
               >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                   <div className="min-w-0">
-                    <p className="font-serif text-xl text-primary">
+                    <p className="break-words font-serif text-xl text-primary">
                       {plan.emoji} {plan.name}
                     </p>
-                    <p className="text-sm text-muted-foreground">{plan.tagline}</p>
+                    <p className="break-words text-sm text-muted-foreground">{plan.tagline}</p>
                   </div>
                   {active && (
                     <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
@@ -296,11 +300,11 @@ function AbonnementPage() {
                   )}
                 </div>
 
-                <div>
-                  <p className="text-3xl font-semibold text-foreground">
+                <div className="min-w-0">
+                  <p className="break-words text-3xl font-semibold text-foreground">
                     {price === undefined ? "0 €" : euro(price)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="break-words text-sm text-muted-foreground">
                     {price === undefined
                       ? "Gratuit, pour toujours"
                       : `soit ${euro(price / days)} / jour`}
@@ -359,7 +363,7 @@ function AbonnementPage() {
                       );
                     }
                   }}
-                  className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold border transition-colors ${
+                  className={`w-full whitespace-normal rounded-full px-4 py-2.5 text-sm font-semibold leading-tight border transition-colors ${
                     active && !plan.prices
                       ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
                       : plan.highlight
@@ -376,7 +380,7 @@ function AbonnementPage() {
                     return (
                       <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
                         <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span>{label}</span>
+                        <span className="min-w-0 break-words">{label}</span>
                       </li>
                     );
                   })}
@@ -391,7 +395,7 @@ function AbonnementPage() {
 
 
 
-      <div className="bg-card rounded-2xl p-6 border border-destructive/30 shadow-[var(--shadow-card)] space-y-4">
+      <div className="bg-card rounded-2xl border border-destructive/30 p-4 shadow-[var(--shadow-card)] space-y-4 sm:p-5 lg:p-6">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-destructive" />
           <h3 className="text-lg font-serif text-destructive">Gestion du compte</h3>
@@ -400,11 +404,11 @@ function AbonnementPage() {
           Ces actions affectent votre compte Nooryaa. La suspension est réversible en contactant le
           support ; la suppression est définitive.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <AlertDialog open={suspendOpen} onOpenChange={setSuspendOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
-                <PauseCircle className="h-4 w-4" />
+              <Button variant="outline" className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 sm:w-auto w-full">
+                <PauseCircle className="h-4 w-4 shrink-0" />
                 Suspendre mon compte
               </Button>
             </AlertDialogTrigger>
@@ -431,8 +435,8 @@ function AbonnementPage() {
 
           <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="rounded-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10">
-                <Trash2 className="h-4 w-4" />
+              <Button variant="outline" className="whitespace-normal rounded-full px-4 py-2.5 leading-tight gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 sm:w-auto w-full">
+                <Trash2 className="h-4 w-4 shrink-0" />
                 Supprimer mon compte
               </Button>
             </AlertDialogTrigger>

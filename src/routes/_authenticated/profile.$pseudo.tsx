@@ -45,6 +45,13 @@ function ProfileView() {
     },
   });
 
+  // Notification email « visite de profil » (une fois par consultation, anti-spam côté serveur)
+  useEffect(() => {
+    if (profile?.id && profile.id !== ctx.userId) notifyByEmail("visit", profile.id);
+  }, [profile?.id, ctx.userId]);
+
+
+
   const { data: photos } = useQuery({
     queryKey: ["photos", profile?.id],
     enabled: !!profile,

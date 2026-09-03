@@ -56,6 +56,30 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+function PasswordInput({ id, value, onChange, ...rest }: { id: string; value: string; onChange: (v: string) => void } & Omit<React.ComponentProps<"input">, "id" | "value" | "onChange" | "type">) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="pr-10"
+        {...rest}
+      />
+      <button
+        type="button"
+        onClick={() => setShow((s) => !s)}
+        aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+}
+
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();

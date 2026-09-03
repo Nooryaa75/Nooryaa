@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const SITE_NAME = "Nooryaa";
 const SITE_URL = "https://nooryaa.lovable.app";
+const LOGO_URL = `${SITE_URL}/__l5e/assets-v1/8bac8c57-59cb-45bd-a929-b1bb843cf2e2/nooryaa-logo.png`;
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 
 export type NotifyKind = "like" | "match" | "message" | "visit";
@@ -38,7 +39,7 @@ function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f5fb;padding:24px 12px;">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e3f2;">
-        <tr><td style="background:#3b2a7a;padding:20px 24px;color:#ffffff;font-size:20px;font-weight:bold;">${SITE_NAME}</td></tr>
+        <tr><td align="center" style="background:#3b2a7a;padding:24px;"><img src="${LOGO_URL}" alt="${SITE_NAME}" width="96" height="96" style="display:block;margin:0 auto;border-radius:20px;" /></td></tr>
         <tr><td style="padding:24px;">
           <h1 style="margin:0 0 12px;font-size:18px;color:#2b1f57;">${title}</h1>
           <div style="font-size:15px;line-height:1.6;color:#4a4468;">${body}</div>

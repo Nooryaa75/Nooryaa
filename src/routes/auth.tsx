@@ -275,12 +275,12 @@ function AuthPage() {
 
           <div>
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <PasswordInput id="password" required minLength={6} value={password} onChange={setPassword} />
           </div>
           {mode === "signup" && (
             <div>
               <Label htmlFor="password2">Confirmer le mot de passe</Label>
-              <Input id="password2" type="password" required minLength={6} value={password2} onChange={(e) => setPassword2(e.target.value)} />
+              <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
               {password2 && password !== password2 && (
                 <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
               )}

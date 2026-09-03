@@ -58,9 +58,10 @@ function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
 }
 
 function actorAvatar(avatarUrl?: string | null, actorName?: string, blurred?: boolean) {
-  if (!avatarUrl) return "";
-  const blur = blurred ? "filter:blur(10px);" : "";
-  return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;${blur}" /></div>`;
+  // Si le membre a flouté sa photo, on ne l'inclut pas du tout dans l'email
+  // (le filtre CSS n'est pas supporté par tous les clients mail, ex. Outlook).
+  if (!avatarUrl || blurred) return "";
+  return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;" /></div>`;
 }
 
 function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null, actorBlurred?: boolean) {

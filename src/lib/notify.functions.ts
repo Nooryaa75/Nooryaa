@@ -151,6 +151,33 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     if (!recipient?.email) return { sent: false, reason: "no_email" as const };
 
     const prefs = (recipient.preferences as any)?.notifications?.[PREF_KEY[data.kind]];
+    const actorName = actor?.first_name || actor?.pseudo || "Un membre";
+
+    // Notification in-app (centre de notifications) — respecte la préférence "push in-app".
+    const inAppEnabled = typeof prefs?.in_app === "boolean" ? prefs.in_app : true;
+    if (inAppEnabled) {
+      const titles: Record<NotifyKind, string> = {
+        like: `${actorName} vous a liké`,
+        match: `C'est un match avec ${actorName} !`,
+        message: `Nouveau message de ${actorName}`,
+        visit: `${actorName} a consulté votre profil`,
+      };
+      const links: Record<NotifyKind, string> = {
+        like: "/likes",
+        match: "/matchs",
+        message: "/messages",
+        visit: "/compte/profil",
+      };
+      await supabaseAdmin.from("notifications").insert({
+        user_id: recipient.id,
+        actor_id: context.userId,
+        kind: data.kind,
+        title: titles[data.kind],
+        body: data.kind === "message" && data.preview ? `« ${data.preview.slice(0, 140)} »` : null,
+        link: links[data.kind],
+      });
+    }
+
     const emailEnabled = typeof prefs?.email === "boolean" ? prefs.email : data.kind !== "visit";
     if (!emailEnabled) return { sent: false, reason: "disabled" as const };
 
@@ -176,9 +203,10 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     const { subject, html } = buildEmail(
       data.kind,
       recipient.first_name || recipient.pseudo || "",
-      actor?.first_name || actor?.pseudo || "Un membre",
+      actorName,
       data.preview ?? null,
       actorPhoto?.url ?? null,
+      (actor as any)?.primary_photo_blurred === true,
     );
 
     let status = "sent";

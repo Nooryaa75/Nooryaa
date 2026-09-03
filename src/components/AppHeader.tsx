@@ -78,12 +78,37 @@ export function AppHeader() {
               );
             })}
           </nav>
-          <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Déconnexion</span>
-          </Button>
+          <div className="flex items-center gap-1">
+            <Link
+              to="/notifications"
+              aria-label="Notifications"
+              aria-current={pathname.startsWith("/notifications") ? "page" : undefined}
+              className={`relative flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
+                pathname.startsWith("/notifications")
+                  ? "bg-secondary text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+              }`}
+            >
+              <Bell className="h-[18px] w-[18px]" />
+              <Badge count={unreadNotifs ?? 0} />
+            </Link>
+            <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Déconnexion</span>
+            </Button>
+          </div>
         </div>
       </header>
+
+      {/* Cloche de notifications (mobile, en haut à droite) */}
+      <Link
+        to="/notifications"
+        aria-label="Notifications"
+        className="md:hidden fixed top-3 right-3 z-40 relative flex h-10 w-10 items-center justify-center rounded-full bg-card shadow-md border border-border/60 text-primary"
+      >
+        <Bell className="h-5 w-5" />
+        <Badge count={unreadNotifs ?? 0} />
+      </Link>
 
       {/* Barre de navigation basse (mobile) */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card rounded-t-3xl shadow-[0_-4px_24px_rgba(31,34,48,0.08)] flex justify-around pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">

@@ -1,9 +1,10 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
+import { Heart, MessageCircle, Search, User, LogOut, Home, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
+import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const links = [
@@ -36,6 +37,7 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
+  const { data: unreadNotifs } = useUnreadNotificationsCount();
 
   function countFor(to: string) {
     if (to === "/likes") return counts?.likes ?? 0;

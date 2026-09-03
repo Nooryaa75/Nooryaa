@@ -27,6 +27,7 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedMatchsRouteImport } from './routes/_authenticated/matchs'
@@ -140,6 +141,12 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/matchs': typeof AuthenticatedMatchsRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -318,6 +326,7 @@ export interface FileRoutesByTo {
   '/matchs': typeof AuthenticatedMatchsRoute
   '/me': typeof AuthenticatedMeRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -362,6 +371,7 @@ export interface FileRoutesById {
   '/_authenticated/matchs': typeof AuthenticatedMatchsRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/recherche': typeof AuthenticatedRechercheRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/matchs'
     | '/me'
     | '/messages'
+    | '/notifications'
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/matchs'
     | '/me'
     | '/messages'
+    | '/notifications'
     | '/onboarding'
     | '/recherche'
     | '/admin/ads'
@@ -490,6 +502,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matchs'
     | '/_authenticated/me'
     | '/_authenticated/messages'
+    | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/recherche'
     | '/admin/ads'
@@ -672,6 +685,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/messages': {
@@ -885,6 +905,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMatchsRoute: typeof AuthenticatedMatchsRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedRechercheRoute: typeof AuthenticatedRechercheRoute
   AuthenticatedProfilePseudoRoute: typeof AuthenticatedProfilePseudoRoute
@@ -898,6 +919,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMatchsRoute: AuthenticatedMatchsRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedRechercheRoute: AuthenticatedRechercheRoute,
   AuthenticatedProfilePseudoRoute: AuthenticatedProfilePseudoRoute,

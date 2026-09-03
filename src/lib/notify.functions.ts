@@ -73,7 +73,7 @@ function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, 
         subject: `${who} vous a liké sur ${SITE_NAME} 💜`,
         html: layout(
           "Vous avez un nouveau coup de cœur",
-          `<p>${hi}</p><p><strong>${who}</strong> vient de vous liker sur ${SITE_NAME}. Découvrez son profil et, si le cœur y est, likez à votre tour pour ouvrir la conversation.</p>`,
+          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vient de vous liker sur ${SITE_NAME}. Découvrez son profil et, si le cœur y est, likez à votre tour pour ouvrir la conversation.</p>`,
           "Voir qui m'a liké",
           `${SITE_URL}/likes`,
         ),
@@ -83,7 +83,7 @@ function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, 
         subject: `C'est un match avec ${who} ! 🎉`,
         html: layout(
           "Vous avez un nouveau match",
-          `<p>${hi}</p><p>Vous et <strong>${who}</strong> vous êtes likés mutuellement. Vous pouvez désormais échanger dans le respect de la charte ${SITE_NAME}.</p>`,
+          `${avatar}<p>${hi}</p><p>Vous et <strong>${who}</strong> vous êtes likés mutuellement. Vous pouvez désormais échanger dans le respect de la charte ${SITE_NAME}.</p>`,
           "Démarrer la conversation",
           `${SITE_URL}/matchs`,
         ),
@@ -93,7 +93,7 @@ function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, 
         subject: `Nouveau message de ${who}`,
         html: layout(
           "Vous avez reçu un message",
-          `<p>${hi}</p><p><strong>${who}</strong> vous a envoyé un message sur ${SITE_NAME}.</p>${
+          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vous a envoyé un message sur ${SITE_NAME}.</p>${
             preview ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">« ${escapeHtml(preview.slice(0, 140))} »</p>` : ""
           }`,
           "Lire le message",
@@ -105,7 +105,7 @@ function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, 
         subject: `${who} a consulté votre profil`,
         html: layout(
           "Votre profil a été consulté",
-          `<p>${hi}</p><p><strong>${who}</strong> a récemment visité votre profil sur ${SITE_NAME}.</p>`,
+          `${avatar}<p>${hi}</p><p><strong>${who}</strong> a récemment visité votre profil sur ${SITE_NAME}.</p>`,
           "Voir mon profil",
           `${SITE_URL}/compte/profil`,
         ),
@@ -139,6 +139,14 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       supabaseAdmin.from("profiles").select("id, pseudo, first_name").eq("id", context.userId).maybeSingle(),
     ]);
 
+    const { data: actorPhoto } = await supabaseAdmin
+      .from("photos")
+      .select("url")
+      .eq("user_id", context.userId)
+      .order("position")
+      .limit(1)
+      .maybeSingle();
+
     if (!recipient?.email) return { sent: false, reason: "no_email" as const };
 
     const prefs = (recipient.preferences as any)?.notifications?.[PREF_KEY[data.kind]];
@@ -169,6 +177,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       recipient.first_name || recipient.pseudo || "",
       actor?.first_name || actor?.pseudo || "Un membre",
       data.preview ?? null,
+      actorPhoto?.url ?? null,
     );
 
     let status = "sent";

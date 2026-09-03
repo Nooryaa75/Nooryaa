@@ -132,6 +132,8 @@ function AuthPage() {
           }
           throw error;
         }
+        // Email de bienvenue (envoyé une seule fois, en arrière-plan)
+        void sendWelcomeEmail({ data: { email } }).catch(() => {});
         if (!data.session) {
           setSignupEmailSent(true);
           toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");

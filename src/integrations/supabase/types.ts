@@ -199,6 +199,39 @@ export type Database = {
           },
         ]
       }
+      email_notifications: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          email: string
+          error: string | null
+          id: string
+          kind: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          email: string
+          error?: string | null
+          id?: string
+          kind: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          email?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string

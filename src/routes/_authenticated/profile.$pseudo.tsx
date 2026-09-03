@@ -8,10 +8,11 @@ import {
   BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
+import { notifyLike, notifyByEmail } from "@/lib/notify";
 import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -44,6 +45,13 @@ function ProfileView() {
     },
   });
 
+  // Notification email « visite de profil » (une fois par consultation, anti-spam côté serveur)
+  useEffect(() => {
+    if (profile?.id && profile.id !== ctx.userId) notifyByEmail("visit", profile.id);
+  }, [profile?.id, ctx.userId]);
+
+
+
   const { data: photos } = useQuery({
     queryKey: ["photos", profile?.id],
     enabled: !!profile,
@@ -71,8 +79,12 @@ function ProfileView() {
   const toggleLike = useMutation({
     mutationFn: async () => {
       if (!profile) return;
-      if (liked) await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", profile.id);
-      else await supabase.from("likes").insert({ from_user: ctx.userId, to_user: profile.id });
+      if (liked) {
+        await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", profile.id);
+      } else {
+        await supabase.from("likes").insert({ from_user: ctx.userId, to_user: profile.id });
+        await notifyLike(ctx.userId, profile.id);
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["liked"] });
@@ -104,6 +116,7 @@ function ProfileView() {
     if (!profile) return;
     if (!liked) {
       await supabase.from("likes").insert({ from_user: ctx.userId, to_user: profile.id });
+      await notifyLike(ctx.userId, profile.id);
       qc.invalidateQueries({ queryKey: ["liked"] });
     }
     navigate({ to: "/messages/$pseudo", params: { pseudo: profile.pseudo } });

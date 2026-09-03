@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyLike } from "@/lib/notify";
 import { Button } from "@/components/ui/button";
 import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
@@ -120,6 +121,10 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       toast.error(swipeError?.message ?? likeError?.message ?? "Impossible d'enregistrer ce choix.");
       setIsDeciding(false);
       return;
+    }
+
+    if (like && !currentLiked) {
+      await notifyLike(userId, decidedProfile.id);
     }
 
     if (like) {

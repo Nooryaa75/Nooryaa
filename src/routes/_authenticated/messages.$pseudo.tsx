@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { notifyByEmail } from "@/lib/notify";
 import { useServerFn } from "@tanstack/react-start";
 import { moderateMessage } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
@@ -159,6 +160,7 @@ function Conversation() {
         ...(replyTo ? { reply_to: replyTo.id } : {}),
       } as any);
       if (error) throw error;
+      notifyByEmail("message", peer.id, content);
     },
     onSuccess: () => {
       setText(""); setReplyTo(null); setEditing(null);
@@ -245,6 +247,7 @@ function Conversation() {
         ...(replyTo ? { reply_to: replyTo.id } : {}),
       } as any);
       if (error) throw error;
+      notifyByEmail("message", peer.id, "Photo");
       setReplyTo(null);
       qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     } catch (e: any) {
@@ -269,6 +272,7 @@ function Conversation() {
         ...(replyTo ? { reply_to: replyTo.id } : {}),
       } as any);
       if (error) throw error;
+      notifyByEmail("message", peer.id, "Message vocal");
       setReplyTo(null);
       qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     } catch (e: any) {

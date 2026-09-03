@@ -20,6 +20,7 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const login = useServerFn(adminLogin);

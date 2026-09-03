@@ -57,15 +57,16 @@ function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
 </body></html>`;
 }
 
-function actorAvatar(avatarUrl?: string | null, actorName?: string) {
+function actorAvatar(avatarUrl?: string | null, actorName?: string, blurred?: boolean) {
   if (!avatarUrl) return "";
-  return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;" /></div>`;
+  const blur = blurred ? "filter:blur(10px);" : "";
+  return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;${blur}" /></div>`;
 }
 
-function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null) {
+function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null, actorBlurred?: boolean) {
   const who = escapeHtml(actorName || "Un membre");
   const hi = `Assalamu alaykum ${escapeHtml(recipientName || "")},`.trim();
-  const avatar = actorAvatar(actorAvatarUrl, actorName);
+  const avatar = actorAvatar(actorAvatarUrl, actorName, actorBlurred);
 
   switch (kind) {
     case "like":
@@ -136,7 +137,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
         .select("id, email, pseudo, first_name, preferences")
         .eq("id", data.recipientId)
         .maybeSingle(),
-      supabaseAdmin.from("profiles").select("id, pseudo, first_name").eq("id", context.userId).maybeSingle(),
+      supabaseAdmin.from("profiles").select("id, pseudo, first_name, primary_photo_blurred").eq("id", context.userId).maybeSingle(),
     ]);
 
     const { data: actorPhoto } = await supabaseAdmin

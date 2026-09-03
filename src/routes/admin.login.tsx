@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({
   ssr: false,
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const login = useServerFn(adminLogin);
@@ -49,7 +51,17 @@ function AdminLogin() {
         </div>
         <div>
           <Label htmlFor="pwd">Mot de passe</Label>
-          <Input id="pwd" type="password" required autoFocus value={password} onChange={(e) => setPassword(e.target.value)} />
+          <div className="relative">
+            <Input id="pwd" type={show ? "text" : "password"} required autoFocus value={password} onChange={(e) => setPassword(e.target.value)} className="pr-10" />
+            <button
+              type="button"
+              onClick={() => setShow((s) => !s)}
+              aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
         <Button type="submit" disabled={loading} className="w-full rounded-full">
           {loading ? "Vérification..." : "Entrer"}

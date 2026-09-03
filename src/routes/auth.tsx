@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const searchSchema = z.object({
@@ -54,6 +55,30 @@ export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Connexion — Nooryaa (Abonnement gratuit)" }] }),
   component: AuthPage,
 });
+
+function PasswordInput({ id, value, onChange, ...rest }: { id: string; value: string; onChange: (v: string) => void } & Omit<React.ComponentProps<"input">, "id" | "value" | "onChange" | "type">) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="pr-10"
+        {...rest}
+      />
+      <button
+        type="button"
+        onClick={() => setShow((s) => !s)}
+        aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+}
 
 function AuthPage() {
   const { mode } = Route.useSearch();
@@ -250,12 +275,12 @@ function AuthPage() {
 
           <div>
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <PasswordInput id="password" required minLength={6} value={password} onChange={setPassword} />
           </div>
           {mode === "signup" && (
             <div>
               <Label htmlFor="password2">Confirmer le mot de passe</Label>
-              <Input id="password2" type="password" required minLength={6} value={password2} onChange={(e) => setPassword2(e.target.value)} />
+              <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
               {password2 && password !== password2 && (
                 <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
               )}

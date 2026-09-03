@@ -203,3 +203,94 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
 
     return { sent: status === "sent", reason: status === "sent" ? ("ok" as const) : ("failed" as const) };
   });
+
+/**
+ * Email de bienvenue envoyé à la création du compte.
+ * Fonction publique mais protégée : l'email n'est envoyé que si le profil
+ * existe (compte réellement créé) et qu'aucun email de bienvenue n'a déjà
+ * été envoyé à cette adresse.
+ */
+export const sendWelcomeEmail = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string }) => {
+    const email = String(data?.email ?? "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
+    return { email };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email, pseudo, first_name")
+      .ilike("email", data.email)
+      .maybeSingle();
+    if (!profile?.email) return { sent: false, reason: "no_account" as const };
+
+    const { data: already } = await supabaseAdmin
+      .from("email_notifications")
+      .select("id")
+      .eq("user_id", profile.id)
+      .eq("kind", "welcome")
+      .eq("status", "sent")
+      .limit(1);
+    if (already && already.length > 0) return { sent: false, reason: "already_sent" as const };
+
+    const lovableKey = process.env["LOVABLE_API_KEY"];
+    const resendKey = process.env["RESEND_API_KEY"];
+    if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
+
+    const name = escapeHtml(profile.first_name || profile.pseudo || "");
+    const html = layout(
+      "Bienvenue sur " + SITE_NAME,
+      `<p>Assalamu alaykum ${name},</p>
+       <p>Bienvenue sur <strong>${SITE_NAME}</strong>, la plateforme de rencontre pensée pour les musulmans qui souhaitent construire une relation sérieuse, dans le respect et la bienveillance.</p>
+       <p>Pour bien démarrer :</p>
+       <ul style="margin:0;padding-left:20px;">
+         <li>Complétez votre fiche profil (photos, pratique, projets…) ;</li>
+         <li>Réalisez votre selfie de vérification pour obtenir le badge ;</li>
+         <li>Découvrez les profils recommandés près de chez vous.</li>
+       </ul>
+       <p style="margin-top:12px;">Qu'Allah facilite vos démarches et vous accorde un compagnon ou une compagne qui vous apaise le cœur.</p>`,
+      "Compléter mon profil",
+      `${SITE_URL}/onboarding`,
+    );
+
+    let status = "sent";
+    let errorText: string | null = null;
+    try {
+      const response = await fetch(`${GATEWAY_URL}/emails`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": resendKey,
+        },
+        body: JSON.stringify({
+          from: `${SITE_NAME} <onboarding@resend.dev>`,
+          to: [profile.email],
+          subject: `Bienvenue sur ${SITE_NAME} 🌙`,
+          html,
+        }),
+      });
+      if (!response.ok) {
+        status = "failed";
+        errorText = `[${response.status}] ${await response.text()}`;
+        console.error("Resend gateway error (welcome)", errorText);
+      }
+    } catch (e: any) {
+      status = "failed";
+      errorText = e?.message ?? "unknown error";
+      console.error("Resend gateway exception (welcome)", errorText);
+    }
+
+    await supabaseAdmin.from("email_notifications").insert({
+      user_id: profile.id,
+      kind: "welcome",
+      actor_id: null,
+      email: profile.email,
+      status,
+      error: errorText,
+    });
+
+    return { sent: status === "sent" };
+  });

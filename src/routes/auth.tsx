@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { sendWelcomeEmail } from "@/lib/notify.functions";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const searchSchema = z.object({
@@ -132,6 +133,8 @@ function AuthPage() {
           }
           throw error;
         }
+        // Email de bienvenue (envoyé une seule fois, en arrière-plan)
+        void sendWelcomeEmail({ data: { email } }).catch(() => {});
         if (!data.session) {
           setSignupEmailSent(true);
           toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");

@@ -57,9 +57,15 @@ function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
 </body></html>`;
 }
 
-function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null) {
+function actorAvatar(avatarUrl?: string | null, actorName?: string) {
+  if (!avatarUrl) return "";
+  return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;" /></div>`;
+}
+
+function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null) {
   const who = escapeHtml(actorName || "Un membre");
   const hi = `Assalamu alaykum ${escapeHtml(recipientName || "")},`.trim();
+  const avatar = actorAvatar(actorAvatarUrl, actorName);
 
   switch (kind) {
     case "like":

@@ -10,4 +10,6 @@
 - [x] Consommation (likes / super likes / boosts, crédit-débit + historique)
 - [x] Journal d'audit
 - [x] Présence temps réel (last_seen toutes les 2 min)
+- [x] Centre de notifications in-app (table, cloche header, lu/non-lu, préférences)
+- [x] Photos floutées également dans les emails de notification
 - [ ] Paiement réel (Stripe) — non connecté

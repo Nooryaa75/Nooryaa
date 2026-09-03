@@ -54,12 +54,13 @@ export function AppHeader() {
   return (
     <>
       <header className="hidden md:block sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
-        <div className="container mx-auto flex items-start justify-between px-4 pt-2 pb-2 max-w-6xl">
-          <Link to="/browse" className="flex items-start gap-2.5 -mt-1">
-            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-10 w-10 rounded-xl object-cover shadow-sm -mt-0.5" />
-            <div className="flex flex-col leading-none justify-center">
-              <span className="text-xl font-serif font-semibold tracking-[0.16em] uppercase gold-text">Nooryaa</span>
-            </div>
+        <div className="container relative mx-auto flex items-center justify-between px-4 pt-2 pb-2 max-w-6xl">
+          <Link
+            to="/browse"
+            aria-label="Accueil Nooryaa"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <img src={logoAsset.url} alt="Logo Nooryaa" className="h-11 w-11 rounded-xl object-cover shadow-sm" />
           </Link>
 
           <nav className="flex items-center gap-1">

@@ -78,8 +78,8 @@ function Onboarding() {
   }, [ctx.userId]);
 
   async function checkPseudo(p: string) {
-    if (!/^[a-zA-Z0-9_-]{3,20}$/.test(p)) {
-      setPseudoError("3 à 20 caractères, lettres/chiffres/_/-");
+    if (!p.trim()) {
+      setPseudoError("Pseudo requis");
       return false;
     }
     const { data } = await supabase.from("profiles").select("id").eq("pseudo", p).neq("id", ctx.userId).maybeSingle();

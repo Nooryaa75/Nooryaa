@@ -76,25 +76,10 @@ export function AppHeader() {
               );
             })}
           </nav>
-          <div className="flex items-center gap-1">
-            <Link
-              to="/notifications"
-              aria-label="Notifications"
-              aria-current={pathname.startsWith("/notifications") ? "page" : undefined}
-              className={`relative flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
-                pathname.startsWith("/notifications")
-                  ? "bg-secondary text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-              }`}
-            >
-              <Bell className="h-[18px] w-[18px]" />
-              <Badge count={unreadNotifs ?? 0} />
-            </Link>
-            <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Déconnexion</span>
-            </Button>
-          </div>
+          <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Déconnexion</span>
+          </Button>
         </div>
       </header>
 

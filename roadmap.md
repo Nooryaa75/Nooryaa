@@ -13,3 +13,5 @@
 - [x] Centre de notifications in-app (table, cloche header, lu/non-lu, préférences)
 - [x] Photos floutées également dans les emails de notification
 - [ ] Paiement réel (Stripe) — non connecté
+- [x] Correction suppression de compte (fonction delete_own_account, paramètre ambigu)
+- [x] Logo Nooryaa entre le titre Accueil et la cloche

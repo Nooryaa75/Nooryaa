@@ -17,7 +17,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.rpc("delete_own_account", {
-      user_id: context.userId,
+      p_user_id: context.userId,
     });
     if (error) throw error;
     return { ok: true };

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Bell } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
 import { SocialLinks } from "@/components/SocialLinks";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
@@ -9,7 +9,31 @@ import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, distanceKm } from "@/hooks/useDiscovery";
 import { useMatches } from "@/hooks/useMatches";
+import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { ProfileVignette, ageFrom } from "@/components/ProfileVignette";
+
+function Badge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold leading-[18px] text-center">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
+function NotificationsBell() {
+  const { data: unreadCount } = useUnreadNotificationsCount();
+  return (
+    <Link
+      to="/notifications"
+      aria-label="Notifications"
+      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/60 text-primary shadow-sm hover:bg-accent transition-colors"
+    >
+      <Bell className="h-5 w-5" />
+      <Badge count={unreadCount ?? 0} />
+    </Link>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({
@@ -78,7 +102,10 @@ function Home() {
     <div className="space-y-7 pb-8">
       {/* Titre de page */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+          <NotificationsBell />
+        </div>
         <PrayerTimeBadge />
       </div>
 

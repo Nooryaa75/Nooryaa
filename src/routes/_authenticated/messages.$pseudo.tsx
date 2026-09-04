@@ -263,10 +263,24 @@ function Conversation() {
     if (blob.size > 10 * 1024 * 1024) { toast.error("Vocal trop lourd (max 10 Mo)"); return; }
     setSendingVoice(true);
     try {
-      const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+      const ext = blob.type.includes("wav") ? "wav" : blob.type.includes("mp4") ? "m4a" : "webm";
       const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("message-audio").upload(path, blob, { contentType: blob.type });
       if (upErr) throw upErr;
+
+      // Modération du vocal : transcription puis mêmes règles que le texte
+      try {
+        const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
+        if (res.verdict === "block") {
+          await supabase.storage.from("message-audio").remove([path]);
+          throw new Error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
+        }
+        if (res.verdict === "warn" && res.reason) toast.warning(res.reason);
+      } catch (e: any) {
+        if (e?.message && !/fetch|network/i.test(e.message)) throw e;
+        // analyse indisponible : on laisse passer le vocal
+      }
+
       const { error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, audio_path: path, audio_duration: duration,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
@@ -281,6 +295,7 @@ function Conversation() {
       setSendingVoice(false);
     }
   }
+
 
   if (!peer) return <div className="m-auto text-muted-foreground">Chargement...</div>;
 

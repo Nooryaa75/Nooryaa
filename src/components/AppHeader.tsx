@@ -83,25 +83,6 @@ export function AppHeader() {
         </div>
       </header>
 
-      {/* Header mobile */}
-      <header className="md:hidden sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
-        <div className="container mx-auto flex items-center justify-end px-4 py-2 max-w-6xl">
-          <Link
-            to="/notifications"
-            aria-label="Notifications"
-            aria-current={pathname.startsWith("/notifications") ? "page" : undefined}
-            className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-              pathname.startsWith("/notifications")
-                ? "bg-secondary text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-            }`}
-          >
-            <Bell className="h-5 w-5" />
-            <Badge count={unreadNotifs ?? 0} />
-          </Link>
-        </div>
-      </header>
-
       {/* Barre de navigation basse (mobile) */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card rounded-t-3xl shadow-[0_-4px_24px_rgba(31,34,48,0.08)] flex justify-around pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {mobileLinks.map((l) => {

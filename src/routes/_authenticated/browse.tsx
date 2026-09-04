@@ -9,6 +9,7 @@ import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, distanceKm } from "@/hooks/useDiscovery";
 import { useMatches } from "@/hooks/useMatches";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { ProfileVignette, ageFrom } from "@/components/ProfileVignette";
 
@@ -104,6 +105,7 @@ function Home() {
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+          <img src={logoAsset.url} alt="Nooryaa" className="h-9 w-9 object-contain" />
           <NotificationsBell />
         </div>
         <PrayerTimeBadge />

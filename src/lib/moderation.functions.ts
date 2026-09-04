@@ -95,18 +95,17 @@ export const moderateMessage = createServerFn({ method: "POST" })
     return result;
   });
 
-async function transcribeAudio(base64: string, mime: string): Promise<string | null> {
+async function transcribeAudio(bytes: Uint8Array, mime: string): Promise<string | null> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return null;
   try {
-    const bin = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
     const ext = mime.includes("mp4") || mime.includes("m4a") ? "m4a"
       : mime.includes("wav") ? "wav"
       : mime.includes("mpeg") ? "mp3"
       : "webm";
     const form = new FormData();
     form.append("model", "openai/gpt-4o-transcribe");
-    form.append("file", new Blob([bin as unknown as BlobPart], { type: mime || "audio/webm" }), `voice.${ext}`);
+    form.append("file", new Blob([bytes as unknown as BlobPart], { type: mime || "audio/webm" }), `voice.${ext}`);
     const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
       method: "POST",
       headers: { authorization: `Bearer ${apiKey}` },
@@ -120,19 +119,28 @@ async function transcribeAudio(base64: string, mime: string): Promise<string | n
   }
 }
 
-/** Modère un message vocal : transcription puis mêmes règles que le texte. */
+/** Modère un message vocal déjà déposé dans le stockage : transcription puis mêmes règles que le texte. */
 export const moderateVoice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { audioBase64: string; mimeType?: string; targetUserId?: string }) => ({
-    audioBase64: String(data?.audioBase64 ?? ""),
+  .inputValidator((data: { audioPath: string; mimeType?: string; targetUserId?: string }) => ({
+    audioPath: String(data?.audioPath ?? ""),
     mimeType: String(data?.mimeType ?? "audio/webm"),
     targetUserId: data?.targetUserId,
   }))
   .handler(async ({ data, context }): Promise<ModerationResult & { transcript: string }> => {
-    if (!data.audioBase64) return { verdict: "allow", categories: [], reason: "", transcript: "" };
+    const empty = { verdict: "allow" as const, categories: [] as string[], reason: "", transcript: "" };
+    if (!data.audioPath) return empty;
+    // le vocal doit appartenir à l'expéditeur (dossier = son identifiant)
+    if (!data.audioPath.startsWith(`${(context as any).userId}/`)) return empty;
 
-    const transcript = (await transcribeAudio(data.audioBase64, data.mimeType))?.trim() ?? "";
-    if (!transcript) return { verdict: "allow", categories: [], reason: "", transcript: "" };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const dl = await supabaseAdmin.storage.from("message-audio").download(data.audioPath);
+    if (dl.error || !dl.data) return empty;
+    const bytes = new Uint8Array(await dl.data.arrayBuffer());
+
+    const transcript = (await transcribeAudio(bytes, data.mimeType))?.trim() ?? "";
+    if (!transcript) return empty;
+
 
     const lex = lexiconCheck(transcript);
     let result: ModerationResult = lex;

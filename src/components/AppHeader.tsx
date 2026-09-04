@@ -1,10 +1,9 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, MessageCircle, Search, User, LogOut, Home, Bell } from "lucide-react";
+import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
-import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const links = [
@@ -37,7 +36,6 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
-  const { data: unreadNotifs } = useUnreadNotificationsCount();
 
   function countFor(to: string) {
     if (to === "/likes") return counts?.likes ?? 0;
@@ -78,44 +76,10 @@ export function AppHeader() {
               );
             })}
           </nav>
-          <div className="flex items-center gap-1">
-            <Link
-              to="/notifications"
-              aria-label="Notifications"
-              aria-current={pathname.startsWith("/notifications") ? "page" : undefined}
-              className={`relative flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
-                pathname.startsWith("/notifications")
-                  ? "bg-secondary text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-              }`}
-            >
-              <Bell className="h-[18px] w-[18px]" />
-              <Badge count={unreadNotifs ?? 0} />
-            </Link>
-            <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Déconnexion</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Header mobile */}
-      <header className="md:hidden sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
-        <div className="container mx-auto flex items-center justify-end px-4 py-2 max-w-6xl">
-          <Link
-            to="/notifications"
-            aria-label="Notifications"
-            aria-current={pathname.startsWith("/notifications") ? "page" : undefined}
-            className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-              pathname.startsWith("/notifications")
-                ? "bg-secondary text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-            }`}
-          >
-            <Bell className="h-5 w-5" />
-            <Badge count={unreadNotifs ?? 0} />
-          </Link>
+          <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Déconnexion</span>
+          </Button>
         </div>
       </header>
 

@@ -17,3 +17,4 @@
 - [x] Logo Nooryaa entre le titre Accueil et la cloche
 
 - [x] Profils invisibles : taille non renseignée exclue par le filtre
+- [ ] Bug: Sara ne peut pas écouter le vocal reçu de Rachid (erreur lecture audio)

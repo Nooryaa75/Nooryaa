@@ -63,8 +63,9 @@ export async function queryDiscoveryProfiles({
   else if (me?.gender === "femme") q = q.eq("gender", "homme");
 
   q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);
-  if (filters.heightMin != null) q = q.gte("height_cm", filters.heightMin);
-  if (filters.heightMax != null) q = q.lte("height_cm", filters.heightMax);
+  // La taille peut ne pas être renseignée : on n'exclut pas ces profils.
+  if (filters.heightMin != null) q = q.or(`height_cm.is.null,height_cm.gte.${filters.heightMin}`);
+  if (filters.heightMax != null) q = q.or(`height_cm.is.null,height_cm.lte.${filters.heightMax}`);
   if (filters.city) q = q.ilike("city", `%${filters.city}%`);
   if (filters.country !== ANY) q = q.eq("country", filters.country);
   if (filters.countryOrigin !== ANY) q = q.eq("country_origin", filters.countryOrigin);

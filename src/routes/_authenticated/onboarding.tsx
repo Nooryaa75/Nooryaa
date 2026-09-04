@@ -56,6 +56,9 @@ function Onboarding() {
   });
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
+  // 20h00 à Paris ce soir (UTC+2 en septembre) = 18h00 UTC
+  const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
+  const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {

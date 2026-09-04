@@ -60,7 +60,14 @@ function Onboarding() {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
       if (data) setForm((f) => ({
         ...f,
-        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : "",
+        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
+        // Pré-remplissage avec les infos déjà connues (inscription)
+        phone: (data as any).phone || f.phone,
+        gender: ((data as any).gender as any) || f.gender,
+        birthdate: (data as any).birthdate || f.birthdate,
+        city: (data as any).city || f.city,
+        country: (data as any).country || f.country,
+        country_origin: (data as any).country_origin || f.country_origin,
       }));
     });
   }, [ctx.userId]);
@@ -165,7 +172,8 @@ function Onboarding() {
         </div>
         <div>
           <Label htmlFor="phone">Téléphone *</Label>
-          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" readOnly={!!form.phone} className={form.phone ? "bg-muted/50" : undefined} />
+          {form.phone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
         </div>
         <div>
           <Label>Je suis *</Label>

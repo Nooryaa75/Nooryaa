@@ -115,11 +115,6 @@ function Onboarding() {
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
-    const { data: me } = await supabase.from("profiles").select("photo_verified").eq("id", ctx.userId).single();
-    if (!(me as any)?.photo_verified) {
-      toast.error("Vérification par selfie obligatoire : ajoutez vos photos puis lancez la vérification en direct avant d'enregistrer.");
-      return;
-    }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
@@ -346,7 +341,7 @@ function Onboarding() {
         </div>
         <SelfieVerification userId={ctx.userId} />
         <p className="text-xs text-muted-foreground">
-          La vérification par selfie est obligatoire : votre fiche ne peut pas être enregistrée tant qu'elle n'est pas validée.
+          Vérification par selfie (facultative pendant la phase de test) : elle ajoute un badge vérifié à votre profil.
         </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

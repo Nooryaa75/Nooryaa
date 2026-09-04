@@ -60,7 +60,14 @@ function Onboarding() {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
       if (data) setForm((f) => ({
         ...f,
-        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : "",
+        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
+        // Pré-remplissage avec les infos déjà connues (inscription)
+        phone: (data as any).phone || f.phone,
+        gender: ((data as any).gender as any) || f.gender,
+        birthdate: (data as any).birthdate || f.birthdate,
+        city: (data as any).city || f.city,
+        country: (data as any).country || f.country,
+        country_origin: (data as any).country_origin || f.country_origin,
       }));
     });
   }, [ctx.userId]);

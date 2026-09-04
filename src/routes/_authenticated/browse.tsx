@@ -88,7 +88,10 @@ function Home() {
     <div className="space-y-7 pb-8">
       {/* Titre de page */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold text-primary">Accueil</h1>
+          <NotificationsBell />
+        </div>
         <PrayerTimeBadge />
       </div>
 

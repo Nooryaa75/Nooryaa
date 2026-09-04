@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,9 +52,13 @@ function Onboarding() {
     personality: "",
     objective: "",
     bio: "",
+    photo_verified: false,
   });
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
+  // 20h00 à Paris ce soir (UTC+2 en septembre) = 18h00 UTC
+  const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
+  const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
@@ -68,6 +72,7 @@ function Onboarding() {
         city: (data as any).city || f.city,
         country: (data as any).country || f.country,
         country_origin: (data as any).country_origin || f.country_origin,
+        photo_verified: !!(data as any).photo_verified,
       }));
     });
   }, [ctx.userId]);
@@ -114,6 +119,9 @@ function Onboarding() {
     }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
+    }
+    if (selfieRequired && !form.photo_verified) {
+      toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
     }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
@@ -341,7 +349,9 @@ function Onboarding() {
         </div>
         <SelfieVerification userId={ctx.userId} />
         <p className="text-xs text-muted-foreground">
-          Vérification par selfie (facultative pendant la phase de test) : elle ajoute un badge vérifié à votre profil.
+          {selfieRequired
+            ? "La vérification par selfie est obligatoire pour finaliser votre profil."
+            : "Vérification par selfie (facultative jusqu'à 20h00 ce soir) : elle ajoute un badge vérifié à votre profil."}
         </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

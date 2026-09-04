@@ -120,6 +120,9 @@ function Onboarding() {
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
+    if (selfieRequired && !form.photo_verified) {
+      toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
+    }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,

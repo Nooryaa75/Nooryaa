@@ -392,8 +392,18 @@ function Conversation() {
                             {Math.floor(m.audio_duration / 60)}:{String(m.audio_duration % 60).padStart(2, "0")}
                           </span>
                         ) : null}
+                        <a
+                          href={m.audio_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] underline opacity-70"
+                          title="Ouvrir le vocal si la lecture ne fonctionne pas"
+                        >
+                          Ouvrir
+                        </a>
                       </div>
                     )}
+
                     {m.content && <div className="px-4 pt-2.5 whitespace-pre-wrap break-words">{m.content}</div>}
                     <div className={`px-4 pb-1.5 pt-0.5 text-[10px] flex items-center gap-1 ${mine ? "justify-end opacity-80" : "text-muted-foreground"}`}>
                       {m.edited_at && "modifié · "}

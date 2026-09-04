@@ -21,6 +21,20 @@ function Badge({ count }: { count: number }) {
   );
 }
 
+function NotificationsBell() {
+  const { data: unreadCount } = useUnreadNotificationsCount();
+  return (
+    <Link
+      to="/notifications"
+      aria-label="Notifications"
+      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/60 text-primary shadow-sm hover:bg-accent transition-colors"
+    >
+      <Bell className="h-5 w-5" />
+      <Badge count={unreadCount ?? 0} />
+    </Link>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({
     meta: [

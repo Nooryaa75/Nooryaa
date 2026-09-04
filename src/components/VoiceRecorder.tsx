@@ -23,8 +23,7 @@ export function VoiceRecorder({
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [preview, setPreview] = useState<{ url: string; blob: Blob; duration: number } | null>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const stopRef = useRef<(() => void) | null>(null);
   const secondsRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const previewUrlRef = useRef<string | null>(null);
@@ -44,30 +43,45 @@ export function VoiceRecorder({
 
   function stop() {
     clearTimer();
-    const rec = recorderRef.current;
-    if (rec && rec.state === "recording") rec.stop();
+    stopRef.current?.();
+    stopRef.current = null;
   }
 
   async function start() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
-      const rec = new MediaRecorder(stream, { mimeType: mime });
-      chunksRef.current = [];
-      rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      rec.onstop = () => {
+      const AudioCtx: typeof AudioContext =
+        (window as any).AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioCtx();
+      if (ctx.state === "suspended") await ctx.resume();
+      const source = ctx.createMediaStreamSource(stream);
+      const node = ctx.createScriptProcessor(4096, 1, 1);
+      const chunks: Float32Array[] = [];
+      node.onaudioprocess = (e) => chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+      source.connect(node);
+      node.connect(ctx.destination);
+
+      const sampleRate = ctx.sampleRate;
+      stopRef.current = () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunksRef.current, { type: mime });
+        node.disconnect();
+        source.disconnect();
+        void ctx.close();
+        const blob = encodeWav(chunks, sampleRate);
+        if (blob.size < 2048) {
+          toast.error("Enregistrement vide, réessayez.");
+          setRecording(false);
+          return;
+        }
         if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
         const url = URL.createObjectURL(blob);
         previewUrlRef.current = url;
         setPreview({ url, blob, duration: Math.max(1, secondsRef.current) });
         setRecording(false);
       };
-      recorderRef.current = rec;
+
       secondsRef.current = 0;
       setSeconds(0);
-      rec.start();
       setRecording(true);
       timerRef.current = setInterval(() => {
         secondsRef.current += 1;
@@ -78,6 +92,7 @@ export function VoiceRecorder({
       toast.error("Micro indisponible. Autorisez l'accès au microphone.");
     }
   }
+
 
   function discard() {
     if (previewUrlRef.current) { URL.revokeObjectURL(previewUrlRef.current); previewUrlRef.current = null; }

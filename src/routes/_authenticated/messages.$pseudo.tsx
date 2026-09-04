@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { notifyByEmail } from "@/lib/notify";
 import { useServerFn } from "@tanstack/react-start";
-import { moderateMessage } from "@/lib/moderation.functions";
+import { moderateMessage, moderateVoice } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
@@ -125,6 +125,7 @@ function Conversation() {
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [messages, peerTyping]);
 
   const moderate = useServerFn(moderateMessage);
+  const moderateVoiceFn = useServerFn(moderateVoice);
 
   async function checkContent(content: string) {
     const local = lexiconCheck(content);

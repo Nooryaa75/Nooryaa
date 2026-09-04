@@ -349,7 +349,9 @@ function Onboarding() {
         </div>
         <SelfieVerification userId={ctx.userId} />
         <p className="text-xs text-muted-foreground">
-          Vérification par selfie (facultative pendant la phase de test) : elle ajoute un badge vérifié à votre profil.
+          {selfieRequired
+            ? "La vérification par selfie est obligatoire pour finaliser votre profil."
+            : "Vérification par selfie (facultative jusqu'à 20h00 ce soir) : elle ajoute un badge vérifié à votre profil."}
         </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

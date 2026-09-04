@@ -36,7 +36,6 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
-  const { data: unreadNotifs } = useUnreadNotificationsCount();
 
   function countFor(to: string) {
     if (to === "/likes") return counts?.likes ?? 0;

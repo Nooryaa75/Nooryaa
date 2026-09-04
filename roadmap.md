@@ -15,3 +15,4 @@
 - [ ] Paiement réel (Stripe) — non connecté
 - [x] Correction suppression de compte (fonction delete_own_account, paramètre ambigu)
 - [x] Logo Nooryaa entre le titre Accueil et la cloche
+- [ ] Erreur suppression compte sur site publié (schema cache / ancienne signature)

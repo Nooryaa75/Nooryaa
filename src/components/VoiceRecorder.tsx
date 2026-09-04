@@ -10,6 +10,40 @@ function fmt(s: number) {
 }
 
 const MAX_SECONDS = 120;
+const TARGET_RATE = 16000;
+
+/** Convertit les échantillons PCM en fichier WAV 16 bits mono, lisible sur tous les appareils. */
+function encodeWav(chunks: Float32Array[], sampleRate: number): Blob {
+  const total = chunks.reduce((n, c) => n + c.length, 0);
+  const merged = new Float32Array(total);
+  let offset = 0;
+  for (const c of chunks) { merged.set(c, offset); offset += c.length; }
+
+  const ratio = Math.max(1, Math.round(sampleRate / TARGET_RATE));
+  const outRate = Math.round(sampleRate / ratio);
+  const outLength = Math.floor(merged.length / ratio);
+  const buffer = new ArrayBuffer(44 + outLength * 2);
+  const view = new DataView(buffer);
+  const writeStr = (pos: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(pos + i, s.charCodeAt(i)); };
+  writeStr(0, "RIFF");
+  view.setUint32(4, 36 + outLength * 2, true);
+  writeStr(8, "WAVEfmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, outRate, true);
+  view.setUint32(28, outRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, "data");
+  view.setUint32(40, outLength * 2, true);
+  for (let i = 0; i < outLength; i++) {
+    const s = Math.max(-1, Math.min(1, merged[i * ratio] ?? 0));
+    view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return new Blob([buffer], { type: "audio/wav" });
+}
+
 
 export function VoiceRecorder({
   onSend,

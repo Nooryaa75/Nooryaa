@@ -94,3 +94,73 @@ export const moderateMessage = createServerFn({ method: "POST" })
 
     return result;
   });
+
+async function transcribeAudio(base64: string, mime: string): Promise<string | null> {
+  const apiKey = process.env["LOVABLE_API_KEY"];
+  if (!apiKey) return null;
+  try {
+    const bin = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const ext = mime.includes("mp4") || mime.includes("m4a") ? "m4a"
+      : mime.includes("wav") ? "wav"
+      : mime.includes("mpeg") ? "mp3"
+      : "webm";
+    const form = new FormData();
+    form.append("model", "openai/gpt-4o-transcribe");
+    form.append("file", new Blob([bin as unknown as BlobPart], { type: mime || "audio/webm" }), `voice.${ext}`);
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { authorization: `Bearer ${apiKey}` },
+      body: form,
+    });
+    if (!res.ok) return null;
+    const json: any = await res.json();
+    return typeof json?.text === "string" ? json.text : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Modère un message vocal : transcription puis mêmes règles que le texte. */
+export const moderateVoice = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { audioBase64: string; mimeType?: string; targetUserId?: string }) => ({
+    audioBase64: String(data?.audioBase64 ?? ""),
+    mimeType: String(data?.mimeType ?? "audio/webm"),
+    targetUserId: data?.targetUserId,
+  }))
+  .handler(async ({ data, context }): Promise<ModerationResult & { transcript: string }> => {
+    if (!data.audioBase64) return { verdict: "allow", categories: [], reason: "", transcript: "" };
+
+    const transcript = (await transcribeAudio(data.audioBase64, data.mimeType))?.trim() ?? "";
+    if (!transcript) return { verdict: "allow", categories: [], reason: "", transcript: "" };
+
+    const lex = lexiconCheck(transcript);
+    let result: ModerationResult = lex;
+    if (lex.verdict !== "block") {
+      const ai = await aiCheck(transcript);
+      if (ai) {
+        const rank = { allow: 0, warn: 1, block: 2 } as const;
+        result = rank[ai.verdict] >= rank[lex.verdict] ? ai : lex;
+        if (result.categories.length === 0 && lex.categories.length > 0) result.categories = lex.categories;
+      }
+    }
+
+    if (result.verdict !== "allow") {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("moderation_events").insert({
+          user_id: (context as any).userId,
+          target_user: data.targetUserId ?? null,
+          content: transcript.slice(0, 2000),
+          verdict: result.verdict,
+          categories: result.categories,
+          reason: result.reason,
+          source: "voice",
+        });
+      } catch {
+        // la journalisation ne doit jamais bloquer l'envoi
+      }
+    }
+
+    return { ...result, transcript };
+  });

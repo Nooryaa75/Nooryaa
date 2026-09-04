@@ -1035,7 +1035,7 @@ export type Database = {
       }
       delete_own_account:
         | { Args: never; Returns: undefined }
-        | { Args: { p_user_id: string }; Returns: undefined }
+        | { Args: { user_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

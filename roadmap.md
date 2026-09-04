@@ -16,3 +16,4 @@
 - [x] Correction suppression de compte (fonction delete_own_account, paramètre ambigu)
 - [x] Logo Nooryaa entre le titre Accueil et la cloche
 
+- [x] Profils invisibles : taille non renseignée exclue par le filtre

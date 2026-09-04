@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Bell } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
 import { SocialLinks } from "@/components/SocialLinks";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
@@ -9,7 +9,17 @@ import { DeckCard, type DeckKey } from "@/components/DeckCard";
 import { SwipeDeck } from "@/components/SwipeDeck";
 import { useDiscovery, DEFAULT_FILTERS, distanceKm } from "@/hooks/useDiscovery";
 import { useMatches } from "@/hooks/useMatches";
+import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { ProfileVignette, ageFrom } from "@/components/ProfileVignette";
+
+function Badge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold leading-[18px] text-center">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/browse")({
   head: () => ({

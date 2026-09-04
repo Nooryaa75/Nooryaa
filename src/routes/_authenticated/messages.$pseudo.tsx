@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { notifyByEmail } from "@/lib/notify";
 import { useServerFn } from "@tanstack/react-start";
-import { moderateMessage } from "@/lib/moderation.functions";
+import { moderateMessage, moderateVoice } from "@/lib/moderation.functions";
 import { lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
@@ -125,6 +125,7 @@ function Conversation() {
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [messages, peerTyping]);
 
   const moderate = useServerFn(moderateMessage);
+  const moderateVoiceFn = useServerFn(moderateVoice);
 
   async function checkContent(content: string) {
     const local = lexiconCheck(content);
@@ -263,10 +264,24 @@ function Conversation() {
     if (blob.size > 10 * 1024 * 1024) { toast.error("Vocal trop lourd (max 10 Mo)"); return; }
     setSendingVoice(true);
     try {
-      const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+      const ext = blob.type.includes("wav") ? "wav" : blob.type.includes("mp4") ? "m4a" : "webm";
       const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("message-audio").upload(path, blob, { contentType: blob.type });
       if (upErr) throw upErr;
+
+      // Modération du vocal : transcription puis mêmes règles que le texte
+      try {
+        const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
+        if (res.verdict === "block") {
+          await supabase.storage.from("message-audio").remove([path]);
+          throw new Error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
+        }
+        if (res.verdict === "warn" && res.reason) toast.warning(res.reason);
+      } catch (e: any) {
+        if (e?.message && !/fetch|network/i.test(e.message)) throw e;
+        // analyse indisponible : on laisse passer le vocal
+      }
+
       const { error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, audio_path: path, audio_duration: duration,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
@@ -281,6 +296,7 @@ function Conversation() {
       setSendingVoice(false);
     }
   }
+
 
   if (!peer) return <div className="m-auto text-muted-foreground">Chargement...</div>;
 
@@ -376,8 +392,18 @@ function Conversation() {
                             {Math.floor(m.audio_duration / 60)}:{String(m.audio_duration % 60).padStart(2, "0")}
                           </span>
                         ) : null}
+                        <a
+                          href={m.audio_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] underline opacity-70"
+                          title="Ouvrir le vocal si la lecture ne fonctionne pas"
+                        >
+                          Ouvrir
+                        </a>
                       </div>
                     )}
+
                     {m.content && <div className="px-4 pt-2.5 whitespace-pre-wrap break-words">{m.content}</div>}
                     <div className={`px-4 pb-1.5 pt-0.5 text-[10px] flex items-center gap-1 ${mine ? "justify-end opacity-80" : "text-muted-foreground"}`}>
                       {m.edited_at && "modifié · "}

@@ -172,7 +172,8 @@ function Onboarding() {
         </div>
         <div>
           <Label htmlFor="phone">Téléphone *</Label>
-          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" readOnly={!!form.phone} className={form.phone ? "bg-muted/50" : undefined} />
+          {form.phone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
         </div>
         <div>
           <Label>Je suis *</Label>

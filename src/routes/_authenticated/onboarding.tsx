@@ -52,6 +52,7 @@ function Onboarding() {
     personality: "",
     objective: "",
     bio: "",
+    photo_verified: false,
   });
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);

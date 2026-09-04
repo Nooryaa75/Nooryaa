@@ -69,6 +69,7 @@ function Onboarding() {
         city: (data as any).city || f.city,
         country: (data as any).country || f.country,
         country_origin: (data as any).country_origin || f.country_origin,
+        photo_verified: !!(data as any).photo_verified,
       }));
     });
   }, [ctx.userId]);

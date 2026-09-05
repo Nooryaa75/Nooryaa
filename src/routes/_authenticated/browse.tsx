@@ -153,7 +153,7 @@ function Home() {
               <p className="text-xs text-muted-foreground mb-3">
                 Vous vous êtes likés mutuellement — discutez ensemble 💞
               </p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
                 {matches.slice(0, 4).map((p: any) => (
                   <ProfileVignette key={p.id} profile={p} chatBadge />
                 ))}

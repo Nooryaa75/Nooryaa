@@ -179,8 +179,8 @@ function Home() {
                   Voir tout
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                {recommended.slice(0, 2).map((p: any) => (
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+                {recommended.slice(0, 4).map((p: any) => (
                   <ProfileVignette key={p.id} profile={p} userId={ctx.userId} likeable />
                 ))}
               </div>

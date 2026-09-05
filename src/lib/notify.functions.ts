@@ -169,15 +169,35 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
         message: "/messages",
         visit: "/compte/profil",
       };
-      await supabaseAdmin.from("notifications").insert({
-        user_id: recipient.id,
-        actor_id: context.userId,
-        kind: data.kind,
-        title: titles[data.kind],
-        body: data.kind === "message" && data.preview ? `« ${data.preview.slice(0, 140)} »` : null,
-        link: links[data.kind],
-      });
+      // Anti-doublon : une seule notification in-app par expéditeur et par type
+      // dans la fenêtre anti-spam (sinon le centre de notifications se remplit
+      // de dizaines d'entrées identiques).
+      const inAppMinutes = THROTTLE_MINUTES[data.kind];
+      let duplicate = false;
+      if (inAppMinutes > 0) {
+        const sinceInApp = new Date(Date.now() - inAppMinutes * 60000).toISOString();
+        const { data: recentInApp } = await supabaseAdmin
+          .from("notifications")
+          .select("id")
+          .eq("user_id", recipient.id)
+          .eq("actor_id", context.userId)
+          .eq("kind", data.kind)
+          .gte("created_at", sinceInApp)
+          .limit(1);
+        duplicate = !!(recentInApp && recentInApp.length > 0);
+      }
+      if (!duplicate) {
+        await supabaseAdmin.from("notifications").insert({
+          user_id: recipient.id,
+          actor_id: context.userId,
+          kind: data.kind,
+          title: titles[data.kind],
+          body: data.kind === "message" && data.preview ? `« ${data.preview.slice(0, 140)} »` : null,
+          link: links[data.kind],
+        });
+      }
     }
+
 
     const emailEnabled = typeof prefs?.email === "boolean" ? prefs.email : data.kind !== "visit";
     if (!emailEnabled) return { sent: false, reason: "disabled" as const };

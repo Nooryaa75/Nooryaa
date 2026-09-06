@@ -146,8 +146,22 @@ function AbonnementPage() {
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
   const { data: dbPlans, isLoading: plansLoading } = useActivePlans();
+  const [gender, setGender] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      const { data } = await supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle();
+      if (alive) setGender((data?.gender as string | null) ?? null);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
   const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
+
   const visiblePlans = plans.filter((p) => activeCodes.has(p.id.toLowerCase()));
   const currentPlan = plans.find((p) => p.id === current)!;
 

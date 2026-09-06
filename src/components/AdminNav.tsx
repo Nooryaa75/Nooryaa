@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
-import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail, ShieldAlert, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap, ScrollText } from "lucide-react";
+import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail, ShieldAlert, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap, ScrollText, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
@@ -20,6 +20,8 @@ const links = [
   { to: "/admin/contact", label: "Contact", icon: Mail, exact: false, badge: "contacts" as const },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
   { to: "/admin/audit", label: "Audit", icon: ScrollText, exact: false },
+  { to: "/admin/reset", label: "Réinitialiser", icon: RotateCcw, exact: false },
+
 ] as const;
 
 export function AdminNav() {

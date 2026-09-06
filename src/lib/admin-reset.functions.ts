@@ -100,7 +100,7 @@ export const adminSectionRows = createServerFn({ method: "GET" })
       s,
     );
     if (error) throw new Error(error.message);
-    return { section: s.key, label: s.label, rows: (rows ?? []) as Record<string, unknown>[] };
+    return { section: s.key, label: s.label, rows: (rows ?? []) as any[] };
   });
 
 export const adminSectionArchive = createServerFn({ method: "POST" })
@@ -113,12 +113,12 @@ export const adminSectionArchive = createServerFn({ method: "POST" })
       s,
     );
     if (error) throw new Error(error.message);
-    const payload = (rows ?? []) as Record<string, unknown>[];
+    const payload = (rows ?? []) as any[];
     const { error: insErr } = await supabaseAdmin.from("section_archives").insert({
       section: s.key,
       label: s.label,
       row_count: payload.length,
-      payload,
+      payload: payload as any,
       note: data.note ?? null,
       created_by: identity.email ?? identity.via,
     });

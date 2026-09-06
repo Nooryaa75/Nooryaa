@@ -802,6 +802,39 @@ export type Database = {
         }
         Relationships: []
       }
+      section_archives: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string
+          note: string | null
+          payload: Json
+          row_count: number
+          section: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label: string
+          note?: string | null
+          payload?: Json
+          row_count?: number
+          section: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+          note?: string | null
+          payload?: Json
+          row_count?: number
+          section?: string
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           active: boolean

@@ -1,111 +1,196 @@
 import { createServerFn } from "@tanstack/react-start";
 
-export type ResetScope =
+export type SectionKey =
   | "messages"
   | "likes"
+  | "passes"
   | "notifications"
+  | "email_notifications"
   | "reports"
-  | "support"
+  | "blocks"
+  | "moderation"
+  | "support_tickets"
+  | "ticket_replies"
+  | "contacts"
   | "subscriptions"
+  | "credit_events"
+  | "saved_searches"
   | "audit"
-  | "test_profiles"
-  | "members";
+  | "ads"
+  | "test_profiles";
 
-export const RESET_SCOPES: { key: ResetScope; label: string; desc: string; danger?: boolean }[] = [
-  { key: "messages", label: "Discussions", desc: "Tous les messages échangés (textes, photos, vocaux)." },
-  { key: "likes", label: "Likes & passes", desc: "Likes, profils passés et conversations masquées." },
-  { key: "notifications", label: "Notifications", desc: "Notifications in-app et journal des emails." },
-  { key: "reports", label: "Signalements & blocages", desc: "Signalements, blocages et incidents de modération." },
-  { key: "support", label: "Support & contact", desc: "Tickets, réponses et messages du formulaire de contact." },
-  { key: "subscriptions", label: "Abonnements & crédits", desc: "Abonnements, crédits et historique de consommation." },
-  { key: "audit", label: "Journal admin", desc: "Historique des actions d'administration." },
-  { key: "test_profiles", label: "Profils de test", desc: "Supprime les comptes @nooryaa.test.", danger: true },
-  { key: "members", label: "Tous les membres", desc: "Supprime tous les comptes membres (sauf administrateurs).", danger: true },
+type SectionDef = {
+  key: SectionKey;
+  label: string;
+  desc: string;
+  table: string;
+  timeCol: string;
+  extraTables?: string[];
+  danger?: boolean;
+};
+
+export const SECTIONS: SectionDef[] = [
+  { key: "messages", label: "Discussions", desc: "Messages échangés entre membres (texte, photo, vocal).", table: "messages", timeCol: "created_at" },
+  { key: "likes", label: "Likes", desc: "Likes envoyés entre membres.", table: "likes", timeCol: "created_at" },
+  { key: "passes", label: "Profils passés", desc: "Profils écartés depuis l'accueil.", table: "profile_passes", timeCol: "created_at" },
+  { key: "notifications", label: "Notifications in-app", desc: "Historique de la cloche des membres.", table: "notifications", timeCol: "created_at" },
+  { key: "email_notifications", label: "Journal des emails", desc: "Emails de notification envoyés.", table: "email_notifications", timeCol: "created_at" },
+  { key: "reports", label: "Signalements", desc: "Signalements déposés par les membres.", table: "reports", timeCol: "created_at" },
+  { key: "blocks", label: "Blocages", desc: "Membres bloqués entre eux.", table: "blocks", timeCol: "created_at" },
+  { key: "moderation", label: "Modération", desc: "Incidents détectés (texte, vocal, photo).", table: "moderation_events", timeCol: "created_at" },
+  { key: "support_tickets", label: "Tickets support", desc: "Tickets ouverts par les membres.", table: "support_tickets", timeCol: "created_at", extraTables: ["ticket_replies"] },
+  { key: "ticket_replies", label: "Réponses support", desc: "Réponses échangées sur les tickets.", table: "ticket_replies", timeCol: "created_at" },
+  { key: "contacts", label: "Messages de contact", desc: "Formulaire de contact du site public.", table: "contact_messages", timeCol: "created_at" },
+  { key: "subscriptions", label: "Abonnements", desc: "Abonnements souscrits par les membres.", table: "subscriptions", timeCol: "created_at" },
+  { key: "credit_events", label: "Consommation", desc: "Likes, super likes et boosts consommés.", table: "credit_events", timeCol: "created_at" },
+  { key: "saved_searches", label: "Recherches sauvegardées", desc: "Recherches enregistrées par les membres.", table: "saved_searches", timeCol: "created_at" },
+  { key: "audit", label: "Journal admin", desc: "Historique des actions d'administration.", table: "admin_actions", timeCol: "created_at" },
+  { key: "ads", label: "Publicités", desc: "Annonces partenaires du carrousel.", table: "ads", timeCol: "created_at" },
+  { key: "test_profiles", label: "Profils de test", desc: "Comptes @nooryaa.test créés pour les essais.", table: "profiles", timeCol: "created_at", danger: true },
 ];
 
 const ALL_ROWS = "1970-01-01T00:00:00Z";
+const EXPORT_LIMIT = 5000;
 
-export const adminResetCounts = createServerFn({ method: "GET" }).handler(async () => {
+function def(key: SectionKey): SectionDef {
+  const found = SECTIONS.find((s) => s.key === key);
+  if (!found) throw new Error("Rubrique inconnue");
+  return found;
+}
+
+async function admin() {
   const { requireAdminOrThrow } = await import("./admin-session.server");
-  await requireAdminOrThrow();
+  const identity = await requireAdminOrThrow();
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const head = (t: string) => supabaseAdmin.from(t as any).select("*", { count: "exact", head: true });
-  const [messages, likes, passes, notifications, reports, blocks, moderation, tickets, contacts, subs, credits, audit, testProfiles, profiles] =
-    await Promise.all([
-      head("messages"), head("likes"), head("profile_passes"), head("notifications"),
-      head("reports"), head("blocks"), head("moderation_events"), head("support_tickets"),
-      head("contact_messages"), head("subscriptions"), head("credit_events"), head("admin_actions"),
-      supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }).like("email", "%@nooryaa.test"),
-      head("profiles"),
-    ]);
+  return { identity, supabaseAdmin };
+}
+
+function scoped(query: any, s: SectionDef) {
+  return s.key === "test_profiles" ? query.like("email", "%@nooryaa.test") : query;
+}
+
+export const adminSectionSummary = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await admin();
+  const counts = await Promise.all(
+    SECTIONS.map(async (s) => {
+      const { count } = await scoped(supabaseAdmin.from(s.table as any).select("*", { count: "exact", head: true }), s);
+      return [s.key, count ?? 0] as const;
+    }),
+  );
+  const { data: archives } = await supabaseAdmin
+    .from("section_archives")
+    .select("section, created_at, row_count")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  const lastArchive: Record<string, { created_at: string; row_count: number }> = {};
+  for (const a of archives ?? []) if (!lastArchive[a.section]) lastArchive[a.section] = { created_at: a.created_at, row_count: a.row_count };
   return {
-    messages: messages.count ?? 0,
-    likes: (likes.count ?? 0) + (passes.count ?? 0),
-    notifications: notifications.count ?? 0,
-    reports: (reports.count ?? 0) + (blocks.count ?? 0) + (moderation.count ?? 0),
-    support: (tickets.count ?? 0) + (contacts.count ?? 0),
-    subscriptions: (subs.count ?? 0) + (credits.count ?? 0),
-    audit: audit.count ?? 0,
-    test_profiles: testProfiles.count ?? 0,
-    members: profiles.count ?? 0,
-  } as Record<ResetScope, number>;
+    counts: Object.fromEntries(counts) as Record<SectionKey, number>,
+    lastArchive,
+  };
 });
 
-export const adminReset = createServerFn({ method: "POST" })
-  .inputValidator((data: { scopes: ResetScope[]; confirm: string }) => data)
+export const adminSectionRows = createServerFn({ method: "GET" })
+  .inputValidator((data: { section: SectionKey; limit?: number }) => data)
   .handler(async ({ data }) => {
-    const { requireAdminOrThrow } = await import("./admin-session.server");
-    await requireAdminOrThrow();
-    if (data.confirm.trim().toUpperCase() !== "REINITIALISER") {
-      throw new Error("Confirmation invalide : saisissez REINITIALISER.");
-    }
-    const scopes = new Set(data.scopes);
-    if (scopes.size === 0) throw new Error("Sélectionnez au moins un élément à réinitialiser.");
+    const { supabaseAdmin } = await admin();
+    const s = def(data.section);
+    const { data: rows, error } = await scoped(
+      supabaseAdmin.from(s.table as any).select("*").order(s.timeCol, { ascending: false }).limit(Math.min(data.limit ?? 500, EXPORT_LIMIT)),
+      s,
+    );
+    if (error) throw new Error(error.message);
+    return { section: s.key, label: s.label, rows: (rows ?? []) as any[] };
+  });
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const wipe = async (table: string) => {
-      const { error } = await supabaseAdmin.from(table as any).delete().gte("created_at", ALL_ROWS);
-      if (error) throw new Error(`${table}: ${error.message}`);
-    };
-    const done: string[] = [];
+export const adminSectionArchive = createServerFn({ method: "POST" })
+  .inputValidator((data: { section: SectionKey; purge?: boolean; note?: string }) => data)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin, identity } = await admin();
+    const s = def(data.section);
+    const { data: rows, error } = await scoped(
+      supabaseAdmin.from(s.table as any).select("*").order(s.timeCol, { ascending: false }).limit(EXPORT_LIMIT),
+      s,
+    );
+    if (error) throw new Error(error.message);
+    const payload = (rows ?? []) as any[];
+    const { error: insErr } = await supabaseAdmin.from("section_archives").insert({
+      section: s.key,
+      label: s.label,
+      row_count: payload.length,
+      payload: payload as any,
+      note: data.note ?? null,
+      created_by: identity.email ?? identity.via,
+    });
+    if (insErr) throw new Error(insErr.message);
 
-    if (scopes.has("messages")) { await wipe("messages"); done.push("messages"); }
-    if (scopes.has("likes")) {
-      await wipe("likes"); await wipe("profile_passes"); await wipe("conversation_hides");
-      done.push("likes");
+    let purged = 0;
+    if (data.purge) {
+      purged = await purgeSection(supabaseAdmin, s);
     }
-    if (scopes.has("notifications")) { await wipe("notifications"); await wipe("email_notifications"); done.push("notifications"); }
-    if (scopes.has("reports")) { await wipe("reports"); await wipe("blocks"); await wipe("moderation_events"); done.push("reports"); }
-    if (scopes.has("support")) { await wipe("ticket_replies"); await wipe("support_tickets"); await wipe("contact_messages"); done.push("support"); }
-    if (scopes.has("subscriptions")) {
-      await wipe("credit_events"); await wipe("subscriptions");
-      const { error } = await supabaseAdmin.from("user_credits").delete().gte("updated_at", ALL_ROWS);
-      if (error) throw new Error(`user_credits: ${error.message}`);
-      done.push("subscriptions");
-    }
+    return { ok: true as const, archived: payload.length, purged };
+  });
 
-    let deletedUsers = 0;
-    if (scopes.has("members") || scopes.has("test_profiles")) {
-      const { data: adminRoles } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
-      const protectedIds = new Set((adminRoles ?? []).map((r) => r.user_id));
-      let query = supabaseAdmin.from("profiles").select("id, email");
-      if (!scopes.has("members")) query = query.like("email", "%@nooryaa.test");
-      const { data: rows } = await query;
-      for (const row of rows ?? []) {
-        if (protectedIds.has(row.id)) continue;
-        const { error } = await supabaseAdmin.auth.admin.deleteUser(row.id);
-        if (!error) deletedUsers++;
-      }
-      done.push(scopes.has("members") ? "membres" : "profils de test");
+async function purgeSection(supabaseAdmin: any, s: SectionDef) {
+  if (s.key === "test_profiles") {
+    const { data: adminRoles } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    const protectedIds = new Set((adminRoles ?? []).map((r: any) => r.user_id));
+    const { data: rows } = await supabaseAdmin.from("profiles").select("id").like("email", "%@nooryaa.test");
+    let n = 0;
+    for (const row of rows ?? []) {
+      if (protectedIds.has(row.id)) continue;
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(row.id);
+      if (!error) n++;
     }
+    return n;
+  }
+  for (const t of s.extraTables ?? []) {
+    const { error } = await supabaseAdmin.from(t).delete().gte("created_at", ALL_ROWS);
+    if (error) throw new Error(`${t}: ${error.message}`);
+  }
+  const { count } = await supabaseAdmin.from(s.table).select("*", { count: "exact", head: true });
+  const { error } = await supabaseAdmin.from(s.table).delete().gte(s.timeCol, ALL_ROWS);
+  if (error) throw new Error(`${s.table}: ${error.message}`);
+  return count ?? 0;
+}
 
-    if (scopes.has("audit")) { await wipe("admin_actions"); done.push("journal admin"); }
-    else {
-      await supabaseAdmin.from("admin_actions").insert({
-        action: "reset",
-        details: { scopes: data.scopes, deletedUsers, at: new Date().toISOString() },
-      });
+export const adminSectionReset = createServerFn({ method: "POST" })
+  .inputValidator((data: { section: SectionKey; confirm: string }) => data)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await admin();
+    if (data.confirm.trim().toUpperCase() !== "EFFACER") throw new Error("Confirmation invalide : saisissez EFFACER.");
+    const s = def(data.section);
+    const purged = await purgeSection(supabaseAdmin, s);
+    if (s.key !== "audit") {
+      await supabaseAdmin.from("admin_actions").insert({ action: `reset:${s.key}`, details: { purged, at: new Date().toISOString() } });
     }
+    return { ok: true as const, purged };
+  });
 
-    return { ok: true as const, done, deletedUsers };
+export const adminListArchives = createServerFn({ method: "GET" })
+  .inputValidator((data: { section?: SectionKey } | undefined) => data ?? {})
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await admin();
+    let q = supabaseAdmin.from("section_archives").select("id, section, label, row_count, note, created_by, created_at");
+    if (data.section) q = q.eq("section", data.section);
+    const { data: rows } = await q.order("created_at", { ascending: false }).limit(100);
+    return rows ?? [];
+  });
+
+export const adminGetArchive = createServerFn({ method: "GET" })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await admin();
+    const { data: row, error } = await supabaseAdmin.from("section_archives").select("*").eq("id", data.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const adminDeleteArchive = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await admin();
+    const { error } = await supabaseAdmin.from("section_archives").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
   });

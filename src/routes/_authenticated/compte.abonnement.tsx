@@ -102,7 +102,25 @@ const plans: Plan[] = [
       (d) => ayaSuperLikes[d],
     ],
   },
+  {
+    id: "noor_f",
+    emoji: "🌸",
+    name: "NOOR",
+    tagline: "La formule des femmes, tout inclus",
+    highlight: true,
+    onlyFor: "femme",
+    allowedDurations: ["1m"],
+    prices: { "24h": 3.99, "7j": 3.99, "1m": 3.99 },
+    features: [
+      "Likes illimités",
+      "Filtres avancés complets",
+      "Voir qui a liké votre profil",
+      "Mode incognito",
+      "3,99 € par mois, sans engagement",
+    ],
+  },
 ];
+
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });

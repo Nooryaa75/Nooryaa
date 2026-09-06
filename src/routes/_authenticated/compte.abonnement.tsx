@@ -44,6 +44,11 @@ type Plan = {
   features: Feature[];
   highlight?: boolean;
   prices?: Record<DurationId, number>;
+  /** Durées proposées (par défaut toutes). */
+  allowedDurations?: DurationId[];
+  /** Réservée à un genre précis. */
+  onlyFor?: "femme" | "homme";
+
 };
 
 const ayaBoosts: Record<DurationId, string> = {

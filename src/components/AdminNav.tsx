@@ -20,6 +20,8 @@ const links = [
   { to: "/admin/contact", label: "Contact", icon: Mail, exact: false, badge: "contacts" as const },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
   { to: "/admin/audit", label: "Audit", icon: ScrollText, exact: false },
+  { to: "/admin/reset", label: "Réinitialiser", icon: RotateCcw, exact: false },
+
 ] as const;
 
 export function AdminNav() {

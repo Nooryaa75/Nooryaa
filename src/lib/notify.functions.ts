@@ -241,7 +241,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
           "X-Connection-Api-Key": resendKey,
         },
         body: JSON.stringify({
-          from: `${SITE_NAME} <onboarding@resend.dev>`,
+          from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [recipient.email],
           subject,
           html,
@@ -332,7 +332,7 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
           "X-Connection-Api-Key": resendKey,
         },
         body: JSON.stringify({
-          from: `${SITE_NAME} <onboarding@resend.dev>`,
+          from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [profile.email],
           subject: `Bienvenue sur ${SITE_NAME} 🌙`,
           html,

@@ -105,7 +105,7 @@ function Onboarding() {
     if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
     if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
     if (!form.phone) missing.push("Téléphone");
-    if (!form.city) missing.push("Ville / région");
+    if (!form.city) missing.push("Ville de résidence");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");
     if (!form.profession) missing.push("Profession");
@@ -251,7 +251,7 @@ function Onboarding() {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <Label>Ville / région *</Label>
+            <Label>Ville de résidence *</Label>
             <CityAutocomplete
               value={form.city}
               onChange={(v) => setForm({ ...form, city: v })}

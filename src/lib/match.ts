@@ -84,7 +84,7 @@ function compatibilityCriteria(me: any, profile: any): Criterion[] {
 
   // Socle commun : il évite un score artificiellement nul lorsque les préférences
   // facultatives n'ont pas encore été renseignées.
-  add(me?.country, profile.country);
+  // Aucun critère implicite de pays : les rencontres sont ouvertes au monde entier.
   add(me?.religious_practice, profile.religious_practice, 2);
   add(me?.salat_quotidienne, profile.salat_quotidienne);
   add(me?.ramadan, profile.ramadan);

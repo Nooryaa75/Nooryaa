@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle, XCircle, RefreshCw, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -44,6 +44,11 @@ type Plan = {
   features: Feature[];
   highlight?: boolean;
   prices?: Record<DurationId, number>;
+  /** Durées proposées (par défaut toutes). */
+  allowedDurations?: DurationId[];
+  /** Réservée à un genre précis. */
+  onlyFor?: "femme" | "homme";
+
 };
 
 const ayaBoosts: Record<DurationId, string> = {
@@ -97,7 +102,25 @@ const plans: Plan[] = [
       (d) => ayaSuperLikes[d],
     ],
   },
+  {
+    id: "noor_f",
+    emoji: "🌸",
+    name: "NOOR",
+    tagline: "La formule des femmes, tout inclus",
+    highlight: true,
+    onlyFor: "femme",
+    allowedDurations: ["1m"],
+    prices: { "24h": 3.99, "7j": 3.99, "1m": 3.99 },
+    features: [
+      "Likes illimités",
+      "Filtres avancés complets",
+      "Voir qui a liké votre profil",
+      "Mode incognito",
+      "3,99 € par mois, sans engagement",
+    ],
+  },
 ];
+
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -123,9 +146,28 @@ function AbonnementPage() {
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
   const { data: dbPlans, isLoading: plansLoading } = useActivePlans();
+  const [gender, setGender] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      const { data } = await supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle();
+      if (alive) setGender((data?.gender as string | null) ?? null);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
   const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
-  const visiblePlans = plans.filter((p) => activeCodes.has(p.id.toLowerCase()));
+
+  const visiblePlans = plans.filter((p) => {
+    if (!activeCodes.has(p.id.toLowerCase())) return false;
+    if (gender === "femme") return p.id === "gratuit" || p.id === "noor_f";
+    if (p.onlyFor && p.onlyFor !== gender) return false;
+    return true;
+  });
   const currentPlan = plans.find((p) => p.id === current)!;
 
 
@@ -272,7 +314,10 @@ function AbonnementPage() {
           {visiblePlans.map((plan) => {
 
             const active = plan.id === current;
-            const duration = selectedDuration[plan.id] ?? "1m";
+            const planDurations = plan.allowedDurations
+              ? durations.filter((d) => plan.allowedDurations!.includes(d.id))
+              : durations;
+            const duration = selectedDuration[plan.id] ?? planDurations[0]!.id;
             const price = plan.prices?.[duration];
             const days = durations.find((d) => d.id === duration)!.days;
             return (
@@ -323,7 +368,7 @@ function AbonnementPage() {
                     aria-label={`Durée de la formule ${plan.name}`}
                     className="w-full rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground"
                   >
-                    {durations.map((d) => (
+                    {planDurations.map((d) => (
                       <option key={d.id} value={d.id}>
                         {d.label} — {euro(plan.prices![d.id])}
                       </option>

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,9 +57,40 @@ function Onboarding() {
   });
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
+  const [attempted, setAttempted] = useState(false);
+  const [extraError, setExtraError] = useState<string | null>(null);
+  const errorBoxRef = useRef<HTMLDivElement | null>(null);
   // 20h00 à Paris ce soir (UTC+2 en septembre) = 18h00 UTC
   const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
   const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
+
+  function computeMissing(): string[] {
+    const missing: string[] = [];
+    if (!form.pseudo.trim()) missing.push("Pseudo");
+    if (!form.gender) missing.push("Je suis");
+    if (!form.birthdate) missing.push("Date de naissance");
+    if (!form.marital_status) missing.push("Situation");
+    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
+    if (form.ramadan === null) missing.push("Ramadan");
+    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
+    if (form.omra === null) missing.push("Avez-vous fait la Omra");
+    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
+    if (form.has_children === null) missing.push("Avez-vous des enfants");
+    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
+    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
+    if (!form.phone) missing.push("Téléphone");
+    if (!form.city) missing.push("Ville de résidence");
+    if (!form.country) missing.push("Pays de résidence");
+    if (!form.country_origin) missing.push("Pays d'origine");
+    if (!form.profession) missing.push("Profession");
+    if (!form.education_level) missing.push("Niveau d'études");
+    if (!form.activities) missing.push("Activités / centres d'intérêt");
+    if (form.smoker === null) missing.push("Fumez-vous");
+    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
+    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos de vous (50 à 500 caractères)");
+    return missing;
+  }
+  const missingFields = attempted ? computeMissing() : [];
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
@@ -91,48 +122,36 @@ function Onboarding() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!(await checkPseudo(form.pseudo))) return;
-    const missing: string[] = [];
-    if (!form.pseudo) missing.push("Pseudo");
-    if (!form.gender) missing.push("Je suis");
-    if (!form.birthdate) missing.push("Date de naissance");
-    if (!form.marital_status) missing.push("Situation");
-    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
-    if (form.ramadan === null) missing.push("Ramadan");
-    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
-    if (form.omra === null) missing.push("Avez-vous fait la Omra");
-    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
-    if (form.has_children === null) missing.push("Avez-vous des enfants");
-    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
-    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
-    if (!form.phone) missing.push("Téléphone");
-    if (!form.city) missing.push("Ville de résidence");
-    if (!form.country) missing.push("Pays de résidence");
-    if (!form.country_origin) missing.push("Pays d'origine");
-    if (!form.profession) missing.push("Profession");
-    if (!form.education_level) missing.push("Niveau d'études");
-    if (!form.activities) missing.push("Activités / centres d'intérêt");
-    if (form.smoker === null) missing.push("Fumez-vous");
-    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos (50 à 500 caractères)");
+    setAttempted(true);
+    if (!(await checkPseudo(form.pseudo))) {
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    const missing = computeMissing();
     if (missing.length > 0) {
-      toast.error("Champs à compléter : " + missing.join(", ")); return;
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
     }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
+    setExtraError(null);
     if (selfieRequired && !form.photo_verified) {
       // La vérification a pu aboutir après le chargement du formulaire : on relit l'état réel.
       const { data: fresh } = await supabase
         .from("profiles").select("photo_verified").eq("id", ctx.userId).maybeSingle();
       if (!(fresh as any)?.photo_verified) {
-        toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
+        setExtraError("Vérification par selfie obligatoire");
+        errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
       }
       setForm((f) => ({ ...f, photo_verified: true }));
     }
     const { count: photoCount } = await supabase.from("photos").select("*", { count: "exact", head: true }).eq("user_id", ctx.userId);
     if (!photoCount || photoCount === 0) {
-      toast.error("Veuillez ajouter au moins une photo de profil."); return;
+      setExtraError("Photo de profil (au moins une)");
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
     }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
@@ -178,6 +197,16 @@ function Onboarding() {
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
       <p className="text-muted-foreground text-sm mb-6">Tous les champs sont obligatoires pour finaliser votre profil.</p>
+      {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
+        <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
+          <p className="font-semibold text-destructive text-sm">Champs obligatoires à compléter :</p>
+          <ul className="mt-1 list-disc pl-5 text-sm text-destructive space-y-0.5">
+            {pseudoError && attempted && <li>Pseudo : {pseudoError}</li>}
+            {missingFields.map((m) => <li key={m}>{m}</li>)}
+            {extraError && missingFields.length === 0 && <li>{extraError}</li>}
+          </ul>
+        </div>
+      )}
       <form onSubmit={submit} className="space-y-5">
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>

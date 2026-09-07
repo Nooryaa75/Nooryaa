@@ -5,6 +5,7 @@ import { Heart, User, BadgeCheck, MapPin, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { notifyLike } from "@/lib/notify";
+import { isOnline } from "@/lib/discovery";
 
 export function ageFrom(birthdate?: string | null): number | null {
   if (!birthdate) return null;
@@ -38,6 +39,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
   const [liked, setLiked] = useState(false);
   const age = ageFrom(profile.birthdate);
   const distance = typeof profile._distance === "number" ? Math.round(profile._distance) : null;
+  const online = isOnline(profile);
 
   const likeMutation = useMutation({
     mutationFn: async () => {
@@ -71,6 +73,13 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
     <div className="group relative w-full rounded-xl overflow-hidden border border-border/40 bg-card shadow-[var(--shadow-card)]">
       <Link to="/profile/$pseudo" params={{ pseudo: profile.pseudo }} className="block w-full h-full">
         <div className="relative aspect-[2/3] w-full bg-secondary overflow-hidden">
+          {online && (
+            <span
+              className="absolute top-1.5 left-1.5 z-10 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/80"
+              title="En ligne"
+              aria-label="En ligne"
+            />
+          )}
           {profile.primary_photo_url ? (
             <img
               src={profile.primary_photo_url}

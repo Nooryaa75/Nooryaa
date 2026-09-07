@@ -265,6 +265,20 @@ function Recherche() {
           </div>
 
 
+          {/* En ligne */}
+          <label className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3 cursor-pointer">
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <span className={`h-2.5 w-2.5 rounded-full ${filters.onlineOnly ? "bg-emerald-500" : "bg-muted-foreground/30"}`} />
+              Actuellement connecté
+            </span>
+            <input
+              type="checkbox"
+              checked={filters.onlineOnly}
+              onChange={(e) => set({ onlineOnly: e.target.checked })}
+              className="h-4 w-4 accent-emerald-500"
+            />
+          </label>
+
           {/* Localisation */}
           <div className="space-y-3">
             <SectionTitle>Localisation</SectionTitle>

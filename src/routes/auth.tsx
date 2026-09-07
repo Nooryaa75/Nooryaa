@@ -22,9 +22,29 @@ function frenchAuthError(message?: string) {
   if (/email not confirmed/i.test(m)) return "Votre email n'est pas encore confirmé. Vérifiez votre boîte mail.";
   if (/user already registered/i.test(m)) return "Cet email est déjà utilisé.";
   if (/rate limit|too many/i.test(m)) return "Trop de tentatives. Merci de réessayer dans quelques minutes.";
-  if (/network|fetch/i.test(m)) return "Connexion au serveur impossible. Vérifiez votre réseau.";
+  if (/weak password|pwned/i.test(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus original (lettres, chiffres et symboles).";
+  if (/load failed|failed to fetch|networkerror|network request failed|network|fetch|timeout|aborted/i.test(m)) {
+    return "Connexion au serveur interrompue. Vérifiez votre réseau (ou désactivez le mode économie de données / bloqueur de publicité) puis réessayez.";
+  }
   return m || "Une erreur est survenue";
 }
+
+function isNetworkError(err: any) {
+  const m = String(err?.message || "");
+  return /load failed|failed to fetch|networkerror|network request failed|timeout|aborted/i.test(m);
+}
+
+// Certains réseaux mobiles coupent la première requête : on réessaie une fois.
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    if (!isNetworkError(err)) throw err;
+    await new Promise((r) => setTimeout(r, 1200));
+    return await fn();
+  }
+}
+
 
 
 async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
@@ -115,18 +135,20 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              phone: phone.trim(),
+        const { data, error } = await withRetry(() =>
+          supabase.auth.signUp({
+            email: email.trim().toLowerCase(),
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/onboarding`,
+              data: {
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                phone: phone.trim(),
+              },
             },
-          },
-        });
+          }),
+        );
         if (error) {
           if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
           if (/duplicate key|unique constraint|Database error/i.test(error.message)) {
@@ -143,9 +165,10 @@ function AuthPage() {
         }
         toast.success("Compte créé ! Vous pouvez compléter votre profil.");
         navigate({ to: "/onboarding" });
-
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await withRetry(() =>
+          supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password }),
+        );
         if (error) throw error;
         await redirectAfterAuth(navigate);
       }

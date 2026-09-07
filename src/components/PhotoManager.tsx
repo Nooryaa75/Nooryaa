@@ -78,15 +78,39 @@ export function PhotoManager({ userId }: { userId: string }) {
       setChecking(false);
     }
 
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
-    if (upErr) { toast.error(upErr.message); return; }
+    const { data: sessionData } = await supabase.auth.getSession();
+    const authId = sessionData.session?.user?.id;
+    if (!authId) {
+      toast.error("Votre session a expiré. Reconnectez-vous puis réessayez.");
+      return;
+    }
+
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const path = `${authId}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("profile-photos")
+      .upload(path, file, { upsert: false, contentType: file.type || "image/jpeg" });
+    if (upErr) {
+      toast.error(
+        /row-level security|policy|unauthorized/i.test(upErr.message)
+          ? "Envoi refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez."
+          : upErr.message,
+      );
+      return;
+    }
     const { data: signed } = await supabase.storage.from("profile-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
     if (!signed) { toast.error("URL non générée"); return; }
     const nextPos = (photos.reduce((m, p) => Math.max(m, p.position), 0) || 0) + 1;
-    const { error } = await supabase.from("photos").insert({ user_id: userId, url: signed.signedUrl, storage_path: path, position: nextPos });
-    if (error) { toast.error(error.message); return; }
+    const { error } = await supabase.from("photos").insert({ user_id: authId, url: signed.signedUrl, storage_path: path, position: nextPos });
+    if (error) {
+      toast.error(
+        /row-level security|policy/i.test(error.message)
+          ? "Enregistrement refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez."
+          : error.message,
+      );
+      return;
+    }
+
     if (photos.length === 0) {
       await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl, primary_photo_blurred: false }).eq("id", userId);
     }

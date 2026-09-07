@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, Bell } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
 import { SocialLinks } from "@/components/SocialLinks";
@@ -58,6 +58,15 @@ function Home() {
 
   // Matchs = likes croisés, triés du plus récent au plus ancien
   const { data: matches = [] } = useMatches(ctx.userId);
+
+  useEffect(() => {
+    function reset() {
+      setDeck(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    window.addEventListener("reset-home-deck", reset);
+    return () => window.removeEventListener("reset-home-deck", reset);
+  }, []);
 
 
   if (deck) {

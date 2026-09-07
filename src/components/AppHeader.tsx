@@ -31,6 +31,12 @@ function Badge({ count }: { count: number }) {
   );
 }
 
+function resetHomeDeck() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("reset-home-deck"));
+  }
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -62,6 +68,7 @@ export function AppHeader() {
                 <Link
                   key={l.to}
                   to={l.to}
+                  onClick={l.to === "/browse" ? resetHomeDeck : undefined}
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-colors ${
                     active ? "bg-secondary text-primary font-bold" : "text-muted-foreground font-medium hover:text-foreground"
@@ -91,6 +98,7 @@ export function AppHeader() {
             <Link
               key={l.to}
               to={l.to}
+              onClick={l.to === "/browse" ? resetHomeDeck : undefined}
               aria-current={active ? "page" : undefined}
               className={`flex flex-col items-center gap-1 px-2 text-[11px] ${
                 active ? "text-primary font-bold" : "text-primary/70 font-medium"

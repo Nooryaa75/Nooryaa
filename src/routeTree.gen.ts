@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
 import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -58,9 +60,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
+  id: '/reinitialiser-mot-de-passe',
+  path: '/reinitialiser-mot-de-passe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotreDifferenceRoute = NotreDifferenceRouteImport.update({
   id: '/notre-difference',
   path: '/notre-difference',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -281,7 +293,9 @@ const AuthenticatedCompteAbonnementRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -325,7 +339,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -370,7 +386,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
@@ -416,7 +434,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -460,7 +480,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -504,7 +526,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
@@ -550,7 +574,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   NotreDifferenceRoute: typeof NotreDifferenceRoute
+  ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -581,11 +607,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reinitialiser-mot-de-passe': {
+      id: '/reinitialiser-mot-de-passe'
+      path: '/reinitialiser-mot-de-passe'
+      fullPath: '/reinitialiser-mot-de-passe'
+      preLoaderRoute: typeof ReinitialiserMotDePasseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notre-difference': {
       id: '/notre-difference'
       path: '/notre-difference'
       fullPath: '/notre-difference'
       preLoaderRoute: typeof NotreDifferenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -952,7 +992,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  MotDePasseOublieRoute: MotDePasseOublieRoute,
   NotreDifferenceRoute: NotreDifferenceRoute,
+  ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,

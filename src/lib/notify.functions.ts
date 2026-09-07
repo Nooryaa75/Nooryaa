@@ -360,3 +360,91 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
 
     return { sent: status === "sent" };
   });
+
+/**
+ * Mot de passe oublié : génère un lien de réinitialisation sécurisé
+ * et l'envoie avec le template email Nooryaa (Resend).
+ * Réponse volontairement neutre : on n'indique jamais si l'email existe.
+ */
+export const sendPasswordReset = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string; origin?: string }) => {
+    const email = String(data?.email ?? "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
+    const origin = typeof data?.origin === "string" && /^https?:\/\//.test(data.origin) ? data.origin : undefined;
+    return { email, origin };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const base = data.origin ?? SITE_URL;
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email, pseudo, first_name")
+      .ilike("email", data.email)
+      .maybeSingle();
+    if (!profile?.email) return { sent: true };
+
+    const { data: link, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: "recovery",
+      email: profile.email,
+      options: { redirectTo: `${base}/reinitialiser-mot-de-passe` },
+    });
+    if (linkError || !link?.properties?.action_link) {
+      console.error("generateLink recovery error", linkError?.message);
+      return { sent: true };
+    }
+
+    const lovableKey = process.env["LOVABLE_API_KEY"];
+    const resendKey = process.env["RESEND_API_KEY"];
+    if (!lovableKey || !resendKey) return { sent: true };
+
+    const name = escapeHtml(profile.first_name || profile.pseudo || "");
+    const html = layout(
+      "Réinitialisation de votre mot de passe",
+      `<p>Assalamu alaykum ${name},</p>
+       <p>Vous avez demandé à réinitialiser le mot de passe de votre compte <strong>${SITE_NAME}</strong>.</p>
+       <p>Ce lien est valable <strong>1 heure</strong> et ne peut être utilisé qu'une seule fois.</p>
+       <p style="color:#8a83a6;font-size:13px;">Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email : votre mot de passe reste inchangé.</p>`,
+      "Choisir un nouveau mot de passe",
+      link.properties.action_link,
+    );
+
+    let status = "sent";
+    let errorText: string | null = null;
+    try {
+      const response = await fetch(`${GATEWAY_URL}/emails`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": resendKey,
+        },
+        body: JSON.stringify({
+          from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
+          to: [profile.email],
+          subject: `Réinitialisez votre mot de passe ${SITE_NAME}`,
+          html,
+        }),
+      });
+      if (!response.ok) {
+        status = "failed";
+        errorText = `[${response.status}] ${await response.text()}`;
+        console.error("Resend gateway error (reset)", errorText);
+      }
+    } catch (e: any) {
+      status = "failed";
+      errorText = e?.message ?? "unknown error";
+      console.error("Resend gateway exception (reset)", errorText);
+    }
+
+    await supabaseAdmin.from("email_notifications").insert({
+      user_id: profile.id,
+      kind: "password_reset",
+      actor_id: null,
+      email: profile.email,
+      status,
+      error: errorText,
+    });
+
+    return { sent: true };
+  });

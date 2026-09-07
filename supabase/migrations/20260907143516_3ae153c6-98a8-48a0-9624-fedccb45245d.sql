@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.delete_own_account() FROM authenticated;

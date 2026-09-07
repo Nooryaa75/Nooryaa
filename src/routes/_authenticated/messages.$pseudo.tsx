@@ -18,10 +18,10 @@ import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
-import { frenchError } from "@/lib/errors";
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/messages/$pseudo")({
   head: ({ params }) => ({ meta: [{ title: `Chat avec ${params.pseudo} — Nooryaa` }] }),

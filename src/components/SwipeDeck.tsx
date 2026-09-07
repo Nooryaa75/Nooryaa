@@ -326,6 +326,29 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <MessageCircle className="h-5 w-5" />
               </Button>
             )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full h-12 w-12 p-0 border-border text-muted-foreground hover:text-primary hover:border-primary"
+                  aria-label="Plus d'actions"
+                  disabled={isDeciding}
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top" className="min-w-[180px]">
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
+                  onClick={blockProfile}
+                  disabled={isDeciding}
+                >
+                  <Ban className="h-4 w-4 mr-2" /> Bloquer {current.pseudo}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="mt-2 text-center text-xs text-muted-foreground">

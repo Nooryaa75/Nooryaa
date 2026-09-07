@@ -12,7 +12,15 @@ export type Filters = {
   hasChildren: string; wantsChildren: string; smoker: string;
   radiusEnabled: boolean; radiusKm: number;
   originLabel: string; originLat: number | null; originLng: number | null;
+  onlineOnly: boolean;
 };
+
+/** Un profil est « en ligne » si sa dernière activité date de moins de 10 minutes. */
+export const ONLINE_MINUTES = 10;
+export function isOnline(p: { last_seen?: string | null }): boolean {
+  if (!p?.last_seen) return false;
+  return Date.now() - new Date(p.last_seen).getTime() < ONLINE_MINUTES * 60 * 1000;
+}
 
 export const DEFAULT_FILTERS: Filters = {
   ageMin: 18, ageMax: 60, heightMin: 120, heightMax: 230, city: "", country: ANY, countryOrigin: ANY,
@@ -23,6 +31,7 @@ export const DEFAULT_FILTERS: Filters = {
   hasChildren: ANY, wantsChildren: ANY, smoker: ANY,
   radiusEnabled: false, radiusKm: 50,
   originLabel: "", originLat: null, originLng: null,
+  onlineOnly: false,
 };
 
 /** Distance en km entre deux points (formule de haversine). */

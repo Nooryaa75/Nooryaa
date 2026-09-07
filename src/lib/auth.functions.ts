@@ -78,13 +78,14 @@ export const signUpByServer = createServerFn({ method: "POST" })
       throw new Error("Impossible de générer le lien de confirmation.");
     }
 
-    // Envoi du mail de confirmation en arrière-plan, via le template Nooryaa / Resend.
+    // Envoi du mail de confirmation via le template Nooryaa / Resend.
     const { sendEmailConfirmation } = await import("@/lib/notify.functions");
-    void sendEmailConfirmation({
+    const sendResult = await sendEmailConfirmation({
       email,
       firstName: data.firstName.trim(),
       confirmationUrl: linkData.properties.action_link,
-    }).catch(() => {});
+    }).catch(() => ({ sent: false as const }));
 
-    return { ok: true as const, email };
+    return { ok: true as const, email, emailSent: sendResult.sent };
+
   });

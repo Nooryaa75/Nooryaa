@@ -510,6 +510,21 @@ function Conversation() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bloquer {peer.pseudo} ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette personne ne pourra plus vous contacter ni voir votre profil, et réciproquement. Vous pourrez la débloquer depuis sa fiche.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={() => blockPeer.mutate()}>Bloquer</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={reportOpen} onOpenChange={setReportOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

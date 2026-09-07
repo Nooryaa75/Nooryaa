@@ -23,7 +23,7 @@ function frenchAuthError(message?: string) {
   if (/email not confirmed/i.test(m)) return "Votre email n'est pas encore confirmé. Vérifiez votre boîte mail.";
   if (/user already registered/i.test(m)) return "Cet email est déjà utilisé.";
   if (/rate limit|too many/i.test(m)) return "Trop de tentatives. Merci de réessayer dans quelques minutes.";
-  if (/weak password|pwned/i.test(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus original (lettres, chiffres et symboles).";
+  if (/weak|pwned|easy to guess|known to be weak|common|compromised/i.test(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus original (lettres, chiffres et symboles).";
   if (/load failed|failed to fetch|networkerror|network request failed|network|fetch|timeout|aborted/i.test(m)) {
     return "Connexion au serveur interrompue. Si vous utilisez un VPN, un pare-feu, un mode économie de données ou un bloqueur, désactivez-les momentanément puis réessayez.";
   }

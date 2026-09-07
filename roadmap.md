@@ -17,3 +17,7 @@
 - [x] Logo Nooryaa entre le titre Accueil et la cloche
 
 - [x] Profils invisibles : taille non renseignée exclue par le filtre
+
+## En cours
+- [x] Point vert « en ligne » sur les fiches (last_seen < 10 min) + critère « Actuellement connecté » dans la recherche
+- [x] SwipeDeck : remplacer la coche par un cœur pour liker

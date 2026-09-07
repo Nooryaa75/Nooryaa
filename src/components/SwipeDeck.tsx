@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
+  Heart, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
   GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
   Shield, Search, BadgeCheck, ShieldAlert, Ban, MoreHorizontal, Flag,
 } from "lucide-react";
@@ -301,12 +301,12 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             </Button>
             <Button
               size="lg"
-              className="rounded-full h-16 w-16 p-0 bg-primary text-primary-foreground hover:bg-primary/90"
-              aria-label="Valider ce profil"
+              className="rounded-full h-16 w-16 p-0 bg-[#E83E8C] text-white hover:bg-[#d12f7d]"
+              aria-label="Envoyer un coup de cœur"
               disabled={isDeciding}
               onClick={() => decide(true)}
             >
-              <Check className="h-7 w-7" />
+              <Heart className="h-7 w-7 fill-current" />
             </Button>
             {currentCanMessage ? (
               <Link to="/messages/$pseudo" params={{ pseudo: current.pseudo }}>

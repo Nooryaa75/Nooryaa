@@ -362,6 +362,59 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
   });
 
 /**
+ * Envoi manuel du lien de confirmation d'email (signup fallback serveur).
+ * Fonction utilitaire appelée depuis d'autres server functions.
+ */
+export async function sendEmailConfirmation(opts: {
+  email: string;
+  firstName?: string;
+  confirmationUrl: string;
+}) {
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  const resendKey = process.env["RESEND_API_KEY"];
+  if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
+
+  const name = escapeHtml(opts.firstName || "");
+  const html = layout(
+    "Confirmez votre adresse email",
+    `<p>Assalamu alaykum ${name},</p>
+     <p>Merci de rejoindre <strong>${SITE_NAME}</strong>. Pour activer votre compte et accéder à la plateforme, cliquez sur le bouton ci-dessous :</p>`,
+    "Confirmer mon email",
+    opts.confirmationUrl,
+  );
+
+  let status = "sent";
+  let errorText: string | null = null;
+  try {
+    const response = await fetch(`${GATEWAY_URL}/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+      },
+      body: JSON.stringify({
+        from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
+        to: [opts.email],
+        subject: `Confirmez votre inscription sur ${SITE_NAME}`,
+        html,
+      }),
+    });
+    if (!response.ok) {
+      status = "failed";
+      errorText = `[${response.status}] ${await response.text()}`;
+      console.error("Resend gateway error (confirmation)", errorText);
+    }
+  } catch (e: any) {
+    status = "failed";
+    errorText = e?.message ?? "unknown error";
+    console.error("Resend gateway exception (confirmation)", errorText);
+  }
+
+  return { sent: status === "sent", reason: status === "sent" ? ("ok" as const) : ("failed" as const), errorText };
+}
+
+/**
  * Mot de passe oublié : génère un lien de réinitialisation sécurisé
  * et l'envoie avec le template email Nooryaa (Resend).
  * Réponse volontairement neutre : on n'indique jamais si l'email existe.

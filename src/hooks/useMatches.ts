@@ -19,13 +19,14 @@ export function useMatches(userId: string | undefined) {
       const ids = [...sentMap.keys()].filter((id) => recvMap.has(id));
       if (ids.length === 0) return [] as any[];
       const { data: me } = await supabase.from("profiles").select("gender").eq("id", userId!).maybeSingle();
-      let q = supabase
+      // Un homme ne voit que des femmes, une femme que des hommes
+      const wanted = me?.gender === "homme" ? "femme" : me?.gender === "femme" ? "homme" : null;
+      if (!wanted) return [] as any[];
+      const q = supabase
         .from("profiles")
         .select("id, pseudo, birthdate, city, country, latitude, longitude, primary_photo_url, primary_photo_blurred, photo_verified, personality, porte_voile, objective")
-        .in("id", ids);
-      // Un homme ne voit que des femmes, une femme que des hommes
-      if (me?.gender === "homme") q = q.eq("gender", "femme");
-      else if (me?.gender === "femme") q = q.eq("gender", "homme");
+        .in("id", ids)
+        .eq("gender", wanted);
       const { data: profiles } = await q;
       return (profiles ?? [])
         .map((p: any) => {

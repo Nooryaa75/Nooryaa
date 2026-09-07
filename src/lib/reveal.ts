@@ -21,26 +21,23 @@ export function useLikeGraph(userId: string) {
 export type LikeGraph = { iLiked: Set<string>; likedMe: Set<string> } | undefined;
 
 /**
- * Une photo floutée se dévoile si son propriétaire m'a liké·e
- * et que je suis moi-même « ouvert·e » : soit je l'ai liké·e en retour,
- * soit ma propre photo n'est pas floutée.
+ * Le floutage dépend uniquement du choix de son propriétaire :
+ * aucun dévoilement automatique (coups de cœur réciproques ou autre).
+ * Seul mon propre profil m'est toujours visible en clair.
  */
-/** Le flou d'un profil est levé pour moi ? (réciprocité des coups de cœur) */
 export function isRevealed(
   target: { id?: string | null } | null | undefined,
-  me: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
-  graph: LikeGraph,
+  me: { id?: string | null } | null | undefined,
+  _graph?: LikeGraph,
 ): boolean {
   if (!target?.id || !me?.id) return false;
-  if (target.id === me.id) return false;
-  if (!graph?.likedMe.has(target.id)) return false;
-  return graph.iLiked.has(target.id) || !me.primary_photo_blurred;
+  return target.id === me.id;
 }
 
 export function isBlurred(
   target: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
-  me: { id?: string | null; primary_photo_blurred?: boolean | null } | null | undefined,
-  graph: LikeGraph,
+  me: { id?: string | null } | null | undefined,
+  graph?: LikeGraph,
 ): boolean {
   if (!target?.primary_photo_blurred) return false;
   return !isRevealed(target, me, graph);

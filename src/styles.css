@@ -104,6 +104,23 @@
   --shadow-card: 0 8px 30px -10px oklch(0.26 0.028 275 / 0.14);
   --glow-gold: 0 0 0 1px color-mix(in oklab, var(--gold) 30%, transparent), 0 10px 40px -12px color-mix(in oklab, var(--gold) 40%, transparent);
 
+  /* Notifications (sonner) aux couleurs Nooryaa — plus de vert par défaut */
+  --normal-bg: var(--card);
+  --normal-text: var(--card-foreground);
+  --normal-border: color-mix(in oklab, var(--gold) 30%, var(--border));
+  --success-bg: oklch(0.945 0.032 305);          /* lavande */
+  --success-text: oklch(0.38 0.155 305);         /* indigo */
+  --success-border: oklch(0.62 0.222 355);       /* magenta */
+  --info-bg: oklch(0.945 0.032 305);
+  --info-text: oklch(0.38 0.155 305);
+  --info-border: oklch(0.62 0.222 355);
+  --warning-bg: oklch(0.96 0.05 55);
+  --warning-text: oklch(0.42 0.12 40);
+  --warning-border: oklch(0.68 0.19 22);
+  --error-bg: oklch(0.96 0.03 20);
+  --error-text: oklch(0.45 0.17 22);
+  --error-border: oklch(0.68 0.19 22);
+
 
 
 

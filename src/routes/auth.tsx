@@ -166,8 +166,9 @@ function AuthPage() {
         toast.success("Compte créé ! Vous pouvez compléter votre profil.");
         navigate({ to: "/onboarding" });
 
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await withRetry(() =>
+          supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password }),
+        );
         if (error) throw error;
         await redirectAfterAuth(navigate);
       }

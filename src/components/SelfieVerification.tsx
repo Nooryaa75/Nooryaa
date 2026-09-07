@@ -18,7 +18,13 @@ async function toDataUrl(file: File, max = 768): Promise<string> {
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-export function SelfieVerification({ userId }: { userId: string }) {
+export function SelfieVerification({
+  userId,
+  onVerified,
+}: {
+  userId: string;
+  onVerified?: () => void;
+}) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);

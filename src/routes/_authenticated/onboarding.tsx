@@ -123,6 +123,10 @@ function Onboarding() {
     if (selfieRequired && !form.photo_verified) {
       toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
     }
+    const { count: photoCount } = await supabase.from("photos").select("*", { count: "exact", head: true }).eq("user_id", ctx.userId);
+    if (!photoCount || photoCount === 0) {
+      toast.error("Veuillez ajouter au moins une photo de profil."); return;
+    }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
@@ -345,6 +349,7 @@ function Onboarding() {
           <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 50</p>
         </div>
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
+          <Label>Photos de profil *</Label>
           <PhotoManager userId={ctx.userId} />
         </div>
         <SelfieVerification userId={ctx.userId} />

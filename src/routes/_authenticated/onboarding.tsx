@@ -58,6 +58,7 @@ function Onboarding() {
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
+  const [extraError, setExtraError] = useState<string | null>(null);
   const errorBoxRef = useRef<HTMLDivElement | null>(null);
   // 20h00 à Paris ce soir (UTC+2 en septembre) = 18h00 UTC
   const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);

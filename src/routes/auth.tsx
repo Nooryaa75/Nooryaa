@@ -177,22 +177,9 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const payload = {
-          email: email.trim().toLowerCase(),
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              phone: phone.trim(),
-            },
-          },
-        };
-
         // L'email de vérification est toujours envoyé par notre serveur via Resend
         // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
-        void payload;
+
         await signUpByServer({
           data: {
             email: email.trim().toLowerCase(),

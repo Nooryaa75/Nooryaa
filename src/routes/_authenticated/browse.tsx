@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, Bell } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
 import { SocialLinks } from "@/components/SocialLinks";

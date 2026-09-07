@@ -224,9 +224,13 @@ function AuthPage() {
         <h1 className="text-2xl font-serif text-center text-primary mb-1">
           {mode === "signup" ? "Créer un compte" : "Connexion"}
         </h1>
-        <p className="text-center text-sm text-muted-foreground mb-6">
+        <p className="text-center text-sm text-muted-foreground mb-3">
           {mode === "signup" ? "Commencez votre recherche aujourd'hui — c'est gratuit." : "Connectez-vous à votre profil"}
         </p>
+
+        <div className="mb-5">
+          <StoreBadges />
+        </div>
 
         <Button
           onClick={handleGoogle}
@@ -309,9 +313,6 @@ function AuthPage() {
           </Link>
         </p>
 
-        <div className="mt-6">
-          <StoreBadges />
-        </div>
       </div>
     </div>
   );

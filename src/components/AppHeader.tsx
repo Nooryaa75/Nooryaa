@@ -31,6 +31,12 @@ function Badge({ count }: { count: number }) {
   );
 }
 
+function resetHomeDeck() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("reset-home-deck"));
+  }
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();

@@ -29,6 +29,7 @@ import { ProfileVignette } from "@/components/ProfileVignette";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { getSavedSearchCounts } from "@/lib/search.functions";
 import {
+import { frenchError } from "@/lib/errors";
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -128,7 +129,7 @@ function Recherche() {
     const { error } = await supabase.from("saved_searches").insert({
       user_id: ctx.userId, name, filters: filters as any, last_notified_at: new Date().toISOString(),
     } as any);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error(frenchError(error)); return; }
     setSearchName("");
     toast.success("Recherche enregistrée");
     qc.invalidateQueries({ queryKey: ["saved-searches", ctx.userId] });
@@ -136,7 +137,7 @@ function Recherche() {
 
   async function deleteSearch(id: string) {
     const { error } = await supabase.from("saved_searches").delete().eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error(frenchError(error)); return; }
     qc.invalidateQueries({ queryKey: ["saved-searches", ctx.userId] });
   }
 

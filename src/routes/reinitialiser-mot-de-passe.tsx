@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/reinitialiser-mot-de-passe")({
   ssr: false,
@@ -100,7 +101,7 @@ function ResetPassword() {
       await supabase.auth.signOut();
       navigate({ to: "/auth", search: { mode: "signin" } });
     } catch (err: any) {
-      toast.error(err?.message || "Impossible de mettre à jour le mot de passe.");
+      toast.error(frenchError(err, "Impossible de mettre à jour le mot de passe."));
     } finally {
       setLoading(false);
     }

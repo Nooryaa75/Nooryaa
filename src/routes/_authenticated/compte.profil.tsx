@@ -16,6 +16,7 @@ import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { SearchPreferences } from "@/components/SearchPreferences";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/compte/profil")({
   head: () => ({ meta: [{ title: "Mon profil — Nooryaa" }] }),
@@ -89,7 +90,7 @@ function MyProfile() {
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profil mis à jour"); qc.invalidateQueries({ queryKey: ["me"] }); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e, "L'enregistrement a échoué.")),
   });
 
   if (!form) return <div className="text-center py-12">Chargement...</div>;

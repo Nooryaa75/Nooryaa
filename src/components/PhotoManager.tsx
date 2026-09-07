@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
 import { CameraCapture } from "@/components/CameraCapture";
+import { frenchError } from "@/lib/errors";
 
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
@@ -106,7 +107,7 @@ export function PhotoManager({ userId }: { userId: string }) {
       toast.error(
         /row-level security|policy/i.test(error.message)
           ? "Enregistrement refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez."
-          : error.message,
+          : frenchError(error),
       );
       return;
     }
@@ -141,7 +142,7 @@ export function PhotoManager({ userId }: { userId: string }) {
   async function toggleBlur(photo: any) {
     const next = !photo.blurred;
     const { error } = await supabase.from("photos").update({ blurred: next }).eq("id", photo.id);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error(frenchError(error, "L'enregistrement de la photo a échoué.")); return; }
     if (profile?.primary_photo_url === photo.url) {
       await supabase.from("profiles").update({ primary_photo_blurred: next }).eq("id", userId);
     }

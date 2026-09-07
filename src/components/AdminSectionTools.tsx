@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Download, Printer, Archive, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 type Props = {
   section: SectionKey;
@@ -37,7 +38,7 @@ export function AdminSectionTools({ section, label, compact, onDone }: Props) {
       downloadCsv(`nooryaa-${section}-${new Date().toISOString().slice(0, 10)}.csv`, res.rows);
       toast.success(`${res.rows.length} ligne(s) exportée(s).`);
     },
-    onError: (e: any) => toast.error(e?.message ?? "Export impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Export impossible")),
   });
 
   const print = useMutation({
@@ -46,7 +47,7 @@ export function AdminSectionTools({ section, label, compact, onDone }: Props) {
       if (res.rows.length === 0) return toast.info("Aucune donnée à imprimer.");
       if (!printRows(`Nooryaa — ${label}`, res.rows)) toast.error("Autorisez les fenêtres pop-up pour imprimer.");
     },
-    onError: (e: any) => toast.error(e?.message ?? "Impression impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Impression impossible")),
   });
 
   const archive = useMutation({
@@ -56,7 +57,7 @@ export function AdminSectionTools({ section, label, compact, onDone }: Props) {
       setConfirming(null); setConfirm("");
       refresh();
     },
-    onError: (e: any) => toast.error(e?.message ?? "Archivage impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Archivage impossible")),
   });
 
   const reset = useMutation({
@@ -66,7 +67,7 @@ export function AdminSectionTools({ section, label, compact, onDone }: Props) {
       setConfirming(null); setConfirm("");
       refresh();
     },
-    onError: (e: any) => toast.error(e?.message ?? "Effacement impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Effacement impossible")),
   });
 
   const busy = exportCsv.isPending || print.isPending || archive.isPending || reset.isPending;

@@ -6,6 +6,7 @@ import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/conversations/$pair")({
   ssr: false,
@@ -32,7 +33,7 @@ function AdminConversationView() {
   const delMut = useMutation({
     mutationFn: (id: string) => del({ data: { id } }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-conv", a, b] }); toast.success("Message supprimé"); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const pA = data?.participants.find((p: any) => p.id === a);

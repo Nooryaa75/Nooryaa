@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/config")({
   ssr: false,
@@ -61,7 +62,7 @@ function AdminConfig() {
       setDraft(null);
       qc.invalidateQueries({ queryKey: ["admin-plans"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
   });
 
   const delMut = useMutation({
@@ -78,7 +79,7 @@ function AdminConfig() {
       toast.success(v.active ? "Formule activée" : "Formule désactivée");
       qc.invalidateQueries({ queryKey: ["admin-plans"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
   });
 
   return (
@@ -262,7 +263,7 @@ function SocialSection() {
       qc.invalidateQueries({ queryKey: ["admin-social-links"] });
       qc.invalidateQueries({ queryKey: ["social-links"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
   });
 
   return (

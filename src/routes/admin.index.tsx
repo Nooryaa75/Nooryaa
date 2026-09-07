@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
@@ -62,7 +63,7 @@ function AdminDashboard() {
       const existing = res.results.filter((r) => r.status === "exists").length;
       toast.success(`${created} profil(s) créé(s), ${existing} déjà présent(s).`);
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur lors de la création"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur lors de la création")),
   });
 
   const c = data?.counters;

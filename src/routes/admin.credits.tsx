@@ -8,6 +8,7 @@ import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/credits")({
   ssr: false,
@@ -42,7 +43,7 @@ function AdminCredits() {
       qc.invalidateQueries({ queryKey: ["admin-credits"] });
       qc.invalidateQueries({ queryKey: ["admin-credit-history"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
   });
 
   const kinds = [

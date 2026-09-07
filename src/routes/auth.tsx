@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/notify.functions";
+import { signUpByServer } from "@/lib/auth.functions";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const searchSchema = z.object({
@@ -24,7 +25,7 @@ function frenchAuthError(message?: string) {
   if (/rate limit|too many/i.test(m)) return "Trop de tentatives. Merci de réessayer dans quelques minutes.";
   if (/weak password|pwned/i.test(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus original (lettres, chiffres et symboles).";
   if (/load failed|failed to fetch|networkerror|network request failed|network|fetch|timeout|aborted/i.test(m)) {
-    return "Connexion au serveur interrompue. Vérifiez votre réseau (ou désactivez le mode économie de données / bloqueur de publicité) puis réessayez.";
+    return "Connexion au serveur interrompue. Si vous utilisez un VPN, un pare-feu, un mode économie de données ou un bloqueur, désactivez-les momentanément puis réessayez.";
   }
   return m || "Une erreur est survenue";
 }
@@ -34,15 +35,19 @@ function isNetworkError(err: any) {
   return /load failed|failed to fetch|networkerror|network request failed|timeout|aborted/i.test(m);
 }
 
-// Certains réseaux mobiles coupent la première requête : on réessaie une fois.
-async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch (err) {
-    if (!isNetworkError(err)) throw err;
-    await new Promise((r) => setTimeout(r, 1200));
-    return await fn();
+// Certains réseaux mobiles / VPN / pare-feu coupent les requêtes : on réessaie plusieurs fois.
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastErr: any;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (!isNetworkError(err)) throw err;
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
   }
+  throw lastErr;
 }
 
 
@@ -102,6 +107,43 @@ function PasswordInput({ id, value, onChange, ...rest }: { id: string; value: st
   );
 }
 
+function passwordStrength(p: string) {
+  let score = 0;
+  if (p.length >= 8) score++;
+  if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+  if (/[0-9]/.test(p)) score++;
+  if (/[^A-Za-z0-9]/.test(p)) score++;
+  return score;
+}
+
+function PasswordStrength({ password }: { password: string }) {
+  const score = passwordStrength(password);
+  if (!password) return null;
+  const labels = ["Faible", "Moyen", "Correct", "Sécurisé"];
+  const colors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-green-500"];
+  const text = ["text-red-500", "text-orange-500", "text-yellow-500", "text-green-500"];
+  const index = Math.max(0, Math.min(score - 1, 3));
+  return (
+    <div className="mt-2 space-y-1.5">
+      <div className="flex gap-1">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${i <= score ? colors[index] : "bg-muted"}`}
+          />
+        ))}
+      </div>
+      <p className={`text-[11px] font-medium ${text[index]}`}>{labels[index]}</p>
+      <ul className="text-[10px] text-muted-foreground space-y-0.5">
+        <li className={password.length >= 8 ? "text-green-500" : ""}>Au moins 8 caractères</li>
+        <li className={/[a-z]/.test(password) && /[A-Z]/.test(password) ? "text-green-500" : ""}>Majuscules et minuscules</li>
+        <li className={/[0-9]/.test(password) ? "text-green-500" : ""}>Au moins un chiffre</li>
+        <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-500" : ""}>Au moins un caractère spécial</li>
+      </ul>
+    </div>
+  );
+}
+
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
@@ -135,20 +177,43 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const { data, error } = await withRetry(() =>
-          supabase.auth.signUp({
-            email: email.trim().toLowerCase(),
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/onboarding`,
-              data: {
-                first_name: firstName.trim(),
-                last_name: lastName.trim(),
-                phone: phone.trim(),
-              },
+        const payload = {
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/onboarding`,
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              phone: phone.trim(),
             },
-          }),
-        );
+          },
+        };
+
+        let signupResult: { data: any; error: any };
+        try {
+          signupResult = await withRetry(() => supabase.auth.signUp(payload), 3);
+        } catch (err) {
+          if (isNetworkError(err)) {
+            // Recours serveur quand le client ne peut pas joindre Supabase (VPN, réseau filtré…)
+            await signUpByServer({
+              data: {
+                email,
+                password,
+                firstName,
+                lastName,
+                phone,
+                origin: window.location.origin,
+              },
+            });
+            setSignupEmailSent(true);
+            toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+            return;
+          }
+          throw err;
+        }
+
+        const { data, error } = signupResult;
         if (error) {
           if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
           if (/duplicate key|unique constraint|Database error/i.test(error.message)) {
@@ -307,6 +372,7 @@ function AuthPage() {
           <div>
             <Label htmlFor="password">Mot de passe</Label>
             <PasswordInput id="password" required minLength={6} value={password} onChange={setPassword} />
+            {mode === "signup" && <PasswordStrength password={password} />}
             {mode === "signin" && (
               <p className="text-right mt-1">
                 <Link to="/mot-de-passe-oublie" className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4">

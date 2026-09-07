@@ -42,7 +42,19 @@ export function AdminNav() {
   };
 
   async function handleLogout() {
-    await logout();
+    try {
+      await logout();
+    } catch {
+      // on poursuit quand même la déconnexion côté membre
+    }
+    // Si l'admin est aussi connecté via son compte membre (rôle admin),
+    // il faut fermer cette session sinon la page de login le renvoie dans l'admin.
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      await supabase.auth.signOut();
+    } catch {
+      // ignore
+    }
     navigate({ to: "/admin/login" });
   }
 

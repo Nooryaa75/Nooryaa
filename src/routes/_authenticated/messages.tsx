@@ -13,6 +13,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
+import { useMyProfile } from "@/lib/match";
+import { useLikeGraph, isBlurred } from "@/lib/reveal";
 
 export const Route = createFileRoute("/_authenticated/messages")({
   head: () => ({ meta: [{ title: "Messages — Nooryaa" }] }),
@@ -23,6 +25,7 @@ type Convo = {
   id: string;
   pseudo: string;
   primary_photo_url: string | null;
+  primary_photo_blurred: boolean;
   lastText: string;
   lastAt: string | null;
   lastIsMine: boolean;
@@ -66,6 +69,8 @@ function MessagesLayout() {
   const isDetail = pathname !== "/messages";
   const qc = useQueryClient();
   const online = useOnlineUsers(ctx.userId);
+  const { data: me } = useMyProfile(ctx.userId);
+  const { data: likeGraph } = useLikeGraph(ctx.userId);
 
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; pseudo: string } | null>(null);
   const [reportOpen, setReportOpen] = useState<{ id: string; pseudo: string } | null>(null);
@@ -110,7 +115,7 @@ function MessagesLayout() {
       const filtered = [...ids].filter((id) => !excluded.has(id) && (byPeer.get(id)?.visible || likedIds.has(id)));
       if (filtered.length === 0) return [];
 
-      const { data: profs } = await supabase.from("profiles").select("id, pseudo, primary_photo_url").in("id", filtered);
+      const { data: profs } = await supabase.from("profiles").select("id, pseudo, primary_photo_url, primary_photo_blurred").in("id", filtered);
       return (profs ?? []).map((p) => {
         const e = byPeer.get(p.id);
         const last = e?.last;
@@ -125,6 +130,7 @@ function MessagesLayout() {
           id: p.id,
           pseudo: p.pseudo,
           primary_photo_url: p.primary_photo_url,
+          primary_photo_blurred: !!p.primary_photo_blurred,
           lastText,
           lastAt: last?.created_at ?? null,
           lastIsMine: last?.sender === ctx.userId,
@@ -274,7 +280,7 @@ function MessagesLayout() {
               >
                 <Link to="/messages/$pseudo" params={{ pseudo: p.pseudo }} className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="h-12 w-12 rounded-full bg-secondary overflow-hidden flex items-center justify-center shrink-0 ring-2 ring-secondary">
-                    {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className="w-full h-full object-cover" /> : <User className="h-5 w-5 text-muted-foreground" />}
+                    {p.primary_photo_url ? <img src={p.primary_photo_url} alt="" className={`w-full h-full object-cover ${isBlurred(p as any, me as any, likeGraph) ? "blur-md scale-110" : ""}`} /> : <User className="h-5 w-5 text-muted-foreground" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-foreground flex items-center gap-1.5">

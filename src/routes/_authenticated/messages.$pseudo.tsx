@@ -15,7 +15,7 @@ import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { PrayerChatNotice } from "@/components/PrayerChatNotice";
 import { useMyProfile } from "@/lib/match";
-import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { useLikeGraph, canMessage, isBlurred, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -51,12 +51,14 @@ function Conversation() {
 
   const { data: peer } = useQuery({
     queryKey: ["peer", pseudo],
-    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url, gender").eq("pseudo", pseudo).single()).data,
+    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url, primary_photo_blurred, gender").eq("pseudo", pseudo).single()).data,
   });
 
   const { data: me } = useMyProfile(ctx.userId);
   const { data: likeGraph } = useLikeGraph(ctx.userId);
   const messagingAllowed = canMessage(me, peer, likeGraph);
+  const peerBlurred = isBlurred(peer as any, me as any, likeGraph);
+  const peerAvatarClass = `w-full h-full object-cover ${peerBlurred ? "blur-md scale-110" : ""}`;
 
   const { data: messages } = useQuery({
     queryKey: ["messages", ctx.userId, peer?.id],
@@ -309,7 +311,7 @@ function Conversation() {
         <Link to="/messages" className="text-primary"><ArrowLeft className="h-5 w-5" /></Link>
         <Link to="/profile/$pseudo" params={{ pseudo: peer.pseudo }} className="flex items-center gap-3 flex-1 min-w-0">
           <div className="h-10 w-10 rounded-full bg-secondary overflow-hidden shrink-0">
-            {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+            {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className={peerAvatarClass} />}
           </div>
           <span className="min-w-0">
             <span className="font-bold text-foreground flex items-center gap-1.5">
@@ -354,7 +356,7 @@ function Conversation() {
             <div key={m.id} className={`flex items-end gap-2 group ${mine ? "justify-end" : "justify-start"}`}>
               {!mine && (
                 <div className="h-8 w-8 rounded-full bg-secondary overflow-hidden shrink-0">
-                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className={peerAvatarClass} />}
                 </div>
               )}
               {mine && !m.deleted_at && (

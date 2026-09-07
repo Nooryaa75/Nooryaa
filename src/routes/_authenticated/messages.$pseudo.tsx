@@ -238,6 +238,23 @@ function Conversation() {
 
 
 
+  const blockPeer = useMutation({
+    mutationFn: async () => {
+      if (!peer) return;
+      const { error } = await supabase.from("blocks").insert({ blocker: ctx.userId, blocked: peer.id } as any);
+      if (error) throw error;
+      await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", peer.id);
+    },
+    onSuccess: () => {
+      toast.success("Profil bloqué");
+      qc.invalidateQueries({ queryKey: ["block"] });
+      qc.invalidateQueries({ queryKey: ["browse"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+      navigate({ to: "/messages" });
+    },
+    onError: (e: any) => toast.error(frenchError(e)),
+  });
+
   async function handlePhoto(file: File) {
     if (!peer) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo trop lourde (max 5 Mo)"); return; }
@@ -329,6 +346,9 @@ function Conversation() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setReportOpen(true)}>
               <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={() => setConfirmBlock(true)}>
+              <Ban className="h-4 w-4 mr-2" /> Bloquer {peer.pseudo}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDeleteConvo(true)}>
               <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation

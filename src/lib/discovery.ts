@@ -75,6 +75,10 @@ export async function queryDiscoveryProfiles({
   q = q.eq("gender", wantedGender);
 
   q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);
+  if (filters.onlineOnly) {
+    const cutoff = new Date(Date.now() - ONLINE_MINUTES * 60 * 1000).toISOString();
+    q = q.gte("last_seen", cutoff);
+  }
   // La taille peut ne pas être renseignée : on n'exclut pas ces profils.
   if (filters.heightMin != null) q = q.or(`height_cm.is.null,height_cm.gte.${filters.heightMin}`);
   if (filters.heightMax != null) q = q.or(`height_cm.is.null,height_cm.lte.${filters.heightMax}`);

@@ -4,9 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Navigation, Clock } from "lucide-react";
 import type { DeckKey } from "@/components/DeckCard";
 import { matchPercent } from "@/lib/match";
-import { ANY, DEFAULT_FILTERS, distanceKm, queryDiscoveryProfiles, type Filters } from "@/lib/discovery";
+import { ANY, DEFAULT_FILTERS, distanceKm, isOnline, queryDiscoveryProfiles, type Filters } from "@/lib/discovery";
 
-export { ANY, DEFAULT_FILTERS, distanceKm, type Filters };
+export { ANY, DEFAULT_FILTERS, distanceKm, isOnline, type Filters };
 
 export const buildDecks = (
   gender?: string | null,

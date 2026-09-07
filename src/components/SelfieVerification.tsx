@@ -45,8 +45,10 @@ export function SelfieVerification({
     try {
       const selfieDataUrl = await toDataUrl(file);
       const res = await run({ data: { selfieDataUrl } });
-      if (res.verdict === "verified") toast.success(res.reason || "Photo vérifiée ✅");
-      else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
+      if (res.verdict === "verified") {
+        toast.success(res.reason || "Photo vérifiée ✅");
+        onVerified?.();
+      } else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
       else toast.warning(res.reason || "Vérification à confirmer");
       await qc.invalidateQueries({ queryKey: ["me", userId] });
     } catch {

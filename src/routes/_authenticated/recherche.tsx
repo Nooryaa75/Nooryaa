@@ -29,9 +29,9 @@ import { ProfileVignette } from "@/components/ProfileVignette";
 import { useDiscovery, DEFAULT_FILTERS, ANY, type Filters } from "@/hooks/useDiscovery";
 import { getSavedSearchCounts } from "@/lib/search.functions";
 import {
-import { frenchError } from "@/lib/errors";
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/recherche")({
   head: () => ({

@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Trash2, Plus, ExternalLink, Megaphone } from "lucide-react";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/ads")({
   ssr: false,
@@ -35,12 +36,12 @@ function AdminAds() {
   const upsertMut = useMutation({
     mutationFn: (vars: any) => upsert({ data: vars }),
     onSuccess: () => { toast.success("Publicité enregistrée"); qc.invalidateQueries({ queryKey: ["admin-ads"] }); setEditing(null); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
   const delMut = useMutation({
     mutationFn: (id: string) => del({ data: { id } }),
     onSuccess: () => { toast.success("Supprimée"); qc.invalidateQueries({ queryKey: ["admin-ads"] }); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const toggleActive = (a: AdRow) => upsertMut.mutate({ id: a.id, title: a.title ?? "", image_url: a.image_url, link_url: a.link_url ?? "", active: !a.active, sort_order: a.sort_order });

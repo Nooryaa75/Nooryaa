@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
 import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon } from "lucide-react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/profiles/$id")({
   ssr: false,
@@ -31,13 +32,13 @@ function AdminProfileDetail() {
   const statusMut = useMutation({
     mutationFn: (status: "active" | "suspended" | "banned") => setStatus({ data: { id, status } }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profile", id] }); toast.success("Statut mis à jour"); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const deleteMut = useMutation({
     mutationFn: () => del({ data: { id } }),
     onSuccess: () => { toast.success("Profil supprimé"); navigate({ to: "/admin/profiles" }); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   if (!data?.profile) return (

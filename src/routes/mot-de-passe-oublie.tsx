@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/mot-de-passe-oublie")({
   head: () => ({
@@ -35,7 +36,7 @@ function ForgotPassword() {
       await requestReset({ data: { email, origin: window.location.origin } });
       setSent(true);
     } catch (err: any) {
-      toast.error(err?.message || "Une erreur est survenue");
+      toast.error(frenchError(err));
     } finally {
       setLoading(false);
     }

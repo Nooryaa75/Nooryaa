@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/reports")({
   ssr: false,
@@ -38,7 +39,7 @@ function AdminReports() {
   const suspendMut = useMutation({
     mutationFn: (id: string) => setProfileStatus({ data: { id, status: "suspended" } }),
     onSuccess: () => toast.success("Profil suspendu"),
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   return (

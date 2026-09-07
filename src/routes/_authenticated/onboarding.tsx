@@ -14,6 +14,7 @@ import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { frenchError } from "@/lib/errors";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -162,7 +163,7 @@ function Onboarding() {
       onboarded: true,
     }).eq("id", ctx.userId);
     setLoading(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error(frenchError(error, "L'enregistrement a échoué.")); return; }
     toast.success("Profil créé !");
     navigate({ to: "/browse" });
   }

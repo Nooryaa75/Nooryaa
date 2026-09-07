@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   head: () => ({ meta: [{ title: "Mon abonnement — Nooryaa" }] }),
@@ -179,7 +180,7 @@ function AbonnementPage() {
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {
-      toast.error(e.message || "La suspension a échoué.");
+      toast.error(frenchError(e, "La suspension a échoué."));
     } finally {
       setLoading(null);
       setSuspendOpen(false);
@@ -194,7 +195,7 @@ function AbonnementPage() {
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {
-      toast.error(e.message || "La suppression a échoué.");
+      toast.error(frenchError(e, "La suppression a échoué."));
     } finally {
       setLoading(null);
       setDeleteOpen(false);

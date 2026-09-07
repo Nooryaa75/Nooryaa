@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/compte/service-client")({
   head: () => ({ meta: [{ title: "Service client — Nooryaa" }] }),
@@ -53,7 +54,7 @@ function ServiceClientPage() {
       setCategory("");
       setMessage("");
     } catch (e: any) {
-      toast.error(e.message || "L'envoi a échoué. Veuillez réessayer.");
+      toast.error(frenchError(e, "L'envoi a échoué. Veuillez réessayer."));
     } finally {
       setLoading(false);
     }

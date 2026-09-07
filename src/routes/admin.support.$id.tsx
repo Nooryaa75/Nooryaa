@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/support/$id")({
   ssr: false,
@@ -40,7 +41,7 @@ function TicketDetail() {
       qc.invalidateQueries({ queryKey: ["admin-ticket", id] });
       qc.invalidateQueries({ queryKey: ["admin-tickets"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erreur"),
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
   });
 
   const setStatus = useMutation({

@@ -16,6 +16,7 @@ import { notifyLike, notifyByEmail } from "@/lib/notify";
 import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
   head: ({ params }) => ({ meta: [{ title: `${params.pseudo} — Nooryaa` }] }),
@@ -126,7 +127,7 @@ function ProfileView() {
     if (!profile) return;
     const reason = `[${reportCategory}] ${reportDetail.trim()}`.slice(0, 500);
     const { error } = await supabase.from("reports").insert({ reporter: ctx.userId, reported: profile.id, reason });
-    if (error) toast.error(error.message);
+    if (error) toast.error(frenchError(error));
     else { toast.success("Signalement envoyé à la modération"); setReportOpen(false); setReportDetail(""); }
   }
 

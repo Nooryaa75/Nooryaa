@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/messages")({
   head: () => ({ meta: [{ title: "Messages — Nooryaa" }] }),
@@ -171,7 +172,7 @@ function MessagesLayout() {
       qc.invalidateQueries({ queryKey: ["conversations"] });
       qc.invalidateQueries({ queryKey: ["unread-counts"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const reportAbuse = useMutation({
@@ -189,7 +190,7 @@ function MessagesLayout() {
       setReportOpen(null);
       setReportReason("");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const tabs = [

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, Download, Printer, Trash2 } from "lucide-react";
 import { downloadJson, printRows } from "@/lib/admin-export";
 import { toast } from "sonner";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/reset")({
   ssr: false,
@@ -49,13 +50,13 @@ function AdminDataManagement() {
       if (mode === "download") downloadJson(`nooryaa-archive-${a.section}-${a.created_at.slice(0, 10)}.json`, rows);
       else if (!printRows(`Archive — ${a.label}`, rows)) toast.error("Autorisez les fenêtres pop-up pour imprimer.");
     },
-    onError: (e: any) => toast.error(e?.message ?? "Lecture impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Lecture impossible")),
   });
 
   const removeArchive = useMutation({
     mutationFn: (id: string) => deleteArchiveFn({ data: { id } }),
     onSuccess: () => { toast.success("Archive supprimée."); qc.invalidateQueries({ queryKey: ["admin-archives"] }); },
-    onError: (e: any) => toast.error(e?.message ?? "Suppression impossible"),
+    onError: (e: any) => toast.error(frenchError(e, "Suppression impossible")),
   });
 
   return (

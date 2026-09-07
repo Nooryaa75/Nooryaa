@@ -21,6 +21,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/_authenticated/messages/$pseudo")({
   head: ({ params }) => ({ meta: [{ title: `Chat avec ${params.pseudo} — Nooryaa` }] }),
@@ -167,7 +168,7 @@ function Conversation() {
       setText(""); setReplyTo(null); setEditing(null);
       qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const removeMessage = useMutation({
@@ -181,7 +182,7 @@ function Conversation() {
       if (m.audio_path) await supabase.storage.from("message-audio").remove([m.audio_path]);
     },
     onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const deleteConversation = useMutation({
@@ -211,7 +212,7 @@ function Conversation() {
       qc.invalidateQueries({ queryKey: ["conversations"] });
       navigate({ to: "/messages" });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const reportAbuse = useMutation({
@@ -229,7 +230,7 @@ function Conversation() {
       setReportOpen(false);
       setReportReason("");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
 
@@ -252,7 +253,7 @@ function Conversation() {
       setReplyTo(null);
       qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     } catch (e: any) {
-      toast.error(e.message);
+      toast.error(frenchError(e));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -291,7 +292,7 @@ function Conversation() {
       setReplyTo(null);
       qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
     } catch (e: any) {
-      toast.error(e.message);
+      toast.error(frenchError(e));
     } finally {
       setSendingVoice(false);
     }

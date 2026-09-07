@@ -5,9 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { notifyLike } from "@/lib/notify";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
   GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
-  Shield, Search, BadgeCheck, ShieldAlert,
+  Shield, Search, BadgeCheck, ShieldAlert, Ban, MoreHorizontal, Flag,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";

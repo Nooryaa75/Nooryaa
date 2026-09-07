@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Heart, Bell } from "lucide-react";
 import { DailyReminder } from "@/components/DailyReminder";
 import { SocialLinks } from "@/components/SocialLinks";
+import { StoreBadges } from "@/components/StoreBadges";
 import { PrayerTimeBadge } from "@/components/PrayerTimeBadge";
 import { DeckCard, type DeckKey } from "@/components/DeckCard";
 
@@ -192,6 +193,9 @@ function Home() {
 
           {/* Réseaux sociaux */}
           <SocialLinks />
+
+          {/* Télécharger l'application */}
+          <StoreBadges />
 
 
 

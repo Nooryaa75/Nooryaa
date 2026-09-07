@@ -307,6 +307,10 @@ function AuthPage() {
             {mode === "signup" ? "Connexion" : "S'inscrire"}
           </Link>
         </p>
+
+        <div className="mt-6">
+          <StoreBadges />
+        </div>
       </div>
     </div>
   );

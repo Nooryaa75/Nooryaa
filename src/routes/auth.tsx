@@ -22,9 +22,29 @@ function frenchAuthError(message?: string) {
   if (/email not confirmed/i.test(m)) return "Votre email n'est pas encore confirmé. Vérifiez votre boîte mail.";
   if (/user already registered/i.test(m)) return "Cet email est déjà utilisé.";
   if (/rate limit|too many/i.test(m)) return "Trop de tentatives. Merci de réessayer dans quelques minutes.";
-  if (/network|fetch/i.test(m)) return "Connexion au serveur impossible. Vérifiez votre réseau.";
+  if (/weak password|pwned/i.test(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus original (lettres, chiffres et symboles).";
+  if (/load failed|failed to fetch|networkerror|network request failed|network|fetch|timeout|aborted/i.test(m)) {
+    return "Connexion au serveur interrompue. Vérifiez votre réseau (ou désactivez le mode économie de données / bloqueur de publicité) puis réessayez.";
+  }
   return m || "Une erreur est survenue";
 }
+
+function isNetworkError(err: any) {
+  const m = String(err?.message || "");
+  return /load failed|failed to fetch|networkerror|network request failed|timeout|aborted/i.test(m);
+}
+
+// Certains réseaux mobiles coupent la première requête : on réessaie une fois.
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    if (!isNetworkError(err)) throw err;
+    await new Promise((r) => setTimeout(r, 1200));
+    return await fn();
+  }
+}
+
 
 
 async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {

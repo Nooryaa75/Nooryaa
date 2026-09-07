@@ -5,9 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { notifyLike } from "@/lib/notify";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Check, X, MapPin, User, ArrowLeft, MessageCircle, Undo2, Globe, Briefcase,
   GraduationCap, Ruler, Sparkles, BookOpen, Users, ChevronDown, ChevronUp,
-  Shield, Search, BadgeCheck, ShieldAlert,
+  Shield, Search, BadgeCheck, ShieldAlert, Ban, MoreHorizontal, Flag,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
@@ -132,6 +138,31 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       toast.success(`Vous avez aimé ${decidedProfile.pseudo}`);
     }
     setDismissedIds((ids) => (ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]));
+    setIsDeciding(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    await refresh();
+  }
+
+  /** Bloque le profil courant et le retire de la pile. */
+  async function blockProfile() {
+    if (!current || isDeciding) return;
+    const target = current;
+    setIsDeciding(true);
+
+    const { error } = await supabase.from("blocks").insert({ blocker: userId, blocked: target.id });
+    if (error) {
+      toast.error(error.message || "Impossible de bloquer ce profil.");
+      setIsDeciding(false);
+      return;
+    }
+
+    await supabase.from("likes").delete().eq("from_user", userId).eq("to_user", target.id);
+
+    if (likedIds.has(target.id)) {
+      setLocalLikedIds((ids) => ids.filter((id) => id !== target.id));
+    }
+    setDismissedIds((ids) => (ids.includes(target.id) ? ids : [...ids, target.id]));
+    toast.success(`${target.pseudo} a été bloqué·e`);
     setIsDeciding(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     await refresh();
@@ -295,6 +326,29 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 <MessageCircle className="h-5 w-5" />
               </Button>
             )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full h-12 w-12 p-0 border-border text-muted-foreground hover:text-primary hover:border-primary"
+                  aria-label="Plus d'actions"
+                  disabled={isDeciding}
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top" className="min-w-[180px]">
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
+                  onClick={blockProfile}
+                  disabled={isDeciding}
+                >
+                  <Ban className="h-4 w-4 mr-2" /> Bloquer {current.pseudo}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="mt-2 text-center text-xs text-muted-foreground">

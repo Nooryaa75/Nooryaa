@@ -104,10 +104,12 @@ function Home() {
     <div className="space-y-7 pb-8">
       {/* Titre de page */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-primary">Accueil</h1>
-          <img src={logoAsset.url} alt="Nooryaa" className="h-9 w-9 object-contain" />
-          <NotificationsBell />
+        <div className="grid grid-cols-3 items-center gap-3">
+          <h1 className="text-2xl font-bold text-primary justify-self-start">Accueil</h1>
+          <img src={logoAsset.url} alt="Nooryaa" className="h-9 w-9 object-contain justify-self-center" />
+          <div className="justify-self-end">
+            <NotificationsBell />
+          </div>
         </div>
         <PrayerTimeBadge />
       </div>

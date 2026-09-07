@@ -54,7 +54,7 @@ function Section({ title, items, me, userId }: { title: string; items: any[] | u
     .map((it: any) => it.profiles)
     .filter(Boolean)
     // Un homme ne voit que des femmes, une femme que des hommes
-    .filter((p: any) => !wanted || p.gender === wanted)
+    .filter((p: any) => wanted != null && p.gender === wanted)
     .map((p: any) => {
       const pct = matchPercent(me, p) ?? 0;
       return { ...p, _matchPercent: pct, personality: p.personality ?? (pct > 0 ? `${pct}% compatible` : null) };

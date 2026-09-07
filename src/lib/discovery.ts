@@ -58,9 +58,12 @@ export async function queryDiscoveryProfiles({
   const maxBirth = new Date(today.getFullYear() - filters.ageMin, today.getMonth(), today.getDate()).toISOString().slice(0, 10);
   const minBirth = new Date(today.getFullYear() - filters.ageMax - 1, today.getMonth(), today.getDate()).toISOString().slice(0, 10);
 
+  // Genre opposé strict : un homme ne voit que des femmes, une femme que des hommes.
+  const wantedGender = me?.gender === "homme" ? "femme" : me?.gender === "femme" ? "homme" : null;
+  if (!wantedGender) return [];
+
   let q = supabase.from("profiles").select("*").eq("onboarded", true).eq("status", "active").neq("id", userId);
-  if (me?.gender === "homme") q = q.eq("gender", "femme");
-  else if (me?.gender === "femme") q = q.eq("gender", "homme");
+  q = q.eq("gender", wantedGender);
 
   q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);
   // La taille peut ne pas être renseignée : on n'exclut pas ces profils.

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus } from "lucide-react";
+import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus, Ban } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { notifyByEmail } from "@/lib/notify";
@@ -41,6 +41,7 @@ function Conversation() {
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [confirmBlock, setConfirmBlock] = useState(false);
   const [actionFor, setActionFor] = useState<string | null>(null);
   const [reportReason, setReportReason] = useState("");
   const [peerTyping, setPeerTyping] = useState(false);

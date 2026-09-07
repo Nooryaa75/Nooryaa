@@ -122,7 +122,13 @@ function Onboarding() {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
     if (selfieRequired && !form.photo_verified) {
-      toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
+      // La vérification a pu aboutir après le chargement du formulaire : on relit l'état réel.
+      const { data: fresh } = await supabase
+        .from("profiles").select("photo_verified").eq("id", ctx.userId).maybeSingle();
+      if (!(fresh as any)?.photo_verified) {
+        toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
+      }
+      setForm((f) => ({ ...f, photo_verified: true }));
     }
     const { count: photoCount } = await supabase.from("photos").select("*", { count: "exact", head: true }).eq("user_id", ctx.userId);
     if (!photoCount || photoCount === 0) {
@@ -353,11 +359,16 @@ function Onboarding() {
           <Label>Photos de profil *</Label>
           <PhotoManager userId={ctx.userId} />
         </div>
-        <SelfieVerification userId={ctx.userId} />
+        <SelfieVerification
+          userId={ctx.userId}
+          onVerified={() => setForm((f) => ({ ...f, photo_verified: true }))}
+        />
         <p className="text-xs text-muted-foreground">
-          {selfieRequired
+          {selfieRequired && !form.photo_verified
             ? "La vérification par selfie est obligatoire pour finaliser votre profil."
-            : "Vérification par selfie (facultative jusqu'à 20h00 ce soir) : elle ajoute un badge vérifié à votre profil."}
+            : form.photo_verified
+              ? "Votre photo est vérifiée ✅"
+              : "Vérification par selfie (facultative) : elle ajoute un badge vérifié à votre profil."}
         </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

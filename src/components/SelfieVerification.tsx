@@ -18,7 +18,13 @@ async function toDataUrl(file: File, max = 768): Promise<string> {
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-export function SelfieVerification({ userId }: { userId: string }) {
+export function SelfieVerification({
+  userId,
+  onVerified,
+}: {
+  userId: string;
+  onVerified?: () => void;
+}) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -39,8 +45,10 @@ export function SelfieVerification({ userId }: { userId: string }) {
     try {
       const selfieDataUrl = await toDataUrl(file);
       const res = await run({ data: { selfieDataUrl } });
-      if (res.verdict === "verified") toast.success(res.reason || "Photo vérifiée ✅");
-      else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
+      if (res.verdict === "verified") {
+        toast.success(res.reason || "Photo vérifiée ✅");
+        onVerified?.();
+      } else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
       else toast.warning(res.reason || "Vérification à confirmer");
       await qc.invalidateQueries({ queryKey: ["me", userId] });
     } catch {

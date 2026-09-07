@@ -98,6 +98,7 @@ export function AppHeader() {
             <Link
               key={l.to}
               to={l.to}
+              onClick={l.to === "/browse" ? resetHomeDeck : undefined}
               aria-current={active ? "page" : undefined}
               className={`flex flex-col items-center gap-1 px-2 text-[11px] ${
                 active ? "text-primary font-bold" : "text-primary/70 font-medium"

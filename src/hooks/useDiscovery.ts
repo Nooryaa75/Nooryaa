@@ -54,7 +54,7 @@ export function useDiscovery(userId: string, filters: Filters) {
   const originLng = filters.originLng ?? (me as any)?.longitude ?? null;
 
   const { data: profiles, isLoading } = useQuery({
-    queryKey: ["browse", userId, me?.looking_for, filters, originLat, originLng],
+    queryKey: ["browse", userId, me?.gender, me?.looking_for, filters, originLat, originLng],
     enabled: !!me,
     queryFn: async () => {
       const [{ data: iBlock }, { data: blockedMe }] = await Promise.all([

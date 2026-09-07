@@ -35,10 +35,10 @@ export const EDUCATION_LEVELS = [
 ] as const;
 
 export const OBJECTIVES = [
-  "Mariage rapide (insha'Allah)",
-  "Faire connaissance pour mariage",
-  "Trouver un·e partenaire sérieux·se",
-  "Échanger d'abord, voir ensuite",
+  "Mariage rapide",
+  "Mariage dans 6 mois",
+  "Mariage dans 1 an",
+  "Mariage dans 2 ans",
 ] as const;
 
 export const RELIGION_OPTIONS = [

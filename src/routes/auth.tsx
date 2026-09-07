@@ -135,18 +135,20 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              phone: phone.trim(),
+        const { data, error } = await withRetry(() =>
+          supabase.auth.signUp({
+            email: email.trim().toLowerCase(),
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/onboarding`,
+              data: {
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                phone: phone.trim(),
+              },
             },
-          },
-        });
+          }),
+        );
         if (error) {
           if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
           if (/duplicate key|unique constraint|Database error/i.test(error.message)) {

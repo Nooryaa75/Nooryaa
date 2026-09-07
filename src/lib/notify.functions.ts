@@ -67,10 +67,11 @@ function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
           <div class="nry-text" style="font-size:15px;line-height:1.6;color:#4a4468;">${body}</div>
 
           <div style="margin-top:24px;">
-            <a href="${ctaUrl}" style="display:inline-block;background:#c2185b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;font-size:15px;font-weight:bold;">${ctaLabel}</a>
+            <a class="nry-cta" href="${ctaUrl}" style="display:inline-block;background:#c2185b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;font-size:15px;font-weight:bold;">${ctaLabel}</a>
           </div>
         </td></tr>
-        <tr><td style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
+        <tr><td class="nry-foot" style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
+
           Vous recevez cet email car vos préférences de notification l'autorisent.
           Vous pouvez les modifier à tout moment dans <a href="${SITE_URL}/compte/notifications" style="color:#3b2a7a;">Mon compte → Mes notifications</a>.
         </td></tr>

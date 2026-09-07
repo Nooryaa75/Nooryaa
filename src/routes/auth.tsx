@@ -177,59 +177,24 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
-        const payload = {
-          email: email.trim().toLowerCase(),
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              phone: phone.trim(),
-            },
+        // L'email de vérification est toujours envoyé par notre serveur via Resend
+        // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
+
+        await signUpByServer({
+          data: {
+            email: email.trim().toLowerCase(),
+            password,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            phone: phone.trim(),
+            origin: window.location.origin,
           },
-        };
+        });
+        void sendWelcomeEmail({ data: { email: email.trim().toLowerCase() } }).catch(() => {});
+        setSignupEmailSent(true);
+        toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+        return;
 
-        let signupResult: { data: any; error: any };
-        try {
-          signupResult = await withRetry(() => supabase.auth.signUp(payload), 3);
-        } catch (err) {
-          if (isNetworkError(err)) {
-            // Recours serveur quand le client ne peut pas joindre Supabase (VPN, réseau filtré…)
-            await signUpByServer({
-              data: {
-                email,
-                password,
-                firstName,
-                lastName,
-                phone,
-                origin: window.location.origin,
-              },
-            });
-            setSignupEmailSent(true);
-            toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
-            return;
-          }
-          throw err;
-        }
-
-        const { data, error } = signupResult;
-        if (error) {
-          if (/already registered|exists/i.test(error.message)) throw new Error("Cet email est déjà utilisé.");
-          if (/duplicate key|unique constraint|Database error/i.test(error.message)) {
-            throw new Error("Un compte existe déjà avec cet email, ce numéro de téléphone ou cette identité.");
-          }
-          throw error;
-        }
-        // Email de bienvenue (envoyé une seule fois, en arrière-plan)
-        void sendWelcomeEmail({ data: { email } }).catch(() => {});
-        if (!data.session) {
-          setSignupEmailSent(true);
-          toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
-          return;
-        }
-        toast.success("Compte créé ! Vous pouvez compléter votre profil.");
-        navigate({ to: "/onboarding" });
       } else {
         const { error } = await withRetry(() =>
           supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password }),

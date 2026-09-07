@@ -34,20 +34,44 @@ function escapeHtml(value: string) {
 
 function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
   return `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;background:#f6f5fb;font-family:Arial,Helvetica,sans-serif;">
+<html lang="fr"><head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light only" />
+  <style>
+    :root { color-scheme: light only; supported-color-schemes: light only; }
+    /* Neutralise l'inversion automatique du mode sombre (Gmail, Outlook, iOS) */
+    u + .body .glist { color: inherit !important; }
+    [data-ogsc] .nry-card { background:#ffffff !important; }
+    [data-ogsc] .nry-title { color:#2b1f57 !important; }
+    [data-ogsc] .nry-text { color:#4a4468 !important; }
+    [data-ogsc] .nry-foot { background:#faf9ff !important; color:#8a83a6 !important; }
+    [data-ogsc] .nry-cta { background:#c2185b !important; color:#ffffff !important; }
+    @media (prefers-color-scheme: dark) {
+      .nry-card { background:#ffffff !important; }
+      .nry-title { color:#2b1f57 !important; }
+      .nry-text { color:#4a4468 !important; }
+      .nry-foot { background:#faf9ff !important; color:#8a83a6 !important; }
+      .nry-cta { background:#c2185b !important; color:#ffffff !important; }
+    }
+  </style>
+</head>
+<body class="body" style="margin:0;padding:0;background:#f6f5fb;font-family:Arial,Helvetica,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f5fb;padding:24px 12px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e3f2;">
+      <table role="presentation" class="nry-card" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e3f2;">
         <tr><td align="center" style="background:#3b2a7a;padding:24px;"><img src="${LOGO_URL}" alt="${SITE_NAME}" width="96" height="96" style="display:block;margin:0 auto;border-radius:20px;" /></td></tr>
         <tr><td style="padding:24px;">
-          <h1 style="margin:0 0 12px;font-size:18px;color:#2b1f57;">${title}</h1>
-          <div style="font-size:15px;line-height:1.6;color:#4a4468;">${body}</div>
+          <h1 class="nry-title" style="margin:0 0 12px;font-size:18px;color:#2b1f57;">${title}</h1>
+          <div class="nry-text" style="font-size:15px;line-height:1.6;color:#4a4468;">${body}</div>
+
           <div style="margin-top:24px;">
-            <a href="${ctaUrl}" style="display:inline-block;background:#c2185b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;font-size:15px;font-weight:bold;">${ctaLabel}</a>
+            <a class="nry-cta" href="${ctaUrl}" style="display:inline-block;background:#c2185b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;font-size:15px;font-weight:bold;">${ctaLabel}</a>
           </div>
         </td></tr>
-        <tr><td style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
+        <tr><td class="nry-foot" style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
+
           Vous recevez cet email car vos préférences de notification l'autorisent.
           Vous pouvez les modifier à tout moment dans <a href="${SITE_URL}/compte/notifications" style="color:#3b2a7a;">Mon compte → Mes notifications</a>.
         </td></tr>

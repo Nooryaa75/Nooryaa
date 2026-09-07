@@ -121,32 +121,15 @@ function Onboarding() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!(await checkPseudo(form.pseudo))) return;
-    const missing: string[] = [];
-    if (!form.pseudo) missing.push("Pseudo");
-    if (!form.gender) missing.push("Je suis");
-    if (!form.birthdate) missing.push("Date de naissance");
-    if (!form.marital_status) missing.push("Situation");
-    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
-    if (form.ramadan === null) missing.push("Ramadan");
-    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
-    if (form.omra === null) missing.push("Avez-vous fait la Omra");
-    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
-    if (form.has_children === null) missing.push("Avez-vous des enfants");
-    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
-    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
-    if (!form.phone) missing.push("Téléphone");
-    if (!form.city) missing.push("Ville de résidence");
-    if (!form.country) missing.push("Pays de résidence");
-    if (!form.country_origin) missing.push("Pays d'origine");
-    if (!form.profession) missing.push("Profession");
-    if (!form.education_level) missing.push("Niveau d'études");
-    if (!form.activities) missing.push("Activités / centres d'intérêt");
-    if (form.smoker === null) missing.push("Fumez-vous");
-    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos (50 à 500 caractères)");
+    setAttempted(true);
+    if (!(await checkPseudo(form.pseudo))) {
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    const missing = computeMissing();
     if (missing.length > 0) {
-      toast.error("Champs à compléter : " + missing.join(", ")); return;
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
     }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;

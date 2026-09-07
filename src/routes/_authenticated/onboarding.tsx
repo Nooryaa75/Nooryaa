@@ -135,18 +135,23 @@ function Onboarding() {
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
+    setExtraError(null);
     if (selfieRequired && !form.photo_verified) {
       // La vérification a pu aboutir après le chargement du formulaire : on relit l'état réel.
       const { data: fresh } = await supabase
         .from("profiles").select("photo_verified").eq("id", ctx.userId).maybeSingle();
       if (!(fresh as any)?.photo_verified) {
-        toast.error("La vérification par selfie est obligatoire pour finaliser votre profil."); return;
+        setExtraError("Vérification par selfie obligatoire");
+        errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
       }
       setForm((f) => ({ ...f, photo_verified: true }));
     }
     const { count: photoCount } = await supabase.from("photos").select("*", { count: "exact", head: true }).eq("user_id", ctx.userId);
     if (!photoCount || photoCount === 0) {
-      toast.error("Veuillez ajouter au moins une photo de profil."); return;
+      setExtraError("Photo de profil (au moins une)");
+      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
     }
     setLoading(true);
     const { error } = await supabase.from("profiles").update({

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus } from "lucide-react";
+import { ArrowLeft, Send, ImagePlus, Loader2, MoreVertical, Pencil, Trash2, Reply, X, Check, CheckCheck, Flag, ShieldCheck, Plus, Ban } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { notifyByEmail } from "@/lib/notify";
@@ -41,6 +41,7 @@ function Conversation() {
   const [editing, setEditing] = useState<any | null>(null);
   const [confirmDeleteConvo, setConfirmDeleteConvo] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [confirmBlock, setConfirmBlock] = useState(false);
   const [actionFor, setActionFor] = useState<string | null>(null);
   const [reportReason, setReportReason] = useState("");
   const [peerTyping, setPeerTyping] = useState(false);
@@ -237,6 +238,23 @@ function Conversation() {
 
 
 
+  const blockPeer = useMutation({
+    mutationFn: async () => {
+      if (!peer) return;
+      const { error } = await supabase.from("blocks").insert({ blocker: ctx.userId, blocked: peer.id } as any);
+      if (error) throw error;
+      await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", peer.id);
+    },
+    onSuccess: () => {
+      toast.success("Profil bloqué");
+      qc.invalidateQueries({ queryKey: ["block"] });
+      qc.invalidateQueries({ queryKey: ["browse"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+      navigate({ to: "/messages" });
+    },
+    onError: (e: any) => toast.error(frenchError(e)),
+  });
+
   async function handlePhoto(file: File) {
     if (!peer) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo trop lourde (max 5 Mo)"); return; }
@@ -328,6 +346,9 @@ function Conversation() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setReportOpen(true)}>
               <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={() => setConfirmBlock(true)}>
+              <Ban className="h-4 w-4 mr-2" /> Bloquer {peer.pseudo}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDeleteConvo(true)}>
               <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation
@@ -485,6 +506,21 @@ function Conversation() {
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteConversation.mutate()}>Supprimer</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bloquer {peer.pseudo} ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette personne ne pourra plus vous contacter ni voir votre profil, et réciproquement. Vous pourrez la débloquer depuis sa fiche.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={() => blockPeer.mutate()}>Bloquer</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

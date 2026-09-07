@@ -359,23 +359,6 @@ function ProfileView() {
           </Accordion>
         </div>
       </div>
-
-      {!isMe && (
-        <div className="border-t border-border/60 pt-6 flex flex-col items-center gap-3 pb-4">
-          {blockState?.iBlocked ? (
-            <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="outline" className="gap-2 rounded-full">
-              <Ban className="h-4 w-4" /> Débloquer {profile.pseudo}
-            </Button>
-          ) : !blockState?.blocksMe && (
-            <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" className="gap-2 rounded-full text-destructive hover:text-destructive">
-              <Ban className="h-4 w-4" /> Bloquer {profile.pseudo}
-            </Button>
-          )}
-          <p className="text-xs text-muted-foreground text-center max-w-md">
-            Une personne bloquée ne peut plus vous contacter ni voir votre profil, et réciproquement.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

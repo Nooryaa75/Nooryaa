@@ -140,23 +140,31 @@ export function PhotoManager({ userId }: { userId: string }) {
 
       <div className="grid grid-cols-3 gap-3">
         {photos?.map((p: any) => (
-          <div key={p.id} className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">
-            <img src={p.url} alt="" className={`w-full h-full object-cover ${p.blurred ? "blur-md scale-110" : ""}`} />
-            {profile?.primary_photo_url === p.url && (
-              <div className="absolute top-1 left-1 bg-[color:var(--gold)] text-primary-foreground rounded-full p-1"><Star className="h-3 w-3 fill-current" /></div>
-            )}
-            {p.blurred && (
-              <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1"><EyeOff className="h-3 w-3" /></div>
-            )}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-2">
-              {profile?.primary_photo_url !== p.url && (
-                <button type="button" title="Photo principale" onClick={() => makePrimary(p)} className="bg-white/90 rounded-full p-1.5"><Star className="h-4 w-4 text-primary" /></button>
+          <div key={p.id} className="flex flex-col gap-2">
+            <div className="relative group aspect-square rounded-xl overflow-hidden bg-secondary">
+              <img src={p.url} alt="" className={`w-full h-full object-cover ${p.blurred ? "blur-md scale-110" : ""}`} />
+              {profile?.primary_photo_url === p.url && (
+                <div className="absolute top-1 left-1 bg-[color:var(--gold)] text-primary-foreground rounded-full p-1"><Star className="h-3 w-3 fill-current" /></div>
               )}
-              <button type="button" title={p.blurred ? "Retirer le flou" : "Flouter"} onClick={() => toggleBlur(p)} className="bg-white/90 rounded-full p-1.5">
-                {p.blurred ? <Eye className="h-4 w-4 text-primary" /> : <EyeOff className="h-4 w-4 text-primary" />}
-              </button>
-              <button type="button" title="Supprimer" onClick={() => deletePhoto(p)} className="bg-white/90 rounded-full p-1.5"><Trash2 className="h-4 w-4 text-destructive" /></button>
+              {p.blurred && (
+                <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1"><EyeOff className="h-3 w-3" /></div>
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                {profile?.primary_photo_url !== p.url && (
+                  <button type="button" title="Photo principale" onClick={() => makePrimary(p)} className="bg-white/90 rounded-full p-1.5"><Star className="h-4 w-4 text-primary" /></button>
+                )}
+                <button type="button" title="Supprimer" onClick={() => deletePhoto(p)} className="bg-white/90 rounded-full p-1.5"><Trash2 className="h-4 w-4 text-destructive" /></button>
+              </div>
             </div>
+            <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={p.blurred ?? false}
+                onChange={() => toggleBlur(p)}
+                className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+              />
+              Flouter cette photo
+            </label>
           </div>
         ))}
         {(photos?.length ?? 0) < MAX_PHOTOS && (

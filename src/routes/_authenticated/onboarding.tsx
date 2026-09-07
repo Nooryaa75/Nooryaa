@@ -57,9 +57,39 @@ function Onboarding() {
   });
   const [loading, setLoading] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
+  const [attempted, setAttempted] = useState(false);
+  const errorBoxRef = useRef<HTMLDivElement | null>(null);
   // 20h00 à Paris ce soir (UTC+2 en septembre) = 18h00 UTC
   const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
   const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
+
+  function computeMissing(): string[] {
+    const missing: string[] = [];
+    if (!form.pseudo.trim()) missing.push("Pseudo");
+    if (!form.gender) missing.push("Je suis");
+    if (!form.birthdate) missing.push("Date de naissance");
+    if (!form.marital_status) missing.push("Situation");
+    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
+    if (form.ramadan === null) missing.push("Ramadan");
+    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
+    if (form.omra === null) missing.push("Avez-vous fait la Omra");
+    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
+    if (form.has_children === null) missing.push("Avez-vous des enfants");
+    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
+    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
+    if (!form.phone) missing.push("Téléphone");
+    if (!form.city) missing.push("Ville de résidence");
+    if (!form.country) missing.push("Pays de résidence");
+    if (!form.country_origin) missing.push("Pays d'origine");
+    if (!form.profession) missing.push("Profession");
+    if (!form.education_level) missing.push("Niveau d'études");
+    if (!form.activities) missing.push("Activités / centres d'intérêt");
+    if (form.smoker === null) missing.push("Fumez-vous");
+    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
+    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos de vous (50 à 500 caractères)");
+    return missing;
+  }
+  const missingFields = attempted ? computeMissing() : [];
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {

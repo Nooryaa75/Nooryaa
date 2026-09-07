@@ -215,7 +215,16 @@ export function PhotoManager({ userId }: { userId: string }) {
         )}
 
       </div>
-      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
+      {/* Import depuis la galerie : liste MIME explicite (pas image/*) pour éviter que
+          le navigateur mobile ouvre l'appareil photo au lieu de la photothèque. */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/png,image/jpeg,image/jpg,image/webp,image/heic,image/heif"
+        multiple={false}
+        hidden
+        onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }}
+      />
       <input ref={captureRef} type="file" accept="image/*" capture="user" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadPhoto(f); }} />
       <CameraCapture open={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={(f) => uploadPhoto(f)} />
 

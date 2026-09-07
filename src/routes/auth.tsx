@@ -279,6 +279,13 @@ function AuthPage() {
           <div>
             <Label htmlFor="password">Mot de passe</Label>
             <PasswordInput id="password" required minLength={6} value={password} onChange={setPassword} />
+            {mode === "signin" && (
+              <p className="text-right mt-1">
+                <Link to="/mot-de-passe-oublie" className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4">
+                  Mot de passe oublié ?
+                </Link>
+              </p>
+            )}
           </div>
           {mode === "signup" && (
             <div>

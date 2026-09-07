@@ -311,7 +311,7 @@ function Conversation() {
         <Link to="/messages" className="text-primary"><ArrowLeft className="h-5 w-5" /></Link>
         <Link to="/profile/$pseudo" params={{ pseudo: peer.pseudo }} className="flex items-center gap-3 flex-1 min-w-0">
           <div className="h-10 w-10 rounded-full bg-secondary overflow-hidden shrink-0">
-            {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+            {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className={peerAvatarClass} />}
           </div>
           <span className="min-w-0">
             <span className="font-bold text-foreground flex items-center gap-1.5">
@@ -356,7 +356,7 @@ function Conversation() {
             <div key={m.id} className={`flex items-end gap-2 group ${mine ? "justify-end" : "justify-start"}`}>
               {!mine && (
                 <div className="h-8 w-8 rounded-full bg-secondary overflow-hidden shrink-0">
-                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className="w-full h-full object-cover" />}
+                  {peer.primary_photo_url && <img src={peer.primary_photo_url} alt="" className={peerAvatarClass} />}
                 </div>
               )}
               {mine && !m.deleted_at && (

@@ -15,7 +15,7 @@ import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { PrayerChatNotice } from "@/components/PrayerChatNotice";
 import { useMyProfile } from "@/lib/match";
-import { useLikeGraph, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { useLikeGraph, canMessage, isBlurred, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -51,12 +51,14 @@ function Conversation() {
 
   const { data: peer } = useQuery({
     queryKey: ["peer", pseudo],
-    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url, gender").eq("pseudo", pseudo).single()).data,
+    queryFn: async () => (await supabase.from("profiles").select("id, pseudo, primary_photo_url, primary_photo_blurred, gender").eq("pseudo", pseudo).single()).data,
   });
 
   const { data: me } = useMyProfile(ctx.userId);
   const { data: likeGraph } = useLikeGraph(ctx.userId);
   const messagingAllowed = canMessage(me, peer, likeGraph);
+  const peerBlurred = isBlurred(peer as any, me as any, likeGraph);
+  const peerAvatarClass = `w-full h-full object-cover ${peerBlurred ? "blur-md scale-110" : ""}`;
 
   const { data: messages } = useQuery({
     queryKey: ["messages", ctx.userId, peer?.id],

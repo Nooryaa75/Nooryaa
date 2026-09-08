@@ -353,3 +353,50 @@ function MyProfile() {
     </div>
   );
 }
+
+const MONTHS_FR = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
+];
+
+/** Sélecteur de date de naissance en trois menus : jour / mois / année. */
+function BirthdatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [y, m, d] = value ? value.split("-").map(Number) : [null, null, null] as const;
+  const minYear = Number(minBirthdate().slice(0, 4));
+  const maxYear = Number(maxBirthdate().slice(0, 4));
+  const years: number[] = [];
+  for (let yr = maxYear; yr >= minYear; yr--) years.push(yr);
+  const daysInMonth = y && m ? new Date(y, m, 0).getDate() : 31;
+  const days: number[] = [];
+  for (let dd = 1; dd <= daysInMonth; dd++) days.push(dd);
+
+  const emit = (day: number | null, month: number | null, year: number | null) => {
+    if (!day || !month || !year) return;
+    onChange(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+  };
+
+  const selCls = "h-auto p-0 border-0 shadow-none text-sm font-medium focus:ring-0";
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <Select value={d ? String(d) : ""} onValueChange={(v) => emit(Number(v), m, y)}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Jour" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {days.map((dd) => <SelectItem key={dd} value={String(dd)}>{dd}</SelectItem>)}
+        </SelectContent>
+      </Select>
+      <Select value={m ? String(m) : ""} onValueChange={(v) => emit(d, Number(v), y)}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Mois" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {MONTHS_FR.map((mo, i) => <SelectItem key={mo} value={String(i + 1)}>{mo}</SelectItem>)}
+        </SelectContent>
+      </Select>
+      <Select value={y ? String(y) : ""} onValueChange={(v) => emit(d, m, Number(v))}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Année" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {years.map((yr) => <SelectItem key={yr} value={String(yr)}>{yr}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}

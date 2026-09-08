@@ -150,14 +150,10 @@ function MyProfile() {
           <Field label="Téléphone">
             <Input className={inputCls} type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
           </Field>
-          <Field label={`Âge${form.birthdate ? ` — ${ageFromBirthdate(form.birthdate)} ans` : ""}`}>
-            <Input
-              className={inputCls}
-              type="date"
+          <Field label={`Date de naissance${form.birthdate ? ` — ${ageFromBirthdate(form.birthdate)} ans` : ""}`}>
+            <BirthdatePicker
               value={form.birthdate ?? ""}
-              min={minBirthdate()}
-              max={maxBirthdate()}
-              onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
+              onChange={(v) => setForm({ ...form, birthdate: v })}
             />
           </Field>
           <Field label="Taille (cm)">
@@ -354,6 +350,53 @@ function MyProfile() {
         </Link>
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="rounded-full">Enregistrer</Button>
       </div>
+    </div>
+  );
+}
+
+const MONTHS_FR = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
+];
+
+/** Sélecteur de date de naissance en trois menus : jour / mois / année. */
+function BirthdatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [y, m, d] = value ? value.split("-").map(Number) : [null, null, null] as const;
+  const minYear = Number(minBirthdate().slice(0, 4));
+  const maxYear = Number(maxBirthdate().slice(0, 4));
+  const years: number[] = [];
+  for (let yr = maxYear; yr >= minYear; yr--) years.push(yr);
+  const daysInMonth = y && m ? new Date(y, m, 0).getDate() : 31;
+  const days: number[] = [];
+  for (let dd = 1; dd <= daysInMonth; dd++) days.push(dd);
+
+  const emit = (day: number | null, month: number | null, year: number | null) => {
+    if (!day || !month || !year) return;
+    onChange(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+  };
+
+  const selCls = "h-auto p-0 border-0 shadow-none text-sm font-medium focus:ring-0";
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <Select value={d ? String(d) : ""} onValueChange={(v) => emit(Number(v), m, y)}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Jour" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {days.map((dd) => <SelectItem key={dd} value={String(dd)}>{dd}</SelectItem>)}
+        </SelectContent>
+      </Select>
+      <Select value={m ? String(m) : ""} onValueChange={(v) => emit(d, Number(v), y)}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Mois" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {MONTHS_FR.map((mo, i) => <SelectItem key={mo} value={String(i + 1)}>{mo}</SelectItem>)}
+        </SelectContent>
+      </Select>
+      <Select value={y ? String(y) : ""} onValueChange={(v) => emit(d, m, Number(v))}>
+        <SelectTrigger className={selCls}><SelectValue placeholder="Année" /></SelectTrigger>
+        <SelectContent className="max-h-60">
+          {years.map((yr) => <SelectItem key={yr} value={String(yr)}>{yr}</SelectItem>)}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

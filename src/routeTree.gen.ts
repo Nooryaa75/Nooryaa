@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
@@ -92,6 +93,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVisitsRoute = AdminVisitsRouteImport.update({
+  id: '/admin/visits',
+  path: '/admin/visits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminResetRoute = AdminResetRouteImport.update({
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/visits': typeof AdminVisitsRoute
   '/admin': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -411,6 +419,7 @@ export interface FileRoutesById {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/_authenticated/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -459,6 +468,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/visits'
     | '/admin/'
     | '/compte/abonnement'
     | '/compte/cgu'
@@ -504,6 +514,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/visits'
     | '/admin'
     | '/compte/abonnement'
     | '/compte/cgu'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/visits'
     | '/admin/'
     | '/_authenticated/compte/abonnement'
     | '/_authenticated/compte/cgu'
@@ -589,6 +601,7 @@ export interface RootRouteChildren {
   AdminModerationRoute: typeof AdminModerationRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminResetRoute: typeof AdminResetRoute
+  AdminVisitsRoute: typeof AdminVisitsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
@@ -654,6 +667,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/visits': {
+      id: '/admin/visits'
+      path: '/admin/visits'
+      fullPath: '/admin/visits'
+      preLoaderRoute: typeof AdminVisitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/reset': {
@@ -1007,6 +1027,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminModerationRoute: AdminModerationRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminResetRoute: AdminResetRoute,
+  AdminVisitsRoute: AdminVisitsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,
   AdminProfilesIdRoute: AdminProfilesIdRoute,

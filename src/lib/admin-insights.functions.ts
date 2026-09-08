@@ -504,16 +504,6 @@ export const adminCreditHistory = createServerFn({ method: "GET" })
     return rows ?? [];
   });
 
-// ---------------- Journal d'audit ----------------
-
-export const adminAuditLog = createServerFn({ method: "GET" }).handler(async () => {
-  const { requireAdminOrThrow } = await import("./admin-session.server");
-  await requireAdminOrThrow();
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin.from("admin_actions").select("*").order("created_at", { ascending: false }).limit(200);
-  return data ?? [];
-});
-
 // ---------------- Réseaux sociaux ----------------
 
 export type SocialLinkRow = { id: string; network: string; label: string; url: string; active: boolean; sort_order: number };

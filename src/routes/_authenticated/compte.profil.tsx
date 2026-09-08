@@ -150,14 +150,10 @@ function MyProfile() {
           <Field label="Téléphone">
             <Input className={inputCls} type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
           </Field>
-          <Field label={`Âge${form.birthdate ? ` — ${ageFromBirthdate(form.birthdate)} ans` : ""}`}>
-            <Input
-              className={inputCls}
-              type="date"
+          <Field label={`Date de naissance${form.birthdate ? ` — ${ageFromBirthdate(form.birthdate)} ans` : ""}`}>
+            <BirthdatePicker
               value={form.birthdate ?? ""}
-              min={minBirthdate()}
-              max={maxBirthdate()}
-              onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
+              onChange={(v) => setForm({ ...form, birthdate: v })}
             />
           </Field>
           <Field label="Taille (cm)">

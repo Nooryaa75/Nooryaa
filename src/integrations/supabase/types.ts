@@ -512,16 +512,20 @@ export type Database = {
         Row: {
           access: Json
           active: boolean
+          audience: string
           boosts: number
           code: string
           created_at: string
           duration_days: number
+          emoji: string | null
           features: string[]
           highlight: boolean
           id: string
           likes_per_day: number
+          messages_per_day: number
           name: string
           price_ttc: number
+          rewinds: number
           sort_order: number
           super_likes: number
           tagline: string | null
@@ -531,16 +535,20 @@ export type Database = {
         Insert: {
           access?: Json
           active?: boolean
+          audience?: string
           boosts?: number
           code: string
           created_at?: string
           duration_days?: number
+          emoji?: string | null
           features?: string[]
           highlight?: boolean
           id?: string
           likes_per_day?: number
+          messages_per_day?: number
           name: string
           price_ttc?: number
+          rewinds?: number
           sort_order?: number
           super_likes?: number
           tagline?: string | null
@@ -550,16 +558,20 @@ export type Database = {
         Update: {
           access?: Json
           active?: boolean
+          audience?: string
           boosts?: number
           code?: string
           created_at?: string
           duration_days?: number
+          emoji?: string | null
           features?: string[]
           highlight?: boolean
           id?: string
           likes_per_day?: number
+          messages_per_day?: number
           name?: string
           price_ttc?: number
+          rewinds?: number
           sort_order?: number
           super_likes?: number
           tagline?: string | null

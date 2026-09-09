@@ -30,101 +30,52 @@ export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   component: AbonnementPage,
 });
 
-type DurationId = "24h" | "7j" | "1m";
-
-const durations: { id: DurationId; label: string; days: number }[] = [
-  { id: "24h", label: "24 heures", days: 1 },
-  { id: "7j", label: "1 semaine", days: 7 },
-  { id: "1m", label: "1 mois", days: 30 },
-];
-
-type Feature = string | ((duration: DurationId) => string);
-
-type Plan = {
-  id: string;
-  emoji: string;
+/** Carte affichée au membre : formules de même nom regroupées, une option par durée. */
+type PlanGroup = {
+  key: string;
   name: string;
+  emoji: string;
   tagline: string;
-  features: Feature[];
-  highlight?: boolean;
-  prices?: Record<DurationId, number>;
-  /** Durées proposées (par défaut toutes). */
-  allowedDurations?: DurationId[];
-  /** Réservée à un genre précis. */
-  onlyFor?: "femme" | "homme";
-
+  highlight: boolean;
+  free: boolean;
+  variants: PublicPlan[];
 };
 
-const ayaBoosts: Record<DurationId, string> = {
-  "24h": "1 Boost",
-  "7j": "2 Boosts",
-  "1m": "4 Boosts",
-};
+function groupPlans(plans: PublicPlan[]): PlanGroup[] {
+  const map = new Map<string, PlanGroup>();
+  for (const p of plans) {
+    const key = `${p.audience}:${p.name.trim().toLowerCase()}`;
+    const g = map.get(key) ?? {
+      key,
+      name: p.name,
+      emoji: p.emoji ?? "",
+      tagline: p.tagline ?? "",
+      highlight: false,
+      free: true,
+      variants: [],
+    };
+    g.variants.push(p);
+    g.highlight = g.highlight || p.highlight;
+    g.free = g.free && p.price_ttc === 0;
+    if (!g.emoji && p.emoji) g.emoji = p.emoji;
+    if (!g.tagline && p.tagline) g.tagline = p.tagline;
+    map.set(key, g);
+  }
+  const groups = [...map.values()];
+  for (const g of groups) g.variants.sort((a, b) => a.duration_days - b.duration_days || a.sort_order - b.sort_order);
+  groups.sort((a, b) => Math.min(...a.variants.map((v) => v.sort_order)) - Math.min(...b.variants.map((v) => v.sort_order)));
+  return groups;
+}
 
-const ayaSuperLikes: Record<DurationId, string> = {
-  "24h": "2 Super Likes",
-  "7j": "10 Super Likes",
-  "1m": "20 Super Likes",
-};
-
-const plans: Plan[] = [
-  {
-    id: "gratuit",
-    emoji: "🟢",
-    name: "Gratuit",
-    tagline: "Pour découvrir Nooryaa",
-    features: [
-      "Accès à tout",
-      "Nombre de likes limité à la journée",
-      "Fonctionnalités de la messagerie limitées",
-    ],
-  },
-  {
-    id: "noor",
-    emoji: "🌙",
-    name: "NOOR",
-    tagline: "L'essentiel pour aller plus loin",
-    highlight: true,
-    prices: { "24h": 2.99, "7j": 6.99, "1m": 14.99 },
-    features: [
-      "Likes illimités",
-      "Filtres avancés complets",
-      "Voir qui a liké le profil",
-      "Mode incognito",
-    ],
-  },
-  {
-    id: "aya",
-    emoji: "✨",
-    name: "AYA",
-    tagline: "Tout NOOR, et plus encore",
-    prices: { "24h": 3.99, "7j": 9.99, "1m": 19.99 },
-    features: [
-      "Toute la formule NOOR",
-      "Priorité maximale dans les recherches",
-      (d) => ayaBoosts[d],
-      (d) => ayaSuperLikes[d],
-    ],
-  },
-  {
-    id: "noor_f",
-    emoji: "🌸",
-    name: "NOOR",
-    tagline: "La formule des femmes, tout inclus",
-    highlight: true,
-    onlyFor: "femme",
-    allowedDurations: ["1m"],
-    prices: { "24h": 3.99, "7j": 3.99, "1m": 3.99 },
-    features: [
-      "Likes illimités",
-      "Filtres avancés complets",
-      "Voir qui a liké votre profil",
-      "Mode incognito",
-      "3,99 € par mois, sans engagement",
-    ],
-  },
-];
-
+function autoFeatures(p: PublicPlan): string[] {
+  const out: string[] = [];
+  out.push(p.likes_per_day < 0 ? "Likes illimités" : `${p.likes_per_day} likes par jour`);
+  if (p.messages_per_day >= 0) out.push(`${p.messages_per_day} messages par jour`);
+  if (p.super_likes > 0) out.push(`${p.super_likes} super likes`);
+  if (p.boosts > 0) out.push(`${p.boosts} boost${p.boosts > 1 ? "s" : ""}`);
+  if (p.rewinds !== 0) out.push(p.rewinds < 0 ? "Retours en arrière illimités" : `${p.rewinds} retours en arrière par jour`);
+  return out;
+}
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -134,15 +85,11 @@ const euro = (n: number) =>
 
 function AbonnementPage() {
   const saveSubscription = useServerFn(recordSubscription);
-  const [current, setCurrent] = useState("gratuit");
-  const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
+  const [current, setCurrent] = useState<string | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);
   const [renewsAt, setRenewsAt] = useState<Date | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState<Record<string, DurationId>>({
-    noor: "1m",
-    aya: "1m",
-  });
+  const [selectedVariant, setSelectedVariant] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -160,23 +107,37 @@ function AbonnementPage() {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const { data } = await supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle();
-      if (alive) setGender((data?.gender as string | null) ?? null);
+      const [{ data }, { data: sub }] = await Promise.all([
+        supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle(),
+        supabase
+          .from("subscriptions")
+          .select("plan_code, auto_renew, ends_at")
+          .eq("user_id", u.user.id)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      if (!alive) return;
+      setGender((data?.gender as string | null) ?? null);
+      if (sub) {
+        setCurrent(sub.plan_code);
+        setAutoRenew(sub.auto_renew);
+        setRenewsAt(sub.ends_at ? new Date(sub.ends_at) : null);
+      }
     })();
     return () => {
       alive = false;
     };
   }, []);
-  const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
-  const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
 
-  const visiblePlans = plans.filter((p) => {
-    if (!activeCodes.has(p.id.toLowerCase())) return false;
-    if (gender === "femme") return p.id === "gratuit" || p.id === "noor_f";
-    if (p.onlyFor && p.onlyFor !== gender) return false;
-    return true;
-  });
-  const currentPlan = plans.find((p) => p.id === current)!;
+  const subscriptionsDisabled = !plansLoading && (dbPlans?.length ?? 0) === 0;
+  const visiblePlans = plansForGender(dbPlans ?? [], gender);
+  const groups = groupPlans(visiblePlans);
+  const freePlan = visiblePlans.find((p) => p.price_ttc === 0) ?? null;
+  const currentPlan: PublicPlan | null =
+    (dbPlans ?? []).find((p) => p.code === current) ?? freePlan;
+  const currentIsPaid = !!currentPlan && currentPlan.price_ttc > 0;
 
 
   async function handleSuspend() {

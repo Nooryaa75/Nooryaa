@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
-import { useActivePlans } from "@/lib/entitlements";
+import { useActivePlans, plansForGender, durationLabel, type PublicPlan } from "@/lib/entitlements";
 
 import {
   AlertDialog,
@@ -30,101 +30,53 @@ export const Route = createFileRoute("/_authenticated/compte/abonnement")({
   component: AbonnementPage,
 });
 
-type DurationId = "24h" | "7j" | "1m";
-
-const durations: { id: DurationId; label: string; days: number }[] = [
-  { id: "24h", label: "24 heures", days: 1 },
-  { id: "7j", label: "1 semaine", days: 7 },
-  { id: "1m", label: "1 mois", days: 30 },
-];
-
-type Feature = string | ((duration: DurationId) => string);
-
-type Plan = {
-  id: string;
-  emoji: string;
+/** Carte affichée au membre : formules de même nom regroupées, une option par durée. */
+type PlanGroup = {
+  key: string;
   name: string;
+  emoji: string;
   tagline: string;
-  features: Feature[];
-  highlight?: boolean;
-  prices?: Record<DurationId, number>;
-  /** Durées proposées (par défaut toutes). */
-  allowedDurations?: DurationId[];
-  /** Réservée à un genre précis. */
-  onlyFor?: "femme" | "homme";
-
+  highlight: boolean;
+  free: boolean;
+  variants: PublicPlan[];
 };
 
-const ayaBoosts: Record<DurationId, string> = {
-  "24h": "1 Boost",
-  "7j": "2 Boosts",
-  "1m": "4 Boosts",
-};
+function groupPlans(plans: PublicPlan[]): PlanGroup[] {
+  const map = new Map<string, PlanGroup>();
+  for (const p of plans) {
+    const key = `${p.audience}:${p.name.trim().toLowerCase()}`;
+    const g = map.get(key) ?? {
+      key,
+      name: p.name,
+      emoji: p.emoji ?? "",
+      tagline: p.tagline ?? "",
+      highlight: false,
+      free: true,
+      variants: [],
+    };
+    g.variants.push(p);
+    g.highlight = g.highlight || p.highlight;
+    g.free = g.free && p.price_ttc === 0;
+    if (!g.emoji && p.emoji) g.emoji = p.emoji;
+    if (!g.tagline && p.tagline) g.tagline = p.tagline;
+    map.set(key, g);
+  }
+  const groups = [...map.values()];
+  for (const g of groups) g.variants.sort((a, b) => a.duration_days - b.duration_days || a.sort_order - b.sort_order);
+  groups.sort((a, b) => Math.min(...a.variants.map((v) => v.sort_order)) - Math.min(...b.variants.map((v) => v.sort_order)));
+  return groups;
+}
 
-const ayaSuperLikes: Record<DurationId, string> = {
-  "24h": "2 Super Likes",
-  "7j": "10 Super Likes",
-  "1m": "20 Super Likes",
-};
-
-const plans: Plan[] = [
-  {
-    id: "gratuit",
-    emoji: "🟢",
-    name: "Gratuit",
-    tagline: "Pour découvrir Nooryaa",
-    features: [
-      "Accès à tout",
-      "Nombre de likes limité à la journée",
-      "Fonctionnalités de la messagerie limitées",
-    ],
-  },
-  {
-    id: "noor",
-    emoji: "🌙",
-    name: "NOOR",
-    tagline: "L'essentiel pour aller plus loin",
-    highlight: true,
-    prices: { "24h": 2.99, "7j": 6.99, "1m": 14.99 },
-    features: [
-      "Likes illimités",
-      "Filtres avancés complets",
-      "Voir qui a liké le profil",
-      "Mode incognito",
-    ],
-  },
-  {
-    id: "aya",
-    emoji: "✨",
-    name: "AYA",
-    tagline: "Tout NOOR, et plus encore",
-    prices: { "24h": 3.99, "7j": 9.99, "1m": 19.99 },
-    features: [
-      "Toute la formule NOOR",
-      "Priorité maximale dans les recherches",
-      (d) => ayaBoosts[d],
-      (d) => ayaSuperLikes[d],
-    ],
-  },
-  {
-    id: "noor_f",
-    emoji: "🌸",
-    name: "NOOR",
-    tagline: "La formule des femmes, tout inclus",
-    highlight: true,
-    onlyFor: "femme",
-    allowedDurations: ["1m"],
-    prices: { "24h": 3.99, "7j": 3.99, "1m": 3.99 },
-    features: [
-      "Likes illimités",
-      "Filtres avancés complets",
-      "Voir qui a liké votre profil",
-      "Mode incognito",
-      "3,99 € par mois, sans engagement",
-    ],
-  },
-];
-
+function autoFeatures(p: PublicPlan): string[] {
+  const out: string[] = [];
+  // Avantages générés automatiquement quand l'admin n'en a saisi aucun.
+  out.push(p.likes_per_day < 0 ? "Likes illimités" : `${p.likes_per_day} likes par jour`);
+  if (p.messages_per_day >= 0) out.push(`${p.messages_per_day} messages par jour`);
+  if (p.super_likes > 0) out.push(`${p.super_likes} super likes`);
+  if (p.boosts > 0) out.push(`${p.boosts} boost${p.boosts > 1 ? "s" : ""}`);
+  if (p.rewinds !== 0) out.push(p.rewinds < 0 ? "Retours en arrière illimités" : `${p.rewinds} retours en arrière par jour`);
+  return out;
+}
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -134,15 +86,11 @@ const euro = (n: number) =>
 
 function AbonnementPage() {
   const saveSubscription = useServerFn(recordSubscription);
-  const [current, setCurrent] = useState("gratuit");
-  const [currentDuration, setCurrentDuration] = useState<DurationId | null>(null);
+  const [current, setCurrent] = useState<string | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);
   const [renewsAt, setRenewsAt] = useState<Date | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState<Record<string, DurationId>>({
-    noor: "1m",
-    aya: "1m",
-  });
+  const [selectedVariant, setSelectedVariant] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -160,23 +108,37 @@ function AbonnementPage() {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const { data } = await supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle();
-      if (alive) setGender((data?.gender as string | null) ?? null);
+      const [{ data }, { data: sub }] = await Promise.all([
+        supabase.from("profiles").select("gender").eq("id", u.user.id).maybeSingle(),
+        supabase
+          .from("subscriptions")
+          .select("plan_code, auto_renew, ends_at")
+          .eq("user_id", u.user.id)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      if (!alive) return;
+      setGender((data?.gender as string | null) ?? null);
+      if (sub) {
+        setCurrent(sub.plan_code);
+        setAutoRenew(sub.auto_renew);
+        setRenewsAt(sub.ends_at ? new Date(sub.ends_at) : null);
+      }
     })();
     return () => {
       alive = false;
     };
   }, []);
-  const activeCodes = new Set((dbPlans ?? []).map((p) => p.code.toLowerCase()));
-  const subscriptionsDisabled = !plansLoading && activeCodes.size === 0;
 
-  const visiblePlans = plans.filter((p) => {
-    if (!activeCodes.has(p.id.toLowerCase())) return false;
-    if (gender === "femme") return p.id === "gratuit" || p.id === "noor_f";
-    if (p.onlyFor && p.onlyFor !== gender) return false;
-    return true;
-  });
-  const currentPlan = plans.find((p) => p.id === current)!;
+  const subscriptionsDisabled = !plansLoading && (dbPlans?.length ?? 0) === 0;
+  const visiblePlans = plansForGender(dbPlans ?? [], gender);
+  const groups = groupPlans(visiblePlans);
+  const freePlan = visiblePlans.find((p) => p.price_ttc === 0) ?? null;
+  const currentPlan: PublicPlan | null =
+    (dbPlans ?? []).find((p) => p.code === current) ?? freePlan;
+  const currentIsPaid = !!currentPlan && currentPlan.price_ttc > 0;
 
 
   async function handleSuspend() {
@@ -243,16 +205,14 @@ function AbonnementPage() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-primary/40 bg-secondary/50 p-4 sm:items-center sm:gap-4">
           <div className="min-w-0">
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-primary">
-              <span className="shrink-0">{currentPlan.emoji} {currentPlan.name}</span>
-              {currentDuration && (
-                <span className="text-muted-foreground font-medium">
-                  — {durations.find((d) => d.id === currentDuration)!.label}
-                </span>
+              <span className="shrink-0">{currentPlan ? `${currentPlan.emoji ?? ""} ${currentPlan.name}` : "Accès complet"}</span>
+              {currentIsPaid && currentPlan && currentPlan.duration_days > 0 && (
+                <span className="text-muted-foreground font-medium">— {durationLabel(currentPlan.duration_days)}</span>
               )}
               <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
-              {!currentPlan.prices
+              {!currentIsPaid
                 ? "Votre formule actuelle — modifiable à tout moment, sans engagement."
                 : autoRenew
                   ? `Renouvellement automatique actif${renewsAt ? ` — prochaine échéance le ${formatDate(renewsAt)}` : ""}.`
@@ -260,11 +220,11 @@ function AbonnementPage() {
             </p>
           </div>
           <span className="shrink-0 self-center text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
-            {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
+            {currentIsPaid && !autoRenew ? "Se termine" : "Actif"}
           </span>
         </div>
 
-        {currentPlan.prices && (
+        {currentIsPaid && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {autoRenew ? (
               <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
@@ -281,7 +241,7 @@ function AbonnementPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Annuler le renouvellement automatique ?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Votre formule {currentPlan.name} restera active
+                      Votre formule {currentPlan?.name} restera active
                       {renewsAt ? ` jusqu'au ${formatDate(renewsAt)}` : " jusqu'à son échéance"}, puis
                       votre compte repassera automatiquement en formule Gratuit. Aucun nouveau
                       prélèvement ne sera effectué.
@@ -327,22 +287,23 @@ function AbonnementPage() {
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
         <div className="grid grid-cols-1 gap-4 items-start md:grid-cols-2 lg:grid-cols-3">
-          {visiblePlans.map((plan) => {
-
-            const active = plan.id === current;
-            const planDurations = plan.allowedDurations
-              ? durations.filter((d) => plan.allowedDurations!.includes(d.id))
-              : durations;
-            const duration = selectedDuration[plan.id] ?? planDurations[0]!.id;
-            const price = plan.prices?.[duration];
-            const days = durations.find((d) => d.id === duration)!.days;
+          {groups.map((group) => {
+            const variant =
+              group.variants.find((v) => v.code === selectedVariant[group.key]) ??
+              group.variants.find((v) => v.code === current) ??
+              group.variants[0]!;
+            const active = group.variants.some((v) => v.code === current) || (!current && group.free && variant.code === freePlan?.code);
+            const price = variant.price_ttc;
+            const days = variant.duration_days;
+            const isFree = price === 0;
+            const features = variant.features.length > 0 ? variant.features : autoFeatures(variant);
             return (
               <div
-                key={plan.id}
+                key={group.key}
                 className={`rounded-2xl border bg-card p-4 flex flex-col gap-4 transition-colors sm:p-5 lg:p-6 ${
                   active
                     ? "border-primary shadow-[var(--shadow-card)]"
-                    : plan.highlight
+                    : group.highlight
                       ? "border-primary/50"
                       : "border-border/60"
                 }`}
@@ -350,9 +311,9 @@ function AbonnementPage() {
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                   <div className="min-w-0">
                     <p className="break-words font-serif text-xl text-primary">
-                      {plan.emoji} {plan.name}
+                      {group.emoji} {group.name}
                     </p>
-                    <p className="break-words text-sm text-muted-foreground">{plan.tagline}</p>
+                    <p className="break-words text-sm text-muted-foreground">{variant.tagline ?? group.tagline}</p>
                   </div>
                   {active && (
                     <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
@@ -363,88 +324,76 @@ function AbonnementPage() {
 
                 <div className="min-w-0">
                   <p className="break-words text-3xl font-semibold text-foreground">
-                    {price === undefined ? "0 €" : euro(price)}
+                    {isFree ? "0 €" : euro(price)}
                   </p>
                   <p className="break-words text-sm text-muted-foreground">
-                    {price === undefined
+                    {isFree
                       ? "Gratuit, pour toujours"
-                      : `soit ${euro(price / days)} / jour`}
+                      : days > 0
+                        ? `soit ${euro(price / days)} / jour`
+                        : "Sans engagement"}
                   </p>
                 </div>
 
-                {plan.prices ? (
+                {group.variants.length > 1 ? (
                   <select
-                    value={duration}
-                    onChange={(e) =>
-                      setSelectedDuration((s) => ({
-                        ...s,
-                        [plan.id]: e.target.value as DurationId,
-                      }))
-                    }
-                    aria-label={`Durée de la formule ${plan.name}`}
+                    value={variant.code}
+                    onChange={(e) => setSelectedVariant((s) => ({ ...s, [group.key]: e.target.value }))}
+                    aria-label={`Durée de la formule ${group.name}`}
                     className="w-full rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground"
                   >
-                    {planDurations.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.label} — {euro(plan.prices![d.id])}
+                    {group.variants.map((v) => (
+                      <option key={v.code} value={v.code}>
+                        {durationLabel(v.duration_days)} — {v.price_ttc === 0 ? "0 €" : euro(v.price_ttc)}
                       </option>
                     ))}
                   </select>
                 ) : (
                   <div className="w-full rounded-xl border border-dashed border-border/60 px-3 py-2.5 text-sm text-muted-foreground">
-                    Sans durée ni engagement
+                    {isFree || days === 0 ? "Sans durée ni engagement" : durationLabel(days)}
                   </div>
                 )}
 
                 <button
                   type="button"
-                  disabled={active && !plan.prices}
+                  disabled={active && isFree}
                   onClick={() => {
-                    if (!plan.prices) {
-                      setCurrent(plan.id);
-                      setCurrentDuration(null);
+                    if (isFree) {
+                      setCurrent(variant.code);
                       setAutoRenew(false);
                       setRenewsAt(null);
-                      void saveSubscription({ data: { planCode: plan.id, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
-                      toast.success("Vous êtes revenu à la formule Gratuit.");
+                      void saveSubscription({ data: { planCode: variant.code, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
+                      toast.success(`Vous êtes passé à la formule ${group.name}.`);
                     } else {
                       const end = new Date();
                       end.setDate(end.getDate() + days);
-                      setCurrent(plan.id);
-                      setCurrentDuration(duration);
-                      setRenewsAt(end);
+                      setCurrent(variant.code);
+                      setRenewsAt(days > 0 ? end : null);
                       setAutoRenew(true);
                       void saveSubscription({
-                        data: { planCode: plan.id, amountTtc: price ?? 0, days, autoRenew: true },
+                        data: { planCode: variant.code, amountTtc: price, days, autoRenew: true },
                       }).catch(() => {});
-                      toast.info(
-                        `Paiement sécurisé bientôt disponible : ${plan.name} — ${
-                          durations.find((d) => d.id === duration)!.label
-                        }.`,
-                      );
+                      toast.info(`Paiement sécurisé bientôt disponible : ${group.name} — ${durationLabel(days)}.`);
                     }
                   }}
                   className={`w-full whitespace-normal rounded-full px-4 py-2.5 text-sm font-semibold leading-tight border transition-colors ${
-                    active && !plan.prices
+                    active && isFree
                       ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
-                      : plan.highlight
+                      : group.highlight
                         ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
                         : "bg-background text-primary border-primary/50 hover:bg-primary/10"
                   }`}
                 >
-                  {active && !plan.prices ? "Formule actuelle" : "Sélectionner"}
+                  {active && isFree ? "Formule actuelle" : active ? "Changer de durée" : "Sélectionner"}
                 </button>
 
                 <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                  {plan.features.map((f, idx) => {
-                    const label = typeof f === "function" ? f(duration) : f;
-                    return (
-                      <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="min-w-0 break-words">{label}</span>
-                      </li>
-                    );
-                  })}
+                  {features.map((label: string, idx: number) => (
+                    <li key={`${variant.code}-feature-${idx}`} className="flex gap-2">
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="min-w-0 break-words">{label}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             );

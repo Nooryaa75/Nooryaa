@@ -18,15 +18,54 @@ export const ACCESS_KEYS = [
 export type AccessKey = (typeof ACCESS_KEYS)[number]["key"];
 export type AccessMap = Partial<Record<AccessKey, boolean>>;
 
+export type PlanAudience = "homme" | "femme" | "tous";
+
+export const AUDIENCE_LABEL: Record<PlanAudience, string> = {
+  homme: "Hommes",
+  femme: "Femmes",
+  tous: "Tous",
+};
+
+/** Durées prédéfinies proposées dans le configurateur (0 = sans durée). */
+export const DURATION_PRESETS: { days: number; label: string }[] = [
+  { days: 0, label: "Sans durée (gratuit)" },
+  { days: 1, label: "24 heures" },
+  { days: 3, label: "3 jours" },
+  { days: 7, label: "1 semaine" },
+  { days: 14, label: "2 semaines" },
+  { days: 30, label: "1 mois" },
+  { days: 90, label: "3 mois" },
+  { days: 180, label: "6 mois" },
+  { days: 365, label: "1 an" },
+];
+
+export function durationLabel(days: number): string {
+  const preset = DURATION_PRESETS.find((d) => d.days === days);
+  if (preset) return preset.label;
+  if (days % 30 === 0) return `${days / 30} mois`;
+  if (days % 7 === 0) return `${days / 7} semaines`;
+  return `${days} jours`;
+}
+
+/** Affiche un quota (−1 = illimité). */
+export function quotaLabel(n: number, unit: string): string {
+  if (n < 0) return `${unit} illimités`;
+  return `${n} ${unit}`;
+}
+
 export type PublicPlan = {
   id: string;
   code: string;
   name: string;
   tagline: string | null;
+  emoji: string | null;
+  audience: PlanAudience;
   duration_days: number;
   price_ttc: number;
   vat_rate: number;
   likes_per_day: number;
+  messages_per_day: number;
+  rewinds: number;
   super_likes: number;
   boosts: number;
   features: string[];
@@ -46,9 +85,17 @@ export async function fetchActivePlans(): Promise<PublicPlan[]> {
     ...p,
     price_ttc: Number(p.price_ttc),
     vat_rate: Number(p.vat_rate),
+    audience: (p.audience ?? "tous") as PlanAudience,
+    messages_per_day: p.messages_per_day ?? -1,
+    rewinds: p.rewinds ?? 0,
     features: (p.features ?? []) as string[],
     access: (p.access ?? {}) as AccessMap,
   })) as PublicPlan[];
+}
+
+/** Formules visibles pour un genre donné (audience ciblée ou "tous"). */
+export function plansForGender(plans: PublicPlan[], gender: string | null | undefined): PublicPlan[] {
+  return plans.filter((p) => p.audience === "tous" || !gender || p.audience === gender);
 }
 
 export function useActivePlans() {

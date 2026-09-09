@@ -93,18 +93,22 @@ export const verifySelfie = createServerFn({ method: "POST" })
 
     const { data: photos } = await supabase
       .from("photos")
-      .select("url, position")
+      .select("url, storage_path, position")
       .eq("user_id", userId)
       .order("position", { ascending: true });
 
-    const urls = Array.from(
+    const paths = Array.from(
       new Set(
-        [profile?.primary_photo_url, ...((photos ?? []) as { url: string }[]).map((p) => p.url)]
-          .filter((u): u is string => typeof u === "string" && u.length > 0),
+        [
+          ...((photos ?? []) as { url: string; storage_path: string | null }[]).map(
+            (p) => p.storage_path || storagePathFromUrl(p.url ?? ""),
+          ),
+          profile?.primary_photo_url ? storagePathFromUrl(profile.primary_photo_url) : null,
+        ].filter((p): p is string => typeof p === "string" && p.length > 0),
       ),
     ).slice(0, 3);
 
-    if (urls.length === 0) {
+    if (paths.length === 0) {
       return {
         verdict: "review",
         single_face: "unknown",
@@ -125,9 +129,22 @@ export const verifySelfie = createServerFn({ method: "POST" })
       };
     }
 
-    // Les photos de profil sont converties en base64 : les URL signées ne sont
-    // pas toujours accessibles par le fournisseur du modèle.
-    const profileImages = await Promise.all(urls.map(toDataUrl));
+    // Les photos de profil sont téléchargées depuis le stockage puis converties en
+    // base64 : les URL signées expirent et ne sont pas lisibles par le modèle.
+    const profileImages = (await Promise.all(paths.map(downloadPhoto))).filter(
+      (i): i is string => !!i,
+    );
+
+    if (profileImages.length === 0) {
+      return {
+        verdict: "review",
+        single_face: "unknown",
+        same_person: "unknown",
+        live_capture: "maybe",
+        reason: "Vos photos de profil n'ont pas pu être chargées. Réessayez dans un instant.",
+      };
+    }
+
 
     let result: SelfieVerificationResult = {
       verdict: "review",

@@ -439,6 +439,91 @@ export async function sendEmailConfirmation(opts: {
 }
 
 /**
+ * Confirmation de suspension ou de suppression du compte.
+ * Fonction utilitaire serveur appelée depuis account.functions.ts.
+ */
+export async function sendAccountClosureEmail(opts: {
+  email: string;
+  firstName?: string | null;
+  action: "suspend" | "delete";
+  reason?: string | null;
+  details?: string | null;
+}) {
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  const resendKey = process.env["RESEND_API_KEY"];
+  if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
+
+  const name = escapeHtml(opts.firstName || "");
+  const reasonBlock = opts.reason
+    ? `<p style="margin-top:12px;">Motif indiqué : <strong>${escapeHtml(opts.reason)}</strong>${
+        opts.details ? `<br /><em>« ${escapeHtml(opts.details)} »</em>` : ""
+      }</p>`
+    : "";
+
+  const isSuspend = opts.action === "suspend";
+  const title = isSuspend ? "Votre compte est suspendu" : "Votre compte a été supprimé";
+  const body = isSuspend
+    ? `<p>Assalamu alaykum ${name},</p>
+       <p>Nous confirmons la <strong>suspension</strong> de votre compte ${SITE_NAME}.</p>
+       <p>Concrètement :</p>
+       <ul style="margin:0;padding-left:20px;">
+         <li>Votre profil n'est plus visible par les autres membres ;</li>
+         <li>Vos conversations, photos et coups de cœur sont conservés ;</li>
+         <li>Vous ne recevez plus aucune notification ;</li>
+         <li>Vous pouvez réactiver votre compte à tout moment en contactant notre service client.</li>
+       </ul>
+       ${reasonBlock}
+       <p style="margin-top:12px;">Qu'Allah facilite vos démarches. Vous serez toujours le bienvenu parmi nous.</p>`
+    : `<p>Assalamu alaykum ${name},</p>
+       <p>Nous confirmons la <strong>suppression définitive</strong> de votre compte ${SITE_NAME}.</p>
+       <p>Concrètement :</p>
+       <ul style="margin:0;padding-left:20px;">
+         <li>Votre profil, vos photos, vos messages, vos coups de cœur et vos recherches ont été effacés ;</li>
+         <li>Votre abonnement éventuel n'est plus renouvelé ;</li>
+         <li>Cette action est irréversible : ces données ne peuvent pas être restaurées ;</li>
+         <li>Vous pouvez créer un nouveau compte plus tard si vous le souhaitez.</li>
+       </ul>
+       ${reasonBlock}
+       <p style="margin-top:12px;">Merci pour la confiance que vous nous avez accordée. Qu'Allah vous accorde ce qu'il y a de meilleur.</p>`;
+
+  const html = layout(
+    title,
+    body,
+    isSuspend ? "Contacter le service client" : `Revenir sur ${SITE_NAME}`,
+    isSuspend ? `${SITE_URL}/compte/service-client` : SITE_URL,
+  );
+
+  try {
+    const response = await fetch(`${GATEWAY_URL}/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+      },
+      body: JSON.stringify({
+        from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
+        to: [opts.email],
+        subject: isSuspend
+          ? `Confirmation : votre compte ${SITE_NAME} est suspendu`
+          : `Confirmation : votre compte ${SITE_NAME} a été supprimé`,
+        html,
+      }),
+    });
+    if (!response.ok) {
+      console.error("Resend gateway error (closure)", `[${response.status}] ${await response.text()}`);
+      return { sent: false, reason: "failed" as const };
+    }
+  } catch (e: any) {
+    console.error("Resend gateway exception (closure)", e?.message ?? e);
+    return { sent: false, reason: "failed" as const };
+  }
+
+  return { sent: true, reason: "ok" as const };
+}
+
+
+/**
  * Mot de passe oublié : génère un lien de réinitialisation sécurisé
  * et l'envoie avec le template email Nooryaa (Resend).
  * Réponse volontairement neutre : on n'indique jamais si l'email existe.

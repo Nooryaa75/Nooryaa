@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { BODY_TYPES, EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, ageFromBirthdate, isAdult } from "@/lib/profile";
 import { ChevronLeft, Camera, Plus, X, User } from "lucide-react";
@@ -48,50 +48,92 @@ function MyProfile() {
 
   const [form, setForm] = useState<any>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [autoState, setAutoState] = useState<"idle" | "saving" | "saved">("idle");
+  const lastSaved = useRef<string | null>(null);
   useEffect(() => {
     if (profile && !form) setForm({ ...profile, valeurs: (profile.preferences as any)?.valeurs ?? [] });
   }, [profile, form]);
 
+  /** Construit les données à enregistrer à partir du formulaire. */
+  function buildPayload(f: any, opts: { skipInvalidBio?: boolean } = {}) {
+    const bio = f.bio || "";
+    const bioInvalid = bio.length > 0 && (bio.length < 50 || bio.length > 500);
+    if (bioInvalid && !opts.skipInvalidBio) {
+      throw new Error("La bio doit contenir entre 50 et 500 caractères");
+    }
+    const birthdateInvalid = !!f.birthdate && !isAdult(f.birthdate);
+    if (birthdateInvalid && !opts.skipInvalidBio) {
+      throw new Error("Vous devez avoir au moins 18 ans");
+    }
+    const payload: any = {
+      height_cm: f.height_cm ? Number(f.height_cm) : null,
+      body_type: f.body_type || null,
+      city: f.city, country: f.country, country_origin: f.country_origin,
+      grew_up: f.grew_up || null,
+      latitude: f.latitude ?? null, longitude: f.longitude ?? null,
+      marital_status: f.marital_status,
+      salat_quotidienne: f.salat_quotidienne ?? null,
+      ramadan: f.ramadan ?? null,
+      hadj: f.hadj ?? null,
+      omra: f.omra ?? null,
+      porte_voile: profile?.gender === "femme" ? (f.porte_voile ?? null) : null,
+      has_children: f.has_children ?? null,
+      children_count: f.has_children ? (Number(f.children_count) || null) : null,
+      wants_children: f.wants_children ?? null,
+      smoker: f.smoker ?? null,
+      religion: f.religion,
+      looking_for: profile?.gender === "homme" ? "femme" : "homme",
+      profession: f.profession, education_level: f.education_level,
+      activities: f.activities, objective: f.objective,
+      personality: f.personality || null,
+      phone: f.phone || null,
+      preferences: { ...(f.preferences ?? {}), valeurs: f.valeurs ?? [] },
+    };
+    // En enregistrement automatique, on ignore simplement les champs invalides
+    // au lieu de bloquer toute la sauvegarde.
+    if (!bioInvalid) payload.bio = f.bio;
+    if (!birthdateInvalid) payload.birthdate = f.birthdate || null;
+    return payload;
+  }
+
   const save = useMutation({
     mutationFn: async () => {
-      const bio = form.bio || "";
-      if (bio.length > 0 && (bio.length < 50 || bio.length > 500)) {
-        throw new Error("La bio doit contenir entre 50 et 500 caractères");
-      }
-      if (form.birthdate && !isAdult(form.birthdate)) {
-        throw new Error("Vous devez avoir au moins 18 ans");
-      }
-      const { error } = await supabase.from("profiles").update({
-        birthdate: form.birthdate || null,
-        height_cm: form.height_cm ? Number(form.height_cm) : null,
-        body_type: form.body_type || null,
-        city: form.city, country: form.country, country_origin: form.country_origin,
-        grew_up: form.grew_up || null,
-        latitude: form.latitude ?? null, longitude: form.longitude ?? null,
-        marital_status: form.marital_status,
-        salat_quotidienne: form.salat_quotidienne ?? null,
-        ramadan: form.ramadan ?? null,
-        hadj: form.hadj ?? null,
-        omra: form.omra ?? null,
-        porte_voile: profile?.gender === "femme" ? (form.porte_voile ?? null) : null,
-        has_children: form.has_children ?? null,
-        children_count: form.has_children ? (Number(form.children_count) || null) : null,
-        wants_children: form.wants_children ?? null,
-        smoker: form.smoker ?? null,
-        religion: form.religion,
-        looking_for: profile?.gender === "homme" ? "femme" : "homme",
-        bio: form.bio,
-        profession: form.profession, education_level: form.education_level,
-        activities: form.activities, objective: form.objective,
-        personality: form.personality || null,
-        phone: form.phone || null,
-        preferences: { ...(form.preferences ?? {}), valeurs: form.valeurs ?? [] },
-      }).eq("id", ctx.userId);
+      const { error } = await supabase.from("profiles").update(buildPayload(form)).eq("id", ctx.userId);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Profil mis à jour"); qc.invalidateQueries({ queryKey: ["me"] }); },
+    onSuccess: () => {
+      lastSaved.current = JSON.stringify(buildPayload(form, { skipInvalidBio: true }));
+      toast.success("Profil mis à jour");
+      qc.invalidateQueries({ queryKey: ["me"] });
+    },
     onError: (e: any) => toast.error(frenchError(e, "L'enregistrement a échoué.")),
   });
+
+  // Enregistrement automatique au fil de la saisie (1,5 s après la dernière modification).
+  useEffect(() => {
+    if (!form) return;
+    const payload = buildPayload(form, { skipInvalidBio: true });
+    const snapshot = JSON.stringify(payload);
+    if (lastSaved.current === null) {
+      lastSaved.current = snapshot;
+      return;
+    }
+    if (snapshot === lastSaved.current) return;
+    const t = setTimeout(async () => {
+      setAutoState("saving");
+      const { error } = await supabase.from("profiles").update(payload).eq("id", ctx.userId);
+      if (error) {
+        setAutoState("idle");
+        return;
+      }
+      lastSaved.current = snapshot;
+      setAutoState("saved");
+      setTimeout(() => setAutoState("idle"), 2000);
+    }, 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form]);
+
 
   if (!form) return <div className="text-center py-12">Chargement...</div>;
 
@@ -121,6 +163,14 @@ function MyProfile() {
           {save.isPending ? "…" : "Enregistrer"}
         </button>
       </div>
+      <p className="-mt-4 text-center text-xs text-muted-foreground h-4">
+        {autoState === "saving"
+          ? "Enregistrement…"
+          : autoState === "saved"
+            ? "Modifications enregistrées"
+            : "Vos modifications sont enregistrées automatiquement"}
+      </p>
+
 
       {/* Avatar */}
       <div className="flex flex-col items-center gap-2">

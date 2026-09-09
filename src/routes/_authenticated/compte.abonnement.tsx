@@ -69,6 +69,7 @@ function groupPlans(plans: PublicPlan[]): PlanGroup[] {
 
 function autoFeatures(p: PublicPlan): string[] {
   const out: string[] = [];
+  // Avantages générés automatiquement quand l'admin n'en a saisi aucun.
   out.push(p.likes_per_day < 0 ? "Likes illimités" : `${p.likes_per_day} likes par jour`);
   if (p.messages_per_day >= 0) out.push(`${p.messages_per_day} messages par jour`);
   if (p.super_likes > 0) out.push(`${p.super_likes} super likes`);
@@ -387,7 +388,7 @@ function AbonnementPage() {
                 </button>
 
                 <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                  {features.map((label, idx) => (
+                  {features.map((label: string, idx: number) => (
                     <li key={`${variant.code}-feature-${idx}`} className="flex gap-2">
                       <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                       <span className="min-w-0 break-words">{label}</span>

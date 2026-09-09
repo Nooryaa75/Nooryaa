@@ -71,6 +71,36 @@ export type Database = {
         }
         Relationships: []
       }
+      app_versions: {
+        Row: {
+          created_at: string
+          id: string
+          min_version: string
+          notes: string | null
+          platform: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_version?: string
+          notes?: string | null
+          platform: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_version?: string
+          notes?: string | null
+          platform?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       blocks: {
         Row: {
           blocked: string

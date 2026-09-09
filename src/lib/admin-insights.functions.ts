@@ -535,3 +535,43 @@ export const adminSaveSocialLink = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+// ---------------- Versions des applications mobiles ----------------
+
+export type AppVersionRow = {
+  id: string;
+  platform: "ios" | "android";
+  version: string;
+  min_version: string;
+  notes: string | null;
+  updated_at: string;
+};
+
+export const adminListAppVersions = createServerFn({ method: "GET" }).handler(async () => {
+  const { requireAdminOrThrow } = await import("./admin-session.server");
+  await requireAdminOrThrow();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await (supabaseAdmin.from("app_versions" as any) as any)
+    .select("*")
+    .order("platform", { ascending: true });
+  return (data ?? []) as AppVersionRow[];
+});
+
+export const adminSaveAppVersion = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; version?: string; min_version?: string; notes?: string }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    const who = await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (typeof data.version === "string") patch.version = data.version.trim();
+    if (typeof data.min_version === "string") patch.min_version = data.min_version.trim();
+    if (typeof data.notes === "string") patch.notes = data.notes;
+    const { error } = await (supabaseAdmin.from("app_versions" as any) as any).update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await (supabaseAdmin.from("admin_actions" as any) as any).insert({
+      action: "app_version_update",
+      details: { id: data.id, ...patch, by: who.email ?? who.via },
+    });
+    return { ok: true };
+  });

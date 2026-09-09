@@ -4,14 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
 import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, adminListAppVersions, adminSaveAppVersion, type PlanInput } from "@/lib/admin-insights.functions";
-import { ACCESS_KEYS } from "@/lib/entitlements";
+import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, quotaLabel, type PlanAudience } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, ShieldCheck } from "lucide-react";
+import { Plus, Trash2, ShieldCheck, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 
@@ -29,10 +29,14 @@ const EMPTY: PlanInput = {
   code: "",
   name: "",
   tagline: "",
+  emoji: "",
+  audience: "homme",
   duration_days: 30,
   price_ttc: 0,
   vat_rate: 20,
   likes_per_day: 10,
+  messages_per_day: -1,
+  rewinds: 0,
   super_likes: 0,
   boosts: 0,
   features: [],
@@ -41,6 +45,27 @@ const EMPTY: PlanInput = {
   sort_order: 10,
   access: {},
 };
+
+const AUDIENCES: PlanAudience[] = ["homme", "femme", "tous"];
+
+/** Champ numérique avec interrupteur « Illimité » (valeur −1). */
+function QuotaField({ label, value, onChange, allowUnlimited = true }: { label: string; value: number; onChange: (v: number) => void; allowUnlimited?: boolean }) {
+  const unlimited = value < 0;
+  return (
+    <div>
+      <Label>{label}</Label>
+      <div className="flex items-center gap-2">
+        <Input type="number" min={0} disabled={unlimited} value={unlimited ? "" : value} placeholder={unlimited ? "∞" : "0"} onChange={(e) => onChange(Math.max(0, Number(e.target.value)))} />
+        {allowUnlimited && (
+          <label className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <Switch checked={unlimited} onCheckedChange={(v) => onChange(v ? -1 : 0)} aria-label={`${label} illimité`} />
+            Illimité
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}
 
 
 function AdminConfig() {

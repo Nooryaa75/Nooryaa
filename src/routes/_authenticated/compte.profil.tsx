@@ -163,6 +163,14 @@ function MyProfile() {
           {save.isPending ? "…" : "Enregistrer"}
         </button>
       </div>
+      <p className="-mt-4 text-center text-xs text-muted-foreground h-4">
+        {autoState === "saving"
+          ? "Enregistrement…"
+          : autoState === "saved"
+            ? "Modifications enregistrées"
+            : "Vos modifications sont enregistrées automatiquement"}
+      </p>
+
 
       {/* Avatar */}
       <div className="flex flex-col items-center gap-2">

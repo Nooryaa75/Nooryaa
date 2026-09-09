@@ -4,7 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle, XCircle, RefreshCw, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { suspendAccount, deleteAccount } from "@/lib/account.functions";
+import { suspendAccount, deleteAccount, CLOSURE_REASONS } from "@/lib/account.functions";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
 import { useActivePlans } from "@/lib/entitlements";
 

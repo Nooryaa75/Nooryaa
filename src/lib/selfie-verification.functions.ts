@@ -34,19 +34,35 @@ function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallb
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
-async function toDataUrl(url: string): Promise<string> {
+function bytesToDataUrl(buf: Uint8Array, mime: string): string {
+  let bin = "";
+  const chunk = 8192;
+  for (let i = 0; i < buf.length; i += chunk) {
+    bin += String.fromCharCode(...buf.subarray(i, i + chunk));
+  }
+  return `data:${mime || "image/jpeg"};base64,${btoa(bin)}`;
+}
+
+/** Extrait le chemin de stockage à partir d'une URL signée Supabase. */
+function storagePathFromUrl(url: string): string | null {
+  const m = url.match(/\/object\/(?:sign|public)\/profile-photos\/([^?]+)/);
+  return m ? decodeURIComponent(m[1]!) : null;
+}
+
+/** Télécharge une photo de profil (chemin de stockage) en base64. */
+async function downloadPhoto(path: string): Promise<string | null> {
   try {
-    const img = await fetch(url);
-    if (!img.ok) return url;
-    const buf = new Uint8Array(await img.arrayBuffer());
-    let bin = "";
-    for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
-    const mime = img.headers.get("content-type") || "image/jpeg";
-    return `data:${mime};base64,${btoa(bin)}`;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.storage.from("profile-photos").download(path);
+    if (error || !data) return null;
+    const buf = new Uint8Array(await data.arrayBuffer());
+    if (buf.length === 0) return null;
+    return bytesToDataUrl(buf, (data as Blob).type || "image/jpeg");
   } catch {
-    return url;
+    return null;
   }
 }
+
 
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

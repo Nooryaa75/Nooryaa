@@ -143,6 +143,10 @@ function AbonnementPage() {
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [suspendReason, setSuspendReason] = useState("");
+  const [suspendDetails, setSuspendDetails] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteDetails, setDeleteDetails] = useState("");
   const router = useRouter();
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);

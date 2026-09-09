@@ -286,22 +286,23 @@ function AbonnementPage() {
           <Sparkles className="h-4 w-4" /> Formules d'abonnement
         </h3>
         <div className="grid grid-cols-1 gap-4 items-start md:grid-cols-2 lg:grid-cols-3">
-          {visiblePlans.map((plan) => {
-
-            const active = plan.id === current;
-            const planDurations = plan.allowedDurations
-              ? durations.filter((d) => plan.allowedDurations!.includes(d.id))
-              : durations;
-            const duration = selectedDuration[plan.id] ?? planDurations[0]!.id;
-            const price = plan.prices?.[duration];
-            const days = durations.find((d) => d.id === duration)!.days;
+          {groups.map((group) => {
+            const variant =
+              group.variants.find((v) => v.code === selectedVariant[group.key]) ??
+              group.variants.find((v) => v.code === current) ??
+              group.variants[0]!;
+            const active = group.variants.some((v) => v.code === current) || (!current && group.free && variant.code === freePlan?.code);
+            const price = variant.price_ttc;
+            const days = variant.duration_days;
+            const isFree = price === 0;
+            const features = variant.features.length > 0 ? variant.features : autoFeatures(variant);
             return (
               <div
-                key={plan.id}
+                key={group.key}
                 className={`rounded-2xl border bg-card p-4 flex flex-col gap-4 transition-colors sm:p-5 lg:p-6 ${
                   active
                     ? "border-primary shadow-[var(--shadow-card)]"
-                    : plan.highlight
+                    : group.highlight
                       ? "border-primary/50"
                       : "border-border/60"
                 }`}
@@ -309,9 +310,9 @@ function AbonnementPage() {
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                   <div className="min-w-0">
                     <p className="break-words font-serif text-xl text-primary">
-                      {plan.emoji} {plan.name}
+                      {group.emoji} {group.name}
                     </p>
-                    <p className="break-words text-sm text-muted-foreground">{plan.tagline}</p>
+                    <p className="break-words text-sm text-muted-foreground">{variant.tagline ?? group.tagline}</p>
                   </div>
                   {active && (
                     <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-2 py-0.5">
@@ -322,88 +323,76 @@ function AbonnementPage() {
 
                 <div className="min-w-0">
                   <p className="break-words text-3xl font-semibold text-foreground">
-                    {price === undefined ? "0 €" : euro(price)}
+                    {isFree ? "0 €" : euro(price)}
                   </p>
                   <p className="break-words text-sm text-muted-foreground">
-                    {price === undefined
+                    {isFree
                       ? "Gratuit, pour toujours"
-                      : `soit ${euro(price / days)} / jour`}
+                      : days > 0
+                        ? `soit ${euro(price / days)} / jour`
+                        : "Sans engagement"}
                   </p>
                 </div>
 
-                {plan.prices ? (
+                {group.variants.length > 1 ? (
                   <select
-                    value={duration}
-                    onChange={(e) =>
-                      setSelectedDuration((s) => ({
-                        ...s,
-                        [plan.id]: e.target.value as DurationId,
-                      }))
-                    }
-                    aria-label={`Durée de la formule ${plan.name}`}
+                    value={variant.code}
+                    onChange={(e) => setSelectedVariant((s) => ({ ...s, [group.key]: e.target.value }))}
+                    aria-label={`Durée de la formule ${group.name}`}
                     className="w-full rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground"
                   >
-                    {planDurations.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.label} — {euro(plan.prices![d.id])}
+                    {group.variants.map((v) => (
+                      <option key={v.code} value={v.code}>
+                        {durationLabel(v.duration_days)} — {v.price_ttc === 0 ? "0 €" : euro(v.price_ttc)}
                       </option>
                     ))}
                   </select>
                 ) : (
                   <div className="w-full rounded-xl border border-dashed border-border/60 px-3 py-2.5 text-sm text-muted-foreground">
-                    Sans durée ni engagement
+                    {isFree || days === 0 ? "Sans durée ni engagement" : durationLabel(days)}
                   </div>
                 )}
 
                 <button
                   type="button"
-                  disabled={active && !plan.prices}
+                  disabled={active && isFree}
                   onClick={() => {
-                    if (!plan.prices) {
-                      setCurrent(plan.id);
-                      setCurrentDuration(null);
+                    if (isFree) {
+                      setCurrent(variant.code);
                       setAutoRenew(false);
                       setRenewsAt(null);
-                      void saveSubscription({ data: { planCode: plan.id, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
-                      toast.success("Vous êtes revenu à la formule Gratuit.");
+                      void saveSubscription({ data: { planCode: variant.code, amountTtc: 0, days: 0, autoRenew: false } }).catch(() => {});
+                      toast.success(`Vous êtes passé à la formule ${group.name}.`);
                     } else {
                       const end = new Date();
                       end.setDate(end.getDate() + days);
-                      setCurrent(plan.id);
-                      setCurrentDuration(duration);
-                      setRenewsAt(end);
+                      setCurrent(variant.code);
+                      setRenewsAt(days > 0 ? end : null);
                       setAutoRenew(true);
                       void saveSubscription({
-                        data: { planCode: plan.id, amountTtc: price ?? 0, days, autoRenew: true },
+                        data: { planCode: variant.code, amountTtc: price, days, autoRenew: true },
                       }).catch(() => {});
-                      toast.info(
-                        `Paiement sécurisé bientôt disponible : ${plan.name} — ${
-                          durations.find((d) => d.id === duration)!.label
-                        }.`,
-                      );
+                      toast.info(`Paiement sécurisé bientôt disponible : ${group.name} — ${durationLabel(days)}.`);
                     }
                   }}
                   className={`w-full whitespace-normal rounded-full px-4 py-2.5 text-sm font-semibold leading-tight border transition-colors ${
-                    active && !plan.prices
+                    active && isFree
                       ? "bg-secondary text-muted-foreground border-border/60 cursor-default"
-                      : plan.highlight
+                      : group.highlight
                         ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
                         : "bg-background text-primary border-primary/50 hover:bg-primary/10"
                   }`}
                 >
-                  {active && !plan.prices ? "Formule actuelle" : "Sélectionner"}
+                  {active && isFree ? "Formule actuelle" : active ? "Changer de durée" : "Sélectionner"}
                 </button>
 
                 <ul className="space-y-2 text-sm border-t border-border/60 pt-4">
-                  {plan.features.map((f, idx) => {
-                    const label = typeof f === "function" ? f(duration) : f;
-                    return (
-                      <li key={`${plan.id}-feature-${idx}`} className="flex gap-2">
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="min-w-0 break-words">{label}</span>
-                      </li>
-                    );
-                  })}
+                  {features.map((label, idx) => (
+                    <li key={`${variant.code}-feature-${idx}`} className="flex gap-2">
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="min-w-0 break-words">{label}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             );

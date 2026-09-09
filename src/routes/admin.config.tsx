@@ -243,7 +243,8 @@ function AdminConfig() {
         </div>
 
         {draft && (
-          <section className="bg-card rounded-2xl p-5 border border-primary/40 space-y-5">
+          <section ref={editorRef} className="scroll-mt-24 bg-card rounded-2xl p-5 border-2 border-primary/60 shadow-lg space-y-5">
+
             <h2 className="text-lg font-serif text-primary">{draft.id ? "Modifier la formule" : "Nouvelle formule"}</h2>
 
             <div>

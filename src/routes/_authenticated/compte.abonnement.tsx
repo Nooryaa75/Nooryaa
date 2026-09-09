@@ -547,3 +547,46 @@ function AbonnementPage() {
     </div>
   );
 }
+
+function ReasonPicker({
+  idPrefix,
+  label,
+  reason,
+  onReason,
+  details,
+  onDetails,
+}: {
+  idPrefix: string;
+  label: string;
+  reason: string;
+  onReason: (v: string) => void;
+  details: string;
+  onDetails: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-3 rounded-xl border border-border/60 bg-muted/30 p-3">
+      <p className="text-sm font-medium">{label}</p>
+      <RadioGroup value={reason} onValueChange={onReason} className="gap-2">
+        {CLOSURE_REASONS.map((r) => (
+          <div key={r} className="flex items-start gap-2">
+            <RadioGroupItem value={r} id={`${idPrefix}-${r}`} className="mt-0.5" />
+            <Label htmlFor={`${idPrefix}-${r}`} className="text-sm font-normal leading-snug">
+              {r}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+      <Textarea
+        value={details}
+        onChange={(e) => onDetails(e.target.value)}
+        maxLength={1000}
+        rows={3}
+        placeholder="Souhaitez-vous nous en dire plus ? (facultatif)"
+        className="text-sm"
+      />
+      {!reason && (
+        <p className="text-xs text-destructive">Merci de sélectionner une raison pour continuer.</p>
+      )}
+    </div>
+  );
+}

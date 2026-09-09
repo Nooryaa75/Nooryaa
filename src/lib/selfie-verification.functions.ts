@@ -154,30 +154,35 @@ export const verifySelfie = createServerFn({ method: "POST" })
       reason: "Vérification en attente de contrôle.",
     };
 
-    try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: "openai/gpt-5.6-luna",
-          input: [
-            { role: "system", content: SYSTEM_PROMPT },
-            {
-              role: "user",
-              content: [
-                {
-                  type: "input_text",
-                  text: `Image 1 = selfie de vérification pris en direct. Images suivantes (${profileImages.length}) = photos du profil.`,
-                },
-                { type: "input_image", image_url: data.selfieDataUrl },
-                ...profileImages.map((image_url) => ({ type: "input_image", image_url })),
-              ],
-            },
-          ],
-          max_output_tokens: 1500,
-        }),
-      });
-      if (res.ok) {
+    let gatewayFailed = true;
+    for (let attempt = 0; attempt < 2 && gatewayFailed; attempt++) {
+      try {
+        const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: "openai/gpt-5.6-luna",
+            input: [
+              { role: "system", content: SYSTEM_PROMPT },
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "input_text",
+                    text: `Image 1 = selfie de vérification pris en direct. Images suivantes (${profileImages.length}) = photos du profil.`,
+                  },
+                  { type: "input_image", image_url: data.selfieDataUrl },
+                  ...profileImages.map((image_url) => ({ type: "input_image", image_url })),
+                ],
+              },
+            ],
+            max_output_tokens: 1500,
+          }),
+        });
+        if (!res.ok) {
+          console.error("selfie-verification gateway error", res.status, (await res.text()).slice(0, 500));
+          continue;
+        }
         const json: any = await res.json();
         const text: string =
           json.output_text ??
@@ -187,20 +192,34 @@ export const verifySelfie = createServerFn({ method: "POST" })
             .join("") ??
           "";
         const match = text.match(/\{[\s\S]*\}/);
-        if (match) {
-          const parsed = JSON.parse(match[0]);
-          result = {
-            verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
-            single_face: safeEnum(parsed.single_face, ["yes", "no", "unknown"] as const, "unknown"),
-            same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
-            live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
-            reason: typeof parsed.reason === "string" ? parsed.reason : "",
-          };
+        if (!match) {
+          console.error("selfie-verification: réponse illisible", text.slice(0, 300));
+          continue;
         }
+        const parsed = JSON.parse(match[0]);
+        result = {
+          verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
+          single_face: safeEnum(parsed.single_face, ["yes", "no", "unknown"] as const, "unknown"),
+          same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
+          live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
+          reason: typeof parsed.reason === "string" ? parsed.reason : "",
+        };
+        gatewayFailed = false;
+      } catch (e) {
+        console.error("selfie-verification exception", e);
       }
-    } catch {
-      // on garde le verdict "review"
     }
+
+    if (gatewayFailed) {
+      return {
+        verdict: "review",
+        single_face: "unknown",
+        same_person: "unknown",
+        live_capture: "maybe",
+        reason: "Le service de vérification n'a pas répondu. Merci de réessayer dans un instant.",
+      };
+    }
+
 
     // Garde-fous côté serveur (stricts : le doute ne valide jamais)
     if (result.single_face === "no" || result.same_person === "no" || result.live_capture === "no") {

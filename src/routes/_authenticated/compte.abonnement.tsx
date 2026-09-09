@@ -4,7 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Check, CreditCard, Sparkles, PauseCircle, Trash2, AlertTriangle, XCircle, RefreshCw, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { suspendAccount, deleteAccount } from "@/lib/account.functions";
+import { suspendAccount, deleteAccount, CLOSURE_REASONS } from "@/lib/account.functions";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
 import { useActivePlans } from "@/lib/entitlements";
 
@@ -143,6 +146,10 @@ function AbonnementPage() {
   const [loading, setLoading] = useState<"suspend" | "delete" | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [suspendReason, setSuspendReason] = useState("");
+  const [suspendDetails, setSuspendDetails] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteDetails, setDeleteDetails] = useState("");
   const router = useRouter();
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
@@ -173,10 +180,14 @@ function AbonnementPage() {
 
 
   async function handleSuspend() {
+    if (!suspendReason) {
+      toast.error("Merci d'indiquer la raison de votre suspension.");
+      return;
+    }
     setLoading("suspend");
     try {
-      await doSuspend();
-      toast.success("Votre compte est suspendu. Vous allez être déconnecté.");
+      await doSuspend({ data: { reason: suspendReason, details: suspendDetails } });
+      toast.success("Votre compte est suspendu. Un email de confirmation vous a été envoyé.");
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {
@@ -188,10 +199,14 @@ function AbonnementPage() {
   }
 
   async function handleDelete() {
+    if (!deleteReason) {
+      toast.error("Merci d'indiquer la raison de votre départ.");
+      return;
+    }
     setLoading("delete");
     try {
-      await doDelete();
-      toast.success("Votre compte a été supprimé.");
+      await doDelete({ data: { reason: deleteReason, details: deleteDetails } });
+      toast.success("Votre compte a été supprimé. Un email de confirmation vous a été envoyé.");
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {
@@ -458,18 +473,30 @@ function AbonnementPage() {
                 Suspendre mon compte
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>Suspendre votre compte ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Votre profil sera masqué et vous ne pourrez plus utiliser Nooryaa. Vous pourrez
-                  réactiver votre compte ultérieurement en nous contactant.
+                  Votre profil sera masqué et vous ne pourrez plus utiliser Nooryaa. Vos données sont
+                  conservées : vous pourrez réactiver votre compte en contactant le service client.
+                  Un email de confirmation vous sera envoyé.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <ReasonPicker
+                idPrefix="suspend"
+                label="Pourquoi suspendez-vous votre compte ?"
+                reason={suspendReason}
+                onReason={setSuspendReason}
+                details={suspendDetails}
+                onDetails={setSuspendDetails}
+              />
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={loading === "suspend"}>Annuler</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleSuspend}
+                  onClick={(e) => {
+                    if (!suspendReason) e.preventDefault();
+                    void handleSuspend();
+                  }}
                   disabled={loading === "suspend"}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
@@ -486,18 +513,30 @@ function AbonnementPage() {
                 Supprimer mon compte
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>Supprimer votre compte ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Cette action est irréversible. Toutes vos données (profil, photos, messages, likes,
-                  recherches) seront définitivement effacées.
+                  Cette action est irréversible. Toutes vos données (profil, photos, messages, coups
+                  de cœur, recherches) seront définitivement effacées. Un email de confirmation vous
+                  sera envoyé.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <ReasonPicker
+                idPrefix="delete"
+                label="Pourquoi nous quittez-vous ?"
+                reason={deleteReason}
+                onReason={setDeleteReason}
+                details={deleteDetails}
+                onDetails={setDeleteDetails}
+              />
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={loading === "delete"}>Annuler</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleDelete}
+                  onClick={(e) => {
+                    if (!deleteReason) e.preventDefault();
+                    void handleDelete();
+                  }}
                   disabled={loading === "delete"}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
@@ -508,6 +547,49 @@ function AbonnementPage() {
           </AlertDialog>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ReasonPicker({
+  idPrefix,
+  label,
+  reason,
+  onReason,
+  details,
+  onDetails,
+}: {
+  idPrefix: string;
+  label: string;
+  reason: string;
+  onReason: (v: string) => void;
+  details: string;
+  onDetails: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-3 rounded-xl border border-border/60 bg-muted/30 p-3">
+      <p className="text-sm font-medium">{label}</p>
+      <RadioGroup value={reason} onValueChange={onReason} className="gap-2">
+        {CLOSURE_REASONS.map((r) => (
+          <div key={r} className="flex items-start gap-2">
+            <RadioGroupItem value={r} id={`${idPrefix}-${r}`} className="mt-0.5" />
+            <Label htmlFor={`${idPrefix}-${r}`} className="text-sm font-normal leading-snug">
+              {r}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+      <Textarea
+        value={details}
+        onChange={(e) => onDetails(e.target.value)}
+        maxLength={1000}
+        rows={3}
+        placeholder="Souhaitez-vous nous en dire plus ? (facultatif)"
+        className="text-sm"
+      />
+      {!reason && (
+        <p className="text-xs text-destructive">Merci de sélectionner une raison pour continuer.</p>
+      )}
     </div>
   );
 }

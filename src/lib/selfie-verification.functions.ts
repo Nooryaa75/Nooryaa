@@ -34,19 +34,35 @@ function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallb
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
-async function toDataUrl(url: string): Promise<string> {
+function bytesToDataUrl(buf: Uint8Array, mime: string): string {
+  let bin = "";
+  const chunk = 8192;
+  for (let i = 0; i < buf.length; i += chunk) {
+    bin += String.fromCharCode(...buf.subarray(i, i + chunk));
+  }
+  return `data:${mime || "image/jpeg"};base64,${btoa(bin)}`;
+}
+
+/** Extrait le chemin de stockage à partir d'une URL signée Supabase. */
+function storagePathFromUrl(url: string): string | null {
+  const m = url.match(/\/object\/(?:sign|public)\/profile-photos\/([^?]+)/);
+  return m ? decodeURIComponent(m[1]!) : null;
+}
+
+/** Télécharge une photo de profil (chemin de stockage) en base64. */
+async function downloadPhoto(path: string): Promise<string | null> {
   try {
-    const img = await fetch(url);
-    if (!img.ok) return url;
-    const buf = new Uint8Array(await img.arrayBuffer());
-    let bin = "";
-    for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
-    const mime = img.headers.get("content-type") || "image/jpeg";
-    return `data:${mime};base64,${btoa(bin)}`;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.storage.from("profile-photos").download(path);
+    if (error || !data) return null;
+    const buf = new Uint8Array(await data.arrayBuffer());
+    if (buf.length === 0) return null;
+    return bytesToDataUrl(buf, (data as Blob).type || "image/jpeg");
   } catch {
-    return url;
+    return null;
   }
 }
+
 
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -77,18 +93,22 @@ export const verifySelfie = createServerFn({ method: "POST" })
 
     const { data: photos } = await supabase
       .from("photos")
-      .select("url, position")
+      .select("url, storage_path, position")
       .eq("user_id", userId)
       .order("position", { ascending: true });
 
-    const urls = Array.from(
+    const paths = Array.from(
       new Set(
-        [profile?.primary_photo_url, ...((photos ?? []) as { url: string }[]).map((p) => p.url)]
-          .filter((u): u is string => typeof u === "string" && u.length > 0),
+        [
+          ...((photos ?? []) as { url: string; storage_path: string | null }[]).map(
+            (p) => p.storage_path || storagePathFromUrl(p.url ?? ""),
+          ),
+          profile?.primary_photo_url ? storagePathFromUrl(profile.primary_photo_url) : null,
+        ].filter((p): p is string => typeof p === "string" && p.length > 0),
       ),
     ).slice(0, 3);
 
-    if (urls.length === 0) {
+    if (paths.length === 0) {
       return {
         verdict: "review",
         single_face: "unknown",
@@ -109,9 +129,22 @@ export const verifySelfie = createServerFn({ method: "POST" })
       };
     }
 
-    // Les photos de profil sont converties en base64 : les URL signées ne sont
-    // pas toujours accessibles par le fournisseur du modèle.
-    const profileImages = await Promise.all(urls.map(toDataUrl));
+    // Les photos de profil sont téléchargées depuis le stockage puis converties en
+    // base64 : les URL signées expirent et ne sont pas lisibles par le modèle.
+    const profileImages = (await Promise.all(paths.map(downloadPhoto))).filter(
+      (i): i is string => !!i,
+    );
+
+    if (profileImages.length === 0) {
+      return {
+        verdict: "review",
+        single_face: "unknown",
+        same_person: "unknown",
+        live_capture: "maybe",
+        reason: "Vos photos de profil n'ont pas pu être chargées. Réessayez dans un instant.",
+      };
+    }
+
 
     let result: SelfieVerificationResult = {
       verdict: "review",
@@ -121,30 +154,35 @@ export const verifySelfie = createServerFn({ method: "POST" })
       reason: "Vérification en attente de contrôle.",
     };
 
-    try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: "openai/gpt-5.6-luna",
-          input: [
-            { role: "system", content: SYSTEM_PROMPT },
-            {
-              role: "user",
-              content: [
-                {
-                  type: "input_text",
-                  text: `Image 1 = selfie de vérification pris en direct. Images suivantes (${profileImages.length}) = photos du profil.`,
-                },
-                { type: "input_image", image_url: data.selfieDataUrl },
-                ...profileImages.map((image_url) => ({ type: "input_image", image_url })),
-              ],
-            },
-          ],
-          max_output_tokens: 1500,
-        }),
-      });
-      if (res.ok) {
+    let gatewayFailed = true;
+    for (let attempt = 0; attempt < 2 && gatewayFailed; attempt++) {
+      try {
+        const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: "openai/gpt-5.6-luna",
+            input: [
+              { role: "system", content: SYSTEM_PROMPT },
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "input_text",
+                    text: `Image 1 = selfie de vérification pris en direct. Images suivantes (${profileImages.length}) = photos du profil.`,
+                  },
+                  { type: "input_image", image_url: data.selfieDataUrl },
+                  ...profileImages.map((image_url) => ({ type: "input_image", image_url })),
+                ],
+              },
+            ],
+            max_output_tokens: 1500,
+          }),
+        });
+        if (!res.ok) {
+          console.error("selfie-verification gateway error", res.status, (await res.text()).slice(0, 500));
+          continue;
+        }
         const json: any = await res.json();
         const text: string =
           json.output_text ??
@@ -154,20 +192,34 @@ export const verifySelfie = createServerFn({ method: "POST" })
             .join("") ??
           "";
         const match = text.match(/\{[\s\S]*\}/);
-        if (match) {
-          const parsed = JSON.parse(match[0]);
-          result = {
-            verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
-            single_face: safeEnum(parsed.single_face, ["yes", "no", "unknown"] as const, "unknown"),
-            same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
-            live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
-            reason: typeof parsed.reason === "string" ? parsed.reason : "",
-          };
+        if (!match) {
+          console.error("selfie-verification: réponse illisible", text.slice(0, 300));
+          continue;
         }
+        const parsed = JSON.parse(match[0]);
+        result = {
+          verdict: safeEnum(parsed.verdict, ["verified", "review", "rejected"] as const, "review"),
+          single_face: safeEnum(parsed.single_face, ["yes", "no", "unknown"] as const, "unknown"),
+          same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
+          live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
+          reason: typeof parsed.reason === "string" ? parsed.reason : "",
+        };
+        gatewayFailed = false;
+      } catch (e) {
+        console.error("selfie-verification exception", e);
       }
-    } catch {
-      // on garde le verdict "review"
     }
+
+    if (gatewayFailed) {
+      return {
+        verdict: "review",
+        single_face: "unknown",
+        same_person: "unknown",
+        live_capture: "maybe",
+        reason: "Le service de vérification n'a pas répondu. Merci de réessayer dans un instant.",
+      };
+    }
+
 
     // Garde-fous côté serveur (stricts : le doute ne valide jamais)
     if (result.single_face === "no" || result.same_person === "no" || result.live_capture === "no") {

@@ -173,10 +173,14 @@ function AbonnementPage() {
 
 
   async function handleSuspend() {
+    if (!suspendReason) {
+      toast.error("Merci d'indiquer la raison de votre suspension.");
+      return;
+    }
     setLoading("suspend");
     try {
-      await doSuspend();
-      toast.success("Votre compte est suspendu. Vous allez être déconnecté.");
+      await doSuspend({ data: { reason: suspendReason, details: suspendDetails } });
+      toast.success("Votre compte est suspendu. Un email de confirmation vous a été envoyé.");
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {
@@ -188,10 +192,14 @@ function AbonnementPage() {
   }
 
   async function handleDelete() {
+    if (!deleteReason) {
+      toast.error("Merci d'indiquer la raison de votre départ.");
+      return;
+    }
     setLoading("delete");
     try {
-      await doDelete();
-      toast.success("Votre compte a été supprimé.");
+      await doDelete({ data: { reason: deleteReason, details: deleteDetails } });
+      toast.success("Votre compte a été supprimé. Un email de confirmation vous a été envoyé.");
       await supabase.auth.signOut();
       router.navigate({ to: "/" });
     } catch (e: any) {

@@ -333,7 +333,11 @@ export const adminSavePlan = createServerFn({ method: "POST" })
     const { requireAdminOrThrow } = await import("./admin-session.server");
     const who = await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const payload = { ...data };
+    const code = data.code.trim().toLowerCase().replace(/[^a-z0-9_]+/g, "_");
+    if (!code) throw new Error("Le code de la formule est obligatoire.");
+    if (!data.name.trim()) throw new Error("Le nom de la formule est obligatoire.");
+    if (!["homme", "femme", "tous"].includes(data.audience)) throw new Error("Public invalide.");
+    const payload = { ...data, code, name: data.name.trim(), emoji: data.emoji?.trim() || null };
     delete (payload as any).id;
     const query = data.id
       ? supabaseAdmin.from("plans").update(payload).eq("id", data.id)

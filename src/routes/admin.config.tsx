@@ -309,3 +309,83 @@ function SocialSection() {
     </section>
   );
 }
+
+const PLATFORM_LABEL: Record<string, string> = { ios: "iOS (App Store)", android: "Android (Google Play)" };
+
+function AppVersionsSection() {
+  const qc = useQueryClient();
+  const list = useServerFn(adminListAppVersions);
+  const save = useServerFn(adminSaveAppVersion);
+  const { data } = useQuery({ queryKey: ["admin-app-versions"], queryFn: () => list() });
+  const [draft, setDraft] = useState<Record<string, { version?: string; min_version?: string; notes?: string }>>({});
+
+  const mut = useMutation({
+    mutationFn: (p: { id: string; version?: string; min_version?: string; notes?: string }) => save({ data: p }),
+    onSuccess: () => {
+      toast.success("Version enregistrée");
+      qc.invalidateQueries({ queryKey: ["admin-app-versions"] });
+    },
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
+  });
+
+  return (
+    <section className="bg-card rounded-2xl p-5 border border-border/60 space-y-4">
+      <div>
+        <h2 className="text-lg font-serif text-primary">Version des apps</h2>
+        <p className="text-sm text-muted-foreground">
+          Indiquez la version publiée sur chaque store et la version minimale exigée pour continuer à utiliser l'application.
+        </p>
+      </div>
+      <div className="space-y-3">
+        {(data ?? []).map((v) => {
+          const d = draft[v.id] ?? {};
+          return (
+            <div key={v.id} className="grid gap-3 sm:grid-cols-[160px_1fr_1fr_auto] sm:items-end border border-border/50 rounded-xl p-3">
+              <div className="font-medium">{PLATFORM_LABEL[v.platform] ?? v.platform}</div>
+              <div>
+                <Label>Version en ligne</Label>
+                <Input
+                  placeholder="1.0.0"
+                  value={d.version ?? v.version}
+                  onChange={(e) => setDraft({ ...draft, [v.id]: { ...d, version: e.target.value } })}
+                />
+              </div>
+              <div>
+                <Label>Version minimale</Label>
+                <Input
+                  placeholder="1.0.0"
+                  value={d.min_version ?? v.min_version}
+                  onChange={(e) => setDraft({ ...draft, [v.id]: { ...d, min_version: e.target.value } })}
+                />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full"
+                disabled={mut.isPending}
+                onClick={() =>
+                  mut.mutate({
+                    id: v.id,
+                    version: d.version ?? v.version,
+                    min_version: d.min_version ?? v.min_version,
+                    notes: d.notes ?? v.notes ?? "",
+                  })
+                }
+              >
+                Enregistrer
+              </Button>
+              <div className="sm:col-span-4">
+                <Label>Note de mise à jour (facultatif)</Label>
+                <Textarea
+                  rows={2}
+                  value={d.notes ?? v.notes ?? ""}
+                  onChange={(e) => setDraft({ ...draft, [v.id]: { ...d, notes: e.target.value } })}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

@@ -242,6 +242,8 @@ function AdminConfig() {
           </section>
         )}
 
+        <AppVersionsSection />
+
         <SocialSection />
       </main>
 

@@ -204,16 +204,14 @@ function AbonnementPage() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-primary/40 bg-secondary/50 p-4 sm:items-center sm:gap-4">
           <div className="min-w-0">
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-primary">
-              <span className="shrink-0">{currentPlan.emoji} {currentPlan.name}</span>
-              {currentDuration && (
-                <span className="text-muted-foreground font-medium">
-                  — {durations.find((d) => d.id === currentDuration)!.label}
-                </span>
+              <span className="shrink-0">{currentPlan ? `${currentPlan.emoji ?? ""} ${currentPlan.name}` : "Accès complet"}</span>
+              {currentIsPaid && currentPlan && currentPlan.duration_days > 0 && (
+                <span className="text-muted-foreground font-medium">— {durationLabel(currentPlan.duration_days)}</span>
               )}
               <BadgeCheck className="h-4 w-4 shrink-0" />
             </p>
             <p className="text-sm text-muted-foreground">
-              {!currentPlan.prices
+              {!currentIsPaid
                 ? "Votre formule actuelle — modifiable à tout moment, sans engagement."
                 : autoRenew
                   ? `Renouvellement automatique actif${renewsAt ? ` — prochaine échéance le ${formatDate(renewsAt)}` : ""}.`
@@ -221,11 +219,11 @@ function AbonnementPage() {
             </p>
           </div>
           <span className="shrink-0 self-center text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
-            {currentPlan.prices && !autoRenew ? "Se termine" : "Actif"}
+            {currentIsPaid && !autoRenew ? "Se termine" : "Actif"}
           </span>
         </div>
 
-        {currentPlan.prices && (
+        {currentIsPaid && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {autoRenew ? (
               <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>

@@ -470,18 +470,30 @@ function AbonnementPage() {
                 Suspendre mon compte
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>Suspendre votre compte ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Votre profil sera masqué et vous ne pourrez plus utiliser Nooryaa. Vous pourrez
-                  réactiver votre compte ultérieurement en nous contactant.
+                  Votre profil sera masqué et vous ne pourrez plus utiliser Nooryaa. Vos données sont
+                  conservées : vous pourrez réactiver votre compte en contactant le service client.
+                  Un email de confirmation vous sera envoyé.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <ReasonPicker
+                idPrefix="suspend"
+                label="Pourquoi suspendez-vous votre compte ?"
+                reason={suspendReason}
+                onReason={setSuspendReason}
+                details={suspendDetails}
+                onDetails={setSuspendDetails}
+              />
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={loading === "suspend"}>Annuler</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleSuspend}
+                  onClick={(e) => {
+                    if (!suspendReason) e.preventDefault();
+                    void handleSuspend();
+                  }}
                   disabled={loading === "suspend"}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
@@ -498,18 +510,30 @@ function AbonnementPage() {
                 Supprimer mon compte
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>Supprimer votre compte ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Cette action est irréversible. Toutes vos données (profil, photos, messages, likes,
-                  recherches) seront définitivement effacées.
+                  Cette action est irréversible. Toutes vos données (profil, photos, messages, coups
+                  de cœur, recherches) seront définitivement effacées. Un email de confirmation vous
+                  sera envoyé.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <ReasonPicker
+                idPrefix="delete"
+                label="Pourquoi nous quittez-vous ?"
+                reason={deleteReason}
+                onReason={setDeleteReason}
+                details={deleteDetails}
+                onDetails={setDeleteDetails}
+              />
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={loading === "delete"}>Annuler</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleDelete}
+                  onClick={(e) => {
+                    if (!deleteReason) e.preventDefault();
+                    void handleDelete();
+                  }}
                   disabled={loading === "delete"}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >

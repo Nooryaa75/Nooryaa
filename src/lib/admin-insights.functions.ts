@@ -293,10 +293,14 @@ export type PlanInput = {
   code: string;
   name: string;
   tagline?: string | null;
+  emoji?: string | null;
+  audience: "homme" | "femme" | "tous";
   duration_days: number;
   price_ttc: number;
   vat_rate: number;
   likes_per_day: number;
+  messages_per_day: number;
+  rewinds: number;
   super_likes: number;
   boosts: number;
   features: string[];

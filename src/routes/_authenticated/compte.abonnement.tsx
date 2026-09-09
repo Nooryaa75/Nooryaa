@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
-import { useActivePlans } from "@/lib/entitlements";
+import { useActivePlans, plansForGender, durationLabel, type PublicPlan } from "@/lib/entitlements";
 
 import {
   AlertDialog,
@@ -240,7 +240,7 @@ function AbonnementPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Annuler le renouvellement automatique ?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Votre formule {currentPlan.name} restera active
+                      Votre formule {currentPlan?.name} restera active
                       {renewsAt ? ` jusqu'au ${formatDate(renewsAt)}` : " jusqu'à son échéance"}, puis
                       votre compte repassera automatiquement en formule Gratuit. Aucun nouveau
                       prélèvement ne sera effectué.

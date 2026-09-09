@@ -77,6 +77,12 @@ function AdminConfig() {
   const { data } = useQuery({ queryKey: ["admin-plans"], queryFn: () => list() });
   const [draft, setDraft] = useState<PlanInput | null>(null);
   const [tab, setTab] = useState<PlanAudience | "all">("all");
+  const editorRef = useRef<HTMLElement | null>(null);
+  const editing = draft?.id ?? (draft ? "new" : null);
+  useEffect(() => {
+    if (editing) editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [editing]);
+
 
   const plans = data ?? [];
   const noneActive = plans.length > 0 && plans.every((p) => !p.active);

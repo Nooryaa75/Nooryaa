@@ -71,7 +71,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const { error } = await supabaseAdmin.rpc("delete_own_account", {
-      p_user_id: context.userId,
+      user_id: context.userId,
     });
     if (error) throw error;
 

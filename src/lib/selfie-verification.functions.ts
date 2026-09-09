@@ -49,19 +49,32 @@ function storagePathFromUrl(url: string): string | null {
   return m ? decodeURIComponent(m[1]!) : null;
 }
 
-/** Télécharge une photo de profil (chemin de stockage) en base64. */
+/** Télécharge une photo de profil redimensionnée (chemin de stockage) en base64. */
 async function downloadPhoto(path: string): Promise<string | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.storage.from("profile-photos").download(path);
-    if (error || !data) return null;
-    const buf = new Uint8Array(await data.arrayBuffer());
-    if (buf.length === 0) return null;
-    return bytesToDataUrl(buf, (data as Blob).type || "image/jpeg");
-  } catch {
+    const bucket = supabaseAdmin.storage.from("profile-photos");
+    // Redimensionnement côté stockage : les originaux peuvent peser plusieurs Mo,
+    // ce qui fait échouer l'appel au service de vérification.
+    let res = await bucket.download(path, {
+      transform: { width: 768, height: 768, resize: "contain", quality: 70 },
+    });
+    if (res.error || !res.data || res.data.size === 0 || res.data.size > 2_000_000) {
+      const raw = await bucket.download(path);
+      if (raw.error || !raw.data || raw.data.size === 0 || raw.data.size > 2_000_000) {
+        console.error("selfie-verification: photo illisible ou trop lourde", path, raw.data?.size);
+        return null;
+      }
+      res = raw;
+    }
+    const buf = new Uint8Array(await res.data.arrayBuffer());
+    return bytesToDataUrl(buf, res.data.type || "image/jpeg");
+  } catch (e) {
+    console.error("selfie-verification: échec téléchargement photo", path, e);
     return null;
   }
 }
+
 
 
 export const verifySelfie = createServerFn({ method: "POST" })

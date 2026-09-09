@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
@@ -77,6 +77,12 @@ function AdminConfig() {
   const { data } = useQuery({ queryKey: ["admin-plans"], queryFn: () => list() });
   const [draft, setDraft] = useState<PlanInput | null>(null);
   const [tab, setTab] = useState<PlanAudience | "all">("all");
+  const editorRef = useRef<HTMLElement | null>(null);
+  const editing = draft?.id ?? (draft ? "new" : null);
+  useEffect(() => {
+    if (editing) editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [editing]);
+
 
   const plans = data ?? [];
   const noneActive = plans.length > 0 && plans.every((p) => !p.active);
@@ -243,7 +249,8 @@ function AdminConfig() {
         </div>
 
         {draft && (
-          <section className="bg-card rounded-2xl p-5 border border-primary/40 space-y-5">
+          <section ref={editorRef} className="scroll-mt-24 bg-card rounded-2xl p-5 border-2 border-primary/60 shadow-lg space-y-5">
+
             <h2 className="text-lg font-serif text-primary">{draft.id ? "Modifier la formule" : "Nouvelle formule"}</h2>
 
             <div>

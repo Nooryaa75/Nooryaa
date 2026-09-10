@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
+import { verifyPhotoIdentity } from "@/lib/photo-identity.functions";
 import { CameraCapture } from "@/components/CameraCapture";
 import { frenchError } from "@/lib/errors";
 
@@ -29,6 +30,7 @@ export function PhotoManager({ userId }: { userId: string }) {
   const [checking, setChecking] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const checkPhoto = useServerFn(moderatePhoto);
+  const checkIdentity = useServerFn(verifyPhotoIdentity);
 
   // Web app : getUserMedia. Apps natives / navigateurs mobiles sans getUserMedia :
   // repli sur <input capture> qui ouvre l'appareil photo du téléphone.

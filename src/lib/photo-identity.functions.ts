@@ -84,7 +84,7 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("gender, photo_verified, primary_photo_url")
+      .select("gender, photo_verified, primary_photo_url, email, first_name, pseudo")
       .eq("id", userId)
       .single();
 
@@ -218,6 +218,18 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
             photo_verification_status: "review",
           })
           .eq("id", userId);
+
+        // C'est Nooryaa qui contacte le membre : notification in-app + email
+        // lui demandant de refaire son selfie (le bloc réapparaît dans Mon compte).
+        if (profile.email) {
+          const { requestSelfieRedo } = await import("@/lib/notify.functions");
+          await requestSelfieRedo({
+            userId,
+            email: profile.email,
+            firstName: profile.first_name || profile.pseudo,
+            reason: result.reason || null,
+          });
+        }
       }
     } catch {
       // la journalisation ne doit pas bloquer

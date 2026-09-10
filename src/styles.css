@@ -107,16 +107,16 @@
   /* Notifications (sonner) aux couleurs Nooryaa — plus de vert par défaut */
   --normal-bg: oklch(0.945 0.032 305);          /* lavande Nooryaa */
   --normal-text: oklch(0.38 0.155 305);         /* indigo Nooryaa */
-  --normal-border: oklch(0.62 0.222 355);       /* magenta Nooryaa */
+  --normal-border: oklch(0.38 0.155 305);       /* indigo Nooryaa */
   --success-bg: oklch(0.945 0.032 305);          /* lavande */
   --success-text: oklch(0.38 0.155 305);         /* indigo */
-  --success-border: oklch(0.62 0.222 355);       /* magenta */
+  --success-border: oklch(0.38 0.155 305);       /* indigo */
   --info-bg: oklch(0.945 0.032 305);
   --info-text: oklch(0.38 0.155 305);
-  --info-border: oklch(0.62 0.222 355);
+  --info-border: oklch(0.38 0.155 305);
   --warning-bg: oklch(0.96 0.028 320);          /* rose pâle Nooryaa */
   --warning-text: oklch(0.38 0.155 305);
-  --warning-border: oklch(0.62 0.222 355);
+  --warning-border: oklch(0.38 0.155 305);
   --error-bg: oklch(0.96 0.03 20);
   --error-text: oklch(0.45 0.17 22);
   --error-border: oklch(0.68 0.19 22);
@@ -177,71 +177,71 @@
   /* Notifications (sonner) en mode sombre — couleurs Nooryaa */
   --normal-bg: oklch(0.30 0.05 305);
   --normal-text: oklch(0.92 0.03 320);
-  --normal-border: oklch(0.62 0.222 355);
+  --normal-border: oklch(0.55 0.16 305);
   --success-bg: oklch(0.30 0.05 305);
   --success-text: oklch(0.92 0.03 320);
-  --success-border: oklch(0.62 0.222 355);
+  --success-border: oklch(0.55 0.16 305);
   --info-bg: oklch(0.30 0.05 305);
   --info-text: oklch(0.92 0.03 320);
-  --info-border: oklch(0.62 0.222 355);
+  --info-border: oklch(0.55 0.16 305);
   --warning-bg: oklch(0.30 0.05 305);
   --warning-text: oklch(0.92 0.03 320);
-  --warning-border: oklch(0.62 0.222 355);
+  --warning-border: oklch(0.55 0.16 305);
   --error-bg: oklch(0.33 0.08 20);
   --error-text: oklch(0.9 0.05 25);
   --error-border: oklch(0.68 0.19 22);
 }
 
-/* Sonner définit sa propre palette sur le conteneur : ces sélecteurs plus
-   précis garantissent la charte Nooryaa pour tous les messages du haut. */
-[data-sonner-toaster].toaster {
+/* Sonner définit sa propre palette sur le conteneur avec les sélecteurs
+   [data-sonner-toaster][data-sonner-theme='light'] / 'dark'.
+   On ajoute .toaster pour gagner en spécificité et imposer la charte Nooryaa. */
+[data-sonner-toaster][data-sonner-theme='light'].toaster,
+[data-sonner-toaster][data-sonner-theme='light'].toaster [data-sonner-toast] {
   --normal-bg: oklch(0.945 0.032 305);
   --normal-text: oklch(0.38 0.155 305);
-  --normal-border: oklch(0.62 0.222 355);
+  --normal-border: oklch(0.38 0.155 305);
   --success-bg: oklch(0.945 0.032 305);
   --success-text: oklch(0.38 0.155 305);
-  --success-border: oklch(0.62 0.222 355);
+  --success-border: oklch(0.38 0.155 305);
   --info-bg: oklch(0.945 0.032 305);
   --info-text: oklch(0.38 0.155 305);
-  --info-border: oklch(0.62 0.222 355);
+  --info-border: oklch(0.38 0.155 305);
   --warning-bg: oklch(0.96 0.028 320);
   --warning-text: oklch(0.38 0.155 305);
-  --warning-border: oklch(0.62 0.222 355);
+  --warning-border: oklch(0.38 0.155 305);
   --error-bg: oklch(0.96 0.03 20);
   --error-text: oklch(0.45 0.17 22);
   --error-border: oklch(0.68 0.19 22);
 }
 
-.dark [data-sonner-toaster].toaster {
+[data-sonner-toaster][data-sonner-theme='dark'].toaster,
+[data-sonner-toaster][data-sonner-theme='dark'].toaster [data-sonner-toast] {
   --normal-bg: oklch(0.30 0.05 305);
   --normal-text: oklch(0.92 0.03 320);
-  --normal-border: oklch(0.62 0.222 355);
+  --normal-border: oklch(0.55 0.16 305);
   --success-bg: oklch(0.30 0.05 305);
   --success-text: oklch(0.92 0.03 320);
-  --success-border: oklch(0.62 0.222 355);
+  --success-border: oklch(0.55 0.16 305);
   --info-bg: oklch(0.30 0.05 305);
   --info-text: oklch(0.92 0.03 320);
-  --info-border: oklch(0.62 0.222 355);
+  --info-border: oklch(0.55 0.16 305);
   --warning-bg: oklch(0.30 0.05 305);
   --warning-text: oklch(0.92 0.03 320);
-  --warning-border: oklch(0.62 0.222 355);
+  --warning-border: oklch(0.55 0.16 305);
   --error-bg: oklch(0.33 0.08 20);
   --error-text: oklch(0.9 0.05 25);
   --error-border: oklch(0.68 0.19 22);
 }
 
-/* Les styles injectés par Sonner peuvent arriver après la feuille de l'app.
-   On impose donc la charte sur les messages eux-mêmes, icône comprise. */
+/* Surcharge directe des messages, y compris le type par défaut, pour éviter
+   toute fuite de vert/rouge des styles par défaut de Sonner. */
+[data-sonner-toaster].toaster [data-sonner-toast],
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="normal"],
 [data-sonner-toaster].toaster [data-sonner-toast][data-type="success"],
-[data-sonner-toaster].toaster [data-sonner-toast][data-type="info"] {
-  background: var(--secondary) !important;
-  border-color: var(--accent) !important;
-  color: var(--primary) !important;
-}
-
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="info"],
 [data-sonner-toaster].toaster [data-sonner-toast][data-type="warning"] {
   background: var(--secondary) !important;
-  border-color: var(--accent) !important;
+  border-color: var(--primary) !important;
   color: var(--primary) !important;
 }
 
@@ -249,14 +249,6 @@
   background: var(--error-bg) !important;
   border-color: var(--error-border) !important;
   color: var(--error-text) !important;
-}
-
-.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="success"],
-.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="info"],
-.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="warning"] {
-  background: var(--secondary) !important;
-  border-color: var(--accent) !important;
-  color: var(--foreground) !important;
 }
 
 

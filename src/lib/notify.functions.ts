@@ -32,7 +32,7 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
-function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
+export function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
   return `<!doctype html>
 <html lang="fr"><head>
   <meta charset="utf-8" />

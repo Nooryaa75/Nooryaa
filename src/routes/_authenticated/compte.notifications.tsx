@@ -30,9 +30,13 @@ const TYPES: { key: string; label: string; description: string }[] = [
 
 type Prefs = Record<string, Record<ChannelKey, boolean>>;
 
+// Par défaut à l'inscription : pas d'email pour les messages, likes et visites.
+// L'utilisateur active lui-même ses préférences ensuite.
+const EMAIL_OFF_BY_DEFAULT = new Set(["messages", "likes", "visites"]);
+
 const DEFAULTS: Prefs = TYPES.reduce((acc, t) => {
   acc[t.key] = {
-    email: t.key !== "visites",
+    email: !EMAIL_OFF_BY_DEFAULT.has(t.key),
     inapp: true,
     mobile: t.key === "messages" || t.key === "likes" || t.key === "matchs",
   };

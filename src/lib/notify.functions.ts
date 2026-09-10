@@ -223,7 +223,9 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     }
 
 
-    const emailEnabled = typeof prefs?.email === "boolean" ? prefs.email : data.kind !== "visit";
+    // Emails désactivés par défaut à l'inscription : l'utilisateur les active
+    // lui-même dans Mon compte → Mes notifications.
+    const emailEnabled = prefs?.email === true;
     if (!emailEnabled) return { sent: false, reason: "disabled" as const };
 
     // Anti-spam : pas deux emails identiques dans la fenêtre définie.

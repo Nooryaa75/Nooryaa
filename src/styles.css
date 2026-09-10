@@ -192,6 +192,44 @@
   --error-border: oklch(0.68 0.19 22);
 }
 
+/* Sonner définit sa propre palette sur le conteneur : ces sélecteurs plus
+   précis garantissent la charte Nooryaa pour tous les messages du haut. */
+[data-sonner-toaster].toaster {
+  --normal-bg: oklch(0.945 0.032 305);
+  --normal-text: oklch(0.38 0.155 305);
+  --normal-border: oklch(0.62 0.222 355);
+  --success-bg: oklch(0.945 0.032 305);
+  --success-text: oklch(0.38 0.155 305);
+  --success-border: oklch(0.62 0.222 355);
+  --info-bg: oklch(0.945 0.032 305);
+  --info-text: oklch(0.38 0.155 305);
+  --info-border: oklch(0.62 0.222 355);
+  --warning-bg: oklch(0.96 0.028 320);
+  --warning-text: oklch(0.38 0.155 305);
+  --warning-border: oklch(0.62 0.222 355);
+  --error-bg: oklch(0.96 0.03 20);
+  --error-text: oklch(0.45 0.17 22);
+  --error-border: oklch(0.68 0.19 22);
+}
+
+.dark [data-sonner-toaster].toaster {
+  --normal-bg: oklch(0.30 0.05 305);
+  --normal-text: oklch(0.92 0.03 320);
+  --normal-border: oklch(0.62 0.222 355);
+  --success-bg: oklch(0.30 0.05 305);
+  --success-text: oklch(0.92 0.03 320);
+  --success-border: oklch(0.62 0.222 355);
+  --info-bg: oklch(0.30 0.05 305);
+  --info-text: oklch(0.92 0.03 320);
+  --info-border: oklch(0.62 0.222 355);
+  --warning-bg: oklch(0.30 0.05 305);
+  --warning-text: oklch(0.92 0.03 320);
+  --warning-border: oklch(0.62 0.222 355);
+  --error-bg: oklch(0.33 0.08 20);
+  --error-text: oklch(0.9 0.05 25);
+  --error-border: oklch(0.68 0.19 22);
+}
+
 
 @layer base {
   * {

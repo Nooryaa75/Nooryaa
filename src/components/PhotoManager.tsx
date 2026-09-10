@@ -10,15 +10,35 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { frenchError } from "@/lib/errors";
 
 
-async function toDataUrl(file: File, max = 768): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg", 0.85);
+async function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result));
+    fr.onerror = () => reject(fr.error ?? new Error("lecture du fichier impossible"));
+    fr.readAsDataURL(file);
+  });
 }
+
+async function toDataUrl(file: File, max = 768): Promise<string> {
+  // Certains formats (HEIC iPhone, images exotiques) ne passent pas par createImageBitmap :
+  // on tente le redimensionnement, puis on retombe sur une lecture directe.
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const out = canvas.toDataURL("image/jpeg", 0.85);
+    if (out.startsWith("data:image/") && out.length > 1000) return out;
+  } catch (e) {
+    console.warn("PhotoManager: redimensionnement impossible, lecture directe", e);
+  }
+  const raw = await readAsDataUrl(file);
+  if (!raw.startsWith("data:image/")) throw new Error("format d'image non pris en charge");
+  return raw;
+}
+
 
 
 const MAX_PHOTOS = 3;

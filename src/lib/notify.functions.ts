@@ -524,6 +524,108 @@ export async function sendAccountClosureEmail(opts: {
   return { sent: true, reason: "ok" as const };
 }
 
+/**
+ * Demande automatique de refaire le selfie de vérification, déclenchée par le
+ * contrôle d'identité des photos (photo-identity.functions.ts) quand le badge
+ * « vérifié » est retiré suite à l'ajout d'une photo douteuse.
+ * Envoie : notification in-app (centre de notifications) + email Resend.
+ * Cet envoi est volontairement indépendant des préférences de notification :
+ * c'est une information de sécurité du compte, pas une notification sociale.
+ */
+export async function requestSelfieRedo(opts: {
+  userId: string;
+  email: string;
+  firstName?: string | null;
+  reason?: string | null;
+}) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  // Notification in-app (anti-doublon 24 h : une seule demande à la fois).
+  try {
+    const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+    const { data: recent } = await supabaseAdmin
+      .from("notifications")
+      .select("id")
+      .eq("user_id", opts.userId)
+      .eq("kind", "system")
+      .gte("created_at", since)
+      .limit(1);
+    if (!recent || recent.length === 0) {
+      await supabaseAdmin.from("notifications").insert({
+        user_id: opts.userId,
+        actor_id: null,
+        kind: "system",
+        title: "Vérification de votre profil à refaire",
+        body: "Une de vos nouvelles photos n'a pas pu être confirmée. Refaites la vérification par selfie depuis Mon compte pour retrouver votre badge « Profil vérifié ».",
+        link: "/compte/profil",
+      });
+    }
+  } catch (e) {
+    console.error("requestSelfieRedo notification error", e);
+  }
+
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  const resendKey = process.env["RESEND_API_KEY"];
+  if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
+
+  const name = escapeHtml(opts.firstName || "");
+  const reasonBlock = opts.reason
+    ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">${escapeHtml(opts.reason)}</p>`
+    : "";
+  const html = layout(
+    "Vérification de votre profil à refaire",
+    `<p>Assalamu alaykum ${name},</p>
+     <p>Lors de l'ajout d'une nouvelle photo sur votre profil <strong>${SITE_NAME}</strong>, notre contrôle automatique n'a pas pu confirmer qu'il s'agit bien de vous. Par mesure de sécurité, votre badge « Profil vérifié » a été temporairement retiré.</p>
+     ${reasonBlock}
+     <p>Pour retrouver votre badge, refaites simplement la vérification par selfie depuis <strong>Mon compte → Profil</strong>. Cela ne prend que quelques secondes.</p>`,
+    "Refaire ma vérification",
+    `${SITE_URL}/compte/profil`,
+  );
+
+  let status = "sent";
+  let errorText: string | null = null;
+  try {
+    const response = await fetch(`${GATEWAY_URL}/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+      },
+      body: JSON.stringify({
+        from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
+        to: [opts.email],
+        subject: `${SITE_NAME} : refaites votre vérification par selfie`,
+        html,
+      }),
+    });
+    if (!response.ok) {
+      status = "failed";
+      errorText = `[${response.status}] ${await response.text()}`;
+      console.error("Resend gateway error (selfie redo)", errorText);
+    }
+  } catch (e: any) {
+    status = "failed";
+    errorText = e?.message ?? "unknown error";
+    console.error("Resend gateway exception (selfie redo)", errorText);
+  }
+
+  try {
+    await supabaseAdmin.from("email_notifications").insert({
+      user_id: opts.userId,
+      kind: "selfie_redo",
+      actor_id: null,
+      email: opts.email,
+      status,
+      error: errorText,
+    });
+  } catch {
+    // la journalisation ne doit pas bloquer
+  }
+
+  return { sent: status === "sent" };
+}
+
 
 /**
  * Mot de passe oublié : génère un lien de réinitialisation sécurisé

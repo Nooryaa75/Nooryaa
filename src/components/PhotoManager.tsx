@@ -62,6 +62,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     if (photos.length >= MAX_PHOTOS) { toast.error(`Maximum ${MAX_PHOTOS} photos`); return; }
 
     setChecking(true);
+    let identityWarning: string | null = null;
     try {
       const dataUrl = await toDataUrl(file);
       const declaredAge = profile?.birthdate
@@ -75,8 +76,28 @@ export function PhotoManager({ userId }: { userId: string }) {
       if (check.verdict === "warn") {
         toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
       }
+
+      // Contrôle d'identité : la nouvelle photo doit être la même personne que
+      // les photos déjà validées et correspondre au sexe déclaré.
+      const ident = await checkIdentity({ data: { imageDataUrl: dataUrl } });
+      if (ident.verdict === "block") {
+        toast.error(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.");
+        return;
+      }
+      if (ident.verdict === "review") {
+        toast.error(
+          ident.reason ||
+            "Nous n'avons pas pu confirmer que cette photo est bien vous. Refaites la vérification par selfie puis réessayez.",
+        );
+        return;
+      }
+      if (ident.require_selfie) {
+        identityWarning =
+          "Photo ajoutée : refaites la vérification par selfie pour retrouver votre badge « Vérifié ».";
+      }
     } catch {
-      // si la vérification échoue, on laisse passer l'envoi
+      toast.error("Le contrôle de la photo a échoué. Réessayez dans un instant.");
+      return;
     } finally {
       setChecking(false);
     }

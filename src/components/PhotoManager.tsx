@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
+import { verifyPhotoIdentity } from "@/lib/photo-identity.functions";
 import { CameraCapture } from "@/components/CameraCapture";
 import { frenchError } from "@/lib/errors";
 
@@ -29,6 +30,7 @@ export function PhotoManager({ userId }: { userId: string }) {
   const [checking, setChecking] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const checkPhoto = useServerFn(moderatePhoto);
+  const checkIdentity = useServerFn(verifyPhotoIdentity);
 
   // Web app : getUserMedia. Apps natives / navigateurs mobiles sans getUserMedia :
   // repli sur <input capture> qui ouvre l'appareil photo du téléphone.
@@ -60,6 +62,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     if (photos.length >= MAX_PHOTOS) { toast.error(`Maximum ${MAX_PHOTOS} photos`); return; }
 
     setChecking(true);
+    let identityWarning: string | null = null;
     try {
       const dataUrl = await toDataUrl(file);
       const declaredAge = profile?.birthdate
@@ -73,8 +76,28 @@ export function PhotoManager({ userId }: { userId: string }) {
       if (check.verdict === "warn") {
         toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
       }
+
+      // Contrôle d'identité : la nouvelle photo doit être la même personne que
+      // les photos déjà validées et correspondre au sexe déclaré.
+      const ident = await checkIdentity({ data: { imageDataUrl: dataUrl } });
+      if (ident.verdict === "block") {
+        toast.error(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.");
+        return;
+      }
+      if (ident.verdict === "review") {
+        toast.error(
+          ident.reason ||
+            "Nous n'avons pas pu confirmer que cette photo est bien vous. Refaites la vérification par selfie puis réessayez.",
+        );
+        return;
+      }
+      if (ident.require_selfie) {
+        identityWarning =
+          "Photo ajoutée : refaites la vérification par selfie pour retrouver votre badge « Vérifié ».";
+      }
     } catch {
-      // si la vérification échoue, on laisse passer l'envoi
+      toast.error("Le contrôle de la photo a échoué. Réessayez dans un instant.");
+      return;
     } finally {
       setChecking(false);
     }
@@ -116,7 +139,8 @@ export function PhotoManager({ userId }: { userId: string }) {
       await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl, primary_photo_blurred: false }).eq("id", userId);
     }
     refresh();
-    toast.success("Photo ajoutée");
+    if (identityWarning) toast.warning(identityWarning);
+    else toast.success("Photo ajoutée");
   }
 
 

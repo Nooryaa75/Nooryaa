@@ -139,7 +139,8 @@ export function PhotoManager({ userId }: { userId: string }) {
       await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl, primary_photo_blurred: false }).eq("id", userId);
     }
     refresh();
-    toast.success("Photo ajoutée");
+    if (identityWarning) toast.warning(identityWarning);
+    else toast.success("Photo ajoutée");
   }
 
 

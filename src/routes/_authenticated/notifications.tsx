@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, CheckCheck, Heart, MessageCircle, Sparkles, Eye, Info, Loader2 } from "lucide-react";
-import { AppHeader } from "@/components/AppHeader";
+
 import { Button } from "@/components/ui/button";
 import {
   useNotifications,
@@ -53,7 +53,6 @@ function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-10">
-      <AppHeader />
       <main className="container mx-auto max-w-2xl px-4 py-6 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">

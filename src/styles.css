@@ -230,6 +230,35 @@
   --error-border: oklch(0.68 0.19 22);
 }
 
+/* Les styles injectés par Sonner peuvent arriver après la feuille de l'app.
+   On impose donc la charte sur les messages eux-mêmes, icône comprise. */
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="success"],
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="info"] {
+  background: var(--secondary) !important;
+  border-color: var(--accent) !important;
+  color: var(--primary) !important;
+}
+
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="warning"] {
+  background: var(--secondary) !important;
+  border-color: var(--accent) !important;
+  color: var(--primary) !important;
+}
+
+[data-sonner-toaster].toaster [data-sonner-toast][data-type="error"] {
+  background: var(--error-bg) !important;
+  border-color: var(--error-border) !important;
+  color: var(--error-text) !important;
+}
+
+.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="success"],
+.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="info"],
+.dark [data-sonner-toaster].toaster [data-sonner-toast][data-type="warning"] {
+  background: var(--secondary) !important;
+  border-color: var(--accent) !important;
+  color: var(--foreground) !important;
+}
+
 
 @layer base {
   * {

@@ -139,7 +139,7 @@ export function PhotoManager({ userId }: { userId: string }) {
         identityWarning =
           ident?.verdict === "review" && ident.reason
             ? `Photo ajoutée. ${ident.reason}`
-            : "Photo ajoutée : elle sera vérifiée. Refaites la vérification par selfie pour garder votre badge « Vérifié ».";
+            : "Photo ajoutée : elle sera contrôlée par notre équipe. Nous vous contacterons si une nouvelle vérification est nécessaire.";
       }
     } finally {
       setChecking(false);

@@ -70,16 +70,28 @@ export function SelfieVerification({
     setOpen(true);
   }
 
+  // Profil déjà vérifié : on affiche uniquement le badge. C'est l'équipe Nooryaa
+  // qui demande un nouveau selfie si besoin, pas le membre.
+  if (verified) {
+    return (
+      <div className="rounded-2xl border border-border p-4">
+        <div className="flex items-center gap-2">
+          <BadgeCheck className="h-5 w-5 text-primary" />
+          <h2 className="text-xl font-serif text-primary">Profil vérifié</h2>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Votre identité a été confirmée. Si une nouvelle vérification est nécessaire,
+          notre équipe vous contactera.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl border border-border p-4 space-y-3">
       <div className="flex items-center gap-2">
         <ScanFace className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-serif text-primary">Vérification par selfie</h2>
-        {verified && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-xs px-2 py-1">
-            <BadgeCheck className="h-4 w-4" /> Vérifié
-          </span>
-        )}
       </div>
 
       <p className="text-sm text-muted-foreground">
@@ -88,13 +100,13 @@ export function SelfieVerification({
         la vérification est conservé.
       </p>
 
-      {status === "rejected" && !verified && (
+      {status === "rejected" && (
         <p className="flex items-start gap-2 text-sm text-destructive">
           <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" />
           Dernière tentative refusée : le selfie ne correspondait pas à vos photos ou n'était pas pris en direct.
         </p>
       )}
-      {status === "review" && !verified && (
+      {status === "review" && (
         <p className="flex items-start gap-2 text-sm text-muted-foreground">
           <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0" />
           Vérification à confirmer : réessayez avec un bon éclairage, visage bien visible.
@@ -106,8 +118,6 @@ export function SelfieVerification({
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Vérification…
           </>
-        ) : verified ? (
-          "Refaire la vérification"
         ) : (
           "Lancer la vérification"
         )}

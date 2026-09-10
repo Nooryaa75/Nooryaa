@@ -84,42 +84,66 @@ export function PhotoManager({ userId }: { userId: string }) {
     setChecking(true);
     let identityWarning: string | null = null;
     try {
-      const dataUrl = await toDataUrl(file);
+      let dataUrl: string;
+      try {
+        dataUrl = await toDataUrl(file);
+      } catch (e) {
+        console.error("PhotoManager: image illisible", e);
+        toast.error("Cette image n'a pas pu être lue. Essayez une autre photo (JPEG ou PNG).");
+        return;
+      }
+
       const declaredAge = profile?.birthdate
         ? Math.floor((Date.now() - new Date(profile.birthdate).getTime()) / 31557600000)
         : null;
-      const check = await checkPhoto({ data: { imageDataUrl: dataUrl, declaredAge } });
-      if (check.verdict === "block") {
+
+      // Chaque contrôle est retenté une fois : un incident réseau ne doit pas
+      // bloquer définitivement l'ajout d'une photo.
+      async function twice<T>(fn: () => Promise<T>): Promise<T> {
+        try {
+          return await fn();
+        } catch (e) {
+          console.warn("PhotoManager: nouvelle tentative de contrôle", e);
+          await new Promise((r) => setTimeout(r, 800));
+          return await fn();
+        }
+      }
+
+      let check: Awaited<ReturnType<typeof checkPhoto>> | null = null;
+      try {
+        check = await twice(() => checkPhoto({ data: { imageDataUrl: dataUrl, declaredAge } }));
+      } catch (e) {
+        console.error("PhotoManager: modération indisponible", e);
+      }
+      if (check?.verdict === "block") {
         toast.error(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.");
         return;
       }
-      if (check.verdict === "warn") {
+      if (check?.verdict === "warn") {
         toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
       }
 
       // Contrôle d'identité : la nouvelle photo doit être la même personne que
       // les photos déjà validées et correspondre au sexe déclaré.
-      const ident = await checkIdentity({ data: { imageDataUrl: dataUrl } });
-      if (ident.verdict === "block") {
+      let ident: Awaited<ReturnType<typeof checkIdentity>> | null = null;
+      try {
+        ident = await twice(() => checkIdentity({ data: { imageDataUrl: dataUrl } }));
+      } catch (e) {
+        console.error("PhotoManager: contrôle d'identité indisponible", e);
+      }
+      if (ident?.verdict === "block") {
         toast.error(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.");
         return;
       }
-      if (ident.verdict === "review") {
-        toast.error(
-          ident.reason ||
-            "Nous n'avons pas pu confirmer que cette photo est bien vous. Refaites la vérification par selfie puis réessayez.",
-        );
-        return;
-      }
-      if (ident.require_selfie) {
+      if (!check || !ident || ident.verdict === "review" || ident.require_selfie) {
         identityWarning =
-          "Photo ajoutée : refaites la vérification par selfie pour retrouver votre badge « Vérifié ».";
+          ident?.verdict === "review" && ident.reason
+            ? `Photo ajoutée. ${ident.reason}`
+            : "Photo ajoutée : elle sera vérifiée. Refaites la vérification par selfie pour garder votre badge « Vérifié ».";
       }
-    } catch {
-      toast.error("Le contrôle de la photo a échoué. Réessayez dans un instant.");
-      return;
     } finally {
       setChecking(false);
+
     }
 
     const { data: sessionData } = await supabase.auth.getSession();

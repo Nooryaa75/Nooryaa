@@ -54,26 +54,29 @@ async function downloadPhoto(path: string): Promise<string | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const bucket = supabaseAdmin.storage.from("profile-photos");
-    // Redimensionnement côté stockage : les originaux peuvent peser plusieurs Mo,
-    // ce qui fait échouer l'appel au service de vérification.
-    let res = await bucket.download(path, {
-      transform: { width: 768, height: 768, resize: "contain", quality: 70 },
-    });
-    if (res.error || !res.data || res.data.size === 0 || res.data.size > 2_000_000) {
-      const raw = await bucket.download(path);
-      if (raw.error || !raw.data || raw.data.size === 0 || raw.data.size > 2_000_000) {
-        console.error("selfie-verification: photo illisible ou trop lourde", path, raw.data?.size);
-        return null;
-      }
-      res = raw;
+    // Redimensionnement côté stockage obligatoire : les originaux peuvent peser
+    // plusieurs Mo / faire plusieurs milliers de pixels, ce qui dépasse la limite
+    // d'images acceptée par le service de vérification (erreur 400 "patches").
+    const sizes: { width: number; height: number; quality: number }[] = [
+      { width: 640, height: 640, quality: 65 },
+      { width: 448, height: 448, quality: 60 },
+    ];
+    for (const s of sizes) {
+      const res = await bucket.download(path, {
+        transform: { width: s.width, height: s.height, resize: "contain", quality: s.quality },
+      });
+      if (res.error || !res.data || res.data.size === 0 || res.data.size > 700_000) continue;
+      const buf = new Uint8Array(await res.data.arrayBuffer());
+      return bytesToDataUrl(buf, res.data.type || "image/jpeg");
     }
-    const buf = new Uint8Array(await res.data.arrayBuffer());
-    return bytesToDataUrl(buf, res.data.type || "image/jpeg");
+    console.error("selfie-verification: photo non redimensionnable", path);
+    return null;
   } catch (e) {
     console.error("selfie-verification: échec téléchargement photo", path, e);
     return null;
   }
 }
+
 
 
 

@@ -89,3 +89,44 @@ export const signUpByServer = createServerFn({ method: "POST" })
     return { ok: true as const, email, emailSent: sendResult.sent };
 
   });
+
+const resendSchema = z.object({
+  email: z.string().email(),
+  origin: z.string().url().optional(),
+});
+
+/** Renvoie l'email de confirmation d'inscription à un compte non encore validé. */
+export const resendSignupConfirmation = createServerFn({ method: "POST" })
+  .inputValidator((data) => resendSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = data.email.trim().toLowerCase();
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name")
+      .ilike("email", email)
+      .maybeSingle();
+
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      // "magiclink" ne modifie pas le mot de passe choisi et confirme l'email au clic.
+      type: "magiclink",
+      email,
+      options: { redirectTo: `${data.origin ?? SITE_URL}/onboarding` },
+    });
+
+
+    if (linkError || !linkData?.properties?.action_link) {
+      throw new Error("Impossible de renvoyer l'email de confirmation. Réessayez dans un instant.");
+    }
+
+    const { sendEmailConfirmation } = await import("@/lib/notify.functions");
+    const sendResult = await sendEmailConfirmation({
+      email,
+      firstName: profile?.first_name ?? "",
+      confirmationUrl: linkData.properties.action_link,
+    }).catch(() => ({ sent: false as const }));
+
+    return { ok: true as const, emailSent: sendResult.sent };
+  });
+

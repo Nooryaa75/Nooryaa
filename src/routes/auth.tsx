@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/notify.functions";
-import { signUpByServer } from "@/lib/auth.functions";
+import { signUpByServer, resendSignupConfirmation } from "@/lib/auth.functions";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 const searchSchema = z.object({
@@ -180,7 +180,7 @@ function AuthPage() {
         // L'email de vérification est toujours envoyé par notre serveur via Resend
         // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
 
-        await signUpByServer({
+        const signupResult = await signUpByServer({
           data: {
             email: email.trim().toLowerCase(),
             password,
@@ -192,8 +192,15 @@ function AuthPage() {
         });
         void sendWelcomeEmail({ data: { email: email.trim().toLowerCase() } }).catch(() => {});
         setSignupEmailSent(true);
-        toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+        if (signupResult?.emailSent) {
+          toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+        } else {
+          toast.error(
+            "Votre compte est créé mais l'email de confirmation n'a pas pu partir. Utilisez le bouton « Renvoyer l'email ».",
+          );
+        }
         return;
+
 
       } else {
         const { error } = await withRetry(() =>
@@ -258,7 +265,29 @@ function AuthPage() {
               J'ai confirmé, je me connecte
             </Link>
           </Button>
+          <Button
+            variant="outline"
+            className="w-full rounded-full mb-3"
+            disabled={loading}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const r = await resendSignupConfirmation({
+                  data: { email: email.trim().toLowerCase(), origin: window.location.origin },
+                });
+                if (r?.emailSent) toast.success("Email renvoyé ! Vérifiez votre boîte de réception.");
+                else toast.error("L'envoi a échoué. Réessayez dans quelques minutes.");
+              } catch (e: any) {
+                toast.error(e?.message || "L'envoi a échoué. Réessayez dans quelques minutes.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Renvoyer l'email
+          </Button>
           <Link to="/" className="text-sm text-muted-foreground hover:text-primary">Retour à l'accueil</Link>
+
         </div>
       </div>
     );

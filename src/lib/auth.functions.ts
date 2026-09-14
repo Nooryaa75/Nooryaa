@@ -109,11 +109,12 @@ export const resendSignupConfirmation = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-      type: "signup",
+      // "magiclink" ne modifie pas le mot de passe choisi et confirme l'email au clic.
+      type: "magiclink",
       email,
-      password: crypto.randomUUID(),
       options: { redirectTo: `${data.origin ?? SITE_URL}/onboarding` },
     });
+
 
     if (linkError || !linkData?.properties?.action_link) {
       throw new Error("Impossible de renvoyer l'email de confirmation. Réessayez dans un instant.");

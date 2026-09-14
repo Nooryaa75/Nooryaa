@@ -179,8 +179,20 @@ export function PhotoManager({ userId }: { userId: string }) {
       return;
     }
 
-    if (photos.length === 0) {
-      await supabase.from("profiles").update({ primary_photo_url: signed.signedUrl, primary_photo_blurred: false }).eq("id", userId);
+    // Photo principale : on la définit dès qu'aucune photo principale valide n'est
+    // enregistrée (profil sans photo, ancienne photo supprimée, liste non à jour).
+    const { data: fresh } = await supabase
+      .from("profiles")
+      .select("primary_photo_url")
+      .eq("id", authId)
+      .maybeSingle();
+    const current = fresh?.primary_photo_url ?? null;
+    const stillExists = current ? photos.some((p) => p.url === current) : false;
+    if (!current || !stillExists) {
+      await supabase
+        .from("profiles")
+        .update({ primary_photo_url: signed.signedUrl, primary_photo_blurred: false })
+        .eq("id", authId);
     }
     refresh();
     if (identityWarning) toast.warning(identityWarning);

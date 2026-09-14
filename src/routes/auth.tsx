@@ -265,7 +265,29 @@ function AuthPage() {
               J'ai confirmé, je me connecte
             </Link>
           </Button>
+          <Button
+            variant="outline"
+            className="w-full rounded-full mb-3"
+            disabled={loading}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const r = await resendSignupConfirmation({
+                  data: { email: email.trim().toLowerCase(), origin: window.location.origin },
+                });
+                if (r?.emailSent) toast.success("Email renvoyé ! Vérifiez votre boîte de réception.");
+                else toast.error("L'envoi a échoué. Réessayez dans quelques minutes.");
+              } catch (e: any) {
+                toast.error(e?.message || "L'envoi a échoué. Réessayez dans quelques minutes.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Renvoyer l'email
+          </Button>
           <Link to="/" className="text-sm text-muted-foreground hover:text-primary">Retour à l'accueil</Link>
+
         </div>
       </div>
     );

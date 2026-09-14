@@ -122,7 +122,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           profile?.primary_photo_url ? storagePathFromUrl(profile.primary_photo_url) : null,
         ].filter((p): p is string => typeof p === "string" && p.length > 0),
       ),
-    ).slice(0, 3);
+    ).slice(0, 2);
 
     if (paths.length === 0) {
       return {

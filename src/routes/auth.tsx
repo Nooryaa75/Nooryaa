@@ -180,7 +180,7 @@ function AuthPage() {
         // L'email de vérification est toujours envoyé par notre serveur via Resend
         // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
 
-        await signUpByServer({
+        const signupResult = await signUpByServer({
           data: {
             email: email.trim().toLowerCase(),
             password,
@@ -192,8 +192,15 @@ function AuthPage() {
         });
         void sendWelcomeEmail({ data: { email: email.trim().toLowerCase() } }).catch(() => {});
         setSignupEmailSent(true);
-        toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+        if (signupResult?.emailSent) {
+          toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");
+        } else {
+          toast.error(
+            "Votre compte est créé mais l'email de confirmation n'a pas pu partir. Utilisez le bouton « Renvoyer l'email ».",
+          );
+        }
         return;
+
 
       } else {
         const { error } = await withRetry(() =>

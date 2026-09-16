@@ -61,45 +61,73 @@ function Conversation() {
   const peerBlurred = isBlurred(peer as any, me as any, likeGraph);
   const peerAvatarClass = `w-full h-full object-cover ${peerBlurred ? "blur-md scale-110" : ""}`;
 
+  // Cache des URL signées : évite de re-signer les pièces jointes à chaque rafraîchissement
+  const urlCache = useRef(new Map<string, string>());
+  async function signedUrl(bucket: string, path: string) {
+    const key = `${bucket}:${path}`;
+    const hit = urlCache.current.get(key);
+    if (hit) return hit;
+    const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+    if (data?.signedUrl) urlCache.current.set(key, data.signedUrl);
+    return data?.signedUrl;
+  }
+
+  async function decorate(m: any) {
+    if (m.deleted_at) return m;
+    let out = m;
+    if (m.image_path) out = { ...out, image_url: await signedUrl("message-photos", m.image_path) };
+    if (m.audio_path) out = { ...out, audio_url: await signedUrl("message-audio", m.audio_path) };
+    return out;
+  }
+
+  const msgKey = ["messages", ctx.userId, peer?.id];
+
+  function patchList(updater: (old: any[]) => any[]) {
+    qc.setQueryData(msgKey, (old: any) => updater(Array.isArray(old) ? old : []));
+  }
+
   const { data: messages } = useQuery({
-    queryKey: ["messages", ctx.userId, peer?.id],
+    queryKey: msgKey,
     enabled: !!peer,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const { data } = await supabase.from("messages").select("*")
         .or(`and(sender.eq.${ctx.userId},receiver.eq.${peer!.id}),and(sender.eq.${peer!.id},receiver.eq.${ctx.userId})`)
         .order("created_at");
       const rows = (data ?? []).filter((m: any) => !(m.hidden_for ?? []).includes(ctx.userId));
-      // Resolve signed URLs for any attached photos
-      const withImg = await Promise.all(rows.map(async (m: any) => {
-        if (m.deleted_at) return m;
-        let out = m;
-        if (m.image_path) {
-          const { data: s } = await supabase.storage.from("message-photos").createSignedUrl(m.image_path, 3600);
-          out = { ...out, image_url: s?.signedUrl };
-        }
-        if (m.audio_path) {
-          const { data: a } = await supabase.storage.from("message-audio").createSignedUrl(m.audio_path, 3600);
-          out = { ...out, audio_url: a?.signedUrl };
-        }
-        return out;
-      }));
-      return withImg;
+      return await Promise.all(rows.map(decorate));
     },
   });
 
+  // Temps réel : on applique directement la modification reçue, sans recharger toute la conversation
   useEffect(() => {
     if (!peer) return;
-    const channel = supabase.channel(`msg-${peer.id}`).on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "messages" },
-      (payload: any) => {
-        const m = payload.new ?? payload.old;
-        if (!m) return;
-        if ((m.sender === ctx.userId && m.receiver === peer.id) || (m.sender === peer.id && m.receiver === ctx.userId)) {
-          qc.invalidateQueries({ queryKey: ["messages", ctx.userId, peer.id] });
-        }
-      },
-    ).subscribe();
+    const apply = async (row: any, event: string) => {
+      if (!row) return;
+      const mine = row.sender === ctx.userId && row.receiver === peer.id;
+      const theirs = row.sender === peer.id && row.receiver === ctx.userId;
+      if (!mine && !theirs) return;
+      if (event === "DELETE" || (row.hidden_for ?? []).includes(ctx.userId)) {
+        patchList((old) => old.filter((m) => m.id !== row.id));
+        return;
+      }
+      const dec = await decorate(row);
+      patchList((old) => {
+        const next = old.filter(
+          (m) => m.id !== dec.id && !(m.pending && m.sender === dec.sender && m.content === dec.content),
+        );
+        return [...next, dec].sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+      });
+      if (theirs) qc.invalidateQueries({ queryKey: ["unread-counts"] });
+    };
+    const channel = supabase
+      .channel(`conv-${[ctx.userId, peer.id].sort().join("-")}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${peer.id}` },
+        (p: any) => apply(p.new ?? p.old, p.eventType))
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${ctx.userId}` },
+        (p: any) => apply(p.new ?? p.old, p.eventType))
+      .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [peer, ctx.userId, qc]);
 

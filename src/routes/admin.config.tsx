@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
-import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, adminListAppVersions, adminSaveAppVersion, type PlanInput } from "@/lib/admin-insights.functions";
+import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, adminListAppVersions, adminSaveAppVersion, adminGetSubscriptionsEnabled, adminSetSubscriptionsEnabled, type PlanInput } from "@/lib/admin-insights.functions";
 import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, quotaLabel, type PlanAudience } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, ShieldCheck, Copy } from "lucide-react";
+import { Plus, Trash2, ShieldCheck, Copy, Power } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 
@@ -385,6 +385,61 @@ function AdminConfig() {
         <SocialSection />
       </main>
     </div>
+  );
+}
+
+function SubscriptionSwitchSection() {
+  const qc = useQueryClient();
+  const get = useServerFn(adminGetSubscriptionsEnabled);
+  const set = useServerFn(adminSetSubscriptionsEnabled);
+  const { data, isLoading } = useQuery({ queryKey: ["admin-subscriptions-enabled"], queryFn: () => get() });
+  const enabled = data?.enabled ?? false;
+
+  const mut = useMutation({
+    mutationFn: (v: boolean) => set({ data: { enabled: v } }),
+    onSuccess: (_r, v) => {
+      toast.success(v ? "Abonnements mis en ligne" : "Abonnements arrêtés : le site est gratuit");
+      qc.invalidateQueries({ queryKey: ["admin-subscriptions-enabled"] });
+      qc.invalidateQueries({ queryKey: ["subscriptions-enabled"] });
+      qc.invalidateQueries({ queryKey: ["active-plans"] });
+    },
+    onError: (e: any) => toast.error(frenchError(e, "Erreur")),
+  });
+
+  return (
+    <section className={`rounded-2xl p-5 border-2 space-y-3 ${enabled ? "border-primary/60 bg-primary/5" : "border-border/60 bg-card"}`}>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-serif text-primary flex items-center gap-2">
+            <Power className="h-4 w-4" /> Système d'abonnement
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-xl">
+            {enabled
+              ? "Les formules ci-dessous sont proposées aux membres et les accès premium s'appliquent."
+              : "Le site est entièrement gratuit : aucune formule n'est affichée et tous les membres ont accès à tout."}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-sm font-medium ${enabled ? "text-primary" : "text-muted-foreground"}`}>
+            {enabled ? "En ligne" : "Arrêté"}
+          </span>
+          <Switch
+            checked={enabled}
+            disabled={isLoading || mut.isPending}
+            onCheckedChange={(v) => mut.mutate(v)}
+            aria-label="Mettre en ligne le système d'abonnement"
+          />
+        </div>
+      </div>
+      <Button
+        variant={enabled ? "outline" : "default"}
+        className="rounded-full"
+        disabled={isLoading || mut.isPending}
+        onClick={() => mut.mutate(!enabled)}
+      >
+        {enabled ? "Arrêter les abonnements (site gratuit)" : "Mettre les abonnements en ligne"}
+      </Button>
+    </section>
   );
 }
 

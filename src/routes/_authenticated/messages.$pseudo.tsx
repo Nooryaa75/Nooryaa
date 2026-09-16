@@ -466,7 +466,7 @@ function Conversation() {
               )}
               <div
                 onClick={() => { if (mine && !m.deleted_at) setActionFor(actionFor === m.id ? null : m.id); }}
-                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
+                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.pending ? "opacity-70" : ""} ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
                 style={!m.deleted_at && mine ? { backgroundImage: "var(--gradient-gold)" } : undefined}>
                 {m.deleted_at ? (
                   <div className="px-4 py-2">Message supprimé</div>

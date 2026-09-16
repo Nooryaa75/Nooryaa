@@ -61,45 +61,73 @@ function Conversation() {
   const peerBlurred = isBlurred(peer as any, me as any, likeGraph);
   const peerAvatarClass = `w-full h-full object-cover ${peerBlurred ? "blur-md scale-110" : ""}`;
 
+  // Cache des URL signées : évite de re-signer les pièces jointes à chaque rafraîchissement
+  const urlCache = useRef(new Map<string, string>());
+  async function signedUrl(bucket: string, path: string) {
+    const key = `${bucket}:${path}`;
+    const hit = urlCache.current.get(key);
+    if (hit) return hit;
+    const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+    if (data?.signedUrl) urlCache.current.set(key, data.signedUrl);
+    return data?.signedUrl;
+  }
+
+  async function decorate(m: any) {
+    if (m.deleted_at) return m;
+    let out = m;
+    if (m.image_path) out = { ...out, image_url: await signedUrl("message-photos", m.image_path) };
+    if (m.audio_path) out = { ...out, audio_url: await signedUrl("message-audio", m.audio_path) };
+    return out;
+  }
+
+  const msgKey = ["messages", ctx.userId, peer?.id];
+
+  function patchList(updater: (old: any[]) => any[]) {
+    qc.setQueryData(msgKey, (old: any) => updater(Array.isArray(old) ? old : []));
+  }
+
   const { data: messages } = useQuery({
-    queryKey: ["messages", ctx.userId, peer?.id],
+    queryKey: msgKey,
     enabled: !!peer,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const { data } = await supabase.from("messages").select("*")
         .or(`and(sender.eq.${ctx.userId},receiver.eq.${peer!.id}),and(sender.eq.${peer!.id},receiver.eq.${ctx.userId})`)
         .order("created_at");
       const rows = (data ?? []).filter((m: any) => !(m.hidden_for ?? []).includes(ctx.userId));
-      // Resolve signed URLs for any attached photos
-      const withImg = await Promise.all(rows.map(async (m: any) => {
-        if (m.deleted_at) return m;
-        let out = m;
-        if (m.image_path) {
-          const { data: s } = await supabase.storage.from("message-photos").createSignedUrl(m.image_path, 3600);
-          out = { ...out, image_url: s?.signedUrl };
-        }
-        if (m.audio_path) {
-          const { data: a } = await supabase.storage.from("message-audio").createSignedUrl(m.audio_path, 3600);
-          out = { ...out, audio_url: a?.signedUrl };
-        }
-        return out;
-      }));
-      return withImg;
+      return await Promise.all(rows.map(decorate));
     },
   });
 
+  // Temps réel : on applique directement la modification reçue, sans recharger toute la conversation
   useEffect(() => {
     if (!peer) return;
-    const channel = supabase.channel(`msg-${peer.id}`).on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "messages" },
-      (payload: any) => {
-        const m = payload.new ?? payload.old;
-        if (!m) return;
-        if ((m.sender === ctx.userId && m.receiver === peer.id) || (m.sender === peer.id && m.receiver === ctx.userId)) {
-          qc.invalidateQueries({ queryKey: ["messages", ctx.userId, peer.id] });
-        }
-      },
-    ).subscribe();
+    const apply = async (row: any, event: string) => {
+      if (!row) return;
+      const mine = row.sender === ctx.userId && row.receiver === peer.id;
+      const theirs = row.sender === peer.id && row.receiver === ctx.userId;
+      if (!mine && !theirs) return;
+      if (event === "DELETE" || (row.hidden_for ?? []).includes(ctx.userId)) {
+        patchList((old) => old.filter((m) => m.id !== row.id));
+        return;
+      }
+      const dec = await decorate(row);
+      patchList((old) => {
+        const next = old.filter(
+          (m) => m.id !== dec.id && !(m.pending && m.sender === dec.sender && m.content === dec.content),
+        );
+        return [...next, dec].sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+      });
+      if (theirs) qc.invalidateQueries({ queryKey: ["unread-counts"] });
+    };
+    const channel = supabase
+      .channel(`conv-${[ctx.userId, peer.id].sort().join("-")}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${peer.id}` },
+        (p: any) => apply(p.new ?? p.old, p.eventType))
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${ctx.userId}` },
+        (p: any) => apply(p.new ?? p.old, p.eventType))
+      .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [peer, ctx.userId, qc]);
 
@@ -131,60 +159,95 @@ function Conversation() {
   const moderate = useServerFn(moderateMessage);
   const moderateVoiceFn = useServerFn(moderateVoice);
 
-  async function checkContent(content: string) {
-    const local = lexiconCheck(content);
-    if (local.verdict === "block") throw new Error(local.reason);
-    let verdict: "allow" | "warn" | "block" = local.verdict;
-    let reason = local.reason;
-    try {
-      const res = await moderate({ data: { content, targetUserId: peer!.id } });
-      verdict = res.verdict;
-      reason = res.reason;
-    } catch {
-      // en cas d'indisponibilité de l'analyse, on garde le filtre local
-    }
-    if (verdict === "block") throw new Error(reason || "Ce message ne respecte pas la charte de Nooryaa.");
-    if (verdict === "warn" && reason) toast.warning(reason);
+  // Analyse automatique en arrière-plan : le message part tout de suite,
+  // il est retiré immédiatement s'il enfreint la charte.
+  function moderateInBackground(content: string, messageId: string) {
+    void (async () => {
+      try {
+        const res = await moderate({ data: { content, targetUserId: peer!.id } });
+        if (res.verdict === "block") {
+          await supabase.from("messages")
+            .update({ deleted_at: new Date().toISOString(), content: null } as any)
+            .eq("id", messageId);
+          patchList((old) => old.filter((m) => m.id !== messageId));
+          toast.error(res.reason || "Ce message ne respecte pas la charte de Nooryaa.");
+        } else if (res.verdict === "warn" && res.reason) {
+          toast.warning(res.reason);
+        }
+      } catch {
+        // analyse indisponible : le filtre local a déjà été appliqué
+      }
+    })();
   }
 
   const send = useMutation({
-    mutationFn: async () => {
-      if (!peer || !text.trim()) return;
-      const content = text.trim();
-      await checkContent(content);
+    mutationFn: async (payload: { content: string; editingId: string | null; replyToId: string | null }) => {
+      if (!peer) return;
+      const { content, editingId, replyToId } = payload;
+      const local = lexiconCheck(content);
+      if (local.verdict === "block") throw new Error(local.reason);
+      if (local.verdict === "warn" && local.reason) toast.warning(local.reason);
 
-      if (editing) {
+      if (editingId) {
+        const editedAt = new Date().toISOString();
+        patchList((old) => old.map((m) => (m.id === editingId ? { ...m, content, edited_at: editedAt } : m)));
         const { error } = await supabase.from("messages")
-          .update({ content, edited_at: new Date().toISOString() } as any)
-          .eq("id", editing.id);
+          .update({ content, edited_at: editedAt } as any)
+          .eq("id", editingId);
         if (error) throw error;
+        moderateInBackground(content, editingId);
         return;
       }
-      const { error } = await supabase.from("messages").insert({
+
+      const tempId = `tmp-${crypto.randomUUID()}`;
+      patchList((old) => [...old, {
+        id: tempId, sender: ctx.userId, receiver: peer.id, content,
+        created_at: new Date().toISOString(), reply_to: replyToId, pending: true,
+      }]);
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, content,
-        ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
-      if (error) throw error;
+        ...(replyToId ? { reply_to: replyToId } : {}),
+      } as any).select().single();
+      if (error) {
+        patchList((old) => old.filter((m) => m.id !== tempId));
+        throw error;
+      }
+      patchList((old) => {
+        const withoutDup = old.filter((m) => m.id !== tempId && m.id !== inserted.id);
+        return [...withoutDup, inserted];
+      });
       notifyByEmail("message", peer.id, content);
+      moderateInBackground(content, inserted.id);
     },
     onSuccess: () => {
-      setText(""); setReplyTo(null); setEditing(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
     },
     onError: (e: any) => toast.error(frenchError(e)),
   });
 
+  function submitMessage() {
+    const content = text.trim();
+    if (!peer || !content) return;
+    const editingId = editing?.id ?? null;
+    const replyToId = replyTo?.id ?? null;
+    setText(""); setReplyTo(null); setEditing(null);
+    send.mutate({ content, editingId, replyToId });
+  }
+
   const removeMessage = useMutation({
     mutationFn: async (m: any) => {
+      const deletedAt = new Date().toISOString();
+      patchList((old) => old.map((x) => (x.id === m.id ? { ...x, deleted_at: deletedAt, content: null, image_url: null, audio_url: null } : x)));
       const { error } = await supabase.from("messages")
-        .update({ deleted_at: new Date().toISOString(), content: null, image_path: null, audio_path: null } as any)
+        .update({ deleted_at: deletedAt, content: null, image_path: null, audio_path: null } as any)
         .eq("id", m.id);
       if (error) throw error;
       // Supprime aussi les fichiers du stockage (photo / vocal)
       if (m.image_path) await supabase.storage.from("message-photos").remove([m.image_path]);
       if (m.audio_path) await supabase.storage.from("message-audio").remove([m.audio_path]);
     },
-    onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
+    onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
     onError: (e: any) => toast.error(frenchError(e)),
   });
 
@@ -264,14 +327,17 @@ function Conversation() {
       const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("message-photos").upload(path, file, { contentType: file.type });
       if (upErr) throw upErr;
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, image_path: path,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
+      } as any).select().single();
       if (error) throw error;
+      // Aperçu local immédiat, sans attendre l'URL signée
+      patchList((old) => [...old.filter((m) => m.id !== inserted.id), { ...inserted, image_url: URL.createObjectURL(file) }]);
       notifyByEmail("message", peer.id, "Photo");
       setReplyTo(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
     } catch (e: any) {
       toast.error(frenchError(e));
     } finally {
@@ -290,27 +356,36 @@ function Conversation() {
       const { error: upErr } = await supabase.storage.from("message-audio").upload(path, blob, { contentType: blob.type });
       if (upErr) throw upErr;
 
-      // Modération du vocal : transcription puis mêmes règles que le texte
-      try {
-        const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
-        if (res.verdict === "block") {
-          await supabase.storage.from("message-audio").remove([path]);
-          throw new Error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
-        }
-        if (res.verdict === "warn" && res.reason) toast.warning(res.reason);
-      } catch (e: any) {
-        if (e?.message && !/fetch|network/i.test(e.message)) throw e;
-        // analyse indisponible : on laisse passer le vocal
-      }
-
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, audio_path: path, audio_duration: duration,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
+      } as any).select().single();
       if (error) throw error;
+      // Lecture immédiate depuis l'enregistrement local
+      patchList((old) => [...old.filter((m) => m.id !== inserted.id), { ...inserted, audio_url: URL.createObjectURL(blob) }]);
       notifyByEmail("message", peer.id, "Message vocal");
       setReplyTo(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+
+      // Modération du vocal en arrière-plan : retiré aussitôt s'il enfreint la charte
+      void (async () => {
+        try {
+          const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
+          if (res.verdict === "block") {
+            await supabase.from("messages")
+              .update({ deleted_at: new Date().toISOString(), audio_path: null } as any)
+              .eq("id", inserted.id);
+            await supabase.storage.from("message-audio").remove([path]);
+            patchList((old) => old.filter((m) => m.id !== inserted.id));
+            toast.error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
+          } else if (res.verdict === "warn" && res.reason) {
+            toast.warning(res.reason);
+          }
+        } catch {
+          // analyse indisponible : on laisse passer le vocal
+        }
+      })();
     } catch (e: any) {
       toast.error(frenchError(e));
     } finally {
@@ -391,7 +466,7 @@ function Conversation() {
               )}
               <div
                 onClick={() => { if (mine && !m.deleted_at) setActionFor(actionFor === m.id ? null : m.id); }}
-                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
+                className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.pending ? "opacity-70" : ""} ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
                 style={!m.deleted_at && mine ? { backgroundImage: "var(--gradient-gold)" } : undefined}>
                 {m.deleted_at ? (
                   <div className="px-4 py-2">Message supprimé</div>
@@ -467,7 +542,7 @@ function Conversation() {
           {MESSAGE_BLOCKED_HINT}
         </div>
       ) : (
-      <form onSubmit={(e) => { e.preventDefault(); send.mutate(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
+      <form onSubmit={(e) => { e.preventDefault(); submitMessage(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         {!voiceActive && (
           <>
@@ -487,7 +562,7 @@ function Conversation() {
               maxLength={2000}
               className="rounded-full h-11 bg-card"
             />
-            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending} className="rounded-full h-11 w-11 shrink-0">
+            <Button type="submit" size="icon" disabled={!text.trim()} className="rounded-full h-11 w-11 shrink-0">
               {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             </Button>
           </>

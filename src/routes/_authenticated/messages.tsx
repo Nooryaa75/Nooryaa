@@ -80,7 +80,7 @@ function MessagesLayout() {
 
   const { data: convos } = useQuery({
     queryKey: ["conversations", ctx.userId],
-    refetchInterval: 15_000,
+    refetchInterval: 60_000,
     queryFn: async (): Promise<Convo[]> => {
       const [{ data: msgs }, { data: likes }, { data: iBlock }, { data: blockedMe }, { data: hiddenConvos }] = await Promise.all([
         supabase.from("messages").select("sender, receiver, content, image_path, audio_path, created_at, read_at, deleted_at, hidden_for")
@@ -140,6 +140,24 @@ function MessagesLayout() {
       }).sort((a, b) => (b.lastAt ?? "").localeCompare(a.lastAt ?? ""));
     },
   });
+
+  // Mise à jour instantanée de la liste dès qu'un message arrive ou part
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const refresh = () => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = null;
+        qc.invalidateQueries({ queryKey: ["conversations", ctx.userId] });
+      }, 300);
+    };
+    const channel = supabase
+      .channel(`convos-${ctx.userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `receiver=eq.${ctx.userId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${ctx.userId}` }, refresh)
+      .subscribe();
+    return () => { if (timer) clearTimeout(timer); supabase.removeChannel(channel); };
+  }, [ctx.userId, qc]);
 
   const visible = useMemo(() => {
     let list = convos ?? [];

@@ -327,14 +327,17 @@ function Conversation() {
       const path = `${ctx.userId}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("message-photos").upload(path, file, { contentType: file.type });
       if (upErr) throw upErr;
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, image_path: path,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
+      } as any).select().single();
       if (error) throw error;
+      // Aperçu local immédiat, sans attendre l'URL signée
+      patchList((old) => [...old.filter((m) => m.id !== inserted.id), { ...inserted, image_url: URL.createObjectURL(file) }]);
       notifyByEmail("message", peer.id, "Photo");
       setReplyTo(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
     } catch (e: any) {
       toast.error(frenchError(e));
     } finally {

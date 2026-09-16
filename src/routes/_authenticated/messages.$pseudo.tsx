@@ -528,7 +528,7 @@ function Conversation() {
           {MESSAGE_BLOCKED_HINT}
         </div>
       ) : (
-      <form onSubmit={(e) => { e.preventDefault(); send.mutate(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
+      <form onSubmit={(e) => { e.preventDefault(); submitMessage(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         {!voiceActive && (
           <>
@@ -548,7 +548,7 @@ function Conversation() {
               maxLength={2000}
               className="rounded-full h-11 bg-card"
             />
-            <Button type="submit" size="icon" disabled={!text.trim() || send.isPending} className="rounded-full h-11 w-11 shrink-0">
+            <Button type="submit" size="icon" disabled={!text.trim()} className="rounded-full h-11 w-11 shrink-0">
               {editing ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             </Button>
           </>

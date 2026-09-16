@@ -356,27 +356,36 @@ function Conversation() {
       const { error: upErr } = await supabase.storage.from("message-audio").upload(path, blob, { contentType: blob.type });
       if (upErr) throw upErr;
 
-      // Modération du vocal : transcription puis mêmes règles que le texte
-      try {
-        const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
-        if (res.verdict === "block") {
-          await supabase.storage.from("message-audio").remove([path]);
-          throw new Error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
-        }
-        if (res.verdict === "warn" && res.reason) toast.warning(res.reason);
-      } catch (e: any) {
-        if (e?.message && !/fetch|network/i.test(e.message)) throw e;
-        // analyse indisponible : on laisse passer le vocal
-      }
-
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, audio_path: path, audio_duration: duration,
         ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
+      } as any).select().single();
       if (error) throw error;
+      // Lecture immédiate depuis l'enregistrement local
+      patchList((old) => [...old.filter((m) => m.id !== inserted.id), { ...inserted, audio_url: URL.createObjectURL(blob) }]);
       notifyByEmail("message", peer.id, "Message vocal");
       setReplyTo(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+
+      // Modération du vocal en arrière-plan : retiré aussitôt s'il enfreint la charte
+      void (async () => {
+        try {
+          const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
+          if (res.verdict === "block") {
+            await supabase.from("messages")
+              .update({ deleted_at: new Date().toISOString(), audio_path: null } as any)
+              .eq("id", inserted.id);
+            await supabase.storage.from("message-audio").remove([path]);
+            patchList((old) => old.filter((m) => m.id !== inserted.id));
+            toast.error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
+          } else if (res.verdict === "warn" && res.reason) {
+            toast.warning(res.reason);
+          }
+        } catch {
+          // analyse indisponible : on laisse passer le vocal
+        }
+      })();
     } catch (e: any) {
       toast.error(frenchError(e));
     } finally {

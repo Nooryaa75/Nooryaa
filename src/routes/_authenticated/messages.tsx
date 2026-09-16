@@ -80,7 +80,7 @@ function MessagesLayout() {
 
   const { data: convos } = useQuery({
     queryKey: ["conversations", ctx.userId],
-    refetchInterval: 15_000,
+    refetchInterval: 60_000,
     queryFn: async (): Promise<Convo[]> => {
       const [{ data: msgs }, { data: likes }, { data: iBlock }, { data: blockedMe }, { data: hiddenConvos }] = await Promise.all([
         supabase.from("messages").select("sender, receiver, content, image_path, audio_path, created_at, read_at, deleted_at, hidden_for")

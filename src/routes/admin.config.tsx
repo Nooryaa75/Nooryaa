@@ -159,6 +159,8 @@ function AdminConfig() {
           </Button>
         </div>
 
+        <SubscriptionSwitchSection />
+
         {(noneActive || plans.length === 0) && (
           <div className="flex items-start gap-3 rounded-2xl border border-primary/40 bg-primary/5 p-4">
             <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />

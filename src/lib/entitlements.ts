@@ -74,7 +74,24 @@ export type PublicPlan = {
   access: AccessMap;
 };
 
+/** Le système d'abonnement est-il en ligne ? (interrupteur dans l'administration) */
+export async function fetchSubscriptionsEnabled(): Promise<boolean> {
+  const { data } = await supabase
+    .from("site_settings" as never)
+    .select("value")
+    .eq("key", "subscriptions_enabled")
+    .maybeSingle();
+  return (data as { value?: unknown } | null)?.value === true;
+}
+
+export function useSubscriptionsEnabled() {
+  return useQuery({ queryKey: ["subscriptions-enabled"], queryFn: fetchSubscriptionsEnabled, staleTime: 30_000 });
+}
+
 export async function fetchActivePlans(): Promise<PublicPlan[]> {
+  // Abonnements arrêtés depuis l'administration : aucune formule n'est proposée,
+  // tout le site reste accessible gratuitement.
+  if (!(await fetchSubscriptionsEnabled())) return [];
   const { data, error } = await supabase
     .from("plans")
     .select("*")

@@ -159,48 +159,81 @@ function Conversation() {
   const moderate = useServerFn(moderateMessage);
   const moderateVoiceFn = useServerFn(moderateVoice);
 
-  async function checkContent(content: string) {
-    const local = lexiconCheck(content);
-    if (local.verdict === "block") throw new Error(local.reason);
-    let verdict: "allow" | "warn" | "block" = local.verdict;
-    let reason = local.reason;
-    try {
-      const res = await moderate({ data: { content, targetUserId: peer!.id } });
-      verdict = res.verdict;
-      reason = res.reason;
-    } catch {
-      // en cas d'indisponibilité de l'analyse, on garde le filtre local
-    }
-    if (verdict === "block") throw new Error(reason || "Ce message ne respecte pas la charte de Nooryaa.");
-    if (verdict === "warn" && reason) toast.warning(reason);
+  // Analyse automatique en arrière-plan : le message part tout de suite,
+  // il est retiré immédiatement s'il enfreint la charte.
+  function moderateInBackground(content: string, messageId: string) {
+    void (async () => {
+      try {
+        const res = await moderate({ data: { content, targetUserId: peer!.id } });
+        if (res.verdict === "block") {
+          await supabase.from("messages")
+            .update({ deleted_at: new Date().toISOString(), content: null } as any)
+            .eq("id", messageId);
+          patchList((old) => old.filter((m) => m.id !== messageId));
+          toast.error(res.reason || "Ce message ne respecte pas la charte de Nooryaa.");
+        } else if (res.verdict === "warn" && res.reason) {
+          toast.warning(res.reason);
+        }
+      } catch {
+        // analyse indisponible : le filtre local a déjà été appliqué
+      }
+    })();
   }
 
   const send = useMutation({
-    mutationFn: async () => {
-      if (!peer || !text.trim()) return;
-      const content = text.trim();
-      await checkContent(content);
+    mutationFn: async (payload: { content: string; editingId: string | null; replyToId: string | null }) => {
+      if (!peer) return;
+      const { content, editingId, replyToId } = payload;
+      const local = lexiconCheck(content);
+      if (local.verdict === "block") throw new Error(local.reason);
+      if (local.verdict === "warn" && local.reason) toast.warning(local.reason);
 
-      if (editing) {
+      if (editingId) {
+        const editedAt = new Date().toISOString();
+        patchList((old) => old.map((m) => (m.id === editingId ? { ...m, content, edited_at: editedAt } : m)));
         const { error } = await supabase.from("messages")
-          .update({ content, edited_at: new Date().toISOString() } as any)
-          .eq("id", editing.id);
+          .update({ content, edited_at: editedAt } as any)
+          .eq("id", editingId);
         if (error) throw error;
+        moderateInBackground(content, editingId);
         return;
       }
-      const { error } = await supabase.from("messages").insert({
+
+      const tempId = `tmp-${crypto.randomUUID()}`;
+      patchList((old) => [...old, {
+        id: tempId, sender: ctx.userId, receiver: peer.id, content,
+        created_at: new Date().toISOString(), reply_to: replyToId, pending: true,
+      }]);
+      const { data: inserted, error } = await supabase.from("messages").insert({
         sender: ctx.userId, receiver: peer.id, content,
-        ...(replyTo ? { reply_to: replyTo.id } : {}),
-      } as any);
-      if (error) throw error;
+        ...(replyToId ? { reply_to: replyToId } : {}),
+      } as any).select().single();
+      if (error) {
+        patchList((old) => old.filter((m) => m.id !== tempId));
+        throw error;
+      }
+      patchList((old) => {
+        const withoutDup = old.filter((m) => m.id !== tempId && m.id !== inserted.id);
+        return [...withoutDup, inserted];
+      });
       notifyByEmail("message", peer.id, content);
+      moderateInBackground(content, inserted.id);
     },
     onSuccess: () => {
-      setText(""); setReplyTo(null); setEditing(null);
-      qc.invalidateQueries({ queryKey: ["messages"] }); qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
     },
     onError: (e: any) => toast.error(frenchError(e)),
   });
+
+  function submitMessage() {
+    const content = text.trim();
+    if (!peer || !content) return;
+    const editingId = editing?.id ?? null;
+    const replyToId = replyTo?.id ?? null;
+    setText(""); setReplyTo(null); setEditing(null);
+    send.mutate({ content, editingId, replyToId });
+  }
 
   const removeMessage = useMutation({
     mutationFn: async (m: any) => {

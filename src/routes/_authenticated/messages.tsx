@@ -141,6 +141,24 @@ function MessagesLayout() {
     },
   });
 
+  // Mise à jour instantanée de la liste dès qu'un message arrive ou part
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const refresh = () => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = null;
+        qc.invalidateQueries({ queryKey: ["conversations", ctx.userId] });
+      }, 300);
+    };
+    const channel = supabase
+      .channel(`convos-${ctx.userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `receiver=eq.${ctx.userId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `sender=eq.${ctx.userId}` }, refresh)
+      .subscribe();
+    return () => { if (timer) clearTimeout(timer); supabase.removeChannel(channel); };
+  }, [ctx.userId, qc]);
+
   const visible = useMemo(() => {
     let list = convos ?? [];
     if (tab === "nonlus") list = list.filter((c) => c.unread > 0);

@@ -583,3 +583,33 @@ export const adminSaveAppVersion = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+/** Interrupteur global : mise en ligne / arrêt du système d'abonnement. */
+export const adminGetSubscriptionsEnabled = createServerFn({ method: "GET" }).handler(async () => {
+  const { requireAdminOrThrow } = await import("./admin-session.server");
+  await requireAdminOrThrow();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await (supabaseAdmin.from("site_settings" as any) as any)
+    .select("value, updated_at")
+    .eq("key", "subscriptions_enabled")
+    .maybeSingle();
+  return { enabled: data?.value === true, updated_at: (data?.updated_at as string | undefined) ?? null };
+});
+
+export const adminSetSubscriptionsEnabled = createServerFn({ method: "POST" })
+  .inputValidator((data: { enabled: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    const who = await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await (supabaseAdmin.from("site_settings" as any) as any).upsert(
+      { key: "subscriptions_enabled", value: data.enabled, updated_at: new Date().toISOString() },
+      { onConflict: "key" },
+    );
+    if (error) throw new Error(error.message);
+    await (supabaseAdmin.from("admin_actions" as any) as any).insert({
+      action: data.enabled ? "subscriptions_enabled" : "subscriptions_disabled",
+      details: { by: who.email ?? who.via },
+    });
+    return { ok: true, enabled: data.enabled };
+  });

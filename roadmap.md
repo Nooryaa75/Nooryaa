@@ -23,3 +23,4 @@
 - [x] SwipeDeck : remplacer la coche par un cœur pour liker
 - [x] Internationalisation complète français / anglais / arabe, avec interface RTL en arabe
 - [x] Édition et publication dynamique des CGU et de la politique de confidentialité depuis l’administration
+- [ ] Traduire les titres, champs et questions de la page Mon compte

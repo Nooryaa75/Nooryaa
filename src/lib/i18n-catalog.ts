@@ -46,6 +46,14 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "© 2026 Nooryaa — Marriage connections in the dīn, free subscription",
     "ar": "© 2026 Nooryaa — التوفيق للزواج في الدين، اشتراك مجاني"
   },
+  "Mise en relation dans le dîn pour le mariage": {
+    "en": "Matchmaking in the dîn for marriage",
+    "ar": "التوافق في الدين من أجل الزواج"
+  },
+  "Chargement": {
+    "en": "Loading",
+    "ar": "جارٍ التحميل"
+  },
   "€ / jour": {
     "en": "€ / day",
     "ar": "€ / يوم"
@@ -3826,4 +3834,444 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "profiles",
     "ar": "ملفات شخصية"
   }
+  "A fait la Omra": {
+    "en": "Has performed Umrah",
+    "ar": "اعتمر"
+  },
+  "A fait le Hadj": {
+    "en": "Has performed Hajj",
+    "ar": "حجّ"
+  },
+  "Accès complet": {
+    "en": "Full access",
+    "ar": "وصول كامل"
+  },
+  "Actif": {
+    "en": "Active",
+    "ar": "نشط"
+  },
+  "Actuel": {
+    "en": "Current",
+    "ar": "الحالية"
+  },
+  "Ajouter": {
+    "en": "Add",
+    "ar": "إضافة"
+  },
+  "Annuler": {
+    "en": "Cancel",
+    "ar": "إلغاء"
+  },
+  "Autres": {
+    "en": "Other",
+    "ar": "آخر"
+  },
+  "Avez-vous des enfants ?": {
+    "en": "Do you have children?",
+    "ar": "هل لديك أطفال؟"
+  },
+  "Avez-vous fait la Omra ?": {
+    "en": "Have you performed Umrah?",
+    "ar": "هل اعتمرت؟"
+  },
+  "Avez-vous fait le Hadj ?": {
+    "en": "Have you performed Hajj?",
+    "ar": "هل حججت؟"
+  },
+  "Avril": {
+    "en": "April",
+    "ar": "أبريل"
+  },
+  "Bienveillance": {
+    "en": "Kindness",
+    "ar": "اللطف"
+  },
+  "Changer de durée": {
+    "en": "Change duration",
+    "ar": "تغيير المدة"
+  },
+  "Chaque membre mérite bienveillance et considération.": {
+    "en": "Every member deserves kindness and consideration.",
+    "ar": "كل عضو يستحق اللطف والاهتمام."
+  },
+  "Corpulence": {
+    "en": "Body type",
+    "ar": "نوع الجسم"
+  },
+  "Date de naissance": {
+    "en": "Date of birth",
+    "ar": "تاريخ الميلاد"
+  },
+  "Dernière mise à jour :": {
+    "en": "Last updated:",
+    "ar": "آخر تحديث:"
+  },
+  "Discussions authentiques, sans masque ni fausse promesse.": {
+    "en": "Authentic discussions, no mask or false promise.",
+    "ar": "نقاشات صادقة، بدون قناع أو وعود زائفة."
+  },
+  "Doctorat": {
+    "en": "PhD",
+    "ar": "دكتوراه"
+  },
+  "Email": {
+    "en": "Email",
+    "ar": "البريد الإلكتروني"
+  },
+  "En apprentissage": {
+    "en": "Learning",
+    "ar": "يتعلم"
+  },
+  "Enregistrement refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez.": {
+    "en": "Save refused: your session is no longer valid. Sign in again and retry.",
+    "ar": "رفض الحفظ: جلستك لم تعد صالحة. أعد تسجيل الدخول ثم أعد المحاولة."
+  },
+  "Enregistrement…": {
+    "en": "Saving…",
+    "ar": "جارٍ الحفظ…"
+  },
+  "Enregistrer": {
+    "en": "Save",
+    "ar": "حفظ"
+  },
+  "Envoi refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez.": {
+    "en": "Upload refused: your session is no longer valid. Sign in again and retry.",
+    "ar": "رفض الإرسال: جلستك لم تعد صالحة. أعد تسجيل الدخول ثم أعد المحاولة."
+  },
+  "Famille": {
+    "en": "Family",
+    "ar": "العائلة"
+  },
+  "Femme": {
+    "en": "Woman",
+    "ar": "امرأة"
+  },
+  "Fermer": {
+    "en": "Close",
+    "ar": "إغلاق"
+  },
+  "Floutage retiré": {
+    "en": "Blur removed",
+    "ar": "تم إزالة التضبيب"
+  },
+  "Foi": {
+    "en": "Faith",
+    "ar": "الإيمان"
+  },
+  "Formule actuelle": {
+    "en": "Current plan",
+    "ar": "الخطة الحالية"
+  },
+  "Fumeur·se": {
+    "en": "Smoker",
+    "ar": "مدخّن/ـة"
+  },
+  "Fumez-vous ?": {
+    "en": "Do you smoke?",
+    "ar": "هل تدخّن؟"
+  },
+  "Gratuit, pour toujours": {
+    "en": "Free, forever",
+    "ar": "مجاني، للأبد"
+  },
+  "Homme": {
+    "en": "Man",
+    "ar": "رجل"
+  },
+  "Humour": {
+    "en": "Humor",
+    "ar": "الفكاهة"
+  },
+  "Importer": {
+    "en": "Import",
+    "ar": "استيراد"
+  },
+  "Insultes, menaces et comportements déplacés sont exclus.": {
+    "en": "Insults, threats, and inappropriate behavior are excluded.",
+    "ar": "الإهانات والتهديدات والسلوكيات غير اللائقة ممنوعة."
+  },
+  "Islam": {
+    "en": "Islam",
+    "ar": "الإسلام"
+  },
+  "Janvier": {
+    "en": "January",
+    "ar": "يناير"
+  },
+  "Jour": {
+    "en": "Day",
+    "ar": "اليوم"
+  },
+  "Juillet": {
+    "en": "July",
+    "ar": "يوليو"
+  },
+  "Juin": {
+    "en": "June",
+    "ar": "يونيو"
+  },
+  "Lancer la vérification": {
+    "en": "Start verification",
+    "ar": "بدء التحقق"
+  },
+  "Mai": {
+    "en": "May",
+    "ar": "مايو"
+  },
+  "Mars": {
+    "en": "March",
+    "ar": "مارس"
+  },
+  "Mince": {
+    "en": "Slim",
+    "ar": "نحيل"
+  },
+  "Modifications enregistrées": {
+    "en": "Changes saved",
+    "ar": "تم حفظ التعديلات"
+  },
+  "Mois": {
+    "en": "Month",
+    "ar": "الشهر"
+  },
+  "Mon objectif sur Nooryaa": {
+    "en": "My goal on Nooryaa",
+    "ar": "هدفي على Nooryaa"
+  },
+  "Ne partagez jamais vos informations personnelles à la légère.": {
+    "en": "Never share your personal information lightly.",
+    "ar": "لا تشارك معلوماتك الشخصية باستخفاف أبدًا."
+  },
+  "Non": {
+    "en": "No",
+    "ar": "لا"
+  },
+  "Non pratiquant·e": {
+    "en": "Not practicing",
+    "ar": "غير ملتزم/ـة"
+  },
+  "Normale": {
+    "en": "Average",
+    "ar": "متوسط"
+  },
+  "Novembre": {
+    "en": "November",
+    "ar": "نوفمبر"
+  },
+  "Objectif recherché": {
+    "en": "Goal sought",
+    "ar": "الهدف المطلوب"
+  },
+  "Octobre": {
+    "en": "October",
+    "ar": "أكتوبر"
+  },
+  "Oui": {
+    "en": "Yes",
+    "ar": "نعم"
+  },
+  "Oui, supprimer": {
+    "en": "Yes, delete",
+    "ar": "نعم، احذف"
+  },
+  "Oui, suspendre": {
+    "en": "Yes, suspend",
+    "ar": "نعم، علّق"
+  },
+  "Partenariat": {
+    "en": "Partnership",
+    "ar": "شراكة"
+  },
+  "Patience": {
+    "en": "Patience",
+    "ar": "الصبر"
+  },
+  "Photo floutée": {
+    "en": "Photo blurred",
+    "ar": "الصورة مضبّبة"
+  },
+  "Photo vérifiée ✅": {
+    "en": "Photo verified ✅",
+    "ar": "تم التحقق من الصورة ✅"
+  },
+  "Placez votre visage dans le cercle — une seule personne visible.": {
+    "en": "Place your face in the circle — only one person visible.",
+    "ar": "ضع وجهك داخل الدائرة — يجب أن يظهر شخص واحد فقط."
+  },
+  "Porte le voile": {
+    "en": "Wears hijab",
+    "ar": "ترتدي الحجاب"
+  },
+  "Portez-vous le voile ?": {
+    "en": "Do you wear hijab?",
+    "ar": "هل ترتدين الحجاب؟"
+  },
+  "Pourquoi nous quittez-vous ?": {
+    "en": "Why are you leaving us?",
+    "ar": "لماذا تتركنا؟"
+  },
+  "Pourquoi suspendez-vous votre compte ?": {
+    "en": "Why are you suspending your account?",
+    "ar": "لماذا تريد تعليق حسابك؟"
+  },
+  "Pratiquant·e": {
+    "en": "Practicing",
+    "ar": "ملتزم/ـة"
+  },
+  "Profession": {
+    "en": "Profession",
+    "ar": "المهنة"
+  },
+  "Pseudo": {
+    "en": "Nickname",
+    "ar": "الاسم المستعار"
+  },
+  "Ramadan": {
+    "en": "Ramadan",
+    "ar": "رمضان"
+  },
+  "Religion": {
+    "en": "Religion",
+    "ar": "الدين"
+  },
+  "Renouvellement automatique actif": {
+    "en": "Automatic renewal active",
+    "ar": "التجديد التلقائي مفعّل"
+  },
+  "Renouvellement automatique annulé": {
+    "en": "Automatic renewal cancelled",
+    "ar": "تم إلغاء التجديد التلقائي"
+  },
+  "Reprendre": {
+    "en": "Retake",
+    "ar": "إعادة التقاط"
+  },
+  "Respect": {
+    "en": "Respect",
+    "ar": "الاحترام"
+  },
+  "Retirer": {
+    "en": "Remove",
+    "ar": "إزالة"
+  },
+  "Retour": {
+    "en": "Back",
+    "ar": "رجوع"
+  },
+  "Retours en arrière illimités": {
+    "en": "Unlimited rewinds",
+    "ar": "تراجعات غير محدودة"
+  },
+  "Ronde": {
+    "en": "Curvy",
+    "ar": "ممتلئ"
+  },
+  "Salat quotidienne": {
+    "en": "Daily prayer",
+    "ar": "الصلاة اليومية"
+  },
+  "Sans durée ni engagement": {
+    "en": "No duration or commitment",
+    "ar": "بدون مدة أو التزام"
+  },
+  "Sans engagement": {
+    "en": "No commitment",
+    "ar": "بدون التزام"
+  },
+  "Se termine": {
+    "en": "Ends",
+    "ar": "تنتهي"
+  },
+  "Septembre": {
+    "en": "September",
+    "ar": "سبتمبر"
+  },
+  "Signalement": {
+    "en": "Report",
+    "ar": "إبلاغ"
+  },
+  "Situation": {
+    "en": "Marital status",
+    "ar": "الحالة الاجتماعية"
+  },
+  "Souhaite avoir des enfants": {
+    "en": "Wants children",
+    "ar": "يريد أطفالاً"
+  },
+  "Souhaitez-vous avoir des enfants ?": {
+    "en": "Would you like to have children?",
+    "ar": "هل تودّون إنجاب أطفال؟"
+  },
+  "Soyez honnêtes et respectueux dans vos démarches.": {
+    "en": "Be honest and respectful in your approach.",
+    "ar": "كونوا صادقين ومحترمين في تعاملكم."
+  },
+  "Suppression…": {
+    "en": "Deleting…",
+    "ar": "جارٍ الحذف…"
+  },
+  "Supprimer": {
+    "en": "Delete",
+    "ar": "حذف"
+  },
+  "Suspension…": {
+    "en": "Suspending…",
+    "ar": "جارٍ التعليق…"
+  },
+  "Sélectionner": {
+    "en": "Select",
+    "ar": "اختيار"
+  },
+  "Très pratiquant·e": {
+    "en": "Very practicing",
+    "ar": "ملتزم/ـة جداً"
+  },
+  "Un comportement suspect ? Aidez-nous à protéger la communauté.": {
+    "en": "Suspicious behavior? Help us protect the community.",
+    "ar": "سلوك مشبوه؟ ساعدونا في حماية المجتمع."
+  },
+  "Un non est un non. Chacun est libre de ses choix.": {
+    "en": "No means no. Everyone is free to make their own choices.",
+    "ar": "الرفض هو رفض. كل شخص حر في خياراته."
+  },
+  "Version intégrée": {
+    "en": "Built-in version",
+    "ar": "النسخة المدمجة"
+  },
+  "Ville": {
+    "en": "City",
+    "ar": "المدينة"
+  },
+  "Vos modifications sont enregistrées automatiquement": {
+    "en": "Your changes are saved automatically",
+    "ar": "تُحفظ تعديلاتك تلقائيًا"
+  },
+  "Votre formule actuelle — modifiable à tout moment, sans engagement.": {
+    "en": "Your current plan — change anytime, no commitment.",
+    "ar": "خطّتك الحالية — يمكن تغييرها في أي وقت بدون التزام."
+  },
+  "boost": {
+    "en": "boost",
+    "ar": "بوست"
+  },
+  "boosts": {
+    "en": "boosts",
+    "ar": "بوستات"
+  },
+  "likes par jour": {
+    "en": "likes per day",
+    "ar": "إعجاب في اليوم"
+  },
+  "messages par jour": {
+    "en": "messages per day",
+    "ar": "رسالة في اليوم"
+  },
+  "retours en arrière par jour": {
+    "en": "rewinds per day",
+    "ar": "تراجع في اليوم"
+  },
+  "super likes": {
+    "en": "super likes",
+    "ar": "سوبر لايك"
+  },
 };

@@ -3797,5 +3797,25 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Nooryaa": {
     "en": "Nooryaa",
     "ar": "Nooryaa"
+  },
+  "Selon vos critères et vos préférences.": {
+    "en": "According to your criteria and preferences.",
+    "ar": "وفقًا لمعاييرك وتفضيلاتك."
+  },
+  "Les profils des femmes dans un rayon de 20 km.": {
+    "en": "Women's profiles within a 20 km radius.",
+    "ar": "ملفات النساء في نطاق 20 كم."
+  },
+  "Les profils des hommes dans un rayon de 20 km.": {
+    "en": "Men's profiles within a 20 km radius.",
+    "ar": "ملفات الرجال في نطاق 20 كم."
+  },
+  "Les profils dans un rayon de 20 km.": {
+    "en": "Profiles within a 20 km radius.",
+    "ar": "ملفات شخصية في نطاق 20 كم."
+  },
+  "Les inscriptions des 7 derniers jours.": {
+    "en": "Registrations from the last 7 days.",
+    "ar": "التسجيلات خلال آخر 7 أيام."
   }
 };

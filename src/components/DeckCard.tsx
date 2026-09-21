@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export type DeckKey = "match" | "proches" | "nouveaux";
 
@@ -16,8 +17,10 @@ type Props = {
 };
 
 export function DeckCard({ meta, profiles, onClick }: Props) {
+  const { t } = useI18n();
   const { Icon, title, desc } = meta;
   const preview = profiles.filter((p: any) => p.primary_photo_url || p.pseudo);
+  const countLabel = profiles.length === 1 ? t("profil") : t("profils");
 
   return (
     <button
@@ -67,7 +70,7 @@ export function DeckCard({ meta, profiles, onClick }: Props) {
             )}
           </div>
           <p className="text-[11px] font-semibold text-[#E83E8C]">
-            {profiles.length} profil{profiles.length > 1 ? "s" : ""}
+            {profiles.length} {countLabel}
           </p>
         </div>
       </div>

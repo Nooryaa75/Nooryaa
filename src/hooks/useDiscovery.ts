@@ -5,27 +5,35 @@ import { Sparkles, Navigation, Clock } from "lucide-react";
 import type { DeckKey } from "@/components/DeckCard";
 import { matchPercent } from "@/lib/match";
 import { ANY, DEFAULT_FILTERS, distanceKm, isOnline, queryDiscoveryProfiles, type Filters } from "@/lib/discovery";
+import { useI18n } from "@/lib/i18n";
 
 export { ANY, DEFAULT_FILTERS, distanceKm, isOnline, type Filters };
 
 export const buildDecks = (
   gender?: string | null,
+  t?: (source: string) => string,
 ): { key: DeckKey; title: string; desc: string; Icon: typeof Sparkles }[] => {
+  const tr = t ?? ((source: string) => source);
   // On s'adresse au genre recherché : un homme voit des femmes, une femme voit des hommes.
   const isMan = gender === "homme";
   const isWoman = gender === "femme";
-  const they = isMan ? "Elles" : isWoman ? "Ils" : "Ils/elles";
-  const them = isMan ? "des femmes" : isWoman ? "des hommes" : "des profils";
-  const news = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
+  const matchTitle = isMan ? "Elles te correspondent" : isWoman ? "Ils te correspondent" : "Ils/elles te correspondent";
+  const nearDesc = isMan
+    ? "Les profils des femmes dans un rayon de 20 km."
+    : isWoman
+      ? "Les profils des hommes dans un rayon de 20 km."
+      : "Les profils dans un rayon de 20 km.";
+  const newsTitle = isMan ? "Les nouvelles inscrites" : isWoman ? "Les nouveaux inscrits" : "Les nouveaux profils";
   return [
-    { key: "match", title: `${they} te correspondent`, desc: "Selon vos critères et vos préférences.", Icon: Sparkles },
-    { key: "proches", title: "Près de chez toi", desc: `Les profils ${them} dans un rayon de 20 km.`, Icon: Navigation },
-    { key: "nouveaux", title: news, desc: "Les inscriptions des 7 derniers jours.", Icon: Clock },
+    { key: "match", title: tr(matchTitle), desc: tr("Selon vos critères et vos préférences."), Icon: Sparkles },
+    { key: "proches", title: tr("Près de chez toi"), desc: tr(nearDesc), Icon: Navigation },
+    { key: "nouveaux", title: tr(newsTitle), desc: tr("Les inscriptions des 7 derniers jours."), Icon: Clock },
   ];
 };
 
 /** Charge le profil courant, les profils compatibles et les 3 sélections. */
 export function useDiscovery(userId: string, filters: Filters) {
+  const { t } = useI18n();
   const { data: me } = useQuery({
     queryKey: ["me", userId],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", userId).single()).data,
@@ -71,7 +79,7 @@ export function useDiscovery(userId: string, filters: Filters) {
     },
   });
 
-  const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
+  const deckList = useMemo(() => buildDecks(me?.gender, t), [me?.gender, t]);
 
   // Profils encore « à décider » : ni likés, ni refusés.
   const visibleProfiles = useMemo(() => {

@@ -14,6 +14,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
 import { supabase } from "@/integrations/supabase/client";
+import { I18nProvider } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { TranslatedContent } from "@/components/TranslatedContent";
 
 function NotFoundComponent() {
   return (
@@ -189,11 +192,17 @@ function RootComponent() {
   }, [router, queryClient]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <VisitTracker />
-      <Outlet />
-      <Toaster position="top-center" />
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <TranslatedContent />
+        <div className="fixed end-3 top-3 z-[70] rounded-md border border-border/60 bg-background/90 shadow-sm backdrop-blur">
+          <LanguageSwitcher />
+        </div>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <VisitTracker />
+        <Outlet />
+        <Toaster position="top-center" />
+      </QueryClientProvider>
+    </I18nProvider>
   );
 }

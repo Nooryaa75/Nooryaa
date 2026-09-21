@@ -261,6 +261,20 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  html[dir="rtl"] body {
+    font-family: "Noto Sans Arabic", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  html[dir="rtl"] input,
+  html[dir="rtl"] textarea,
+  html[dir="rtl"] select {
+    text-align: right;
+  }
+}
+
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
 }
 
 /* --- Ornements orientaux --- */

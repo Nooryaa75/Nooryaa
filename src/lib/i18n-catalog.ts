@@ -3817,5 +3817,13 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Les inscriptions des 7 derniers jours.": {
     "en": "Registrations from the last 7 days.",
     "ar": "التسجيلات خلال آخر 7 أيام."
+  },
+  "profil": {
+    "en": "profile",
+    "ar": "ملف شخصي"
+  },
+  "profils": {
+    "en": "profiles",
+    "ar": "ملفات شخصية"
   }
 };

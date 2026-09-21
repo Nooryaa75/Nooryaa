@@ -7,7 +7,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Créer un compte": { "en": "Create an account", "ar": "إنشاء حساب" },
   "Créer mon compte gratuit": { "en": "Create my free account", "ar": "إنشاء حسابي المجاني" },
   "Déjà inscrit·e ?": { "en": "Already registered?", "ar": "لديك حساب بالفعل؟" },
-  "S'inscrire": { "en": "Sign up", "ar": "إنشاء حساب" },
   "ou": { "en": "or", "ar": "أو" },
   "Télécharger sur l'": { "en": "Download on the", "ar": "نزّله من" },
   "Disponible sur": { "en": "Get it on", "ar": "متوفر على" },

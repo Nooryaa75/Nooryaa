@@ -53,7 +53,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
     document.body.dataset.locale = locale;
     const currentTitle = document.title;
-    const knownTitle = TRANSLATIONS[currentTitle]?.[locale];
+    const knownTitle = locale === "fr" ? currentTitle : TRANSLATIONS[currentTitle]?.[locale];
     document.title = knownTitle ?? pageTitles[locale];
   }, [locale]);
 

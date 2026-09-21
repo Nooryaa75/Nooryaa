@@ -4274,4 +4274,16 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "super likes",
     "ar": "سوبر لايك"
   },
+  "Envoi…": {
+    "en": "Sending…",
+    "ar": "جارٍ الإرسال…"
+  },
+  "Envoyer mon message": {
+    "en": "Send my message",
+    "ar": "إرسال رسالتي"
+  },
+  "Sujet": {
+    "en": "Subject",
+    "ar": "الموضوع"
+  },
 };

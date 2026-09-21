@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+import logoTextless from "@/assets/nooryaa-logo-textless.png";
 
-import { SITE_TAGLINE } from "@/lib/site";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/")({
 
 function Splash() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +49,8 @@ function Splash() {
     return () => { cancelled = true; };
   }, [navigate]);
 
+  const tagline = t("Mise en relation dans le dîn pour le mariage");
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background flex items-center justify-center">
       <div
@@ -61,16 +64,18 @@ function Splash() {
 
       <main className="relative z-10 flex flex-col items-center text-center px-6 animate-in fade-in zoom-in-95 duration-1000">
         <img
-          src={logoAsset.url}
-          alt="Logo Nooryaa"
+          src={logoTextless}
+          alt="Nooryaa"
+          width={1024}
+          height={1024}
           className="w-64 md:w-80 rounded-3xl shadow-2xl"
         />
-        <h1 className="sr-only">Nooryaa — {SITE_TAGLINE}</h1>
-        <p className="mt-6 text-sm text-muted-foreground max-w-sm">
-          Pour une relation sincère tournée vers le dîn.
+        <h1 className="sr-only">Nooryaa — {tagline}</h1>
+        <p className="mt-6 text-sm md:text-base text-muted-foreground max-w-xs md:max-w-sm leading-relaxed">
+          {tagline}
         </p>
 
-        <div className="mt-10 flex gap-1.5" aria-label="Chargement">
+        <div className="mt-10 flex gap-1.5" aria-label={t("Chargement")}>
           {[0, 1, 2].map((i) => (
             <span
               key={i}

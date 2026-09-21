@@ -33,6 +33,7 @@ export const buildDecks = (
 
 /** Charge le profil courant, les profils compatibles et les 3 sélections. */
 export function useDiscovery(userId: string, filters: Filters) {
+  const { t } = useI18n();
   const { data: me } = useQuery({
     queryKey: ["me", userId],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", userId).single()).data,
@@ -78,7 +79,7 @@ export function useDiscovery(userId: string, filters: Filters) {
     },
   });
 
-  const deckList = useMemo(() => buildDecks(me?.gender), [me?.gender]);
+  const deckList = useMemo(() => buildDecks(me?.gender, t), [me?.gender, t]);
 
   // Profils encore « à décider » : ni likés, ni refusés.
   const visibleProfiles = useMemo(() => {

@@ -4,6 +4,7 @@ import { TRANSLATIONS } from "@/lib/i18n-catalog";
 
 const attributes = ["placeholder", "title", "aria-label"] as const;
 const originals = new WeakMap<Text | Element, Map<string, string>>();
+const phrases = Object.keys(TRANSLATIONS).sort((a, b) => b.length - a.length);
 
 function remember(node: Text | Element, key: string, value: string) {
   let values = originals.get(node);
@@ -21,7 +22,14 @@ function translated(source: string, locale: "fr" | "en" | "ar") {
   if (direct) return direct;
   const core = source.trim();
   const value = TRANSLATIONS[core]?.[locale];
-  return value ? source.replace(core, value) : source;
+  if (value) return source.replace(core, value);
+
+  let result = source;
+  for (const phrase of phrases) {
+    if (phrase.length < 4 || !result.includes(phrase)) continue;
+    result = result.split(phrase).join(TRANSLATIONS[phrase]?.[locale] ?? phrase);
+  }
+  return result;
 }
 
 function translateTree(root: HTMLElement, locale: "fr" | "en" | "ar") {

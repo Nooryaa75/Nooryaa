@@ -6,6 +6,12 @@ export type Locale = "fr" | "en" | "ar";
 const STORAGE_KEY = "nooryaa-language";
 const localeNames: Record<Locale, string> = { fr: "Français", en: "English", ar: "العربية" };
 
+const pageTitles: Record<Locale, string> = {
+  fr: "Nooryaa — Rencontre musulmane pour un mariage halal",
+  en: "Nooryaa — Muslim matchmaking for halal marriage",
+  ar: "Nooryaa — تعارف إسلامي من أجل زواج حلال",
+};
+
 type I18nValue = {
   locale: Locale;
   dir: "ltr" | "rtl";
@@ -46,6 +52,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
     document.body.dataset.locale = locale;
+    const currentTitle = document.title;
+    const knownTitle = TRANSLATIONS[currentTitle]?.[locale];
+    document.title = knownTitle ?? pageTitles[locale];
   }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {

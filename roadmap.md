@@ -22,4 +22,4 @@
 - [x] Point vert « en ligne » sur les fiches (last_seen < 10 min) + critère « Actuellement connecté » dans la recherche
 - [x] SwipeDeck : remplacer la coche par un cœur pour liker
 - [x] Internationalisation complète français / anglais / arabe, avec interface RTL en arabe
-- [ ] Édition et publication dynamique des CGU et de la politique de confidentialité depuis l’administration
+- [x] Édition et publication dynamique des CGU et de la politique de confidentialité depuis l’administration

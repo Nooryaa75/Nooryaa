@@ -1,67 +1,39 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ShieldCheck, ChevronLeft } from "lucide-react";
+import { fetchPublishedLegalDocument } from "@/lib/legal-documents.functions";
+import { DEFAULT_LEGAL_CONTENT, isLegalContent } from "@/lib/legal-documents";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/compte/confidentialite")({
-  head: () => ({ meta: [{ title: "Politique de confidentialité — Nooryaa" }] }),
+  head: () => ({ meta: [
+    { title: "Politique de confidentialité — Nooryaa" },
+    { name: "description", content: "Consultez la politique de confidentialité de Nooryaa." },
+    { property: "og:title", content: "Politique de confidentialité — Nooryaa" },
+    { property: "og:description", content: "Protection et utilisation de vos données sur Nooryaa." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ConfidentialitePage,
 });
 
-const sections = [
-  {
-    title: "1. Données collectées",
-    body: "Dans le cadre du service, Nooryaa collecte les données que vous renseignez : identité (prénom, nom, pseudo), coordonnées (email, téléphone), date de naissance, localisation approximative (ville, coordonnées GPS de votre ville), informations de profil (pratique religieuse, situation familiale, activités, photos) ainsi que vos échanges via la messagerie.",
-  },
-  {
-    title: "2. Finalités",
-    body: "Vos données servent exclusivement à : créer et gérer votre compte ; vous proposer des profils compatibles (algorithme de compatibilité et recherche par proximité géographique) ; assurer la modération et la sécurité de la communauté ; vous notifier des likes, messages et événements du service.",
-  },
-  {
-    title: "3. Vérification par selfie",
-    body: "La photo de vérification (selfie) est transmise uniquement pour comparaison avec vos photos de profil. Elle n'est ni enregistrée, ni conservée : seul le statut de vérification (vérifié / non vérifié) est conservé sur votre compte.",
-  },
-  {
-    title: "4. Partage des données",
-    body: "Vos données ne sont ni vendues, ni partagées avec des tiers à des fins commerciales. Certains traitements (hébergement, analyse de contenu pour la modération) sont réalisés par des sous-traitants techniques soumis à des obligations strictes de confidentialité et de sécurité.",
-  },
-  {
-    title: "5. Conservation",
-    body: "Vos données sont conservées tant que votre compte est actif. En cas de suppression du compte, elles sont effacées ou anonymisées dans un délai raisonnable, sauf obligations légales de conservation (par exemple pour les signalements en cours de traitement).",
-  },
-  {
-    title: "6. Vos droits",
-    body: "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition concernant vos données. Vous pouvez exercer ces droits depuis votre espace « Mon compte » ou en nous contactant. Vous pouvez également introduire une réclamation auprès de la CNIL.",
-  },
-  {
-    title: "7. Sécurité",
-    body: "Nous mettons en œuvre des mesures techniques et organisationnelles appropriées : chiffrement des échanges, contrôle d'accès, règles de sécurité au niveau de la base de données, et vérification systématique de l'identité des membres.",
-  },
-  {
-    title: "8. Cookies",
-    body: "L'application utilise uniquement les cookies et stockages locaux strictement nécessaires à son fonctionnement (session de connexion, préférences). Aucun cookie publicitaire ou de suivi tiers n'est utilisé.",
-  },
-];
-
 function ConfidentialitePage() {
+  const fetchDocument = useServerFn(fetchPublishedLegalDocument);
+  const { locale, formatDate } = useI18n();
+  const { data } = useQuery({ queryKey: ["legal-document", "privacy"], queryFn: () => fetchDocument({ data: { key: "privacy" } }), staleTime: 60000 });
+  const content = isLegalContent(data?.content) ? data.content : DEFAULT_LEGAL_CONTENT.privacy;
+  const document = content[locale];
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="relative flex items-center justify-center">
-        <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
-          <ChevronLeft className="h-6 w-6" />
-        </Link>
-        <h1 className="text-lg font-bold text-primary flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5" />
-          Confidentialité
-        </h1>
+        <Link to="/compte" aria-label="Retour" className="absolute start-0 text-primary"><ChevronLeft className="h-6 w-6 rtl-flip" /></Link>
+        <h1 className="text-lg font-bold text-primary flex items-center gap-2"><ShieldCheck className="h-5 w-5" />{document.title}</h1>
       </div>
-    <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5">
-      <p className="text-xs text-muted-foreground">Dernière mise à jour : août 2026</p>
-      {sections.map((s) => (
-        <section key={s.title} className="space-y-1.5">
-          <h3 className="font-semibold">{s.title}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
-        </section>
-      ))}
-    </div>
+      <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5">
+        <p className="text-xs text-muted-foreground">{data?.publishedAt ? `Dernière mise à jour : ${formatDate(data.publishedAt, { dateStyle: "long" })}` : "Version intégrée"}</p>
+        {document.sections.map((section, index) => <section key={`${section.title}-${index}`} className="space-y-1.5"><h3 className="font-semibold">{section.title}</h3><p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.body}</p></section>)}
+      </div>
     </div>
   );
 }

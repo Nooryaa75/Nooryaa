@@ -3833,7 +3833,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "profils": {
     "en": "profiles",
     "ar": "ملفات شخصية"
-  }
+  },
   "A fait la Omra": {
     "en": "Has performed Umrah",
     "ar": "اعتمر"

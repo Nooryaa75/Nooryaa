@@ -14,9 +14,36 @@ const options: Array<{ value: Locale; short: string; label: string }> = [
   { value: "ar", short: "AR", label: "العربية" },
 ];
 
-export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+export function LanguageSwitcher({ compact = false, inline = false }: { compact?: boolean; inline?: boolean }) {
   const { locale, setLocale } = useI18n();
   const selected = options.find((option) => option.value === locale) ?? options[0];
+
+  if (inline) {
+    return (
+      <div
+        data-no-translate
+        role="group"
+        aria-label="Language / Langue / اللغة"
+        className="flex w-full items-center rounded-md border border-border bg-muted/40 p-1"
+      >
+        {options.map((option) => (
+          <Button
+            key={option.value}
+            type="button"
+            variant={locale === option.value ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setLocale(option.value)}
+            aria-pressed={locale === option.value}
+            className="h-8 flex-1"
+            lang={option.value}
+            dir={option.value === "ar" ? "rtl" : "ltr"}
+          >
+            {option.value === "ar" ? option.label : option.short}
+          </Button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <DropdownMenu>

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { StoreBadges } from "@/components/StoreBadges";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -303,6 +304,9 @@ function AuthPage() {
             className="mx-auto h-28 w-auto rounded-2xl object-contain"
           />
         </Link>
+        <div className="mx-auto mb-5 max-w-xs">
+          <LanguageSwitcher inline />
+        </div>
         <h1 className="text-2xl font-serif text-center text-primary mb-1">
           {mode === "signup" ? "Créer un compte" : "Connexion"}
         </h1>

@@ -42,6 +42,7 @@ import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.in
 import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
 import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
+import { Route as ApiPublicLegalDocumentsRouteImport } from './routes/api.public.legal-documents'
 import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
 import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
 import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
@@ -221,6 +222,11 @@ const AuthenticatedCompteIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
+const ApiPublicLegalDocumentsRoute = ApiPublicLegalDocumentsRouteImport.update({
+  id: '/api/public/legal-documents',
+  path: '/api/public/legal-documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSupportIdRoute = AdminSupportIdRouteImport.update({
   id: '/admin/support/$id',
   path: '/admin/support/$id',
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
   '/admin/support/$id': typeof AdminSupportIdRoute
+  '/api/public/legal-documents': typeof ApiPublicLegalDocumentsRoute
   '/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
@@ -376,6 +383,7 @@ export interface FileRoutesByTo {
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
   '/admin/support/$id': typeof AdminSupportIdRoute
+  '/api/public/legal-documents': typeof ApiPublicLegalDocumentsRoute
   '/compte': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
@@ -424,6 +432,7 @@ export interface FileRoutesById {
   '/admin/conversations/$pair': typeof AdminConversationsPairRoute
   '/admin/profiles/$id': typeof AdminProfilesIdRoute
   '/admin/support/$id': typeof AdminSupportIdRoute
+  '/api/public/legal-documents': typeof ApiPublicLegalDocumentsRoute
   '/_authenticated/compte/': typeof AuthenticatedCompteIndexRoute
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
     | '/admin/support/$id'
+    | '/api/public/legal-documents'
     | '/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
@@ -517,6 +527,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
     | '/admin/support/$id'
+    | '/api/public/legal-documents'
     | '/compte'
     | '/admin/conversations'
     | '/admin/profiles'
@@ -564,6 +575,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/$pair'
     | '/admin/profiles/$id'
     | '/admin/support/$id'
+    | '/api/public/legal-documents'
     | '/_authenticated/compte/'
     | '/admin/conversations/'
     | '/admin/profiles/'
@@ -593,6 +605,7 @@ export interface RootRouteChildren {
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
   AdminSupportIdRoute: typeof AdminSupportIdRoute
+  ApiPublicLegalDocumentsRoute: typeof ApiPublicLegalDocumentsRoute
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
   AdminSupportIndexRoute: typeof AdminSupportIndexRoute
@@ -831,6 +844,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteIndexRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
+    '/api/public/legal-documents': {
+      id: '/api/public/legal-documents'
+      path: '/api/public/legal-documents'
+      fullPath: '/api/public/legal-documents'
+      preLoaderRoute: typeof ApiPublicLegalDocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/support/$id': {
       id: '/admin/support/$id'
       path: '/admin/support/$id'
@@ -1011,6 +1031,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConversationsPairRoute: AdminConversationsPairRoute,
   AdminProfilesIdRoute: AdminProfilesIdRoute,
   AdminSupportIdRoute: AdminSupportIdRoute,
+  ApiPublicLegalDocumentsRoute: ApiPublicLegalDocumentsRoute,
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
   AdminSupportIndexRoute: AdminSupportIndexRoute,

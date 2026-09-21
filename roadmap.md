@@ -21,4 +21,4 @@
 ## En cours
 - [x] Point vert « en ligne » sur les fiches (last_seen < 10 min) + critère « Actuellement connecté » dans la recherche
 - [x] SwipeDeck : remplacer la coche par un cœur pour liker
-- [ ] Internationalisation complète français / anglais / arabe, avec interface RTL en arabe
+- [x] Internationalisation complète français / anglais / arabe, avec interface RTL en arabe

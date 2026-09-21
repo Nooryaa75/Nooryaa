@@ -1,5 +1,15 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Connexion": { "en": "Sign in", "ar": "تسجيل الدخول" },
+  "Connectez-vous à votre profil": { "en": "Sign in to your profile", "ar": "سجّل الدخول إلى ملفك الشخصي" },
+  "Se connecter": { "en": "Sign in", "ar": "تسجيل الدخول" },
+  "Pas encore de compte ?": { "en": "Don't have an account yet?", "ar": "ليس لديك حساب بعد؟" },
+  "Créer un compte": { "en": "Create an account", "ar": "إنشاء حساب" },
+  "Créer mon compte gratuit": { "en": "Create my free account", "ar": "إنشاء حسابي المجاني" },
+  "Déjà inscrit·e ?": { "en": "Already registered?", "ar": "لديك حساب بالفعل؟" },
+  "S'inscrire": { "en": "Sign up", "ar": "إنشاء حساب" },
+  "ou": { "en": "or", "ar": "أو" },
+  "Télécharger sur l'": { "en": "Download on the", "ar": "نزّله من" },
   "· Inscrit le": {
     "en": "· Registered on",
     "ar": "· تاريخ التسجيل"

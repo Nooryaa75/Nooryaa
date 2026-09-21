@@ -10,6 +10,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "S'inscrire": { "en": "Sign up", "ar": "إنشاء حساب" },
   "ou": { "en": "or", "ar": "أو" },
   "Télécharger sur l'": { "en": "Download on the", "ar": "نزّله من" },
+  "Disponible sur": { "en": "Get it on", "ar": "متوفر على" },
   "· Inscrit le": {
     "en": "· Registered on",
     "ar": "· تاريخ التسجيل"

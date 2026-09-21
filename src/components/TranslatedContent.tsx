@@ -38,7 +38,7 @@ function translateTree(root: HTMLElement, locale: "fr" | "en" | "ar") {
   while (current) {
     const text = current as Text;
     const parent = text.parentElement;
-    if (parent && !["SCRIPT", "STYLE", "TEXTAREA"].includes(parent.tagName)) {
+    if (parent && !parent.closest("[data-no-translate]") && !["SCRIPT", "STYLE", "TEXTAREA"].includes(parent.tagName)) {
       const source = remember(text, "text", text.nodeValue ?? "");
       const next = translated(source, locale);
       if (text.nodeValue !== next) text.nodeValue = next;
@@ -46,6 +46,7 @@ function translateTree(root: HTMLElement, locale: "fr" | "en" | "ar") {
     current = walker.nextNode();
   }
   root.querySelectorAll<HTMLElement>("[placeholder], [title], [aria-label]").forEach((element) => {
+    if (element.closest("[data-no-translate]")) return;
     for (const attribute of attributes) {
       const value = element.getAttribute(attribute);
       if (!value) continue;

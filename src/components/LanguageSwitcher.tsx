@@ -21,12 +21,12 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={compact ? "icon" : "sm"} aria-label="Language / Langue / اللغة" className="gap-1.5">
+        <Button data-no-translate variant="ghost" size={compact ? "icon" : "sm"} aria-label="Language / Langue / اللغة" className="gap-1.5">
           <Languages className="h-4 w-4" />
           {!compact && <span>{selected.short}</span>}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-36">
+      <DropdownMenuContent data-no-translate align="end" className="min-w-36">
         {options.map((option) => (
           <DropdownMenuItem key={option.value} onSelect={() => setLocale(option.value)} className="justify-between gap-4">
             <span lang={option.value} dir={option.value === "ar" ? "rtl" : "ltr"}>{option.label}</span>

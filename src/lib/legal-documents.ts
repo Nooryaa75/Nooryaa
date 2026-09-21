@@ -4,6 +4,8 @@ export type LegalSection = { title: string; body: string };
 export type LegalTranslation = { title: string; sections: LegalSection[] };
 export type LegalContent = Record<LegalLocale, LegalTranslation>;
 
+import { LEGAL_TRANSLATIONS } from "./legal-translations";
+
 const termsSections: LegalSection[] = [
   { title: "1. Objet", body: "Les présentes Conditions Générales d'Utilisation (CGU) encadrent l'accès et l'utilisation de l'application Nooryaa, service de mise en relation destiné aux personnes majeures recherchant une relation sincère tournée vers le dîn. En créant un compte, vous acceptez sans réserve les présentes CGU." },
   { title: "2. Conditions d'accès", body: "L'inscription est réservée aux personnes âgées d'au moins 18 ans. Vous vous engagez à fournir des informations exactes, à jour et complètes. La vérification de votre profil par selfie est obligatoire : elle permet de garantir l'authenticité des membres. Un seul compte par personne est autorisé." },
@@ -29,13 +31,13 @@ const privacySections: LegalSection[] = [
 export const DEFAULT_LEGAL_CONTENT: Record<LegalDocumentKey, LegalContent> = {
   terms: {
     fr: { title: "Conditions Générales d'Utilisation", sections: termsSections },
-    en: { title: "Terms of Use", sections: termsSections },
-    ar: { title: "شروط الاستخدام", sections: termsSections },
+    en: LEGAL_TRANSLATIONS.en.terms,
+    ar: LEGAL_TRANSLATIONS.ar.terms,
   },
   privacy: {
     fr: { title: "Politique de confidentialité", sections: privacySections },
-    en: { title: "Privacy Policy", sections: privacySections },
-    ar: { title: "سياسة الخصوصية", sections: privacySections },
+    en: LEGAL_TRANSLATIONS.en.privacy,
+    ar: LEGAL_TRANSLATIONS.ar.privacy,
   },
 };
 

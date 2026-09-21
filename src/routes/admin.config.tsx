@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, ShieldCheck, Copy, Power } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
+import { AdminLegalDocuments } from "@/components/AdminLegalDocuments";
 
 export const Route = createFileRoute("/admin/config")({
   ssr: false,
@@ -381,6 +382,8 @@ function AdminConfig() {
         )}
 
         <AppVersionsSection />
+
+        <AdminLegalDocuments />
 
         <SocialSection />
       </main>

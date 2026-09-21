@@ -1802,6 +1802,30 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Conversation list",
     "ar": "قائمة المحادثات"
   },
+  "Les nouvelles inscrites": {
+    "en": "New female members",
+    "ar": "العضوات الجديدات"
+  },
+  "Les nouveaux inscrits": {
+    "en": "New male members",
+    "ar": "الأعضاء الجدد"
+  },
+  "Les nouveaux profils": {
+    "en": "New profiles",
+    "ar": "الملفات الشخصية الجديدة"
+  },
+  "Elles te correspondent": {
+    "en": "Your best matches",
+    "ar": "الأكثر توافقًا معك"
+  },
+  "Ils te correspondent": {
+    "en": "Your best matches",
+    "ar": "الأكثر توافقًا معك"
+  },
+  "Ils/elles te correspondent": {
+    "en": "Your best matches",
+    "ar": "الأكثر توافقًا معك"
+  },
   "Logo Nooryaa": {
     "en": "Nooryaa logo",
     "ar": "شعار Nooryaa"

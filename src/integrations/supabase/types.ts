@@ -262,6 +262,48 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_document_drafts: {
+        Row: {
+          document_key: string
+          draft_content: Json
+          updated_at: string
+        }
+        Insert: {
+          document_key: string
+          draft_content?: Json
+          updated_at?: string
+        }
+        Update: {
+          document_key?: string
+          draft_content?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          document_key: string
+          published_at: string | null
+          published_content: Json
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          document_key: string
+          published_at?: string | null
+          published_content?: Json
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          document_key?: string
+          published_at?: string | null
+          published_content?: Json
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string

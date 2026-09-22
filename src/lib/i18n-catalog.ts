@@ -3370,15 +3370,15 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "ar": "لوحة التحكم — إدارة Nooryaa"
   },
   "Taille (cm)": {
-    "en": "Height (cm)",
+    "en": "Height",
     "ar": "الطول (سم)"
   },
   "Taille maximum (cm)": {
-    "en": "Maximum height (cm)",
+    "en": "Maximum height (in)",
     "ar": "الطول الأقصى (سم)"
   },
   "Taille minimum (cm)": {
-    "en": "Minimum height (cm)",
+    "en": "Minimum height (in)",
     "ar": "الطول الأدنى (سم)"
   },
   "Taille recherchée": {

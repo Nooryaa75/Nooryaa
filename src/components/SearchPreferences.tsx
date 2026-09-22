@@ -1,3 +1,5 @@
+import { useI18n } from "@/lib/i18n";
+import { isImperial } from "@/lib/units";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -57,6 +59,13 @@ export function SearchPreferences({
   const set = (k: string, v: any) => onChange({ ...p, [k]: v });
   const isWoman = gender === "femme";
 
+  const { locale } = useI18n();
+  const imperial = isImperial(locale);
+  const toDistance = (km: number | null | undefined) => (km == null ? "" : imperial ? Math.round(km * 0.621371) : km);
+  const fromDistance = (v: number) => (imperial ? Math.round(v / 0.621371) : v);
+  const toHeight = (cm: number | null | undefined) => (cm == null ? "" : imperial ? Math.round(cm / 2.54) : cm);
+  const fromHeight = (v: number) => (imperial ? Math.round(v * 2.54) : v);
+
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
@@ -76,16 +85,16 @@ export function SearchPreferences({
                 <Input type="number" min={18} max={90} value={p.age_max ?? ""} onChange={(e) => set("age_max", e.target.value ? Number(e.target.value) : null)} />
               </div>
               <div>
-                <Label>Distance maximale (km)</Label>
-                <Input type="number" min={1} max={2000} value={p.distance_km ?? ""} onChange={(e) => set("distance_km", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
+                <Label>{imperial ? "Distance maximale (miles)" : "Distance maximale (km)"}</Label>
+                <Input type="number" min={1} max={imperial ? 1240 : 2000} value={toDistance(p.distance_km)} onChange={(e) => set("distance_km", e.target.value ? fromDistance(Number(e.target.value)) : null)} placeholder="Indifférent" />
               </div>
               <div>
-                <Label>Taille minimum (cm)</Label>
-                <Input type="number" min={120} max={230} value={p.height_min ?? ""} onChange={(e) => set("height_min", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
+                <Label>{imperial ? "Taille minimum (in)" : "Taille minimum (cm)"}</Label>
+                <Input type="number" min={imperial ? 47 : 120} max={imperial ? 91 : 230} value={toHeight(p.height_min)} onChange={(e) => set("height_min", e.target.value ? fromHeight(Number(e.target.value)) : null)} placeholder="Indifférent" />
               </div>
               <div>
-                <Label>Taille maximum (cm)</Label>
-                <Input type="number" min={120} max={230} value={p.height_max ?? ""} onChange={(e) => set("height_max", e.target.value ? Number(e.target.value) : null)} placeholder="Indifférent" />
+                <Label>{imperial ? "Taille maximum (in)" : "Taille maximum (cm)"}</Label>
+                <Input type="number" min={imperial ? 47 : 120} max={imperial ? 91 : 230} value={toHeight(p.height_max)} onChange={(e) => set("height_max", e.target.value ? fromHeight(Number(e.target.value)) : null)} placeholder="Indifférent" />
               </div>
               <OptionalSelect label="Corpulence" value={p.body_type} onChange={(v) => set("body_type", v)} options={BODY_TYPES} />
               <OptionalSelect label="Pays de résidence" value={p.country} onChange={(v) => set("country", v)} options={COUNTRIES} />

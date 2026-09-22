@@ -249,6 +249,30 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Active (visible on the home page)",
     "ar": "نشط (مرئي على الصفحة الرئيسية)"
   },
+  "Actif hier": {
+    "en": "Active yesterday",
+    "ar": "نشط أمس"
+  },
+  "Actif il y a {d} jours": {
+    "en": "Active {d} days ago",
+    "ar": "نشط منذ {d} يومًا"
+  },
+  "Actif il y a {h} h": {
+    "en": "Active {h} h ago",
+    "ar": "نشط منذ {h} ساعة"
+  },
+  "Actif il y a {min} min": {
+    "en": "Active {min} min ago",
+    "ar": "نشط منذ {min} دقيقة"
+  },
+  "Actif il y a longtemps": {
+    "en": "Active a long time ago",
+    "ar": "نشط منذ وقت طويل"
+  },
+  "Actif récemment": {
+    "en": "Active recently",
+    "ar": "نشط مؤخرًا"
+  },
   "Activez ou désactivez chaque réseau : les logos apparaissent (ou disparaissent) immédiatement sur la page d'accueil.": {
     "en": "Enable or disable each network: logos appear (or disappear) immediately on the home page.",
     "ar": "فعّل أو عطّل كل شبكة: ستظهر الشعارات (أو تختفي) فورًا على الصفحة الرئيسية."
@@ -1124,6 +1148,10 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "En ligne": {
     "en": "Online",
     "ar": "متصل"
+  },
+  "est en train d'écrire…": {
+    "en": "typing…",
+    "ar": "يكتب الآن…"
   },
   "En ligne maintenant": {
     "en": "Online now",

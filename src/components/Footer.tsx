@@ -9,7 +9,7 @@ export function Footer() {
   return (
     <footer
       data-no-translate
-      className="border-t border-border/60 bg-background/95 px-4 py-5 backdrop-blur"
+      className="border-t border-border/60 bg-background/95 px-4 py-5 pb-16 backdrop-blur md:pb-5"
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:gap-4">

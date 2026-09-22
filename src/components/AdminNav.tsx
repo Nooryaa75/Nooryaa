@@ -20,6 +20,7 @@ const links = [
   { to: "/admin/moderation", label: "Modération", icon: ShieldAlert, exact: false },
   { to: "/admin/contact", label: "Contact", icon: Mail, exact: false, badge: "contacts" as const },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
+  { to: "/admin/rgpd", label: "RGPD", icon: ShieldCheck, exact: false },
   
   { to: "/admin/reset", label: "Données", icon: RotateCcw, exact: false },
 

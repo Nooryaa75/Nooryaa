@@ -235,14 +235,14 @@ function MessagesLayout() {
   ] as const;
 
   return (
-    <div className={isDetail ? "" : "-mt-2"}>
+    <div data-no-translate className={isDetail ? "" : "-mt-2"}>
       {/* En-tête de page façon maquette */}
       {!isDetail && (
         <div className="text-center mb-6">
           <Heart className="mx-auto h-8 w-8 text-accent fill-accent mb-3" />
-          <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">Liste des conversations</h1>
+          <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{t("Liste des conversations")}</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Retrouvez tous vos matchs<br />et conversations au même endroit.
+            {t("Retrouvez tous vos matchs")}<br />{t("et conversations au même endroit.")}
           </p>
         </div>
       )}
@@ -251,16 +251,16 @@ function MessagesLayout() {
         <aside className={`bg-card rounded-[2rem] border border-border/50 overflow-hidden flex flex-col shadow-md ${isDetail ? "hidden md:flex h-full" : "flex h-[70vh]"}`}>
           {/* En-tête carte */}
           <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-primary">Messages</h2>
+            <h2 className="text-xl font-bold text-primary">{t("Messages")}</h2>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" aria-label="Options des messages">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" aria-label={t("Options des messages")}>
                   <MoreVertical className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTab("nonlus")}>Voir les non lus</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTab("favoris")}>Voir les favoris</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTab("nonlus")}>{t("Voir les non lus")}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTab("favoris")}>{t("Voir les favoris")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -272,7 +272,7 @@ function MessagesLayout() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un message"
+                placeholder={t("Rechercher un message")}
                 className="pl-10 rounded-full bg-muted/60 border-transparent focus-visible:ring-accent h-10"
               />
             </div>
@@ -288,7 +288,7 @@ function MessagesLayout() {
                   tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted/70 text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t.label}
+                  {t(t.label)}
               </button>
             ))}
           </div>
@@ -299,8 +299,8 @@ function MessagesLayout() {
               <div className="p-6 text-center text-sm text-muted-foreground">
                 <MessageCircle className="mx-auto h-8 w-8 mb-2 text-accent" />
                 {search || tab !== "tous"
-                  ? "Aucune conversation ne correspond."
-                  : "Aucune conversation pour le moment. Cliquez sur un profil pour démarrer."}
+                  ? t("Aucune conversation ne correspond.")
+                  : t("Aucune conversation pour le moment. Cliquez sur un profil pour démarrer.")}
               </div>
             ) : visible.map((p) => (
               <div
@@ -314,7 +314,7 @@ function MessagesLayout() {
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-foreground flex items-center gap-1.5">
                       <span className="truncate">{p.pseudo}</span>
-                      {online.has(p.id) && <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" aria-label="En ligne" />}
+                      {online.has(p.id) && <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" aria-label={t("En ligne")} />}
                     </p>
                     <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">
                       {p.lastIsMine && `${t("Vous")} : `}{p.lastText}
@@ -331,16 +331,16 @@ function MessagesLayout() {
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100" aria-label={`Options pour ${p.pseudo}`}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100" aria-label={`${t("Options pour")} ${p.pseudo}`}>
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => { setReportOpen({ id: p.id, pseudo: p.pseudo }); }}>
-                      <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+                      <Flag className="h-4 w-4 mr-2" /> {t("Signaler en cas d'abus")}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDelete({ id: p.id, pseudo: p.pseudo })}>
-                      <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation
+                      <Trash2 className="h-4 w-4 mr-2" /> {t("Supprimer la conversation")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -359,14 +359,14 @@ function MessagesLayout() {
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer cette conversation ?</AlertDialogTitle>
+            <AlertDialogTitle>{t("Supprimer cette conversation ?")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Elle disparaîtra de votre messagerie. Votre correspondant·e conservera sa copie.
+              {t("Elle disparaîtra de votre messagerie. Votre correspondant·e conservera sa copie.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDelete(null)}>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmDelete && deleteConversation.mutate(confirmDelete.id)}>Supprimer</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setConfirmDelete(null)}>{t("Annuler")}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmDelete && deleteConversation.mutate(confirmDelete.id)}>{t("Supprimer")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -374,25 +374,25 @@ function MessagesLayout() {
       <AlertDialog open={!!reportOpen} onOpenChange={(open) => !open && setReportOpen(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Signaler {reportOpen?.pseudo}</AlertDialogTitle>
+            <AlertDialogTitle>{t("Signaler")} {reportOpen?.pseudo}</AlertDialogTitle>
             <AlertDialogDescription>
-              Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.
+              {t("Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <Textarea
             value={reportReason}
             onChange={(e) => setReportReason(e.target.value)}
-            placeholder="Propos déplacés, harcèlement, arnaque…"
+            placeholder={t("Propos déplacés, harcèlement, arnaque…")}
             maxLength={500}
             rows={4}
           />
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setReportOpen(null)}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setReportOpen(null)}>{t("Annuler")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={reportReason.trim().length < 10 || reportAbuse.isPending}
               onClick={(e) => { e.preventDefault(); reportAbuse.mutate(); }}
             >
-              Envoyer le signalement
+              {t("Envoyer le signalement")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

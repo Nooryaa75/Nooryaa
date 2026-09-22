@@ -11,6 +11,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Hier": { "en": "Yesterday", "ar": "أمس" },
   "Options pour": { "en": "Options for", "ar": "خيارات" },
   "Signaler en cas d'abus": { "en": "Report abuse", "ar": "الإبلاغ عن إساءة" },
+  "Signaler": { "en": "Report", "ar": "الإبلاغ عن" },
   "Fajr": { "en": "Fajr (Dawn)", "ar": "الفجر" },
   "Dhuhr": { "en": "Dhuhr (Noon)", "ar": "الظهر" },
   "Asr": { "en": "Asr (Afternoon)", "ar": "العصر" },

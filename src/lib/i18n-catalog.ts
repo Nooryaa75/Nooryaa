@@ -2188,6 +2188,10 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Password updated. You can now log in.",
     "ar": "تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول."
   },
+  "Nom": {
+    "en": "Last name",
+    "ar": "اسم العائلة"
+  },
   "Mot de passe oublié": {
     "en": "Forgot password",
     "ar": "نسيت كلمة المرور"
@@ -3699,6 +3703,18 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Vérification par selfie obligatoire": {
     "en": "Selfie verification required",
     "ar": "التحقق عبر صورة سيلفي إلزامي"
+  },
+  "La vérification par selfie est obligatoire pour finaliser votre profil.": {
+    "en": "Selfie verification is required to complete your profile.",
+    "ar": "التحقق عبر صورة سيلفي إلزامي لإكمال ملفك الشخصي."
+  },
+  "Votre photo est vérifiée ✅": {
+    "en": "Your photo is verified ✅",
+    "ar": "تم التحقق من صورتك ✅"
+  },
+  "Vérification par selfie (facultative) : elle ajoute un badge vérifié à votre profil.": {
+    "en": "Selfie verification (optional): it adds a verified badge to your profile.",
+    "ar": "التحقق عبر صورة سيلفي (اختياري): يضيف شارة موثّق إلى ملفك الشخصي."
   },
   "Vérification…": {
     "en": "Verification…",

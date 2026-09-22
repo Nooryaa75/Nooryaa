@@ -15,6 +15,7 @@ import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { frenchError } from "@/lib/errors";
+import { useI18n } from "@/lib/i18n";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 function Onboarding() {
   const navigate = useNavigate();
   const ctx = Route.useRouteContext();
+  const { t } = useI18n();
   const [form, setForm] = useState({
     pseudo: "",
     gender: "" as "homme" | "femme" | "",
@@ -401,10 +403,10 @@ function Onboarding() {
         />
         <p className="text-xs text-muted-foreground">
           {selfieRequired && !form.photo_verified
-            ? "La vérification par selfie est obligatoire pour finaliser votre profil."
+            ? t("La vérification par selfie est obligatoire pour finaliser votre profil.")
             : form.photo_verified
-              ? "Votre photo est vérifiée ✅"
-              : "Vérification par selfie (facultative) : elle ajoute un badge vérifié à votre profil."}
+              ? t("Votre photo est vérifiée ✅")
+              : t("Vérification par selfie (facultative) : elle ajoute un badge vérifié à votre profil.")}
         </p>
         <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
           {loading ? "Enregistrement..." : "Continuer"}

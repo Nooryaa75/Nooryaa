@@ -2905,18 +2905,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Apply",
     "ar": "تطبيق"
   },
-  "Retrouvez vos recherches et soyez notifié": {
-    "en": "Find your searches and get notified",
-    "ar": "اعثر على عمليات بحثك واستلم إشعارًا"
-  },
-  "lorsque de nouveaux profils correspondent.": {
-    "en": "when new profiles match.",
-    "ar": "عندما تظهر ملفات جديدة مطابقة."
-  },
-  "Rayon": {
-    "en": "Radius",
-    "ar": "نطاق"
-  },
   "Recherche par critères, par distance et recherches enregistrées.": {
     "en": "Search by criteria, distance, and saved searches.",
     "ar": "البحث حسب المعايير والمسافة وعمليات البحث المحفوظة."

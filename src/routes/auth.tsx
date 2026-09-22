@@ -149,6 +149,7 @@ function PasswordStrength({ password }: { password: string }) {
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");

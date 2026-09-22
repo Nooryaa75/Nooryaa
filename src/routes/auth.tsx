@@ -157,6 +157,7 @@ function AuthPage() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [signupEmailSent, setSignupEmailSent] = useState(false);
 
   useEffect(() => {

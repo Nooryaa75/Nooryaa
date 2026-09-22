@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +50,7 @@ function Likes() {
 }
 
 function Section({ title, items, me, userId }: { title: string; items: any[] | undefined; me: any; userId: string }) {
+  const { locale } = useI18n();
   const wanted = me?.gender === "homme" ? "femme" : me?.gender === "femme" ? "homme" : null;
   const profiles = (items ?? [])
     .map((it: any) => it.profiles)
@@ -57,7 +59,7 @@ function Section({ title, items, me, userId }: { title: string; items: any[] | u
     .filter((p: any) => wanted != null && p.gender === wanted)
     .map((p: any) => {
       const pct = matchPercent(me, p) ?? 0;
-      return { ...p, _matchPercent: pct, personality: p.personality ?? (pct > 0 ? `${pct}% compatible` : null) };
+      return { ...p, _matchPercent: pct, personality: p.personality ?? (pct > 0 ? (locale === "en" ? `${pct}% match` : locale === "ar" ? `توافق ${pct}%` : `${pct}% compatible`) : null) };
     });
 
   return (

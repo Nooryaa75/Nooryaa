@@ -108,7 +108,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
               {profile.city ?? ""}{profile.country ? `, ${profile.country}` : ""}{distance != null ? ` • ${formatDistance(distance, locale)}` : ""}
             </p>
             {extraInfo && (
-              <p className="text-[10px] text-white/80 font-medium mt-0.5 truncate">{extraInfo}</p>
+              <p className="text-[10px] text-white/80 font-medium mt-0.5 truncate" data-no-translate>{extraInfo}</p>
             )}
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1.5">

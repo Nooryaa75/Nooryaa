@@ -408,6 +408,7 @@ function boolLabel(v: boolean | null | undefined, yes = "Oui", no = "Non"): stri
 }
 
 function PreferenceInfo({ profile }: { profile: any }) {
+  const { locale } = useI18n();
   const prefs = profile.preferences;
   if (!prefs || typeof prefs !== "object") return null;
   const items: { label: string; value?: string | null }[] = [];

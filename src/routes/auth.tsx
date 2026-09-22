@@ -409,9 +409,7 @@ function AuthPage() {
                   onChange={(e) => setAcceptTerms(e.target.checked)}
                 />
                 <span>
-                  J'ai lu et j'accepte les{" "}
-                  <Link to="/cgu" className="text-primary underline underline-offset-4">CGU</Link>{" "}
-                  et la{" "}
+                  J'ai lu et j'accepte les CGU et la{" "}
                   <Link to="/privacy" className="text-primary underline underline-offset-4">
                     politique de confidentialité
                   </Link>

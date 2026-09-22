@@ -579,7 +579,7 @@ export async function requestSelfieRedo(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: `${SITE_NAME} : refaites votre vérification par selfie`,
+        subject: c.selfie.subject(SITE_NAME),
         html,
       }),
     });

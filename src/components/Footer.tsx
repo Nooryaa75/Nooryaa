@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export function Footer() {
   const { t, locale } = useI18n();
-  const currentYear = new Date().getFullYear();
 
   return (
     <footer

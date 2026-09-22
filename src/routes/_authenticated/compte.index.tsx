@@ -124,9 +124,6 @@ function CompteHome() {
         Se déconnecter
       </button>
 
-      <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1 pt-2">
-        Nooryaa v1.0.0 <Heart className="h-3 w-3 text-accent fill-current" />
-      </p>
     </div>
   );
 }

@@ -60,7 +60,7 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
         },
         {
           "title": "5. Recipients, Processors and Hosting",
-          "body": "Your data is never sold, rented or shared for advertising purposes. Your data is hosted within the European Union, in data centres located in Frankfurt (Germany, eu-central-1 region), through our technical hosting and database provider (Lovable Cloud). We rely on technical processors bound by contracts compliant with Article 28 GDPR: hosting and database (European Union), transactional and notification email delivery (new messages, matches, daily reminders, etc.) through the Resend service, automated analysis of photos and messages for moderation. Where a transfer outside the European Union is required, it is covered by the European Commission's standard contractual clauses."
+          "body": "Your data is never sold, rented or shared for advertising purposes. Your data is hosted within the European Union, in data centres located in Frankfurt (Germany, eu-central-1 region), through our technical hosting and database provider (GitHub). We rely on technical processors bound by contracts compliant with Article 28 GDPR: hosting and database (European Union), transactional and notification email delivery (new messages, matches, daily reminders, etc.) through the Resend service, automated analysis of photos and messages for moderation. Where a transfer outside the European Union is required, it is covered by the European Commission's standard contractual clauses."
         },
         {
           "title": "6. Retention Periods",
@@ -144,7 +144,7 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
         },
         {
           "title": "5. الجهات المستقبِلة والمعالِجون والاستضافة",
-          "body": "لا تُباع بياناتكم ولا تُؤجَّر ولا تتم مشاركتها لأغراض إعلانية. وتُستضاف بياناتكم داخل الاتحاد الأوروبي، في مراكز بيانات تقع في فرانكفورت (ألمانيا، المنطقة eu-central-1)، عبر مزوّدنا التقني للاستضافة وقاعدة البيانات (Lovable Cloud). ونستعين بمعالِجين تقنيين مرتبطين بعقود مطابقة للمادة 28 من RGPD: الاستضافة وقاعدة البيانات (الاتحاد الأوروبي)، وإرسال رسائل البريد الإلكتروني الخدمية ورسائل الإشعار (تنبيهات الرسائل، التوفيقات، التذكير اليومي، إلخ) عبر خدمة Resend، والتحليل الآلي للصور والرسائل لأغراض الإشراف. وعند الحاجة إلى نقل البيانات خارج الاتحاد الأوروبي، يتم ذلك في إطار البنود التعاقدية النموذجية للمفوضية الأوروبية."
+          "body": "لا تُباع بياناتكم ولا تُؤجَّر ولا تتم مشاركتها لأغراض إعلانية. وتُستضاف بياناتكم داخل الاتحاد الأوروبي، في مراكز بيانات تقع في فرانكفورت (ألمانيا، المنطقة eu-central-1)، عبر مزوّدنا التقني للاستضافة وقاعدة البيانات (GitHub). ونستعين بمعالِجين تقنيين مرتبطين بعقود مطابقة للمادة 28 من RGPD: الاستضافة وقاعدة البيانات (الاتحاد الأوروبي)، وإرسال رسائل البريد الإلكتروني الخدمية ورسائل الإشعار (تنبيهات الرسائل، التوفيقات، التذكير اليومي، إلخ) عبر خدمة Resend، والتحليل الآلي للصور والرسائل لأغراض الإشراف. وعند الحاجة إلى نقل البيانات خارج الاتحاد الأوروبي، يتم ذلك في إطار البنود التعاقدية النموذجية للمفوضية الأوروبية."
         },
         {
           "title": "6. مدد الاحتفاظ",

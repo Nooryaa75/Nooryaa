@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Square, Trash2, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 function fmt(s: number) {
   const m = Math.floor(s / 60);
@@ -54,6 +55,7 @@ export function VoiceRecorder({
   sending?: boolean;
   onActiveChange?: (active: boolean) => void;
 }) {
+  const { t } = useI18n();
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [preview, setPreview] = useState<{ url: string; blob: Blob; duration: number } | null>(null);
@@ -103,7 +105,7 @@ export function VoiceRecorder({
         void ctx.close();
         const blob = encodeWav(chunks, sampleRate);
         if (blob.size < 2048) {
-          toast.error("Enregistrement vide, réessayez.");
+          toast.error(t("Enregistrement vide, réessayez."));
           setRecording(false);
           return;
         }
@@ -123,7 +125,7 @@ export function VoiceRecorder({
         if (secondsRef.current >= MAX_SECONDS) stop();
       }, 1000);
     } catch {
-      toast.error("Micro indisponible. Autorisez l'accès au microphone.");
+      toast.error(t("Micro indisponible. Autorisez l'accès au microphone."));
     }
   }
 
@@ -139,14 +141,14 @@ export function VoiceRecorder({
     return (
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <audio src={preview.url} controls className="h-9 flex-1 min-w-0" />
-        <Button type="button" size="icon" variant="outline" onClick={discard} disabled={sending} title="Supprimer le vocal">
+        <Button type="button" size="icon" variant="outline" onClick={discard} disabled={sending} title={t("Supprimer le vocal")}>
           <Trash2 className="h-4 w-4" />
         </Button>
         <Button
           type="button"
           size="icon"
           disabled={sending}
-          title="Envoyer le vocal"
+          title={t("Envoyer le vocal")}
           onClick={async () => {
             const { blob, duration } = preview;
             await onSend(blob, Math.max(1, duration));
@@ -165,8 +167,8 @@ export function VoiceRecorder({
         <span className="text-xs text-[color:var(--gold)] tabular-nums flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" /> {fmt(seconds)}
         </span>
-        <span className="text-xs text-muted-foreground truncate">Enregistrement en cours…</span>
-        <Button type="button" size="icon" variant="outline" className="ml-auto" onClick={stop} title="Arrêter l'enregistrement">
+        <span className="text-xs text-muted-foreground truncate">{t("Enregistrement en cours…")}</span>
+        <Button type="button" size="icon" variant="outline" className="ml-auto" onClick={stop} title={t("Arrêter l'enregistrement")}>
           <Square className="h-4 w-4" />
         </Button>
       </div>
@@ -174,7 +176,7 @@ export function VoiceRecorder({
   }
 
   return (
-    <Button type="button" size="icon" variant="outline" onClick={start} title="Enregistrer un vocal">
+    <Button type="button" size="icon" variant="outline" onClick={start} title={t("Enregistrer un vocal")}>
       <Mic className="h-4 w-4" />
     </Button>
   );

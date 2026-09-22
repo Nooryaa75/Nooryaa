@@ -450,49 +450,33 @@ export async function sendAccountClosureEmail(opts: {
   action: "suspend" | "delete";
   reason?: string | null;
   details?: string | null;
+  locale?: string | null;
 }) {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const resendKey = process.env["RESEND_API_KEY"];
   if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
 
+  const locale = normalizeLocale(opts.locale);
+  const c = copyFor(locale);
   const name = escapeHtml(opts.firstName || "");
   const reasonBlock = opts.reason
-    ? `<p style="margin-top:12px;">Motif indiqué : <strong>${escapeHtml(opts.reason)}</strong>${
+    ? `<p style="margin-top:12px;">${c.reasonLabel} : <strong>${escapeHtml(opts.reason)}</strong>${
         opts.details ? `<br /><em>« ${escapeHtml(opts.details)} »</em>` : ""
       }</p>`
     : "";
 
   const isSuspend = opts.action === "suspend";
-  const title = isSuspend ? "Votre compte est suspendu" : "Votre compte a été supprimé";
+  const title = isSuspend ? c.suspend.title : c.deleted.title;
   const body = isSuspend
-    ? `<p>Assalamu alaykum ${name},</p>
-       <p>Nous confirmons la <strong>suspension</strong> de votre compte ${SITE_NAME}.</p>
-       <p>Concrètement :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Votre profil n'est plus visible par les autres membres ;</li>
-         <li>Vos conversations, photos et coups de cœur sont conservés ;</li>
-         <li>Vous ne recevez plus aucune notification ;</li>
-         <li>Vous pouvez réactiver votre compte à tout moment en contactant notre service client.</li>
-       </ul>
-       ${reasonBlock}
-       <p style="margin-top:12px;">Qu'Allah facilite vos démarches. Vous serez toujours le bienvenu parmi nous.</p>`
-    : `<p>Assalamu alaykum ${name},</p>
-       <p>Nous confirmons la <strong>suppression définitive</strong> de votre compte ${SITE_NAME}.</p>
-       <p>Concrètement :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Votre profil, vos photos, vos messages, vos coups de cœur et vos recherches ont été effacés ;</li>
-         <li>Votre abonnement éventuel n'est plus renouvelé ;</li>
-         <li>Cette action est irréversible : ces données ne peuvent pas être restaurées ;</li>
-         <li>Vous pouvez créer un nouveau compte plus tard si vous le souhaitez.</li>
-       </ul>
-       ${reasonBlock}
-       <p style="margin-top:12px;">Merci pour la confiance que vous nous avez accordée. Qu'Allah vous accorde ce qu'il y a de meilleur.</p>`;
+    ? `<p>${c.greeting(name)}</p>${c.suspend.body(SITE_NAME)}${reasonBlock}`
+    : `<p>${c.greeting(name)}</p>${c.deleted.body(SITE_NAME)}${reasonBlock}`;
 
   const html = layout(
     title,
     body,
-    isSuspend ? "Contacter le service client" : `Revenir sur ${SITE_NAME}`,
+    isSuspend ? c.suspend.cta : c.deleted.cta(SITE_NAME),
     isSuspend ? `${SITE_URL}/compte/service-client` : SITE_URL,
+    locale,
   );
 
   try {

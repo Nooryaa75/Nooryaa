@@ -365,7 +365,7 @@ function ProfileView() {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="grid grid-cols-2 gap-3 pb-2">
-                  <Info label="Objectif" value={profile.objective} />
+                  <Info label="Objectif" value={profile.objective ? t(profile.objective) : undefined} />
                   <Info label="Je recherche" value={profile.looking_for ? GENDER_LABELS[profile.looking_for] : undefined} />
                   <PreferenceInfo profile={profile} />
                 </div>

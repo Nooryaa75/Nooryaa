@@ -337,18 +337,11 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
 
     const name = escapeHtml(profile.first_name || profile.pseudo || "");
     const html = layout(
-      "Bienvenue sur " + SITE_NAME,
-      `<p>Assalamu alaykum ${name},</p>
-       <p>Bienvenue sur <strong>${SITE_NAME}</strong>, la plateforme de rencontre pensée pour les musulmans qui souhaitent construire une relation sérieuse, dans le respect et la bienveillance.</p>
-       <p>Pour bien démarrer :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Complétez votre fiche profil (photos, pratique, projets…) ;</li>
-         <li>Réalisez votre selfie de vérification pour obtenir le badge ;</li>
-         <li>Découvrez les profils recommandés près de chez vous.</li>
-       </ul>
-       <p style="margin-top:12px;">Qu'Allah facilite vos démarches et vous accorde un compagnon ou une compagne qui vous apaise le cœur.</p>`,
-      "Compléter mon profil",
+      c.welcome.title(SITE_NAME),
+      `<p>${c.greeting(name)}</p>${c.welcome.body(SITE_NAME)}`,
+      c.welcome.cta,
       `${SITE_URL}/onboarding`,
+      locale,
     );
 
     let status = "sent";

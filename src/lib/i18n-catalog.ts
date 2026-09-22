@@ -4595,4 +4595,9 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "{n} non lues": { "en": "{n} unread", "ar": "{n} غير مقروءة" },
   "Il y a {n} min": { "en": "{n} min ago", "ar": "قبل {n} دقيقة" },
   "Il y a {n} h": { "en": "{n} h ago", "ar": "قبل {n} ساعة" },
+  "Robustesse du mot de passe : ": { "en": "Password strength: ", "ar": "قوة كلمة المرور: " },
+  "Faible": { "en": "Weak", "ar": "ضعيفة" },
+  "Moyen": { "en": "Medium", "ar": "متوسطة" },
+  "Fort": { "en": "Strong", "ar": "قوية" },
+  "Très fort": { "en": "Very strong", "ar": "قوية جداً" },
 };

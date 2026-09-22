@@ -422,7 +422,7 @@ export async function sendEmailConfirmation(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: `Confirmez votre inscription sur ${SITE_NAME}`,
+        subject: c.confirmation.subject(SITE_NAME),
         html,
       }),
     });

@@ -200,8 +200,13 @@ function RootComponent() {
           <LanguageSwitcher />
         </div>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <VisitTracker />
-        <Outlet />
+        <div className="flex min-h-screen flex-col">
+          <VisitTracker />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

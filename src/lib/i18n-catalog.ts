@@ -4515,8 +4515,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Localisation": { "en": "Location", "ar": "الموقع" },
   "Rayon": { "en": "Radius", "ar": "نطاق البحث" },
   "Désactivé": { "en": "Disabled", "ar": "معطّل" },
-  "Âge minimum": { "en": "Minimum age", "ar": "الحد الأدنى للعمر" },
-  "Âge maximum": { "en": "Maximum age", "ar": "الحد الأقصى للعمر" },
   "Taille min": { "en": "Min height", "ar": "أدنى طول" },
   "Taille max": { "en": "Max height", "ar": "أقصى طول" },
   "ans": { "en": "yrs", "ar": "سنة" },

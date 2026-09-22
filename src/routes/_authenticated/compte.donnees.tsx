@@ -162,7 +162,7 @@ function DonneesPage() {
         </h2>
         <p className="text-sm text-muted-foreground">
           {t(
-            "Vous pouvez corriger vos informations depuis Mon profil et supprimer définitivement votre compte depuis Mes notifications. Pour toute autre demande (accès, opposition, réclamation), écrivez-nous à contact@nooryaa.com.",
+            "Vous pouvez corriger vos informations depuis Mon profil et supprimer définitivement votre compte depuis Mon abonnement. Pour toute autre demande (accès, opposition, réclamation), écrivez-nous à contact@nooryaa.com.",
           )}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">

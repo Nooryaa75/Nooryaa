@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, translateText } from "@/lib/i18n";
 import { TRANSLATIONS } from "@/lib/i18n-catalog";
 
 const attributes = ["placeholder", "title", "aria-label"] as const;
@@ -18,11 +18,8 @@ function remember(node: Text | Element, key: string, value: string) {
 
 function translated(source: string, locale: "fr" | "en" | "ar") {
   if (locale === "fr") return source;
-  const direct = TRANSLATIONS[source]?.[locale];
-  if (direct) return direct;
-  const core = source.trim();
-  const value = TRANSLATIONS[core]?.[locale];
-  if (value) return source.replace(core, value);
+  const exact = translateText(source, locale);
+  if (exact !== source) return exact;
 
   let result = source;
   for (const phrase of phrases) {

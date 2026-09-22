@@ -119,9 +119,10 @@ function passwordStrength(p: string) {
 }
 
 function PasswordStrength({ password }: { password: string }) {
+  const { t } = useI18n();
   const score = passwordStrength(password);
   if (!password) return null;
-  const labels = ["Faible", "Moyen", "Correct", "Sécurisé"];
+  const labels = [t("Faible"), t("Moyen"), t("Fort"), t("Très fort")];
   const colors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-green-500"];
   const text = ["text-red-500", "text-orange-500", "text-yellow-500", "text-green-500"];
   const index = Math.max(0, Math.min(score - 1, 3));
@@ -131,16 +132,19 @@ function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${i <= score ? colors[index] : "bg-muted"}`}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${i <= score ? colors[i - 1] : "bg-muted"}`}
           />
         ))}
       </div>
-      <p className={`text-[11px] font-medium ${text[index]}`}>{labels[index]}</p>
+      <p className={`text-[11px] font-medium ${text[index]}`}>
+        {t("Robustesse du mot de passe : ")}
+        {labels[index]}
+      </p>
       <ul className="text-[10px] text-muted-foreground space-y-0.5">
-        <li className={password.length >= 8 ? "text-green-500" : ""}>Au moins 8 caractères</li>
-        <li className={/[a-z]/.test(password) && /[A-Z]/.test(password) ? "text-green-500" : ""}>Majuscules et minuscules</li>
-        <li className={/[0-9]/.test(password) ? "text-green-500" : ""}>Au moins un chiffre</li>
-        <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-500" : ""}>Au moins un caractère spécial</li>
+        <li className={password.length >= 8 ? "text-green-500" : ""}>{t("Au moins 8 caractères")}</li>
+        <li className={/[a-z]/.test(password) && /[A-Z]/.test(password) ? "text-green-500" : ""}>{t("Majuscules et minuscules")}</li>
+        <li className={/[0-9]/.test(password) ? "text-green-500" : ""}>{t("Au moins un chiffre")}</li>
+        <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-500" : ""}>{t("Au moins un caractère spécial")}</li>
       </ul>
     </div>
   );

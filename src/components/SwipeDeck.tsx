@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { useI18n } from "@/lib/i18n";
 
 type Props = {
   title: string;

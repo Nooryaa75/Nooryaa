@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { I18nProvider } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TranslatedContent } from "@/components/TranslatedContent";
+import { Footer } from "@/components/Footer";
 
 function NotFoundComponent() {
   return (

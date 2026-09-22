@@ -629,10 +629,12 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("id, email, pseudo, first_name")
+      .select("id, email, pseudo, first_name, locale")
       .ilike("email", data.email)
       .maybeSingle();
     if (!profile?.email) return { sent: true };
+    const locale = normalizeLocale((profile as any)?.locale);
+    const c = copyFor(locale);
 
     const { data: link, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: "recovery",

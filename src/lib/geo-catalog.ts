@@ -256,7 +256,7 @@ export const GEO_TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Côte-d'Or": { en: "Côte-d'Or", ar: "كوت دور" },
   "Côtes-d'Armor": { en: "Côtes-d'Armor", ar: "كوت دارمور" },
   "Creuse": { en: "Creuse", ar: "كروز" },
-  "Dordogne": { en: "Dordogne", ar: "دوردونь" },
+  "Dordogne": { en: "Dordogne", ar: "دوردوني" },
   "Doubs": { en: "Doubs", ar: "دو" },
   "Drôme": { en: "Drôme", ar: "دروم" },
   "Eure": { en: "Eure", ar: "أور" },

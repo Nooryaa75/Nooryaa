@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/compte/cgu")({
 
 function CguPage() {
   const fetchDocument = useServerFn(fetchPublishedLegalDocument);
-  const { locale, formatDate } = useI18n();
+  const { locale, formatDate, t } = useI18n();
   const { data } = useQuery({ queryKey: ["legal-document", "terms"], queryFn: () => fetchDocument({ data: { key: "terms" } }), staleTime: 60000 });
   const content = isLegalContent(data?.content) ? data.content : DEFAULT_LEGAL_CONTENT.terms;
   const document = content[locale];

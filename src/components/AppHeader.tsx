@@ -63,7 +63,7 @@ export function AppHeader() {
     <>
       <header className="hidden md:block sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border/60">
         <div className="container mx-auto flex items-center justify-between px-4 pt-2 pb-2 max-w-6xl">
-          <nav className="flex items-center gap-1">
+          <nav data-no-translate className="flex items-center gap-1">
             {links.map((l) => {
               const active = pathname.startsWith(l.to);
               return (
@@ -93,7 +93,7 @@ export function AppHeader() {
       </header>
 
       {/* Barre de navigation basse (mobile) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card rounded-t-3xl shadow-[0_-4px_24px_rgba(31,34,48,0.08)] flex justify-around pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <nav data-no-translate className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card rounded-t-3xl shadow-[0_-4px_24px_rgba(31,34,48,0.08)] flex justify-around pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {mobileLinks.map((l) => {
           const active = pathname.startsWith(l.to);
           return (

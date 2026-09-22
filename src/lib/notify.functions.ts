@@ -392,18 +392,21 @@ export async function sendEmailConfirmation(opts: {
   email: string;
   firstName?: string;
   confirmationUrl: string;
+  locale?: string;
 }) {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const resendKey = process.env["RESEND_API_KEY"];
   if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
 
+  const locale = normalizeLocale(opts.locale);
+  const c = copyFor(locale);
   const name = escapeHtml(opts.firstName || "");
   const html = layout(
-    "Confirmez votre adresse email",
-    `<p>Assalamu alaykum ${name},</p>
-     <p>Merci de rejoindre <strong>${SITE_NAME}</strong>. Pour activer votre compte et accéder à la plateforme, cliquez sur le bouton ci-dessous :</p>`,
-    "Confirmer mon email",
+    c.confirmation.title,
+    `<p>${c.greeting(name)}</p>${c.confirmation.body(SITE_NAME)}`,
+    c.confirmation.cta,
     opts.confirmationUrl,
+    locale,
   );
 
   let status = "sent";

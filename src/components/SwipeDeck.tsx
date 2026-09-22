@@ -256,7 +256,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
                 <div className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wider text-white/90">
                   <MapPin className="h-3.5 w-3.5" />
-                  {typeof current._distance === "number" && <span data-no-translate>{t("À")} {formatDistance(current._distance, locale)},</span>}
+                  {typeof current._distance === "number" && <span data-no-translate>{locale === "fr" ? "À " : locale === "ar" ? "على بعد " : ""}{formatDistance(current._distance, locale)},</span>}
                   <span className="truncate">{[current.city, current.country].filter(Boolean).join(", ") || "—"}</span>
                 </div>
                 <div className="mt-2 space-y-1 text-sm text-white/90">

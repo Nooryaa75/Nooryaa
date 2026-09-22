@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import {
   User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck,
-  ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut, Heart,
+  ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/")({

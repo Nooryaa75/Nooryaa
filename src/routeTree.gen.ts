@@ -19,6 +19,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
+import { Route as AdminRgpdRouteImport } from './routes/admin.rgpd'
 import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
@@ -105,6 +106,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminVisitsRoute = AdminVisitsRouteImport.update({
   id: '/admin/visits',
   path: '/admin/visits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRgpdRoute = AdminRgpdRouteImport.update({
+  id: '/admin/rgpd',
+  path: '/admin/rgpd',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminResetRoute = AdminResetRouteImport.update({
@@ -337,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/rgpd': typeof AdminRgpdRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
@@ -385,6 +392,7 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/rgpd': typeof AdminRgpdRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/admin': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
+  '/admin/rgpd': typeof AdminRgpdRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
@@ -487,6 +496,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/rgpd'
     | '/admin/visits'
     | '/admin/'
     | '/compte/abonnement'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/rgpd'
     | '/admin/visits'
     | '/admin'
     | '/compte/abonnement'
@@ -585,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/reports'
     | '/admin/reset'
+    | '/admin/rgpd'
     | '/admin/visits'
     | '/admin/'
     | '/_authenticated/compte/abonnement'
@@ -626,6 +638,7 @@ export interface RootRouteChildren {
   AdminModerationRoute: typeof AdminModerationRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminResetRoute: typeof AdminResetRoute
+  AdminRgpdRoute: typeof AdminRgpdRoute
   AdminVisitsRoute: typeof AdminVisitsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
@@ -707,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/visits'
       fullPath: '/admin/visits'
       preLoaderRoute: typeof AdminVisitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/rgpd': {
+      id: '/admin/rgpd'
+      path: '/admin/rgpd'
+      fullPath: '/admin/rgpd'
+      preLoaderRoute: typeof AdminRgpdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/reset': {
@@ -1069,6 +1089,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminModerationRoute: AdminModerationRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminResetRoute: AdminResetRoute,
+  AdminRgpdRoute: AdminRgpdRoute,
   AdminVisitsRoute: AdminVisitsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,

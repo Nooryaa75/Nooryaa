@@ -7,7 +7,7 @@ import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
 import {
   Users, UserCheck, Flag, MessageCircle, AlertTriangle, MessageSquare, ArrowRight, Sparkles, Megaphone, Mail,
-  Heart, BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3,
+  Heart, BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3, ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -95,6 +95,7 @@ function AdminDashboard() {
     { to: "/admin/reports", label: "Signalements", desc: "Examiner et résoudre les signalements ouverts.", icon: Flag },
     { to: "/admin/contact", label: "Messages de contact", desc: "Répondre aux messages du formulaire d'accueil.", icon: Mail },
     { to: "/admin/ads", label: "Publicités", desc: "Gérer le carrousel d'annonces partenaires.", icon: Megaphone },
+    { to: "/admin/rgpd", label: "RGPD", desc: "Registre des traitements, hébergement et conformité.", icon: ShieldCheck },
   ] as const;
 
   return (

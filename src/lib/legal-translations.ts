@@ -59,8 +59,8 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
           "body": "The verification photo (selfie) is transmitted solely for comparison with your profile photos. It is neither recorded nor retained: only the verification status (verified / unverified) is retained on your account."
         },
         {
-          "title": "5. Recipients and Processors",
-          "body": "Your data is never sold, rented or shared for advertising purposes. We rely on technical processors bound by contracts compliant with Article 28 GDPR: hosting and database, transactional email delivery, automated analysis of photos and messages for moderation. Where a transfer outside the European Union is required, it is covered by the European Commission's standard contractual clauses."
+          "title": "5. Recipients, Processors and Hosting",
+          "body": "Your data is never sold, rented or shared for advertising purposes. Your data is hosted within the European Union, in data centres located in Frankfurt (Germany, eu-central-1 region), through our technical hosting and database provider (Lovable Cloud). We rely on technical processors bound by contracts compliant with Article 28 GDPR: hosting and database (European Union), transactional email delivery (Resend), automated analysis of photos and messages for moderation. Where a transfer outside the European Union is required, it is covered by the European Commission's standard contractual clauses."
         },
         {
           "title": "6. Retention Periods",
@@ -143,8 +143,8 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
           "body": "تُرسل صورة التحقق (سيلفي) حصراً لمقارنتها بصور ملفكم الشخصي. ولا يتم تسجيلها أو الاحتفاظ بها؛ إذ لا يُحتفظ في حسابكم سوى بحالة التحقق (تم التحقق / لم يتم التحقق)."
         },
         {
-          "title": "5. الجهات المستقبِلة والمعالِجون",
-          "body": "لا تُباع بياناتكم ولا تُؤجَّر ولا تتم مشاركتها لأغراض إعلانية. ونستعين بمعالِجين تقنيين مرتبطين بعقود مطابقة للمادة 28 من RGPD: الاستضافة وقاعدة البيانات، وإرسال رسائل البريد الإلكتروني الخدمية، والتحليل الآلي للصور والرسائل لأغراض الإشراف. وعند الحاجة إلى نقل البيانات خارج الاتحاد الأوروبي، يتم ذلك في إطار البنود التعاقدية النموذجية للمفوضية الأوروبية."
+          "title": "5. الجهات المستقبِلة والمعالِجون والاستضافة",
+          "body": "لا تُباع بياناتكم ولا تُؤجَّر ولا تتم مشاركتها لأغراض إعلانية. وتُستضاف بياناتكم داخل الاتحاد الأوروبي، في مراكز بيانات تقع في فرانكفورت (ألمانيا، المنطقة eu-central-1)، عبر مزوّدنا التقني للاستضافة وقاعدة البيانات (Lovable Cloud). ونستعين بمعالِجين تقنيين مرتبطين بعقود مطابقة للمادة 28 من RGPD: الاستضافة وقاعدة البيانات (الاتحاد الأوروبي)، وإرسال رسائل البريد الإلكتروني الخدمية (Resend)، والتحليل الآلي للصور والرسائل لأغراض الإشراف. وعند الحاجة إلى نقل البيانات خارج الاتحاد الأوروبي، يتم ذلك في إطار البنود التعاقدية النموذجية للمفوضية الأوروبية."
         },
         {
           "title": "6. مدد الاحتفاظ",

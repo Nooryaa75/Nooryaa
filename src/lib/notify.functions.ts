@@ -522,6 +522,10 @@ export async function requestSelfieRedo(opts: {
 }) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+  const { data: localeRow } = await supabaseAdmin.from("profiles").select("locale").eq("id", opts.userId).maybeSingle();
+  const locale = normalizeLocale((localeRow as any)?.locale);
+  const c = copyFor(locale);
+
   // Notification in-app (anti-doublon 24 h : une seule demande à la fois).
   try {
     const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import {
   User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck,
-  ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut, Heart,
+  ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compte/")({
@@ -124,9 +124,6 @@ function CompteHome() {
         Se déconnecter
       </button>
 
-      <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1 pt-2">
-        Nooryaa v1.0.0 <Heart className="h-3 w-3 text-accent fill-current" />
-      </p>
     </div>
   );
 }

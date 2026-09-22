@@ -2285,10 +2285,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Nooryaa: Muslim dating site. Free access, no subscription. Muslim singles seeking serious halal marriage. Unlimited messaging and photos.",
     "ar": "Nooryaa: موقع تعارف للمسلمين. استخدام مجاني بلا اشتراك. عازبون وعازبات مسلمون لزواج حلال جاد. مراسلة وصور غير محدودة."
   },
-  "Nooryaa v1.0.0": {
-    "en": "Nooryaa v1.0.0",
-    "ar": "Nooryaa v1.0.0"
-  },
   "nooryaa-admin": {
     "en": "nooryaa-admin",
     "ar": "nooryaa-admin"

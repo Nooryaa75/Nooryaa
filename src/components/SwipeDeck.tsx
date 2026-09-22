@@ -33,18 +33,18 @@ type Props = {
 };
 
 /** Libellé « Actif ... » à partir de la dernière activité. */
-function activeLabel(lastActive: string | null | undefined): string {
-  if (!lastActive) return "Actif récemment";
+function activeLabel(lastActive: string | null | undefined, t: (s: string) => string): string {
+  if (!lastActive) return t("Actif récemment");
   const diff = Date.now() - new Date(lastActive).getTime();
   const min = Math.floor(diff / 60000);
-  if (min < 15) return "En ligne";
-  if (min < 60) return `Actif il y a ${min} min`;
+  if (min < 15) return t("En ligne");
+  if (min < 60) return t("Actif il y a {min} min").replace("{min}", String(min));
   const h = Math.floor(min / 60);
-  if (h < 24) return `Actif il y a ${h} h`;
+  if (h < 24) return t("Actif il y a {h} h").replace("{h}", String(h));
   const d = Math.floor(h / 24);
-  if (d === 1) return "Actif hier";
-  if (d < 30) return `Actif il y a ${d} jours`;
-  return "Actif il y a longtemps";
+  if (d === 1) return t("Actif hier");
+  if (d < 30) return t("Actif il y a {d} jours").replace("{d}", String(d));
+  return t("Actif il y a longtemps");
 }
 
 /** Affiche Oui / Non pour un booléen éventuellement absent. */

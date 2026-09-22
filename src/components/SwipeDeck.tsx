@@ -55,6 +55,7 @@ function boolLabel(value: boolean | null | undefined, yes = "Oui", no = "Non"): 
 /** Fiche plein écran : photo + infos, détails en dessous, décision par boutons. */
 export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
+  const { t } = useI18n();
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [isDeciding, setIsDeciding] = useState(false);

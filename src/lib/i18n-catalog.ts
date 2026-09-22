@@ -3369,6 +3369,22 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Dashboard — Nooryaa Admin",
     "ar": "لوحة التحكم — إدارة Nooryaa"
   },
+  "Taille (in)": {
+    "en": "Height (in)",
+    "ar": "الطول (سم)"
+  },
+  "Distance maximale (miles)": {
+    "en": "Maximum distance (miles)",
+    "ar": "أقصى مسافة (كم)"
+  },
+  "Taille minimum (in)": {
+    "en": "Minimum height (in)",
+    "ar": "الطول الأدنى (سم)"
+  },
+  "Taille maximum (in)": {
+    "en": "Maximum height (in)",
+    "ar": "الطول الأقصى (سم)"
+  },
   "Taille (cm)": {
     "en": "Height",
     "ar": "الطول (سم)"

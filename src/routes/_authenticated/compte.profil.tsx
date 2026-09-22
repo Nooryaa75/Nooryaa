@@ -1,3 +1,5 @@
+import { isImperial } from "@/lib/units";
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +48,8 @@ function MyProfile() {
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
   });
 
+  const { locale } = useI18n();
+  const imperialUnits = isImperial(locale);
   const [form, setForm] = useState<any>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [autoState, setAutoState] = useState<"idle" | "saving" | "saved">("idle");

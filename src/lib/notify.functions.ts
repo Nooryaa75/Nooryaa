@@ -652,13 +652,11 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
 
     const name = escapeHtml(profile.first_name || profile.pseudo || "");
     const html = layout(
-      "Réinitialisation de votre mot de passe",
-      `<p>Assalamu alaykum ${name},</p>
-       <p>Vous avez demandé à réinitialiser le mot de passe de votre compte <strong>${SITE_NAME}</strong>.</p>
-       <p>Ce lien est valable <strong>1 heure</strong> et ne peut être utilisé qu'une seule fois.</p>
-       <p style="color:#8a83a6;font-size:13px;">Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email : votre mot de passe reste inchangé.</p>`,
-      "Choisir un nouveau mot de passe",
+      c.reset.title,
+      `<p>${c.greeting(name)}</p>${c.reset.body(SITE_NAME)}`,
+      c.reset.cta,
       link.properties.action_link,
+      locale,
     );
 
     let status = "sent";

@@ -280,15 +280,15 @@ function MessagesLayout() {
 
           {/* Onglets */}
           <div className="flex gap-2 px-5 pt-4 pb-2">
-            {tabs.map((t) => (
+            {tabs.map((item) => (
               <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
+                key={item.key}
+                onClick={() => setTab(item.key)}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                  tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted/70 text-muted-foreground hover:text-foreground"
+                  tab === item.key ? "bg-primary text-primary-foreground" : "bg-muted/70 text-muted-foreground hover:text-foreground"
                 }`}
               >
-                  {t(t.label)}
+                  {t(item.label)}
               </button>
             ))}
           </div>

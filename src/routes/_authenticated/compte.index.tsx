@@ -20,6 +20,7 @@ const menu = [
   { to: "/compte/regles", label: "Règles communauté", icon: Users },
   { to: "/compte/cgu", label: "CGU", icon: FileText },
   { to: "/compte/confidentialite", label: "Politique de confidentialité", icon: ShieldCheck },
+  { to: "/compte/donnees", label: "Mes données personnelles", icon: Database },
 ] as const;
 
 function CompteHome() {

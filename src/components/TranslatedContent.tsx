@@ -63,9 +63,15 @@ export function TranslatedContent() {
     const run = () => translateTree(document.body, localeRef.current);
     run();
     const observer = new MutationObserver((records) => {
-      if (records.some((record) => record.addedNodes.length > 0 || record.type === "characterData")) run();
+      if (records.some((record) => record.addedNodes.length > 0 || record.type === "characterData" || record.type === "attributes")) run();
     });
-    observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["title", "placeholder", "aria-label"],
+    });
     return () => observer.disconnect();
   }, [locale]);
 

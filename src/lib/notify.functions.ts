@@ -173,16 +173,20 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     if (!recipient?.email) return { sent: false, reason: "no_email" as const };
 
     const prefs = (recipient.preferences as any)?.notifications?.[PREF_KEY[data.kind]];
-    const actorName = actor?.first_name || actor?.pseudo || "Un membre";
+    // Langue choisie par le destinataire : emails et notifications in-app
+    // sont rédigés dans sa langue (fr / en / ar).
+    const locale = normalizeLocale((recipient as any)?.locale);
+    const c = copyFor(locale);
+    const actorName = actor?.first_name || actor?.pseudo || c.memberFallback;
 
     // Notification in-app (centre de notifications) — respecte la préférence "push in-app".
     const inAppEnabled = typeof prefs?.in_app === "boolean" ? prefs.in_app : true;
     if (inAppEnabled) {
       const titles: Record<NotifyKind, string> = {
-        like: `${actorName} vous a liké`,
-        match: `C'est un match avec ${actorName} !`,
-        message: `Nouveau message de ${actorName}`,
-        visit: `${actorName} a consulté votre profil`,
+        like: c.like.inApp(actorName),
+        match: c.match.inApp(actorName),
+        message: c.message.inApp(actorName),
+        visit: c.visit.inApp(actorName),
       };
       const links: Record<NotifyKind, string> = {
         like: "/likes",

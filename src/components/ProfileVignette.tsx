@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { notifyLike } from "@/lib/notify";
 import { isOnline } from "@/lib/discovery";
+import { useI18n } from "@/lib/i18n";
 
 export function ageFrom(birthdate?: string | null): number | null {
   if (!birthdate) return null;
@@ -35,6 +36,7 @@ interface ProfileVignetteProps {
  * la version précédente.
  */
 export function ProfileVignette({ profile, userId, likeable = false, chatBadge = false, extraInfo }: ProfileVignetteProps) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [liked, setLiked] = useState(false);
   const age = ageFrom(profile.birthdate);
@@ -67,7 +69,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
   const tags: { label: string }[] = [];
   if (profile.personality) tags.push({ label: profile.personality });
   if (profile.porte_voile === true) tags.push({ label: "Voilée" });
-  else if (profile.objective) tags.push({ label: profile.objective });
+  else if (profile.objective) tags.push({ label: t(profile.objective) });
 
   return (
     <div className="group relative w-full rounded-xl overflow-hidden border border-border/40 bg-card shadow-[var(--shadow-card)]">

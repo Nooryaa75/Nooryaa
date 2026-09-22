@@ -157,6 +157,7 @@ function AuthPage() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [signupEmailSent, setSignupEmailSent] = useState(false);
 
   useEffect(() => {
@@ -179,6 +180,9 @@ function AuthPage() {
         const digits = phone.replace(/[^0-9]/g, "");
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
+        }
+        if (!acceptTerms) {
+          throw new Error("Merci d'accepter les CGU et la politique de confidentialité.");
         }
         // L'email de vérification est toujours envoyé par notre serveur via Resend
         // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
@@ -341,6 +345,12 @@ function AuthPage() {
           Continuer avec Apple
         </Button>
 
+        {mode === "signup" && (
+          <p className="text-center text-[11px] text-muted-foreground">
+            En continuant avec Google ou Apple, vous acceptez les CGU et la politique de confidentialité de Nooryaa.
+          </p>
+        )}
+
         <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
           <div className="flex-1 h-px bg-border" />ou<div className="flex-1 h-px bg-border" />
         </div>
@@ -383,13 +393,30 @@ function AuthPage() {
             )}
           </div>
           {mode === "signup" && (
-            <div>
-              <Label htmlFor="password2">Confirmer le mot de passe</Label>
-              <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
-              {password2 && password !== password2 && (
-                <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
-              )}
-            </div>
+            <>
+              <div>
+                <Label htmlFor="password2">Confirmer le mot de passe</Label>
+                <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
+                {password2 && password !== password2 && (
+                  <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
+                )}
+              </div>
+              <label className="flex items-start gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 accent-[color:var(--primary)]"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                />
+                <span>
+                  J'ai lu et j'accepte les CGU et la{" "}
+                  <Link to="/privacy" className="text-primary underline underline-offset-4">
+                    politique de confidentialité
+                  </Link>
+                  , y compris le traitement de mes données de profil pour la mise en relation.
+                </span>
+              </label>
+            </>
           )}
           <Button type="submit" disabled={loading} className="w-full rounded-full">
             {loading ? "Chargement..." : mode === "signup" ? "Créer mon compte gratuit" : "Se connecter"}

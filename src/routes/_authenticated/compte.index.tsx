@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import {
-  User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck,
+  User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck, Database,
   ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
 } from "lucide-react";
 
@@ -20,6 +20,7 @@ const menu = [
   { to: "/compte/regles", label: "Règles communauté", icon: Users },
   { to: "/compte/cgu", label: "CGU", icon: FileText },
   { to: "/compte/confidentialite", label: "Politique de confidentialité", icon: ShieldCheck },
+  { to: "/compte/donnees", label: "Mes données personnelles", icon: Database },
 ] as const;
 
 function CompteHome() {

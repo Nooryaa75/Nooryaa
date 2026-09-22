@@ -1106,6 +1106,39 @@ export type Database = {
           },
         ]
       }
+      user_consents: {
+        Row: {
+          accepted: boolean
+          created_at: string
+          document_version: number | null
+          id: string
+          kind: string
+          locale: string | null
+          source: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accepted?: boolean
+          created_at?: string
+          document_version?: number | null
+          id?: string
+          kind: string
+          locale?: string | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accepted?: boolean
+          created_at?: string
+          document_version?: number | null
+          id?: string
+          kind?: string
+          locale?: string | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           boosts: number

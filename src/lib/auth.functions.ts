@@ -80,6 +80,18 @@ export const signUpByServer = createServerFn({ method: "POST" })
       throw new Error("Impossible de générer le lien de confirmation.");
     }
 
+    // Preuve datée de l'acceptation des CGU et de la politique de confidentialité (RGPD).
+    const newUserId = (linkData as { user?: { id?: string } })?.user?.id;
+    if (newUserId) {
+      await supabaseAdmin
+        .from("user_consents")
+        .insert([
+          { user_id: newUserId, kind: "terms", accepted: true, locale: data.locale ?? "fr", source: "signup" },
+          { user_id: newUserId, kind: "privacy", accepted: true, locale: data.locale ?? "fr", source: "signup" },
+        ])
+        .then(() => undefined, () => undefined);
+    }
+
     // Envoi du mail de confirmation via le template Nooryaa / Resend.
     const { sendEmailConfirmation } = await import("@/lib/notify.functions");
     const sendResult = await sendEmailConfirmation({

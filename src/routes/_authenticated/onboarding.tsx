@@ -382,7 +382,14 @@ function Onboarding() {
         <div>
           <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
-          <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/500 caractères minimum 50</p>
+          <div className="mt-1 flex items-center justify-between text-xs">
+            {form.bio.length < 50 ? (
+              <span className="font-medium text-destructive">Encore {50 - form.bio.length} caractère{50 - form.bio.length > 1 ? "s" : ""} minimum</span>
+            ) : (
+              <span className="font-medium text-emerald-600">Minimum atteint ✓</span>
+            )}
+            <span className={form.bio.length >= 450 ? "font-medium text-destructive" : "text-muted-foreground"}>{form.bio.length}/500</span>
+          </div>
         </div>
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <Label>Photos de profil *</Label>

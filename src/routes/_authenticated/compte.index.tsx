@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import {
-  User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck,
+  User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck, Database,
   ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
 } from "lucide-react";
 

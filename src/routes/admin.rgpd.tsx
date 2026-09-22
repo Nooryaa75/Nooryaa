@@ -29,7 +29,7 @@ const REGISTRE: Row[] = [
     base: "Exécution du contrat",
     donnees: "Identité, email, téléphone, date de naissance, mot de passe chiffré",
     duree: "Durée de vie du compte ; suppression sous 30 jours après clôture ; anonymisation après 3 ans d'inactivité",
-    destinataires: "BK Company ; hébergeur Lovable Cloud (UE, Francfort)",
+    destinataires: "BK Company ; hébergeur GitHub (UE, Francfort)",
   },
   {
     traitement: "Mise en relation (matchmaking)",
@@ -138,8 +138,8 @@ function AdminRgpd() {
         <div className="bg-card rounded-2xl border border-border/60 p-5 text-sm space-y-1">
           <p><span className="font-semibold">Responsable du traitement :</span> BK Company, 7 bis allée de Chelles, 93340 Le Raincy — RCS Bobigny 130 260 730</p>
           <p><span className="font-semibold">Contact données personnelles :</span> contact@nooryaa.com</p>
-          <p><span className="font-semibold">Hébergement :</span> Union européenne — centres de données de Francfort (Allemagne, région eu-central-1), via Lovable Cloud</p>
-          <p><span className="font-semibold">Sous-traitants :</span> Lovable Cloud (hébergement/base de données, UE) · Resend (emails transactionnels) · outil d'analyse automatisée (modération)</p>
+          <p><span className="font-semibold">Hébergement :</span> Union européenne — centres de données de Francfort (Allemagne, région eu-central-1), via GitHub</p>
+          <p><span className="font-semibold">Sous-traitants :</span> GitHub (hébergement/base de données, UE) · Resend (emails transactionnels) · outil d'analyse automatisée (modération)</p>
           <p className="text-muted-foreground">Dernière revue du registre : septembre 2026</p>
         </div>
 

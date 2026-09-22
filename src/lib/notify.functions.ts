@@ -305,10 +305,10 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
  * été envoyé à cette adresse.
  */
 export const sendWelcomeEmail = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string }) => {
+  .inputValidator((data: { email: string; locale?: string }) => {
     const email = String(data?.email ?? "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
-    return { email };
+    return { email, locale: data?.locale };
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

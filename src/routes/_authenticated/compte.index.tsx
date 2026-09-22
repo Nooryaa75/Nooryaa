@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck, Database,
   ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
@@ -81,6 +82,12 @@ function CompteHome() {
           </div>
         </div>
       </Link>
+
+      {/* Langue */}
+      <div className="bg-card rounded-2xl p-4 border border-border/60 shadow-[var(--shadow-card)]">
+        <p className="mb-3 text-sm font-medium text-primary">{t("Langue")}</p>
+        <LanguageSwitcher inline />
+      </div>
 
       {/* Bannière Premium */}
       <Link

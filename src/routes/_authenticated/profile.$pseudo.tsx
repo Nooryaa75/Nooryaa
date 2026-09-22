@@ -394,7 +394,7 @@ function Info({ label, value }: { label: string; value?: string | null }) {
   if (value === null || value === undefined || value === "") return null;
   const translated = value.split(", ").map((part) => t(part)).join(", ");
   return (
-    <div className="bg-secondary/60 rounded-lg p-3">
+    <div className="bg-secondary/60 rounded-lg p-3" data-no-translate>
       <div className="text-xs text-muted-foreground">{t(label)}</div>
       <div className="text-primary font-medium">{translated}</div>
     </div>

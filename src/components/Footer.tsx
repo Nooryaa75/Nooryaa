@@ -8,6 +8,7 @@ export function Footer() {
 
   return (
     <footer
+      data-no-translate
       className="border-t border-border/60 bg-background/95 px-4 py-5 backdrop-blur"
       dir={locale === "ar" ? "rtl" : "ltr"}
     >

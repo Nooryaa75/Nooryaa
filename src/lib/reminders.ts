@@ -235,10 +235,22 @@ const REMINDER_TRANSLATIONS: Record<"en" | "ar", Array<Pick<DailyReminder, "titl
   ],
 };
 
+const SOURCE_NAMES: Record<string, { en: string; ar: string }> = {
+  "Bukhari & Muslim": { en: "Bukhari & Muslim", ar: "البخاري ومسلم" },
+  Bukhari: { en: "Bukhari", ar: "البخاري" },
+  Muslim: { en: "Muslim", ar: "مسلم" },
+  Tirmidhi: { en: "Tirmidhi", ar: "الترمذي" },
+};
+
 function localizeSource(source: string | undefined, locale: "fr" | "en" | "ar") {
   if (!source || locale === "fr") return source;
-  if (locale === "en") return source.replace("Coran", "Quran");
-  return source.replace("Hadith", "حديث").replace("Coran", "القرآن");
+  let out = locale === "en" ? source.replace("Coran", "Quran") : source.replace("Hadith", "حديث").replace("Coran", "القرآن");
+  if (locale === "ar") {
+    for (const [name, tr] of Object.entries(SOURCE_NAMES)) {
+      out = out.replace(name, tr.ar);
+    }
+  }
+  return out;
 }
 
 /** Numéro du jour depuis l'époque, en heure locale (change chaque minuit). */

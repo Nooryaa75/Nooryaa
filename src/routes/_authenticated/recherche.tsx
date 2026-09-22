@@ -198,7 +198,7 @@ function Recherche() {
             }`}
             style={tab === t.key ? { background: "var(--gradient-gold)" } : undefined}
           >
-            {t.label}
+            <span data-no-translate>{tr(t.label)}</span>
           </button>
         ))}
       </div>

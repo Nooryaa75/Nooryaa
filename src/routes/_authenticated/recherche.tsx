@@ -305,8 +305,8 @@ function Recherche() {
             </div>
             <div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Rayon</span>
-                <span className="font-medium">{filters.radiusEnabled ? formatDistance(filters.radiusKm, locale) : "Désactivé"}</span>
+                <span className="text-muted-foreground" data-no-translate>{tr("Rayon")}</span>
+                <span className="font-medium" data-no-translate>{filters.radiusEnabled ? formatDistance(filters.radiusKm, locale) : tr("Désactivé")}</span>
               </div>
               <Slider
                 value={[filters.radiusKm]}

@@ -20,6 +20,14 @@ export const recordConsent = createServerFn({ method: "POST" })
     source: clean(data?.source, 40),
   }))
   .handler(async ({ data, context }) => {
+    // Session orpheline (compte supprimé) : on ignore au lieu de casser l'écran.
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (!profile) return { ok: false as const };
+
     const { error } = await context.supabase.from("user_consents").insert({
       user_id: context.userId,
       kind: data.kind,
@@ -27,8 +35,9 @@ export const recordConsent = createServerFn({ method: "POST" })
       locale: data.locale,
       source: data.source,
     });
-    if (error) throw error;
-    return { ok: true };
+    // Preuve non bloquante : un échec ne doit jamais interrompre la navigation.
+    if (error) return { ok: false as const };
+    return { ok: true as const };
   });
 
 /** Historique des consentements du membre connecté. */

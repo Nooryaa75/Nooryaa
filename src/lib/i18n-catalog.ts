@@ -865,6 +865,10 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Terms of Use — Nooryaa",
     "ar": "شروط الاستخدام — Nooryaa"
   },
+  "Conditions d'utilisation": {
+    "en": "Terms of Use",
+    "ar": "شروط الاستخدام"
+  },
   "Confidentialité": {
     "en": "Privacy",
     "ar": "الخصوصية"

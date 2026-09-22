@@ -32,9 +32,10 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
-export function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
+export function layout(title: string, body: string, ctaLabel: string, ctaUrl: string, locale: MailLocale = "fr") {
+  const dir = isRtl(locale) ? "rtl" : "ltr";
   return `<!doctype html>
-<html lang="fr"><head>
+<html lang="${locale}" dir="${dir}"><head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light only" />

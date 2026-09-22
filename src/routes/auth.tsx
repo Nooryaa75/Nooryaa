@@ -383,13 +383,32 @@ function AuthPage() {
             )}
           </div>
           {mode === "signup" && (
-            <div>
-              <Label htmlFor="password2">Confirmer le mot de passe</Label>
-              <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
-              {password2 && password !== password2 && (
-                <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
-              )}
-            </div>
+            <>
+              <div>
+                <Label htmlFor="password2">Confirmer le mot de passe</Label>
+                <PasswordInput id="password2" required minLength={6} value={password2} onChange={setPassword2} />
+                {password2 && password !== password2 && (
+                  <p className="text-[11px] text-destructive mt-1">Les mots de passe ne correspondent pas.</p>
+                )}
+              </div>
+              <label className="flex items-start gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 accent-[color:var(--primary)]"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                />
+                <span>
+                  J'ai lu et j'accepte les{" "}
+                  <Link to="/cgu" className="text-primary underline underline-offset-4">CGU</Link>{" "}
+                  et la{" "}
+                  <Link to="/privacy" className="text-primary underline underline-offset-4">
+                    politique de confidentialité
+                  </Link>
+                  , y compris le traitement de mes données de profil pour la mise en relation.
+                </span>
+              </label>
+            </>
           )}
           <Button type="submit" disabled={loading} className="w-full rounded-full">
             {loading ? "Chargement..." : mode === "signup" ? "Créer mon compte gratuit" : "Se connecter"}

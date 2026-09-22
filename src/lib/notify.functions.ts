@@ -672,7 +672,7 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
         body: JSON.stringify({
           from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [profile.email],
-          subject: `Réinitialisez votre mot de passe ${SITE_NAME}`,
+          subject: c.reset.subject(SITE_NAME),
           html,
         }),
       });

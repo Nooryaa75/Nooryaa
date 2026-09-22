@@ -70,7 +70,7 @@ export function PrayerChatNotice() {
   if (dismissed === id) return null;
 
   return (
-    <div className="mx-4 my-2 flex items-center gap-2 rounded-2xl bg-[#F3E8FF] px-3 py-2">
+    <div data-no-translate className="mx-4 my-2 flex items-center gap-2 rounded-2xl bg-[#F3E8FF] px-3 py-2">
       <Moon className="h-4 w-4 shrink-0 text-primary" />
       <p className="flex-1 text-xs text-primary">
         <span className="font-semibold">{t("C'est l'heure de la prière")} — {t(active.label)} ({active.time}).</span>{" "}
@@ -78,7 +78,7 @@ export function PrayerChatNotice() {
       </p>
       <button
         type="button"
-        aria-label="Masquer le rappel de prière"
+        aria-label={t("Masquer le rappel de prière")}
         onClick={() => setDismissed(id)}
         className="text-muted-foreground hover:text-primary"
       >

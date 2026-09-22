@@ -85,6 +85,7 @@ export function PrayerTimeBadge() {
 
   return (
     <div
+      data-no-translate
       className="flex items-center gap-2 rounded-full bg-[#F3E8FF] px-3 py-1.5"
       title={`${t("Prochaine")} : ${t(res.next.label)} ${t("à")} ${res.next.time}`}
       aria-label={`${t("Prière en cours")} : ${t(res.cur.label)} ${t("à")} ${res.cur.time}`}

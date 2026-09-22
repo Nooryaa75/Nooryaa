@@ -16,6 +16,7 @@ import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { PrayerChatNotice } from "@/components/PrayerChatNotice";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, canMessage, isBlurred, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { useI18n } from "@/lib/i18n";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -33,6 +34,7 @@ function Conversation() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sendingVoice, setSendingVoice] = useState(false);
@@ -411,7 +413,7 @@ function Conversation() {
               <span className="truncate">{peer.pseudo}</span>
               <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
             </span>
-            <span className="text-xs text-muted-foreground block">{peerTyping ? "est en train d'écrire…" : "En ligne"}</span>
+            <span className="text-xs text-muted-foreground block">{peerTyping ? t("est en train d'écrire…") : t("En ligne")}</span>
           </span>
         </Link>
         <DropdownMenu>

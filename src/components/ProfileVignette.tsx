@@ -78,8 +78,8 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
           {online && (
             <span
               className="absolute top-1.5 left-1.5 z-10 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/80"
-              title="En ligne"
-              aria-label="En ligne"
+              title={t("En ligne")}
+              aria-label={t("En ligne")}
             />
           )}
           {profile.primary_photo_url ? (

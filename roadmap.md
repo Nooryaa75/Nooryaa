@@ -24,3 +24,4 @@
 - [x] Internationalisation complète français / anglais / arabe, avec interface RTL en arabe
 - [x] Édition et publication dynamique des CGU et de la politique de confidentialité depuis l’administration
 - [x] Traduire les titres, champs et questions de la page Mon compte
+- [x] Traduire les noms des prières dans l’accueil et les conversations

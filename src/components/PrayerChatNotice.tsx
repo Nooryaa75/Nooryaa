@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Moon, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 type Timings = Record<string, string>;
 
@@ -21,6 +22,7 @@ function toMinutes(hhmm: string) {
 export function PrayerChatNotice() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [dismissed, setDismissed] = useState<string | null>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!("geolocation" in navigator)) {
@@ -68,15 +70,15 @@ export function PrayerChatNotice() {
   if (dismissed === id) return null;
 
   return (
-    <div className="mx-4 my-2 flex items-center gap-2 rounded-2xl bg-[#F3E8FF] px-3 py-2">
+    <div data-no-translate className="mx-4 my-2 flex items-center gap-2 rounded-2xl bg-[#F3E8FF] px-3 py-2">
       <Moon className="h-4 w-4 shrink-0 text-primary" />
       <p className="flex-1 text-xs text-primary">
-        <span className="font-semibold">C'est l'heure de la prière — {active.label} ({active.time}).</span>{" "}
-        <span className="text-muted-foreground">Prenez une pause, la conversation vous attendra 🌙</span>
+        <span className="font-semibold">{t("C'est l'heure de la prière")} — {t(active.label)} ({active.time}).</span>{" "}
+        <span className="text-muted-foreground">{t("Prenez une pause, la conversation vous attendra")} 🌙</span>
       </p>
       <button
         type="button"
-        aria-label="Masquer le rappel de prière"
+        aria-label={t("Masquer le rappel de prière")}
         onClick={() => setDismissed(id)}
         className="text-muted-foreground hover:text-primary"
       >

@@ -21,7 +21,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Vocal trop lourd (max 10 Mo)": { "en": "Voice message is too large (10 MB maximum)", "ar": "حجم الرسالة الصوتية كبير جدًا (الحد الأقصى 10 ميغابايت)" },
   "Ce message ne respecte pas la charte de Nooryaa.": { "en": "This message does not comply with Nooryaa's guidelines.", "ar": "هذه الرسالة لا تتوافق مع قواعد Nooryaa." },
   "Ce vocal ne respecte pas la charte de Nooryaa.": { "en": "This voice message does not comply with Nooryaa's guidelines.", "ar": "هذه الرسالة الصوتية لا تتوافق مع قواعد Nooryaa." },
-  "Photo": { "en": "Photo", "ar": "صورة" },
   "Options de la conversation": { "en": "Conversation options", "ar": "خيارات المحادثة" },
   "Annuler": { "en": "Cancel", "ar": "إلغاء" },
   "Supprimer la conversation": { "en": "Delete conversation", "ar": "حذف المحادثة" },

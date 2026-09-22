@@ -490,9 +490,7 @@ export async function sendAccountClosureEmail(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: isSuspend
-          ? `Confirmation : votre compte ${SITE_NAME} est suspendu`
-          : `Confirmation : votre compte ${SITE_NAME} a été supprimé`,
+        subject: isSuspend ? c.suspend.subject(SITE_NAME) : c.deleted.subject(SITE_NAME),
         html,
       }),
     });

@@ -1,5 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { TRANSLATIONS } from "./i18n-catalog";
+import { TRANSLATIONS as BASE_TRANSLATIONS } from "./i18n-catalog";
+import { GEO_TRANSLATIONS } from "./geo-catalog";
+
+export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  ...GEO_TRANSLATIONS,
+  ...BASE_TRANSLATIONS,
+};
 
 export type Locale = "fr" | "en" | "ar";
 
@@ -24,7 +30,28 @@ type I18nValue = {
 
 const I18nContext = createContext<I18nValue | null>(null);
 
-function translateText(source: string, locale: Locale) {
+/** Traduit un lieu composé : "Ville (Département)" ou "Ville, Pays". */
+function translatePlace(core: string, locale: Exclude<Locale, "fr">): string | null {
+  const parenthesis = core.match(/^(.+?)\s*\((.+)\)$/);
+  if (parenthesis) {
+    const city = parenthesis[1].trim();
+    const area = parenthesis[2].trim();
+    const cityValue = GEO_TRANSLATIONS[city]?.[locale];
+    const areaValue = GEO_TRANSLATIONS[area]?.[locale];
+    if (cityValue || areaValue) return `${cityValue ?? city} (${areaValue ?? area})`;
+    return null;
+  }
+  if (core.includes(",")) {
+    const parts = core.split(",").map((part) => part.trim());
+    if (parts.length > 3 || parts.some((part) => !part)) return null;
+    const values = parts.map((part) => GEO_TRANSLATIONS[part]?.[locale]);
+    if (!values.some(Boolean)) return null;
+    return parts.map((part, index) => values[index] ?? part).join(locale === "ar" ? "، " : ", ");
+  }
+  return null;
+}
+
+export function translateText(source: string, locale: Locale) {
   if (locale === "fr" || !source.trim()) return source;
   const direct = TRANSLATIONS[source]?.[locale];
   if (direct) return direct;
@@ -32,7 +59,7 @@ function translateText(source: string, locale: Locale) {
   const leading = source.match(/^\s*/)?.[0] ?? "";
   const trailing = source.match(/\s*$/)?.[0] ?? "";
   const core = source.trim();
-  const translated = TRANSLATIONS[core]?.[locale];
+  const translated = TRANSLATIONS[core]?.[locale] ?? translatePlace(core, locale);
   return translated ? `${leading}${translated}${trailing}` : source;
 }
 

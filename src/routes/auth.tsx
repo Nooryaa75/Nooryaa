@@ -181,6 +181,9 @@ function AuthPage() {
         if (digits.length < 8 || digits.length > 15) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
+        if (!acceptTerms) {
+          throw new Error("Merci d'accepter les CGU et la politique de confidentialité.");
+        }
         // L'email de vérification est toujours envoyé par notre serveur via Resend
         // (expéditeur noreply@info.nooryaa.com, template Nooryaa).
 

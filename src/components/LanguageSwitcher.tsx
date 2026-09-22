@@ -24,22 +24,24 @@ export function LanguageSwitcher({ compact = false, inline = false }: { compact?
         data-no-translate
         role="group"
         aria-label="Language / Langue / اللغة"
-        className="flex w-full items-center rounded-md border border-border bg-muted/40 p-1"
+        className="flex w-full items-center gap-1 rounded-full border border-border/60 bg-muted/40 p-1"
       >
         {options.map((option) => (
-          <Button
+          <button
             key={option.value}
             type="button"
-            variant={locale === option.value ? "default" : "ghost"}
-            size="sm"
             onClick={() => setLocale(option.value)}
             aria-pressed={locale === option.value}
-            className="h-8 flex-1"
             lang={option.value}
             dir={option.value === "ar" ? "rtl" : "ltr"}
+            className={`h-8 flex-1 rounded-full px-3 text-xs font-medium transition-colors ${
+              locale === option.value
+                ? "bg-primary text-primary-foreground shadow-[var(--shadow-soft)]"
+                : "text-muted-foreground hover:bg-background hover:text-primary"
+            }`}
           >
             {option.value === "ar" ? option.label : option.short}
-          </Button>
+          </button>
         ))}
       </div>
     );

@@ -156,7 +156,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     const [{ data: recipient }, { data: actor }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("id, email, pseudo, first_name, preferences")
+        .select("id, email, pseudo, first_name, preferences, locale")
         .eq("id", data.recipientId)
         .maybeSingle(),
       supabaseAdmin.from("profiles").select("id, pseudo, first_name, primary_photo_blurred").eq("id", context.userId).maybeSingle(),

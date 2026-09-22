@@ -226,7 +226,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
                 <span className="rounded-full bg-black/45 backdrop-blur px-3 py-1 text-[11px] font-medium text-white">
-                  {activeLabel(current.last_active)}
+                  {activeLabel(current.last_active, t)}
                 </span>
                 {typeof current._matchPercent === "number" && (
                   <span className="flex flex-col items-center">

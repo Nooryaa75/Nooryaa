@@ -43,36 +43,44 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
       "title": "Privacy Policy",
       "sections": [
         {
-          "title": "1. Data Collected",
-          "body": "As part of the service, Nooryaa collects the data you provide: identity (first name, surname, username), contact details (email, telephone), date of birth, approximate location (city, GPS coordinates of your city), profile information (religious practice, family situation, activities and photos), as well as your exchanges via the messaging service."
+          "title": "1. Data Controller",
+          "body": "The controller of your personal data is Nooryaa. For any question about your data or to exercise your rights, write to contact@nooryaa.com. We answer every request within one month at the latest."
         },
         {
-          "title": "2. Purposes",
-          "body": "Your data is used exclusively to: create and manage your account; offer you compatible profiles (compatibility algorithm and search by geographical proximity); ensure the moderation and security of the community; and notify you of likes, messages and service events."
+          "title": "2. Data Collected",
+          "body": "As part of the service, Nooryaa collects the data you provide: identity (first name, surname, username), contact details (email, telephone), date of birth, approximate location (city, GPS coordinates of your city), profile information (religious practice, family situation, activities and photos), as well as your exchanges via the messaging service. Some of this information (religious practice, marriage intentions) is sensitive data under Article 9 GDPR: it is processed solely on the basis of your explicit consent, given when you complete your profile, and you may withdraw it at any time by removing that information or deleting your account."
         },
         {
-          "title": "3. Selfie Verification",
+          "title": "3. Purposes and Legal Bases",
+          "body": "Performance of the contract: account creation and management, matchmaking, messaging, subscriptions. Consent: sensitive profile data, audience measurement, marketing notifications. Legitimate interest: service security, prevention of fake accounts and fraud, moderation. Legal obligation: retention of billing records."
+        },
+        {
+          "title": "4. Selfie Verification",
           "body": "The verification photo (selfie) is transmitted solely for comparison with your profile photos. It is neither recorded nor retained: only the verification status (verified / unverified) is retained on your account."
         },
         {
-          "title": "4. Data Sharing",
-          "body": "Your data is neither sold nor shared with third parties for commercial purposes. Certain processing activities (hosting and content analysis for moderation) are carried out by technical processors subject to strict confidentiality and security obligations."
+          "title": "5. Recipients and Processors",
+          "body": "Your data is never sold, rented or shared for advertising purposes. We rely on technical processors bound by contracts compliant with Article 28 GDPR: hosting and database, transactional email delivery, automated analysis of photos and messages for moderation. Where a transfer outside the European Union is required, it is covered by the European Commission's standard contractual clauses."
         },
         {
-          "title": "5. Retention",
-          "body": "Your data is retained for as long as your account remains active. If the account is deleted, the data is erased or anonymized within a reasonable period, except where legal retention obligations apply (for example, for reports that are still being processed)."
+          "title": "6. Retention Periods",
+          "body": "Active account: data is kept for as long as your account exists. Inactive account: deleted or anonymized after 3 years without login. Deleted account: erased within 30 days. Messages: deleted with the account. Reports and moderation evidence: 1 year. Consents: 3 years from collection. Invoices: 10 years (accounting obligation)."
         },
         {
-          "title": "6. Your Rights",
-          "body": "In accordance with the RGPD, you have the right to access, rectify, erase and port your data, as well as the right to object to its processing. You may exercise these rights from your “My Account” area or by contacting us. You may also lodge a complaint with the CNIL."
+          "title": "7. Your Rights",
+          "body": "Under the GDPR you have the right of access, rectification, erasure, restriction, portability and objection, as well as the right to withdraw your consent at any time. You can download all of your data and manage your consents from My Account → My personal data, correct your information from My Profile, and delete your account at any time. You may also lodge a complaint with the CNIL (www.cnil.fr) or your local supervisory authority."
         },
         {
-          "title": "7. Security",
-          "body": "We implement appropriate technical and organizational measures: encryption of exchanges, access controls, database-level security rules, and systematic verification of members’ identities."
+          "title": "8. Security",
+          "body": "We implement appropriate technical and organizational measures: encryption of exchanges, access controls, database-level security rules, logging of administrator access, and systematic verification of members’ identities."
         },
         {
-          "title": "8. Cookies",
-          "body": "The application uses only cookies and local storage that are strictly necessary for its operation (login session and preferences). No advertising cookie or third-party tracking cookie is used."
+          "title": "9. Cookies and Audience Measurement",
+          "body": "The application uses cookies and local storage that are strictly necessary for its operation (login session, preferences, language). An internal audience measurement (pages visited, approximate city, referrer) is enabled only with your consent and can be refused or withdrawn at any time from the cookie banner or My Account → My personal data. No third-party advertising cookie is used."
+        },
+        {
+          "title": "10. Minors",
+          "body": "The service is strictly reserved for adults. No account is knowingly opened for a person under 18; any account identified as such is deleted without delay."
         }
       ]
     }

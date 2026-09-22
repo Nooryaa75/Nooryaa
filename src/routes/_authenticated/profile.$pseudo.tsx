@@ -17,9 +17,19 @@ import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/li
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { frenchError } from "@/lib/errors";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
-  head: ({ params }) => ({ meta: [{ title: `${params.pseudo} — Nooryaa` }] }),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.pseudo} — Nooryaa` },
+      { name: "description", content: `Découvrez le profil de ${params.pseudo} sur Nooryaa.` },
+      { property: "og:title", content: `${params.pseudo} — Nooryaa` },
+      { property: "og:description", content: `Découvrez le profil de ${params.pseudo} sur Nooryaa.` },
+      { property: "og:type", content: "profile" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ProfileView,
 });
 
@@ -27,6 +37,7 @@ const REPORT_REASONS = ["Contenu inapproprié", "Faux profil", "Harcèlement", "
 
 function ProfileView() {
   const { pseudo } = Route.useParams();
+  const { t } = useI18n();
   const ctx = Route.useRouteContext();
   const navigate = useNavigate();
   const router = useRouter();
@@ -91,7 +102,7 @@ function ProfileView() {
       qc.invalidateQueries({ queryKey: ["liked"] });
       qc.invalidateQueries({ queryKey: ["like-graph"] });
       qc.invalidateQueries({ queryKey: ["unread-counts"] });
-      toast.success(liked ? "Coup de cœur retiré" : "Coup de cœur ajouté 💚");
+      toast.success(t(liked ? "Coup de cœur retiré" : "Coup de cœur ajouté 💚"));
     },
   });
 
@@ -109,7 +120,7 @@ function ProfileView() {
       qc.invalidateQueries({ queryKey: ["block"] });
       qc.invalidateQueries({ queryKey: ["liked"] });
       qc.invalidateQueries({ queryKey: ["browse"] });
-      toast.success(blockState?.iBlocked ? "Profil débloqué" : "Profil bloqué");
+      toast.success(t(blockState?.iBlocked ? "Profil débloqué" : "Profil bloqué"));
     },
   });
 
@@ -211,13 +222,14 @@ function ProfileView() {
               {!isMe && !blocked && (
                 <>
                   <Button
+                    data-no-translate
                     onClick={() => toggleLike.mutate()}
                     disabled={toggleLike.isPending}
                     className={`rounded-full gap-2 ${isLiked ? "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary" : "text-muted-foreground border-border hover:text-primary hover:border-primary"}`}
                     variant={isLiked ? "default" : "outline"}
                   >
                     <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
-                    {isLiked ? "Coup de cœur ✓" : "Coup de cœur"}
+                    {t(isLiked ? "Coup de cœur ✓" : "Coup de cœur")}
                   </Button>
                   {messagingAllowed ? (
                     <Button onClick={startConversation} variant="default" className="rounded-full gap-2">
@@ -234,8 +246,8 @@ function ProfileView() {
                       <MessageCircle className="h-4 w-4" /> Message verrouillé
                     </Button>
                   )}
-                  <Button onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                    <Ban className="h-4 w-4" /> Bloquer
+                  <Button data-no-translate onClick={() => toggleBlock.mutate()} disabled={toggleBlock.isPending} variant="ghost" size="sm" className="gap-2 text-muted-foreground">
+                    <Ban className="h-4 w-4" /> {t("Bloquer")}
                   </Button>
                   <Dialog open={reportOpen} onOpenChange={setReportOpen}>
                     <DialogTrigger asChild>
@@ -262,7 +274,7 @@ function ProfileView() {
               {!isMe && blockState?.iBlocked && (
                 <div className="w-full border border-border rounded-lg p-3 text-sm flex items-center justify-between">
                   <span className="text-muted-foreground">Vous avez bloqué ce profil.</span>
-                  <Button onClick={() => toggleBlock.mutate()} variant="outline" size="sm">Débloquer</Button>
+                  <Button data-no-translate onClick={() => toggleBlock.mutate()} variant="outline" size="sm">{t("Débloquer")}</Button>
                 </div>
               )}
               {!isMe && blockState?.blocksMe && !blockState?.iBlocked && (

@@ -44,7 +44,7 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
       "sections": [
         {
           "title": "1. Data Controller",
-          "body": "The controller of your personal data is Nooryaa. For any question about your data or to exercise your rights, write to contact@nooryaa.com. We answer every request within one month at the latest."
+          "body": "The controller of your personal data is the company BK Company, 7 bis allée de Chelles, 93340 Le Raincy, registered with the Bobigny Commercial Court Registry (RCS) under no. 130 260 730, publisher of the Nooryaa application. For any question about your data or to exercise your rights, write to contact@nooryaa.com. We answer every request within one month at the latest."
         },
         {
           "title": "2. Data Collected",
@@ -128,7 +128,7 @@ export const LEGAL_TRANSLATIONS: Record<"en" | "ar", Record<"terms" | "privacy",
       "sections": [
         {
           "title": "1. المسؤول عن المعالجة",
-          "body": "المسؤول عن معالجة بياناتكم هو Nooryaa. لأي سؤال يتعلق ببياناتكم الشخصية أو لممارسة حقوقكم، يمكنكم مراسلتنا على contact@nooryaa.com. ونردّ على كل طلب خلال شهر واحد كحد أقصى."
+          "body": "المسؤول عن معالجة بياناتكم هو شركة BK Company، العنوان: 7 bis allée de Chelles، 93340 Le Raincy، مسجّلة لدى السجل التجاري في Bobigny برقم 130 260 730، وهي الناشرة لتطبيق Nooryaa. لأي سؤال يتعلق ببياناتكم الشخصية أو لممارسة حقوقكم، يمكنكم مراسلتنا على contact@nooryaa.com. ونردّ على كل طلب خلال شهر واحد كحد أقصى."
         },
         {
           "title": "2. البيانات المجمّعة",

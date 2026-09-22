@@ -541,8 +541,8 @@ export async function requestSelfieRedo(opts: {
         user_id: opts.userId,
         actor_id: null,
         kind: "system",
-        title: "Vérification de votre profil à refaire",
-        body: "Une de vos nouvelles photos n'a pas pu être confirmée. Refaites la vérification par selfie depuis Mon compte pour retrouver votre badge « Profil vérifié ».",
+        title: c.selfie.inAppTitle,
+        body: c.selfie.inAppBody,
         link: "/compte/profil",
       });
     }

@@ -1,5 +1,13 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Ouvrir": { "en": "Open", "ar": "فتح" },
+  "modifié · ": { "en": "edited · ", "ar": "تم التعديل · " },
+  "Modification du message : ": { "en": "Editing message: ", "ar": "تعديل الرسالة: " },
+  "Réponse à : ": { "en": "Replying to: ", "ar": "الرد على: " },
+  "Modifier votre message...": { "en": "Edit your message...", "ar": "عدّل رسالتك..." },
+  "Écrire un message...": { "en": "Write a message...", "ar": "اكتب رسالة..." },
+  "Ce message ne respecte pas la charte de Nooryaa.": { "en": "This message does not comply with Nooryaa's guidelines.", "ar": "هذه الرسالة لا تتوافق مع قواعد Nooryaa." },
+  "Ce vocal ne respecte pas la charte de Nooryaa.": { "en": "This voice message does not comply with Nooryaa's guidelines.", "ar": "هذه الرسالة الصوتية لا تتوافق مع قواعد Nooryaa." },
   "Coup de cœur": { "en": "Favorite", "ar": "إعجاب مميز" },
   "Coup de cœur ✓": { "en": "Favorite ✓", "ar": "إعجاب مميز ✓" },
   "Coup de cœur retiré": { "en": "Removed from favorites", "ar": "تمت الإزالة من الإعجابات المميزة" },

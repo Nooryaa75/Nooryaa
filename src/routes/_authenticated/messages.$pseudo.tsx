@@ -34,7 +34,7 @@ function Conversation() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sendingVoice, setSendingVoice] = useState(false);
@@ -172,7 +172,7 @@ function Conversation() {
             .update({ deleted_at: new Date().toISOString(), content: null } as any)
             .eq("id", messageId);
           patchList((old) => old.filter((m) => m.id !== messageId));
-          toast.error(res.reason || "Ce message ne respecte pas la charte de Nooryaa.");
+          toast.error(res.reason ? t(res.reason) : t("Ce message ne respecte pas la charte de Nooryaa."));
         } else if (res.verdict === "warn" && res.reason) {
           toast.warning(res.reason);
         }
@@ -249,7 +249,7 @@ function Conversation() {
       if (m.image_path) await supabase.storage.from("message-photos").remove([m.image_path]);
       if (m.audio_path) await supabase.storage.from("message-audio").remove([m.audio_path]);
     },
-    onSuccess: () => { toast.success("Message supprimé"); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
+    onSuccess: () => { toast.success(t("Message supprimé")); qc.invalidateQueries({ queryKey: ["unread-counts"] }); },
     onError: (e: any) => toast.error(frenchError(e)),
   });
 
@@ -271,7 +271,7 @@ function Conversation() {
       }
     },
     onSuccess: () => {
-      toast.success("Conversation supprimée");
+      toast.success(t("Conversation supprimée"));
       setConfirmDeleteConvo(false);
       if (peer) {
         qc.setQueryData(["conversations", ctx.userId], (old: any) => Array.isArray(old) ? old.filter((p) => p.id !== peer.id) : old);
@@ -294,7 +294,7 @@ function Conversation() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Signalement envoyé à la modération");
+      toast.success(t("Signalement envoyé à la modération"));
       setReportOpen(false);
       setReportReason("");
     },
@@ -311,7 +311,7 @@ function Conversation() {
       await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", peer.id);
     },
     onSuccess: () => {
-      toast.success("Profil bloqué");
+      toast.success(t("Profil bloqué"));
       qc.invalidateQueries({ queryKey: ["block"] });
       qc.invalidateQueries({ queryKey: ["browse"] });
       qc.invalidateQueries({ queryKey: ["conversations"] });
@@ -322,7 +322,7 @@ function Conversation() {
 
   async function handlePhoto(file: File) {
     if (!peer) return;
-    if (file.size > 5 * 1024 * 1024) { toast.error("Photo trop lourde (max 5 Mo)"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error(t("Photo trop lourde (max 5 Mo)")); return; }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -350,7 +350,7 @@ function Conversation() {
 
   async function handleVoice(blob: Blob, duration: number) {
     if (!peer) return;
-    if (blob.size > 10 * 1024 * 1024) { toast.error("Vocal trop lourd (max 10 Mo)"); return; }
+    if (blob.size > 10 * 1024 * 1024) { toast.error(t("Vocal trop lourd (max 10 Mo)")); return; }
     setSendingVoice(true);
     try {
       const ext = blob.type.includes("wav") ? "wav" : blob.type.includes("mp4") ? "m4a" : "webm";
@@ -380,7 +380,7 @@ function Conversation() {
               .eq("id", inserted.id);
             await supabase.storage.from("message-audio").remove([path]);
             patchList((old) => old.filter((m) => m.id !== inserted.id));
-            toast.error(res.reason || "Ce vocal ne respecte pas la charte de Nooryaa.");
+            toast.error(res.reason ? t(res.reason) : t("Ce vocal ne respecte pas la charte de Nooryaa."));
           } else if (res.verdict === "warn" && res.reason) {
             toast.warning(res.reason);
           }
@@ -396,7 +396,7 @@ function Conversation() {
   }
 
 
-  if (!peer) return <div className="m-auto text-muted-foreground">Chargement...</div>;
+  if (!peer) return <div className="m-auto text-muted-foreground">{t("Chargement")}...</div>;
 
   const byId = new Map((messages ?? []).map((m: any) => [m.id, m]));
 
@@ -418,17 +418,17 @@ function Conversation() {
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Options de la conversation"><MoreVertical className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" aria-label={t("Options de la conversation")}><MoreVertical className="h-4 w-4" /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setReportOpen(true)}>
-              <Flag className="h-4 w-4 mr-2" /> Signaler en cas d'abus
+              <Flag className="h-4 w-4 mr-2" /> {t("Signaler en cas d'abus")}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmBlock(true)}>
-              <Ban className="h-4 w-4 mr-2" /> Bloquer {peer.pseudo}
+              <Ban className="h-4 w-4 mr-2" /> {t("Bloquer")} {peer.pseudo}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDeleteConvo(true)}>
-              <Trash2 className="h-4 w-4 mr-2" /> Supprimer la conversation
+              <Trash2 className="h-4 w-4 mr-2" /> {t("Supprimer la conversation")}
             </DropdownMenuItem>
           </DropdownMenuContent>
 
@@ -441,12 +441,12 @@ function Conversation() {
         <div className="mx-1 rounded-2xl bg-secondary px-4 py-3 flex gap-3 items-start">
           <ShieldCheck className="h-8 w-8 text-accent shrink-0" />
           <div>
-            <p className="text-sm font-bold text-accent">Votre sécurité est notre priorité</p>
-            <p className="text-xs text-foreground/80">Ne partagez jamais d'informations personnelles.</p>
-            <Link to="/compte/regles" className="text-xs font-semibold text-primary underline underline-offset-2">En savoir plus</Link>
+            <p className="text-sm font-bold text-accent">{t("Votre sécurité est notre priorité")}</p>
+            <p className="text-xs text-foreground/80">{t("Ne partagez jamais d'informations personnelles.")}</p>
+            <Link to="/compte/regles" className="text-xs font-semibold text-primary underline underline-offset-2">{t("En savoir plus")}</Link>
           </div>
         </div>
-        <p className="text-center text-xs text-muted-foreground py-1">Aujourd'hui</p>
+        <p className="text-center text-xs text-muted-foreground py-1">{t("Aujourd'hui")}</p>
         {messages?.map((m: any) => {
           const mine = m.sender === ctx.userId;
           const parent = m.reply_to ? byId.get(m.reply_to) : null;
@@ -459,11 +459,11 @@ function Conversation() {
               )}
               {mine && !m.deleted_at && (
                 <div className={`transition-opacity flex gap-1 ${actionFor === m.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
-                  <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>
+                   <button type="button" title={t("Répondre")} onClick={() => { setReplyTo(m); setEditing(null); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Reply className="h-4 w-4" /></button>
                   {m.content && (
-                    <button type="button" title="Modifier" onClick={() => { setEditing(m); setReplyTo(null); setText(m.content); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Pencil className="h-4 w-4" /></button>
+                     <button type="button" title={t("Modifier")} onClick={() => { setEditing(m); setReplyTo(null); setText(m.content); setActionFor(null); }} className="text-muted-foreground hover:text-primary"><Pencil className="h-4 w-4" /></button>
                   )}
-                  <button type="button" title="Supprimer" onClick={() => { removeMessage.mutate(m); setActionFor(null); }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                   <button type="button" title={t("Supprimer")} onClick={() => { removeMessage.mutate(m); setActionFor(null); }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
                 </div>
               )}
               <div
@@ -471,18 +471,18 @@ function Conversation() {
                 className={`max-w-[75%] rounded-3xl overflow-hidden text-sm shadow-sm ${m.pending ? "opacity-70" : ""} ${m.deleted_at ? "bg-secondary/50 text-muted-foreground italic" : mine ? "text-primary-foreground cursor-pointer" : "bg-card border border-border/50 text-foreground"}`}
                 style={!m.deleted_at && mine ? { backgroundImage: "var(--gradient-gold)" } : undefined}>
                 {m.deleted_at ? (
-                  <div className="px-4 py-2">Message supprimé</div>
+                   <div className="px-4 py-2">{t("Message supprimé")}</div>
                 ) : (
                   <>
                     {parent && (
                       <div className={`mx-2 mt-2 px-3 py-1.5 rounded-lg text-xs border-l-2 ${mine ? "bg-primary-foreground/10 border-primary-foreground/50" : "bg-background/60 border-[color:var(--gold)]"}`}>
-                        <div className="opacity-70">{parent.sender === ctx.userId ? "Vous" : peer.pseudo}</div>
-                        <div className="truncate">{parent.deleted_at ? "Message supprimé" : parent.content || (parent.audio_path ? "Message vocal" : "Photo")}</div>
+                         <div className="opacity-70">{parent.sender === ctx.userId ? t("Vous") : peer.pseudo}</div>
+                         <div className="truncate">{parent.deleted_at ? t("Message supprimé") : parent.content || (parent.audio_path ? t("Message vocal") : t("Photo"))}</div>
                       </div>
                     )}
                     {m.image_url && (
                       <a href={m.image_url} target="_blank" rel="noopener noreferrer">
-                        <img src={m.image_url} alt="Photo partagée" className="max-h-72 w-auto object-cover" />
+                         <img src={m.image_url} alt={t("Photo partagée")} className="max-h-72 w-auto object-cover" />
                       </a>
                     )}
                     {m.audio_url && (
@@ -498,24 +498,24 @@ function Conversation() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[11px] underline opacity-70"
-                          title="Ouvrir le vocal si la lecture ne fonctionne pas"
+                           title={t("Ouvrir le vocal si la lecture ne fonctionne pas")}
                         >
-                          Ouvrir
+                           {t("Ouvrir")}
                         </a>
                       </div>
                     )}
 
                     {m.content && <div className="px-4 pt-2.5 whitespace-pre-wrap break-words">{m.content}</div>}
                     <div className={`px-4 pb-1.5 pt-0.5 text-[10px] flex items-center gap-1 ${mine ? "justify-end opacity-80" : "text-muted-foreground"}`}>
-                      {m.edited_at && "modifié · "}
-                      {new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                       {m.edited_at && t("modifié · ")}
+                       {new Date(m.created_at).toLocaleTimeString(locale === "ar" ? "ar" : locale === "en" ? "en" : "fr-FR", { hour: "2-digit", minute: "2-digit" })}
                       {mine && <CheckCheck className="h-3.5 w-3.5" />}
                     </div>
                   </>
                 )}
               </div>
               {!mine && !m.deleted_at && (
-                <button type="button" title="Répondre" onClick={() => { setReplyTo(m); setEditing(null); }} className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary">
+                 <button type="button" title={t("Répondre")} onClick={() => { setReplyTo(m); setEditing(null); }} className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary">
                   <Reply className="h-4 w-4" />
                 </button>
               )}
@@ -524,7 +524,7 @@ function Conversation() {
         })}
         {peerTyping && (
           <div className="flex justify-start">
-            <div className="bg-secondary text-muted-foreground rounded-2xl px-4 py-2 text-sm">{peer.pseudo} écrit…</div>
+             <div className="bg-secondary text-muted-foreground rounded-2xl px-4 py-2 text-sm">{peer.pseudo} {t("écrit…")}</div>
           </div>
         )}
       </div>
@@ -532,23 +532,23 @@ function Conversation() {
       {(replyTo || editing) && (
         <div className="px-3 pt-2 flex items-center gap-2 text-xs text-muted-foreground">
           <div className="flex-1 truncate border-l-2 border-[color:var(--gold)] pl-2">
-            {editing ? "Modification du message : " : "Réponse à : "}
-            {(editing ?? replyTo)?.content || ((editing ?? replyTo)?.audio_path ? "Message vocal" : "Photo")}
+             {editing ? t("Modification du message : ") : t("Réponse à : ")}
+             {(editing ?? replyTo)?.content || ((editing ?? replyTo)?.audio_path ? t("Message vocal") : t("Photo"))}
           </div>
-          <button type="button" onClick={() => { setReplyTo(null); setEditing(null); setText(""); }} aria-label="Annuler"><X className="h-4 w-4" /></button>
+           <button type="button" onClick={() => { setReplyTo(null); setEditing(null); setText(""); }} aria-label={t("Annuler")}><X className="h-4 w-4" /></button>
         </div>
       )}
 
       {!messagingAllowed ? (
         <div className="p-4 border-t border-border/60 text-center text-sm text-muted-foreground">
-          {MESSAGE_BLOCKED_HINT}
+           {t(MESSAGE_BLOCKED_HINT)}
         </div>
       ) : (
       <form onSubmit={(e) => { e.preventDefault(); submitMessage(); }} className="p-3 border-t border-border/60 flex gap-2 items-center">
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhoto(e.target.files[0])} />
         {!voiceActive && (
           <>
-            <Button type="button" size="icon" variant="outline" className="rounded-full h-10 w-10 shrink-0" onClick={() => fileRef.current?.click()} disabled={uploading} title="Envoyer une photo">
+             <Button type="button" size="icon" variant="outline" className="rounded-full h-10 w-10 shrink-0" onClick={() => fileRef.current?.click()} disabled={uploading} title={t("Envoyer une photo")}>
               {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-5 w-5" />}
             </Button>
             <EmojiPicker onPick={(e) => setText((t) => t + e)} />
@@ -560,7 +560,7 @@ function Conversation() {
             <Input
               value={text}
               onChange={(e) => { setText(e.target.value); notifyTyping(); }}
-              placeholder={editing ? "Modifier votre message..." : "Écrire un message..."}
+               placeholder={editing ? t("Modifier votre message...") : t("Écrire un message...")}
               maxLength={2000}
               className="rounded-full h-11 bg-card"
             />
@@ -575,14 +575,14 @@ function Conversation() {
       <AlertDialog open={confirmDeleteConvo} onOpenChange={setConfirmDeleteConvo}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer cette conversation ?</AlertDialogTitle>
+             <AlertDialogTitle>{t("Supprimer cette conversation ?")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Elle disparaîtra de votre messagerie. Votre correspondant·e conservera sa copie.
+               {t("Elle disparaîtra de votre messagerie. Votre correspondant·e conservera sa copie.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteConversation.mutate()}>Supprimer</AlertDialogAction>
+             <AlertDialogCancel>{t("Annuler")}</AlertDialogCancel>
+             <AlertDialogAction onClick={() => deleteConversation.mutate()}>{t("Supprimer")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -590,14 +590,14 @@ function Conversation() {
       <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Bloquer {peer.pseudo} ?</AlertDialogTitle>
+             <AlertDialogTitle>{t("Bloquer")} {peer.pseudo} ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette personne ne pourra plus vous contacter ni voir votre profil, et réciproquement. Vous pourrez la débloquer depuis sa fiche.
+               {t("Cette personne ne pourra plus vous contacter ni voir votre profil, et réciproquement. Vous pourrez la débloquer depuis sa fiche.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={() => blockPeer.mutate()}>Bloquer</AlertDialogAction>
+             <AlertDialogCancel>{t("Annuler")}</AlertDialogCancel>
+             <AlertDialogAction onClick={() => blockPeer.mutate()}>{t("Bloquer")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -605,25 +605,25 @@ function Conversation() {
       <AlertDialog open={reportOpen} onOpenChange={setReportOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Signaler {peer.pseudo}</AlertDialogTitle>
+             <AlertDialogTitle>{t("Signaler")} {peer.pseudo}</AlertDialogTitle>
             <AlertDialogDescription>
-              Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.
+               {t("Décrivez brièvement l'abus constaté. Notre équipe de modération examinera le signalement.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <Textarea
             value={reportReason}
             onChange={(e) => setReportReason(e.target.value)}
-            placeholder="Propos déplacés, harcèlement, arnaque…"
+             placeholder={t("Propos déplacés, harcèlement, arnaque…")}
             maxLength={500}
             rows={4}
           />
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+             <AlertDialogCancel>{t("Annuler")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={reportReason.trim().length < 10 || reportAbuse.isPending}
               onClick={(e) => { e.preventDefault(); reportAbuse.mutate(); }}
             >
-              Envoyer le signalement
+               {t("Envoyer le signalement")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

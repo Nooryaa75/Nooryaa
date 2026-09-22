@@ -24,12 +24,6 @@ export function Footer() {
           >
             {t("Politique de confidentialité")}
           </Link>
-          <Link
-            to="/terms"
-            className="text-muted-foreground transition-colors hover:text-primary hover:underline"
-          >
-            {t("Conditions d'utilisation")}
-          </Link>
         </nav>
       </div>
     </footer>

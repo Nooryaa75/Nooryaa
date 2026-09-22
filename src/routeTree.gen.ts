@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -58,11 +57,6 @@ import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes
 import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
 import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -316,7 +310,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -365,7 +358,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/likes': typeof AuthenticatedLikesRoute
@@ -415,7 +407,6 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -466,7 +457,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
-    | '/terms'
     | '/blocked'
     | '/browse'
     | '/compte'
@@ -515,7 +505,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
-    | '/terms'
     | '/blocked'
     | '/browse'
     | '/likes'
@@ -564,7 +553,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
-    | '/terms'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
     | '/_authenticated/compte'
@@ -615,7 +603,6 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TermsRoute: typeof TermsRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminConfigRoute: typeof AdminConfigRoute
@@ -639,13 +626,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -1057,7 +1037,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TermsRoute: TermsRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminConfigRoute: AdminConfigRoute,

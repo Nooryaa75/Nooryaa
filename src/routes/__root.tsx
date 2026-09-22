@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { I18nProvider } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TranslatedContent } from "@/components/TranslatedContent";
+import { Footer } from "@/components/Footer";
 
 function NotFoundComponent() {
   return (
@@ -199,8 +200,13 @@ function RootComponent() {
           <LanguageSwitcher />
         </div>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <VisitTracker />
-        <Outlet />
+        <div className="flex min-h-screen flex-col">
+          <VisitTracker />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

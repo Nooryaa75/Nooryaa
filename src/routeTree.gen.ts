@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -56,6 +58,11 @@ import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes
 import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
 import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -64,6 +71,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
   id: '/reinitialiser-mot-de-passe',
   path: '/reinitialiser-mot-de-passe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotreDifferenceRoute = NotreDifferenceRouteImport.update({
@@ -301,8 +313,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -348,8 +362,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/likes': typeof AuthenticatedLikesRoute
@@ -396,8 +412,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
+  '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -445,8 +463,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
+    | '/terms'
     | '/blocked'
     | '/browse'
     | '/compte'
@@ -492,8 +512,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
+    | '/terms'
     | '/blocked'
     | '/browse'
     | '/likes'
@@ -539,8 +561,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
+    | '/privacy'
     | '/reinitialiser-mot-de-passe'
     | '/sitemap.xml'
+    | '/terms'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
     | '/_authenticated/compte'
@@ -588,8 +612,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   NotreDifferenceRoute: typeof NotreDifferenceRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminConfigRoute: typeof AdminConfigRoute
@@ -613,6 +639,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -625,6 +658,13 @@ declare module '@tanstack/react-router' {
       path: '/reinitialiser-mot-de-passe'
       fullPath: '/reinitialiser-mot-de-passe'
       preLoaderRoute: typeof ReinitialiserMotDePasseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notre-difference': {
@@ -1014,8 +1054,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   NotreDifferenceRoute: NotreDifferenceRoute,
+  PrivacyRoute: PrivacyRoute,
   ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminConfigRoute: AdminConfigRoute,

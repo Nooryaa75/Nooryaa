@@ -53,6 +53,7 @@ import { Route as AuthenticatedCompteServiceClientRouteImport } from './routes/_
 import { Route as AuthenticatedCompteReglesRouteImport } from './routes/_authenticated/compte.regles'
 import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
 import { Route as AuthenticatedCompteNotificationsRouteImport } from './routes/_authenticated/compte.notifications'
+import { Route as AuthenticatedCompteDonneesRouteImport } from './routes/_authenticated/compte.donnees'
 import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes/_authenticated/compte.confidentialite'
 import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
 import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
@@ -284,6 +285,12 @@ const AuthenticatedCompteNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
+const AuthenticatedCompteDonneesRoute =
+  AuthenticatedCompteDonneesRouteImport.update({
+    id: '/donnees',
+    path: '/donnees',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
 const AuthenticatedCompteConfidentialiteRoute =
   AuthenticatedCompteConfidentialiteRouteImport.update({
     id: '/confidentialite',
@@ -335,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
   '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/compte/donnees': typeof AuthenticatedCompteDonneesRoute
   '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/compte/regles': typeof AuthenticatedCompteReglesRoute
@@ -382,6 +390,7 @@ export interface FileRoutesByTo {
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
   '/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/compte/donnees': typeof AuthenticatedCompteDonneesRoute
   '/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/compte/regles': typeof AuthenticatedCompteReglesRoute
@@ -432,6 +441,7 @@ export interface FileRoutesById {
   '/_authenticated/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/_authenticated/compte/cgu': typeof AuthenticatedCompteCguRoute
   '/_authenticated/compte/confidentialite': typeof AuthenticatedCompteConfidentialiteRoute
+  '/_authenticated/compte/donnees': typeof AuthenticatedCompteDonneesRoute
   '/_authenticated/compte/notifications': typeof AuthenticatedCompteNotificationsRoute
   '/_authenticated/compte/profil': typeof AuthenticatedCompteProfilRoute
   '/_authenticated/compte/regles': typeof AuthenticatedCompteReglesRoute
@@ -482,6 +492,7 @@ export interface FileRouteTypes {
     | '/compte/abonnement'
     | '/compte/cgu'
     | '/compte/confidentialite'
+    | '/compte/donnees'
     | '/compte/notifications'
     | '/compte/profil'
     | '/compte/regles'
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/compte/abonnement'
     | '/compte/cgu'
     | '/compte/confidentialite'
+    | '/compte/donnees'
     | '/compte/notifications'
     | '/compte/profil'
     | '/compte/regles'
@@ -578,6 +590,7 @@ export interface FileRouteTypes {
     | '/_authenticated/compte/abonnement'
     | '/_authenticated/compte/cgu'
     | '/_authenticated/compte/confidentialite'
+    | '/_authenticated/compte/donnees'
     | '/_authenticated/compte/notifications'
     | '/_authenticated/compte/profil'
     | '/_authenticated/compte/regles'
@@ -934,6 +947,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteNotificationsRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
+    '/_authenticated/compte/donnees': {
+      id: '/_authenticated/compte/donnees'
+      path: '/donnees'
+      fullPath: '/compte/donnees'
+      preLoaderRoute: typeof AuthenticatedCompteDonneesRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
     '/_authenticated/compte/confidentialite': {
       id: '/_authenticated/compte/confidentialite'
       path: '/confidentialite'
@@ -962,6 +982,7 @@ interface AuthenticatedCompteRouteChildren {
   AuthenticatedCompteAbonnementRoute: typeof AuthenticatedCompteAbonnementRoute
   AuthenticatedCompteCguRoute: typeof AuthenticatedCompteCguRoute
   AuthenticatedCompteConfidentialiteRoute: typeof AuthenticatedCompteConfidentialiteRoute
+  AuthenticatedCompteDonneesRoute: typeof AuthenticatedCompteDonneesRoute
   AuthenticatedCompteNotificationsRoute: typeof AuthenticatedCompteNotificationsRoute
   AuthenticatedCompteProfilRoute: typeof AuthenticatedCompteProfilRoute
   AuthenticatedCompteReglesRoute: typeof AuthenticatedCompteReglesRoute
@@ -974,6 +995,7 @@ const AuthenticatedCompteRouteChildren: AuthenticatedCompteRouteChildren = {
   AuthenticatedCompteCguRoute: AuthenticatedCompteCguRoute,
   AuthenticatedCompteConfidentialiteRoute:
     AuthenticatedCompteConfidentialiteRoute,
+  AuthenticatedCompteDonneesRoute: AuthenticatedCompteDonneesRoute,
   AuthenticatedCompteNotificationsRoute: AuthenticatedCompteNotificationsRoute,
   AuthenticatedCompteProfilRoute: AuthenticatedCompteProfilRoute,
   AuthenticatedCompteReglesRoute: AuthenticatedCompteReglesRoute,

@@ -255,6 +255,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       data.preview ?? null,
       actorPhoto?.url ?? null,
       (actor as any)?.primary_photo_blurred === true,
+      locale,
     );
 
     let status = "sent";

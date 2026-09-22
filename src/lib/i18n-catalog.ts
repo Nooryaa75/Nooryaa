@@ -1,5 +1,10 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Coup de cœur": { "en": "Favorite", "ar": "إعجاب مميز" },
+  "Coup de cœur ✓": { "en": "Favorite ✓", "ar": "إعجاب مميز ✓" },
+  "Coup de cœur retiré": { "en": "Removed from favorites", "ar": "تمت الإزالة من الإعجابات المميزة" },
+  "Coup de cœur ajouté 💚": { "en": "Added to favorites 💚", "ar": "تمت الإضافة إلى الإعجابات المميزة 💚" },
+  "Bloquer": { "en": "Block", "ar": "حظر" },
   "Démarrez la conversation": { "en": "Start the conversation", "ar": "ابدأ المحادثة" },
   "Message vocal": { "en": "Voice message", "ar": "رسالة صوتية" },
   "Photo": { "en": "Photo", "ar": "صورة" },

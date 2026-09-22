@@ -83,7 +83,7 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
 const SEARCH_ICONS = [Heart, Star, Home];
 
 function Recherche() {
-  const { locale } = useI18n();
+  const { locale, t: tr } = useI18n();
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
@@ -198,7 +198,7 @@ function Recherche() {
             }`}
             style={tab === t.key ? { background: "var(--gradient-gold)" } : undefined}
           >
-            {t.label}
+            <span data-no-translate>{tr(t.label)}</span>
           </button>
         ))}
       </div>
@@ -284,7 +284,7 @@ function Recherche() {
 
           {/* Localisation */}
           <div className="space-y-3">
-            <SectionTitle>Localisation</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Localisation")}</span></SectionTitle>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary z-10 pointer-events-none" />
               <CityAutocomplete
@@ -305,8 +305,8 @@ function Recherche() {
             </div>
             <div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Rayon</span>
-                <span className="font-medium">{filters.radiusEnabled ? formatDistance(filters.radiusKm, locale) : "Désactivé"}</span>
+                <span className="text-muted-foreground" data-no-translate>{tr("Rayon")}</span>
+                <span className="font-medium" data-no-translate>{filters.radiusEnabled ? formatDistance(filters.radiusKm, locale) : tr("Désactivé")}</span>
               </div>
               <Slider
                 value={[filters.radiusKm]}
@@ -327,19 +327,22 @@ function Recherche() {
 
           {/* Âge */}
           <div className="space-y-2">
-            <SectionTitle>Âge</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Âge")}</span></SectionTitle>
             <DualRangeSlider
               value={[filters.ageMin, filters.ageMax]}
               min={18}
               max={90}
               step={1}
+              minLabel={tr("Âge minimum")}
+              maxLabel={tr("Âge maximum")}
+              unit={tr("ans")}
               onValueChange={([a, b]) => set({ ageMin: a, ageMax: b })}
             />
           </div>
 
           {/* Taille */}
           <div className="space-y-2">
-            <SectionTitle>Taille</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Taille")}</span></SectionTitle>
             <DualRangeSlider
               value={[filters.heightMin ?? 120, filters.heightMax ?? 230]}
               min={120}
@@ -347,8 +350,8 @@ function Recherche() {
               step={1}
               unit=""
               formatValue={(v) => formatHeight(v, locale) ?? String(v)}
-              minLabel="Taille min"
-              maxLabel="Taille max"
+              minLabel={tr("Taille min")}
+              maxLabel={tr("Taille max")}
               onValueChange={([a, b]) => set({ heightMin: a, heightMax: b })}
             />
           </div>

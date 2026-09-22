@@ -32,10 +32,10 @@ function Bubble({
 }) {
   return (
     <div ref={innerRef} className="absolute top-0 flex flex-col items-center" style={style}>
-      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
+      <span className="text-xs text-muted-foreground whitespace-nowrap" data-no-translate>{label}</span>
       <div className="relative mt-1 rounded-xl border border-border bg-card px-3 py-1 shadow-sm">
         <span className="text-lg font-bold text-primary" data-no-translate>{formatValue ? formatValue(value) : value}</span>
-        {unit ? <span className="ml-1 text-sm font-medium text-muted-foreground">{unit}</span> : null}
+        {unit ? <span className="ml-1 text-sm font-medium text-muted-foreground" data-no-translate>{unit}</span> : null}
         <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
       </div>
     </div>

@@ -4511,4 +4511,11 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Activités": { "en": "Activities", "ar": "الأنشطة" },
   "Nombre d'enfants": { "en": "Number of children", "ar": "عدد الأطفال" },
   "Objectif": { "en": "Goal", "ar": "الهدف" },
+  "Profils": { "en": "Profiles", "ar": "الملفات" },
+  "Localisation": { "en": "Location", "ar": "الموقع" },
+  "Rayon": { "en": "Radius", "ar": "نطاق البحث" },
+  "Désactivé": { "en": "Disabled", "ar": "معطّل" },
+  "Taille min": { "en": "Min height", "ar": "أدنى طول" },
+  "Taille max": { "en": "Max height", "ar": "أقصى طول" },
+  "ans": { "en": "yrs", "ar": "سنة" },
 };

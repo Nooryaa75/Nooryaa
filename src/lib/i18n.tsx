@@ -1,5 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { TRANSLATIONS } from "./i18n-catalog";
+import { TRANSLATIONS as BASE_TRANSLATIONS } from "./i18n-catalog";
+import { GEO_TRANSLATIONS } from "./geo-catalog";
+
+export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  ...GEO_TRANSLATIONS,
+  ...BASE_TRANSLATIONS,
+};
 
 export type Locale = "fr" | "en" | "ar";
 

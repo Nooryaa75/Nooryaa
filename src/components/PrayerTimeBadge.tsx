@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Moon } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 type Timings = Record<string, string>;
 
@@ -35,6 +36,7 @@ function currentPrayer(timings: Timings) {
 
 export function PrayerTimeBadge() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!("geolocation" in navigator)) {
@@ -84,15 +86,15 @@ export function PrayerTimeBadge() {
   return (
     <div
       className="flex items-center gap-2 rounded-full bg-[#F3E8FF] px-3 py-1.5"
-      title={`Prochaine : ${res.next.label} à ${res.next.time}`}
-      aria-label={`Prière en cours : ${res.cur.label} à ${res.cur.time}`}
+      title={`${t("Prochaine")} : ${t(res.next.label)} ${t("à")} ${res.next.time}`}
+      aria-label={`${t("Prière en cours")} : ${t(res.cur.label)} ${t("à")} ${res.cur.time}`}
     >
       <Moon className="h-4 w-4 text-primary" />
       <span className="text-xs font-semibold text-primary">
-        {res.cur.label} {res.cur.time}
+        {t(res.cur.label)} {res.cur.time}
       </span>
       <span className="text-[11px] text-muted-foreground">
-        → {res.next.label} {res.next.time}
+        → {t(res.next.label)} {res.next.time}
       </span>
     </div>
   );

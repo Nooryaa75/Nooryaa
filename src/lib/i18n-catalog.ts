@@ -1,5 +1,15 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Fajr": { "en": "Fajr (Dawn)", "ar": "الفجر" },
+  "Dhuhr": { "en": "Dhuhr (Noon)", "ar": "الظهر" },
+  "Asr": { "en": "Asr (Afternoon)", "ar": "العصر" },
+  "Maghrib": { "en": "Maghrib (Sunset)", "ar": "المغرب" },
+  "Isha": { "en": "Isha (Night)", "ar": "العشاء" },
+  "Prochaine": { "en": "Next", "ar": "القادمة" },
+  "Prière en cours": { "en": "Current prayer", "ar": "الصلاة الحالية" },
+  "à": { "en": "at", "ar": "الساعة" },
+  "C'est l'heure de la prière": { "en": "It is time for prayer", "ar": "حان وقت الصلاة" },
+  "Prenez une pause, la conversation vous attendra": { "en": "Take a break, the conversation can wait", "ar": "خذ استراحة، فالمحادثة يمكنها الانتظار" },
   "Connexion": { "en": "Sign in", "ar": "تسجيل الدخول" },
   "Connectez-vous à votre profil": { "en": "Sign in to your profile", "ar": "سجّل الدخول إلى ملفك الشخصي" },
   "Se connecter": { "en": "Sign in", "ar": "تسجيل الدخول" },

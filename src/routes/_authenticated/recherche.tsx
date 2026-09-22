@@ -128,13 +128,13 @@ function Recherche() {
 
   async function saveCurrentSearch() {
     const name = searchName.trim();
-    if (!name) { toast.error("Donnez un nom à votre recherche"); return; }
+    if (!name) { toast.error(tr("Donnez un nom à votre recherche")); return; }
     const { error } = await supabase.from("saved_searches").insert({
       user_id: ctx.userId, name, filters: filters as any, last_notified_at: new Date().toISOString(),
     } as any);
     if (error) { toast.error(frenchError(error)); return; }
     setSearchName("");
-    toast.success("Recherche enregistrée");
+    toast.success(tr("Recherche enregistrée"));
     qc.invalidateQueries({ queryKey: ["saved-searches", ctx.userId] });
   }
 
@@ -153,7 +153,7 @@ function Recherche() {
     });
     setActiveSearchName(row.name ?? null);
     setTab("resultats");
-    toast.success(`Recherche « ${row.name} » appliquée`);
+    toast.success(`${tr("Recherche")} « ${row.name} » ${tr("appliquée")}`);
     await supabase
       .from("saved_searches")
       .update({ last_notified_at: new Date().toISOString() } as any)
@@ -498,7 +498,7 @@ function Recherche() {
             className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors"
           >
             <RotateCcw className="h-4 w-4" />
-            Réinitialiser les filtres
+            <span data-no-translate>{tr("Réinitialiser les filtres")}</span>
           </button>
         </div>
       )}
@@ -507,16 +507,16 @@ function Recherche() {
       {tab === "enregistrees" && (
         <div className="space-y-5">
           <div>
-            <SectionTitle>Mes recherches sauvegardées</SectionTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Retrouvez vos recherches et soyez notifié<br />lorsque de nouveaux profils correspondent.
+            <SectionTitle><span data-no-translate>{tr("Mes recherches sauvegardées")}</span></SectionTitle>
+            <p className="text-sm text-muted-foreground mt-1" data-no-translate>
+              {tr("Retrouvez vos recherches et soyez notifié")}<br />{tr("lorsque de nouveaux profils correspondent.")}
             </p>
           </div>
 
           {!savedSearches || savedSearches.length === 0 ? (
             <div className="text-center py-14 bg-card rounded-3xl border border-border/60">
               <Star className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-muted-foreground">Aucune recherche enregistrée pour le moment.</p>
+              <p className="text-muted-foreground" data-no-translate>{tr("Aucune recherche enregistrée pour le moment.")}</p>
             </div>
           ) : (
             <ul className="space-y-3">
@@ -533,19 +533,19 @@ function Recherche() {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground truncate text-sm">{s.name}</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">
-                        {s.filters?.ageMin}–{s.filters?.ageMax} ans
+                        {s.filters?.ageMin}–{s.filters?.ageMax} {tr("ans")}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {s.filters?.city || s.filters?.originLabel || "Partout"}
-                        {s.filters?.radiusEnabled ? ` • Rayon ${formatDistance(s.filters.radiusKm, locale)}` : ""}
+                        {s.filters?.city || s.filters?.originLabel || tr("Partout")}
+                        {s.filters?.radiusEnabled ? ` • ${tr("Rayon")} ${formatDistance(s.filters.radiusKm, locale)}` : ""}
                       </p>
                     </div>
                     <span className="shrink-0 inline-flex items-center justify-center rounded-full bg-accent/10 text-accent text-[11px] font-semibold px-2.5 py-1">
-                      {total} profil{total > 1 ? "s" : ""}
+                      {total} {total > 1 ? tr("profils") : tr("profil")}
                     </span>
                     <button
                       type="button"
-                      aria-label="Notifications"
+                      aria-label={tr("Notifications")}
                       onClick={() => applySearch(s)}
                       className="relative shrink-0 text-accent hover:text-primary transition-colors"
                     >
@@ -558,14 +558,14 @@ function Recherche() {
                     </button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button type="button" aria-label="Options" className="shrink-0 text-muted-foreground hover:text-primary transition-colors">
+                        <button type="button" aria-label={tr("Options")} className="shrink-0 text-muted-foreground hover:text-primary transition-colors">
                           <MoreVertical className="h-5 w-5" />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => applySearch(s)}>Appliquer</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => applySearch(s)}><span data-no-translate>{tr("Appliquer")}</span></DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => deleteSearch(s.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" /> Supprimer
+                          <Trash2 className="h-4 w-4 mr-2" /> <span data-no-translate>{tr("Supprimer")}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -581,7 +581,7 @@ function Recherche() {
             className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-accent/40 text-accent font-semibold py-3.5 hover:bg-accent/5 transition-colors"
           >
             <Plus className="h-5 w-5" />
-            Créer une nouvelle recherche
+            <span data-no-translate>{tr("Créer une nouvelle recherche")}</span>
           </button>
         </div>
       )}

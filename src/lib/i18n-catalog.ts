@@ -2886,8 +2886,24 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "ar": "البحث عن الملفات الشخصية — Nooryaa"
   },
   "Recherche enregistrée": {
-    "en": "Saved search",
-    "ar": "بحث محفوظ"
+    "en": "Search saved",
+    "ar": "تم حفظ البحث"
+  },
+  "Recherche": {
+    "en": "Search",
+    "ar": "البحث"
+  },
+  "appliquée": {
+    "en": "applied",
+    "ar": "مُطبَّق"
+  },
+  "Partout": {
+    "en": "Everywhere",
+    "ar": "في كل مكان"
+  },
+  "Appliquer": {
+    "en": "Apply",
+    "ar": "تطبيق"
   },
   "Recherche par critères, par distance et recherches enregistrées.": {
     "en": "Search by criteria, distance, and saved searches.",

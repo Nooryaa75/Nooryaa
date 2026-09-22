@@ -545,7 +545,7 @@ function Recherche() {
                     </span>
                     <button
                       type="button"
-                      aria-label="Notifications"
+                      aria-label={tr("Notifications")}
                       onClick={() => applySearch(s)}
                       className="relative shrink-0 text-accent hover:text-primary transition-colors"
                     >
@@ -558,14 +558,14 @@ function Recherche() {
                     </button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button type="button" aria-label="Options" className="shrink-0 text-muted-foreground hover:text-primary transition-colors">
+                        <button type="button" aria-label={tr("Options")} className="shrink-0 text-muted-foreground hover:text-primary transition-colors">
                           <MoreVertical className="h-5 w-5" />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => applySearch(s)}>Appliquer</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => applySearch(s)}><span data-no-translate>{tr("Appliquer")}</span></DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => deleteSearch(s.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" /> Supprimer
+                          <Trash2 className="h-4 w-4 mr-2" /> <span data-no-translate>{tr("Supprimer")}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -581,7 +581,7 @@ function Recherche() {
             className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-accent/40 text-accent font-semibold py-3.5 hover:bg-accent/5 transition-colors"
           >
             <Plus className="h-5 w-5" />
-            Créer une nouvelle recherche
+            <span data-no-translate>{tr("Créer une nouvelle recherche")}</span>
           </button>
         </div>
       )}

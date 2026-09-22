@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, CheckCheck, Heart, MessageCircle, Sparkles, Eye, Info, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import {
   useNotifications,
   useMarkNotificationRead,
@@ -29,18 +30,20 @@ const KIND_ICON: Record<AppNotification["kind"], typeof Heart> = {
   system: Info,
 };
 
-function formatDate(iso: string) {
+function formatDate(iso: string, locale: string, tr: (s: string) => string) {
   const d = new Date(iso);
   const diffMin = Math.floor((Date.now() - d.getTime()) / 60000);
-  if (diffMin < 1) return "À l'instant";
-  if (diffMin < 60) return `Il y a ${diffMin} min`;
+  const tag = locale === "en" ? "en-US" : locale === "ar" ? "ar" : "fr-FR";
+  if (diffMin < 1) return tr("À l'instant");
+  if (diffMin < 60) return tr("Il y a {n} min").replace("{n}", String(diffMin));
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `Il y a ${diffH} h`;
-  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  if (diffH < 24) return tr("Il y a {n} h").replace("{n}", String(diffH));
+  return d.toLocaleDateString(tag, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
 function NotificationsPage() {
   const navigate = useNavigate();
+  const { t: tr, locale } = useI18n();
   const { data: notifications, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
@@ -65,9 +68,11 @@ function NotificationsPage() {
               )}
             </span>
             <div>
-              <h1 className="text-lg font-bold text-foreground">Notifications</h1>
+              <h1 className="text-lg font-bold text-foreground">{tr("Notifications")}</h1>
               <p className="text-xs text-muted-foreground">
-                {unread > 0 ? `${unread} non lue${unread > 1 ? "s" : ""}` : "Vous êtes à jour"}
+                {unread > 0
+                  ? tr(unread > 1 ? "{n} non lues" : "{n} non lue").replace("{n}", String(unread))
+                  : tr("Vous êtes à jour")}
               </p>
             </div>
           </div>
@@ -80,7 +85,7 @@ function NotificationsPage() {
               disabled={markAllRead.isPending}
             >
               {markAllRead.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCheck className="h-3.5 w-3.5" />}
-              Tout marquer comme lu
+              {tr("Tout marquer comme lu")}
             </Button>
           )}
         </div>
@@ -92,12 +97,12 @@ function NotificationsPage() {
         ) : !notifications?.length ? (
           <div className="rounded-2xl border border-border/60 bg-card p-10 text-center space-y-2">
             <Bell className="h-8 w-8 mx-auto text-muted-foreground/50" />
-            <p className="font-semibold text-foreground">Aucune notification pour le moment</p>
+            <p className="font-semibold text-foreground">{tr("Aucune notification pour le moment")}</p>
             <p className="text-sm text-muted-foreground">
-              Les likes, matchs, messages et visites apparaîtront ici.
+              {tr("Les likes, matchs, messages et visites apparaîtront ici.")}
             </p>
             <Link to="/browse" className="inline-block text-sm font-semibold text-primary hover:underline">
-              Découvrir des profils
+              {tr("Découvrir des profils")}
             </Link>
           </div>
         ) : (
@@ -123,7 +128,7 @@ function NotificationsPage() {
                     >
                       <Icon className="h-4 w-4" />
                     </span>
-                    <span className="min-w-0 flex-1">
+                    <span className="min-w-0 flex-1" data-no-translate>
                       <span className="flex items-center gap-2">
                         <span className={`truncate text-sm ${isUnread ? "font-bold text-foreground" : "font-medium text-foreground/80"}`}>
                           {n.title}
@@ -131,7 +136,7 @@ function NotificationsPage() {
                         {isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
                       </span>
                       {n.body && <span className="block truncate text-xs text-muted-foreground mt-0.5">{n.body}</span>}
-                      <span className="block text-[11px] text-muted-foreground/70 mt-1">{formatDate(n.created_at)}</span>
+                      <span className="block text-[11px] text-muted-foreground/70 mt-1">{formatDate(n.created_at, locale, tr)}</span>
                     </span>
                   </button>
                 </li>

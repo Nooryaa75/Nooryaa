@@ -18,7 +18,16 @@ import { useLikeGraph, isBlurred } from "@/lib/reveal";
 import { useI18n, type Locale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/messages")({
-  head: () => ({ meta: [{ title: "Messages — Nooryaa" }] }),
+  head: () => ({
+    meta: [
+      { title: "Messages — Nooryaa" },
+      { name: "description", content: "Retrouvez vos conversations et échangez avec vos matchs sur Nooryaa." },
+      { property: "og:title", content: "Messages — Nooryaa" },
+      { property: "og:description", content: "Retrouvez vos conversations et échangez avec vos matchs sur Nooryaa." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: MessagesLayout,
 });
 
@@ -81,7 +90,7 @@ function MessagesLayout() {
   const [tab, setTab] = useState<"tous" | "nonlus" | "favoris">("tous");
 
   const { data: convos } = useQuery({
-    queryKey: ["conversations", ctx.userId],
+    queryKey: ["conversations", ctx.userId, locale],
     refetchInterval: 60_000,
     queryFn: async (): Promise<Convo[]> => {
       const [{ data: msgs }, { data: likes }, { data: iBlock }, { data: blockedMe }, { data: hiddenConvos }] = await Promise.all([

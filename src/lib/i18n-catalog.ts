@@ -9,6 +9,8 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Aucune conversation pour le moment. Cliquez sur un profil pour démarrer.": { "en": "No conversations yet. Select a profile to get started.", "ar": "لا توجد محادثات بعد. اختر ملفًا شخصيًا للبدء." },
   "Vous": { "en": "You", "ar": "أنت" },
   "Hier": { "en": "Yesterday", "ar": "أمس" },
+  "Options pour": { "en": "Options for", "ar": "خيارات" },
+  "Signaler en cas d'abus": { "en": "Report abuse", "ar": "الإبلاغ عن إساءة" },
   "Fajr": { "en": "Fajr (Dawn)", "ar": "الفجر" },
   "Dhuhr": { "en": "Dhuhr (Noon)", "ar": "الظهر" },
   "Asr": { "en": "Asr (Afternoon)", "ar": "العصر" },

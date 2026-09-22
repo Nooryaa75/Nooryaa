@@ -83,6 +83,7 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
 const SEARCH_ICONS = [Heart, Star, Home];
 
 function Recherche() {
+  const { locale } = useI18n();
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");

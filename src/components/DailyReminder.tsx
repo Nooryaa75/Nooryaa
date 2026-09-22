@@ -29,7 +29,7 @@ export function DailyReminder() {
       <h2 className="text-base font-bold text-primary mb-3">{t("Rappel du jour")}</h2>
       <div className="bg-[#F3E8FF] rounded-2xl p-5 flex items-start gap-3 min-h-[92px]">
         <Quote className="h-5 w-5 text-primary shrink-0 rotate-180" />
-        <div className="flex-1">
+        <div className="flex-1" data-no-translate>
           {reminder ? (
             <>
               <p className="font-semibold text-sm text-primary">{reminder.title}</p>

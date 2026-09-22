@@ -4567,4 +4567,9 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Masquer le mot de passe": { "en": "Hide password", "ar": "إخفاء كلمة المرور" },
   "Messages envoyés (50 derniers)": { "en": "Sent messages (last 50)", "ar": "الرسائل المرسلة (آخر 50)" },
   "Messages reçus (50 derniers)": { "en": "Received messages (last 50)", "ar": "الرسائل الواردة (آخر 50)" },
+  "Vous êtes à jour": { "en": "You're all caught up", "ar": "أنت على اطلاع بكل الجديد" },
+  "{n} non lue": { "en": "{n} unread", "ar": "{n} غير مقروءة" },
+  "{n} non lues": { "en": "{n} unread", "ar": "{n} غير مقروءة" },
+  "Il y a {n} min": { "en": "{n} min ago", "ar": "قبل {n} دقيقة" },
+  "Il y a {n} h": { "en": "{n} h ago", "ar": "قبل {n} ساعة" },
 };

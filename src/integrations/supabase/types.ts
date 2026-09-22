@@ -683,6 +683,7 @@ export type Database = {
           last_name: string | null
           last_seen: string
           latitude: number | null
+          locale: string
           longitude: number | null
           looking_for: Database["public"]["Enums"]["gender"] | null
           marital_status: Database["public"]["Enums"]["marital_status"] | null
@@ -735,6 +736,7 @@ export type Database = {
           last_name?: string | null
           last_seen?: string
           latitude?: number | null
+          locale?: string
           longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null
@@ -787,6 +789,7 @@ export type Database = {
           last_name?: string | null
           last_seen?: string
           latitude?: number | null
+          locale?: string
           longitude?: number | null
           looking_for?: Database["public"]["Enums"]["gender"] | null
           marital_status?: Database["public"]["Enums"]["marital_status"] | null

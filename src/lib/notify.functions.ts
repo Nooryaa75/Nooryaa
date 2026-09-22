@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { copyFor, isRtl, normalizeLocale, type MailLocale } from "@/lib/email-i18n";
 
 const SITE_NAME = "Nooryaa";
 const SITE_URL = "https://nooryaa.lovable.app";
@@ -32,9 +33,10 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
-export function layout(title: string, body: string, ctaLabel: string, ctaUrl: string) {
+export function layout(title: string, body: string, ctaLabel: string, ctaUrl: string, locale: MailLocale = "fr") {
+  const dir = isRtl(locale) ? "rtl" : "ltr";
   return `<!doctype html>
-<html lang="fr"><head>
+<html lang="${locale}" dir="${dir}"><head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light only" />
@@ -72,8 +74,7 @@ export function layout(title: string, body: string, ctaLabel: string, ctaUrl: st
         </td></tr>
         <tr><td class="nry-foot" style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
 
-          Vous recevez cet email car vos préférences de notification l'autorisent.
-          Vous pouvez les modifier à tout moment dans <a href="${SITE_URL}/compte/notifications" style="color:#3b2a7a;">Mon compte → Mes notifications</a>.
+          ${copyFor(locale).footer(`${SITE_URL}/compte/notifications`)}
         </td></tr>
       </table>
     </td></tr>
@@ -88,53 +89,49 @@ function actorAvatar(avatarUrl?: string | null, actorName?: string, blurred?: bo
   return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;" /></div>`;
 }
 
-function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null, actorBlurred?: boolean) {
-  const who = escapeHtml(actorName || "Un membre");
-  const hi = `Assalamu alaykum ${escapeHtml(recipientName || "")},`.trim();
+function buildEmail(
+  kind: NotifyKind,
+  recipientName: string,
+  actorName: string,
+  preview?: string | null,
+  actorAvatarUrl?: string | null,
+  actorBlurred?: boolean,
+  locale: MailLocale = "fr",
+) {
+  const c = copyFor(locale);
+  const who = escapeHtml(actorName || c.memberFallback);
+  const hi = c.greeting(escapeHtml(recipientName || "")).trim();
   const avatar = actorAvatar(actorAvatarUrl, actorName, actorBlurred);
+  const quote = locale === "en" ? (s: string) => `“${s}”` : locale === "ar" ? (s: string) => `«${s}»` : (s: string) => `« ${s} »`;
 
   switch (kind) {
     case "like":
       return {
-        subject: `${who} vous a liké sur ${SITE_NAME} 💜`,
-        html: layout(
-          "Vous avez un nouveau coup de cœur",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vient de vous liker sur ${SITE_NAME}. Découvrez son profil et, si le cœur y est, likez à votre tour pour ouvrir la conversation.</p>`,
-          "Voir qui m'a liké",
-          `${SITE_URL}/likes`,
-        ),
+        subject: c.like.subject(who, SITE_NAME),
+        html: layout(c.like.title, `${avatar}<p>${hi}</p><p>${c.like.body(who, SITE_NAME)}</p>`, c.like.cta, `${SITE_URL}/likes`, locale),
       };
     case "match":
       return {
-        subject: `C'est un match avec ${who} ! 🎉`,
-        html: layout(
-          "Vous avez un nouveau match",
-          `${avatar}<p>${hi}</p><p>Vous et <strong>${who}</strong> vous êtes likés mutuellement. Vous pouvez désormais échanger dans le respect de la charte ${SITE_NAME}.</p>`,
-          "Démarrer la conversation",
-          `${SITE_URL}/matchs`,
-        ),
+        subject: c.match.subject(who),
+        html: layout(c.match.title, `${avatar}<p>${hi}</p><p>${c.match.body(who, SITE_NAME)}</p>`, c.match.cta, `${SITE_URL}/matchs`, locale),
       };
     case "message":
       return {
-        subject: `Nouveau message de ${who}`,
+        subject: c.message.subject(who),
         html: layout(
-          "Vous avez reçu un message",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vous a envoyé un message sur ${SITE_NAME}.</p>${
-            preview ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">« ${escapeHtml(preview.slice(0, 140))} »</p>` : ""
+          c.message.title,
+          `${avatar}<p>${hi}</p><p>${c.message.body(who, SITE_NAME)}</p>${
+            preview ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">${quote(escapeHtml(preview.slice(0, 140)))}</p>` : ""
           }`,
-          "Lire le message",
+          c.message.cta,
           `${SITE_URL}/messages`,
+          locale,
         ),
       };
     case "visit":
       return {
-        subject: `${who} a consulté votre profil`,
-        html: layout(
-          "Votre profil a été consulté",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> a récemment visité votre profil sur ${SITE_NAME}.</p>`,
-          "Voir mon profil",
-          `${SITE_URL}/compte/profil`,
-        ),
+        subject: c.visit.subject(who),
+        html: layout(c.visit.title, `${avatar}<p>${hi}</p><p>${c.visit.body(who, SITE_NAME)}</p>`, c.visit.cta, `${SITE_URL}/compte/profil`, locale),
       };
   }
 }
@@ -159,7 +156,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     const [{ data: recipient }, { data: actor }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("id, email, pseudo, first_name, preferences")
+        .select("id, email, pseudo, first_name, preferences, locale")
         .eq("id", data.recipientId)
         .maybeSingle(),
       supabaseAdmin.from("profiles").select("id, pseudo, first_name, primary_photo_blurred").eq("id", context.userId).maybeSingle(),
@@ -176,16 +173,20 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     if (!recipient?.email) return { sent: false, reason: "no_email" as const };
 
     const prefs = (recipient.preferences as any)?.notifications?.[PREF_KEY[data.kind]];
-    const actorName = actor?.first_name || actor?.pseudo || "Un membre";
+    // Langue choisie par le destinataire : emails et notifications in-app
+    // sont rédigés dans sa langue (fr / en / ar).
+    const locale = normalizeLocale((recipient as any)?.locale);
+    const c = copyFor(locale);
+    const actorName = actor?.first_name || actor?.pseudo || c.memberFallback;
 
     // Notification in-app (centre de notifications) — respecte la préférence "push in-app".
     const inAppEnabled = typeof prefs?.in_app === "boolean" ? prefs.in_app : true;
     if (inAppEnabled) {
       const titles: Record<NotifyKind, string> = {
-        like: `${actorName} vous a liké`,
-        match: `C'est un match avec ${actorName} !`,
-        message: `Nouveau message de ${actorName}`,
-        visit: `${actorName} a consulté votre profil`,
+        like: c.like.inApp(actorName),
+        match: c.match.inApp(actorName),
+        message: c.message.inApp(actorName),
+        visit: c.visit.inApp(actorName),
       };
       const links: Record<NotifyKind, string> = {
         like: "/likes",
@@ -254,6 +255,7 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       data.preview ?? null,
       actorPhoto?.url ?? null,
       (actor as any)?.primary_photo_blurred === true,
+      locale,
     );
 
     let status = "sent";
@@ -303,20 +305,22 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
  * été envoyé à cette adresse.
  */
 export const sendWelcomeEmail = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string }) => {
+  .inputValidator((data: { email: string; locale?: string }) => {
     const email = String(data?.email ?? "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
-    return { email };
+    return { email, locale: data?.locale };
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("id, email, pseudo, first_name")
+      .select("id, email, pseudo, first_name, locale")
       .ilike("email", data.email)
       .maybeSingle();
     if (!profile?.email) return { sent: false, reason: "no_account" as const };
+    const locale = normalizeLocale(data.locale ?? (profile as any)?.locale);
+    const c = copyFor(locale);
 
     const { data: already } = await supabaseAdmin
       .from("email_notifications")
@@ -333,18 +337,11 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
 
     const name = escapeHtml(profile.first_name || profile.pseudo || "");
     const html = layout(
-      "Bienvenue sur " + SITE_NAME,
-      `<p>Assalamu alaykum ${name},</p>
-       <p>Bienvenue sur <strong>${SITE_NAME}</strong>, la plateforme de rencontre pensée pour les musulmans qui souhaitent construire une relation sérieuse, dans le respect et la bienveillance.</p>
-       <p>Pour bien démarrer :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Complétez votre fiche profil (photos, pratique, projets…) ;</li>
-         <li>Réalisez votre selfie de vérification pour obtenir le badge ;</li>
-         <li>Découvrez les profils recommandés près de chez vous.</li>
-       </ul>
-       <p style="margin-top:12px;">Qu'Allah facilite vos démarches et vous accorde un compagnon ou une compagne qui vous apaise le cœur.</p>`,
-      "Compléter mon profil",
+      c.welcome.title(SITE_NAME),
+      `<p>${c.greeting(name)}</p>${c.welcome.body(SITE_NAME)}`,
+      c.welcome.cta,
       `${SITE_URL}/onboarding`,
+      locale,
     );
 
     let status = "sent";
@@ -360,7 +357,7 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
         body: JSON.stringify({
           from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [profile.email],
-          subject: `Bienvenue sur ${SITE_NAME} 🌙`,
+          subject: c.welcome.subject(SITE_NAME),
           html,
         }),
       });
@@ -395,18 +392,21 @@ export async function sendEmailConfirmation(opts: {
   email: string;
   firstName?: string;
   confirmationUrl: string;
+  locale?: string;
 }) {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const resendKey = process.env["RESEND_API_KEY"];
   if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
 
+  const locale = normalizeLocale(opts.locale);
+  const c = copyFor(locale);
   const name = escapeHtml(opts.firstName || "");
   const html = layout(
-    "Confirmez votre adresse email",
-    `<p>Assalamu alaykum ${name},</p>
-     <p>Merci de rejoindre <strong>${SITE_NAME}</strong>. Pour activer votre compte et accéder à la plateforme, cliquez sur le bouton ci-dessous :</p>`,
-    "Confirmer mon email",
+    c.confirmation.title,
+    `<p>${c.greeting(name)}</p>${c.confirmation.body(SITE_NAME)}`,
+    c.confirmation.cta,
     opts.confirmationUrl,
+    locale,
   );
 
   let status = "sent";
@@ -422,7 +422,7 @@ export async function sendEmailConfirmation(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: `Confirmez votre inscription sur ${SITE_NAME}`,
+        subject: c.confirmation.subject(SITE_NAME),
         html,
       }),
     });
@@ -450,49 +450,33 @@ export async function sendAccountClosureEmail(opts: {
   action: "suspend" | "delete";
   reason?: string | null;
   details?: string | null;
+  locale?: string | null;
 }) {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const resendKey = process.env["RESEND_API_KEY"];
   if (!lovableKey || !resendKey) return { sent: false, reason: "not_configured" as const };
 
+  const locale = normalizeLocale(opts.locale);
+  const c = copyFor(locale);
   const name = escapeHtml(opts.firstName || "");
   const reasonBlock = opts.reason
-    ? `<p style="margin-top:12px;">Motif indiqué : <strong>${escapeHtml(opts.reason)}</strong>${
+    ? `<p style="margin-top:12px;">${c.reasonLabel} : <strong>${escapeHtml(opts.reason)}</strong>${
         opts.details ? `<br /><em>« ${escapeHtml(opts.details)} »</em>` : ""
       }</p>`
     : "";
 
   const isSuspend = opts.action === "suspend";
-  const title = isSuspend ? "Votre compte est suspendu" : "Votre compte a été supprimé";
+  const title = isSuspend ? c.suspend.title : c.deleted.title;
   const body = isSuspend
-    ? `<p>Assalamu alaykum ${name},</p>
-       <p>Nous confirmons la <strong>suspension</strong> de votre compte ${SITE_NAME}.</p>
-       <p>Concrètement :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Votre profil n'est plus visible par les autres membres ;</li>
-         <li>Vos conversations, photos et coups de cœur sont conservés ;</li>
-         <li>Vous ne recevez plus aucune notification ;</li>
-         <li>Vous pouvez réactiver votre compte à tout moment en contactant notre service client.</li>
-       </ul>
-       ${reasonBlock}
-       <p style="margin-top:12px;">Qu'Allah facilite vos démarches. Vous serez toujours le bienvenu parmi nous.</p>`
-    : `<p>Assalamu alaykum ${name},</p>
-       <p>Nous confirmons la <strong>suppression définitive</strong> de votre compte ${SITE_NAME}.</p>
-       <p>Concrètement :</p>
-       <ul style="margin:0;padding-left:20px;">
-         <li>Votre profil, vos photos, vos messages, vos coups de cœur et vos recherches ont été effacés ;</li>
-         <li>Votre abonnement éventuel n'est plus renouvelé ;</li>
-         <li>Cette action est irréversible : ces données ne peuvent pas être restaurées ;</li>
-         <li>Vous pouvez créer un nouveau compte plus tard si vous le souhaitez.</li>
-       </ul>
-       ${reasonBlock}
-       <p style="margin-top:12px;">Merci pour la confiance que vous nous avez accordée. Qu'Allah vous accorde ce qu'il y a de meilleur.</p>`;
+    ? `<p>${c.greeting(name)}</p>${c.suspend.body(SITE_NAME)}${reasonBlock}`
+    : `<p>${c.greeting(name)}</p>${c.deleted.body(SITE_NAME)}${reasonBlock}`;
 
   const html = layout(
     title,
     body,
-    isSuspend ? "Contacter le service client" : `Revenir sur ${SITE_NAME}`,
+    isSuspend ? c.suspend.cta : c.deleted.cta(SITE_NAME),
     isSuspend ? `${SITE_URL}/compte/service-client` : SITE_URL,
+    locale,
   );
 
   try {
@@ -506,9 +490,7 @@ export async function sendAccountClosureEmail(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: isSuspend
-          ? `Confirmation : votre compte ${SITE_NAME} est suspendu`
-          : `Confirmation : votre compte ${SITE_NAME} a été supprimé`,
+        subject: isSuspend ? c.suspend.subject(SITE_NAME) : c.deleted.subject(SITE_NAME),
         html,
       }),
     });
@@ -540,6 +522,10 @@ export async function requestSelfieRedo(opts: {
 }) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+  const { data: localeRow } = await supabaseAdmin.from("profiles").select("locale").eq("id", opts.userId).maybeSingle();
+  const locale = normalizeLocale((localeRow as any)?.locale);
+  const c = copyFor(locale);
+
   // Notification in-app (anti-doublon 24 h : une seule demande à la fois).
   try {
     const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -555,8 +541,8 @@ export async function requestSelfieRedo(opts: {
         user_id: opts.userId,
         actor_id: null,
         kind: "system",
-        title: "Vérification de votre profil à refaire",
-        body: "Une de vos nouvelles photos n'a pas pu être confirmée. Refaites la vérification par selfie depuis Mon compte pour retrouver votre badge « Profil vérifié ».",
+        title: c.selfie.inAppTitle,
+        body: c.selfie.inAppBody,
         link: "/compte/profil",
       });
     }
@@ -573,13 +559,11 @@ export async function requestSelfieRedo(opts: {
     ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">${escapeHtml(opts.reason)}</p>`
     : "";
   const html = layout(
-    "Vérification de votre profil à refaire",
-    `<p>Assalamu alaykum ${name},</p>
-     <p>Lors de l'ajout d'une nouvelle photo sur votre profil <strong>${SITE_NAME}</strong>, notre contrôle automatique n'a pas pu confirmer qu'il s'agit bien de vous. Par mesure de sécurité, votre badge « Profil vérifié » a été temporairement retiré.</p>
-     ${reasonBlock}
-     <p>Pour retrouver votre badge, refaites simplement la vérification par selfie depuis <strong>Mon compte → Profil</strong>. Cela ne prend que quelques secondes.</p>`,
-    "Refaire ma vérification",
+    c.selfie.title,
+    `<p>${c.greeting(name)}</p>${c.selfie.body(SITE_NAME)}${reasonBlock}<p>${c.selfie.inAppBody}</p>`,
+    c.selfie.cta,
     `${SITE_URL}/compte/profil`,
+    locale,
   );
 
   let status = "sent";
@@ -595,7 +579,7 @@ export async function requestSelfieRedo(opts: {
       body: JSON.stringify({
         from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
         to: [opts.email],
-        subject: `${SITE_NAME} : refaites votre vérification par selfie`,
+        subject: c.selfie.subject(SITE_NAME),
         html,
       }),
     });
@@ -645,10 +629,12 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("id, email, pseudo, first_name")
+      .select("id, email, pseudo, first_name, locale")
       .ilike("email", data.email)
       .maybeSingle();
     if (!profile?.email) return { sent: true };
+    const locale = normalizeLocale((profile as any)?.locale);
+    const c = copyFor(locale);
 
     const { data: link, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: "recovery",
@@ -666,13 +652,11 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
 
     const name = escapeHtml(profile.first_name || profile.pseudo || "");
     const html = layout(
-      "Réinitialisation de votre mot de passe",
-      `<p>Assalamu alaykum ${name},</p>
-       <p>Vous avez demandé à réinitialiser le mot de passe de votre compte <strong>${SITE_NAME}</strong>.</p>
-       <p>Ce lien est valable <strong>1 heure</strong> et ne peut être utilisé qu'une seule fois.</p>
-       <p style="color:#8a83a6;font-size:13px;">Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email : votre mot de passe reste inchangé.</p>`,
-      "Choisir un nouveau mot de passe",
+      c.reset.title,
+      `<p>${c.greeting(name)}</p>${c.reset.body(SITE_NAME)}`,
+      c.reset.cta,
       link.properties.action_link,
+      locale,
     );
 
     let status = "sent";
@@ -688,7 +672,7 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
         body: JSON.stringify({
           from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [profile.email],
-          subject: `Réinitialisez votre mot de passe ${SITE_NAME}`,
+          subject: c.reset.subject(SITE_NAME),
           html,
         }),
       });

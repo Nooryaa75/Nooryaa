@@ -8,6 +8,13 @@
       "when": 1789978784575,
       "tag": "0000_create_legal_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790082085325,
+      "tag": "0001_add_profiles_locale",
+      "breakpoints": true
     }
   ]
 }

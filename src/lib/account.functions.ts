@@ -33,7 +33,7 @@ export const suspendAccount = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: profile } = await context.supabase
       .from("profiles")
-      .select("email, first_name, pseudo")
+      .select("email, first_name, pseudo, locale")
       .eq("id", context.userId)
       .maybeSingle();
 
@@ -50,6 +50,7 @@ export const suspendAccount = createServerFn({ method: "POST" })
         action: "suspend",
         reason: data.reason,
         details: data.details,
+        locale: (profile as any)?.locale,
       });
     }
     return { ok: true };
@@ -66,7 +67,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("email, first_name, pseudo")
+      .select("email, first_name, pseudo, locale")
       .eq("id", context.userId)
       .maybeSingle();
 
@@ -82,6 +83,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
         action: "delete",
         reason: data.reason,
         details: data.details,
+        locale: (profile as any)?.locale,
       });
     }
     return { ok: true };

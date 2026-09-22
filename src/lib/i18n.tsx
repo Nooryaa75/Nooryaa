@@ -87,6 +87,19 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((next: Locale) => {
     updateLocale(next);
     window.localStorage.setItem(STORAGE_KEY, next);
+    // Mémorise la langue sur le profil : les emails et notifications
+    // seront rédigés dans cette langue.
+    void (async () => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          await supabase.from("profiles").update({ locale: next }).eq("id", data.user.id);
+        }
+      } catch {
+        /* silencieux : la langue reste stockée localement */
+      }
+    })();
   }, []);
   const t = useCallback((source: string) => translateText(source, locale), [locale]);
 

@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { StoreBadges } from "@/components/StoreBadges";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -148,6 +149,7 @@ function PasswordStrength({ password }: { password: string }) {
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -189,9 +191,10 @@ function AuthPage() {
             lastName: lastName.trim(),
             phone: phone.trim(),
             origin: window.location.origin,
+            locale,
           },
         });
-        void sendWelcomeEmail({ data: { email: email.trim().toLowerCase() } }).catch(() => {});
+        void sendWelcomeEmail({ data: { email: email.trim().toLowerCase(), locale } }).catch(() => {});
         setSignupEmailSent(true);
         if (signupResult?.emailSent) {
           toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");

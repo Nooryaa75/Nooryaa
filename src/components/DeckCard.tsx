@@ -26,6 +26,7 @@ export function DeckCard({ meta, profiles, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
+      data-no-translate
       className={cn(
         "group text-left w-full bg-card rounded-2xl border border-border/60 p-4",
         "flex items-center gap-4 transition-shadow duration-300 hover:shadow-[var(--shadow-card)]"

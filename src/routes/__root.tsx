@@ -18,6 +18,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TranslatedContent } from "@/components/TranslatedContent";
 import { Footer } from "@/components/Footer";
+import { CookieConsent } from "@/components/CookieConsent";
 
 function NotFoundComponent() {
   return (

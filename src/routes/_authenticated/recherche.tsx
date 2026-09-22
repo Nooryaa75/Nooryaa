@@ -284,7 +284,7 @@ function Recherche() {
 
           {/* Localisation */}
           <div className="space-y-3">
-            <SectionTitle>Localisation</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Localisation")}</span></SectionTitle>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary z-10 pointer-events-none" />
               <CityAutocomplete

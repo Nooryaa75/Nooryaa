@@ -25,6 +25,7 @@ const menu = [
 function CompteHome() {
   const ctx = Route.useRouteContext();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const { data: profile } = useQuery({
     queryKey: ["me", ctx.userId],
@@ -66,7 +67,7 @@ function CompteHome() {
           <div className="min-w-0">
             <p className="font-bold text-lg text-primary flex items-center gap-1.5">
               {profile?.pseudo ?? "…"}
-              <span className="h-2.5 w-2.5 rounded-full bg-green-500 inline-block" aria-label="En ligne" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green-500 inline-block" aria-label={t("En ligne")} />
             </p>
             <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
               <MapPin className="h-3.5 w-3.5" />

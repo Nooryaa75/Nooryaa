@@ -73,8 +73,7 @@ export function layout(title: string, body: string, ctaLabel: string, ctaUrl: st
         </td></tr>
         <tr><td class="nry-foot" style="padding:16px 24px;background:#faf9ff;font-size:12px;color:#8a83a6;">
 
-          Vous recevez cet email car vos préférences de notification l'autorisent.
-          Vous pouvez les modifier à tout moment dans <a href="${SITE_URL}/compte/notifications" style="color:#3b2a7a;">Mon compte → Mes notifications</a>.
+          ${copyFor(locale).footer(`${SITE_URL}/compte/notifications`)}
         </td></tr>
       </table>
     </td></tr>

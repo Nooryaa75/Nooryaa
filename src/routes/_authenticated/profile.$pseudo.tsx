@@ -150,6 +150,20 @@ function ProfileView() {
   const isLiked = !!liked;
   const photosRevealed = isRevealed(profile, me, likeGraph);
   const messagingAllowed = canMessage(me, profile, likeGraph);
+  const displayPhotos = photos?.length
+    ? [...photos].sort((a, b) => {
+        if (a.url === profile.primary_photo_url) return -1;
+        if (b.url === profile.primary_photo_url) return 1;
+        return a.position - b.position;
+      })
+    : profile.primary_photo_url
+      ? [{
+          id: `primary-${profile.id}`,
+          url: profile.primary_photo_url,
+          blurred: profile.primary_photo_blurred,
+          position: 0,
+        }]
+      : [];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
@@ -167,17 +181,17 @@ function ProfileView() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
-            {photos && photos[0] ? (
-              <img src={photos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${(photos[0] as any).blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
+            {displayPhotos[0] ? (
+              <img src={displayPhotos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${displayPhotos[0].blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
             )}
           </div>
-          {photos && photos.length > 1 && (
+          {displayPhotos.length > 1 && (
             <div className="grid grid-cols-5 gap-2">
-              {photos.slice(1).map((p) => (
+              {displayPhotos.slice(1).map((p) => (
                 <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                  <img src={p.url} alt="" className={`w-full h-full object-cover ${(p as any).blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
+                  <img src={p.url} alt="" className={`w-full h-full object-cover ${p.blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
                 </div>
               ))}
             </div>

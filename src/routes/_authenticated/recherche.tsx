@@ -507,16 +507,16 @@ function Recherche() {
       {tab === "enregistrees" && (
         <div className="space-y-5">
           <div>
-            <SectionTitle>Mes recherches sauvegardées</SectionTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Retrouvez vos recherches et soyez notifié<br />lorsque de nouveaux profils correspondent.
+            <SectionTitle><span data-no-translate>{tr("Mes recherches sauvegardées")}</span></SectionTitle>
+            <p className="text-sm text-muted-foreground mt-1" data-no-translate>
+              {tr("Retrouvez vos recherches et soyez notifié")}<br />{tr("lorsque de nouveaux profils correspondent.")}
             </p>
           </div>
 
           {!savedSearches || savedSearches.length === 0 ? (
             <div className="text-center py-14 bg-card rounded-3xl border border-border/60">
               <Star className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-muted-foreground">Aucune recherche enregistrée pour le moment.</p>
+              <p className="text-muted-foreground" data-no-translate>{tr("Aucune recherche enregistrée pour le moment.")}</p>
             </div>
           ) : (
             <ul className="space-y-3">
@@ -533,15 +533,15 @@ function Recherche() {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground truncate text-sm">{s.name}</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">
-                        {s.filters?.ageMin}–{s.filters?.ageMax} ans
+                        {s.filters?.ageMin}–{s.filters?.ageMax} {tr("ans")}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {s.filters?.city || s.filters?.originLabel || "Partout"}
-                        {s.filters?.radiusEnabled ? ` • Rayon ${formatDistance(s.filters.radiusKm, locale)}` : ""}
+                        {s.filters?.city || s.filters?.originLabel || tr("Partout")}
+                        {s.filters?.radiusEnabled ? ` • ${tr("Rayon")} ${formatDistance(s.filters.radiusKm, locale)}` : ""}
                       </p>
                     </div>
                     <span className="shrink-0 inline-flex items-center justify-center rounded-full bg-accent/10 text-accent text-[11px] font-semibold px-2.5 py-1">
-                      {total} profil{total > 1 ? "s" : ""}
+                      {total} {total > 1 ? tr("profils") : tr("profil")}
                     </span>
                     <button
                       type="button"

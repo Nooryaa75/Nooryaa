@@ -5,6 +5,7 @@ import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+import { useI18n } from "@/lib/i18n";
 
 const links = [
   { to: "/browse", label: "Accueil", icon: Home },
@@ -38,6 +39,7 @@ function resetHomeDeck() {
 }
 
 export function AppHeader() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -78,14 +80,14 @@ export function AppHeader() {
                     <l.icon className="h-4 w-4" />
                     <Badge count={countFor(l.to)} />
                   </span>
-                  {l.label}
+                   {t(l.label)}
                 </Link>
               );
             })}
           </nav>
           <Button onClick={signOut} variant="ghost" size="sm" className="gap-1.5">
             <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Déconnexion</span>
+             <span className="hidden sm:inline">{t("Déconnexion")}</span>
           </Button>
         </div>
       </header>
@@ -108,7 +110,7 @@ export function AppHeader() {
                 <l.icon className={`h-6 w-6 ${active && l.fillActive ? "fill-primary" : ""}`} strokeWidth={active ? 2.2 : 1.8} />
                 <Badge count={countFor(l.to)} />
               </span>
-              {l.label}
+               {t(l.label)}
             </Link>
           );
         })}

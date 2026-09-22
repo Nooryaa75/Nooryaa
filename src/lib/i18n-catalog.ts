@@ -1,5 +1,17 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Démarrez la conversation": { "en": "Start the conversation", "ar": "ابدأ المحادثة" },
+  "Message vocal": { "en": "Voice message", "ar": "رسالة صوتية" },
+  "Photo": { "en": "Photo", "ar": "صورة" },
+  "Tous": { "en": "All", "ar": "الكل" },
+  "Favoris": { "en": "Favorites", "ar": "المفضلة" },
+  "Aucune conversation ne correspond.": { "en": "No conversations match your search.", "ar": "لا توجد محادثات تطابق بحثك." },
+  "Aucune conversation pour le moment. Cliquez sur un profil pour démarrer.": { "en": "No conversations yet. Select a profile to get started.", "ar": "لا توجد محادثات بعد. اختر ملفًا شخصيًا للبدء." },
+  "Vous": { "en": "You", "ar": "أنت" },
+  "Hier": { "en": "Yesterday", "ar": "أمس" },
+  "Options pour": { "en": "Options for", "ar": "خيارات" },
+  "Signaler en cas d'abus": { "en": "Report abuse", "ar": "الإبلاغ عن إساءة" },
+  "Signaler": { "en": "Report", "ar": "الإبلاغ عن" },
   "Fajr": { "en": "Fajr (Dawn)", "ar": "الفجر" },
   "Dhuhr": { "en": "Dhuhr (Noon)", "ar": "الظهر" },
   "Asr": { "en": "Asr (Afternoon)", "ar": "العصر" },

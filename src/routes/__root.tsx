@@ -197,9 +197,6 @@ function RootComponent() {
     <I18nProvider>
       <QueryClientProvider client={queryClient}>
         <TranslatedContent />
-        <div className="fixed end-3 top-3 z-[70] rounded-md border border-border/60 bg-background/90 shadow-sm backdrop-blur">
-          <LanguageSwitcher />
-        </div>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <div className="flex min-h-screen flex-col">
           <VisitTracker />

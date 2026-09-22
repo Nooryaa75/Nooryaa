@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 
 export function Footer() {
@@ -10,7 +11,10 @@ export function Footer() {
       className="border-t border-border/60 bg-background/95 px-4 py-5 pb-16 backdrop-blur md:pb-5"
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
-      <div className="mx-auto flex max-w-5xl items-center justify-center py-1 text-center">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-3">
+        <div className="w-full max-w-xs">
+          <LanguageSwitcher inline />
+        </div>
         <nav className="text-xs">
           <Link
             to="/privacy"

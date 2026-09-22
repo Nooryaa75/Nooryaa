@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { copyFor, isRtl, normalizeLocale, type MailLocale } from "@/lib/email-i18n";
 
 const SITE_NAME = "Nooryaa";
 const SITE_URL = "https://nooryaa.lovable.app";

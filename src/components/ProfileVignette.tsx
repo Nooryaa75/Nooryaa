@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { notifyLike } from "@/lib/notify";
 import { isOnline } from "@/lib/discovery";
 import { useI18n } from "@/lib/i18n";
+import { formatDistance } from "@/lib/units";
 
 export function ageFrom(birthdate?: string | null): number | null {
   if (!birthdate) return null;
@@ -36,7 +37,7 @@ interface ProfileVignetteProps {
  * la version précédente.
  */
 export function ProfileVignette({ profile, userId, likeable = false, chatBadge = false, extraInfo }: ProfileVignetteProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const queryClient = useQueryClient();
   const [liked, setLiked] = useState(false);
   const age = ageFrom(profile.birthdate);
@@ -104,10 +105,10 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
             </div>
             <p className="text-[10px] text-white/90 truncate flex items-center gap-0.5 mt-0.5">
               {profile.city && <MapPin className="h-2.5 w-2.5 shrink-0" />}
-              {profile.city ?? ""}{profile.country ? `, ${profile.country}` : ""}{distance != null ? ` • ${distance} km` : ""}
+              {profile.city ?? ""}{profile.country ? `, ${profile.country}` : ""}{distance != null ? ` • ${formatDistance(distance, locale)}` : ""}
             </p>
             {extraInfo && (
-              <p className="text-[10px] text-white/80 font-medium mt-0.5 truncate">{extraInfo}</p>
+              <p className="text-[10px] text-white/80 font-medium mt-0.5 truncate" data-no-translate>{extraInfo}</p>
             )}
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1.5">

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
+import { distanceUnitLabel, formatDistance, formatHeight, isImperial } from "@/lib/units";
 import { Slider } from "@/components/ui/slider";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { toast } from "sonner";
@@ -81,6 +83,7 @@ function TriFilter({ label, value, onChange }: { label: string; value: string; o
 const SEARCH_ICONS = [Heart, Star, Home];
 
 function Recherche() {
+  const { locale } = useI18n();
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState("resultats");
@@ -303,7 +306,7 @@ function Recherche() {
             <div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Rayon</span>
-                <span className="font-medium">{filters.radiusEnabled ? `${filters.radiusKm} km` : "Désactivé"}</span>
+                <span className="font-medium">{filters.radiusEnabled ? formatDistance(filters.radiusKm, locale) : "Désactivé"}</span>
               </div>
               <Slider
                 value={[filters.radiusKm]}
@@ -342,7 +345,8 @@ function Recherche() {
               min={120}
               max={230}
               step={1}
-              unit="cm"
+              unit=""
+              formatValue={(v) => formatHeight(v, locale) ?? String(v)}
               minLabel="Taille min"
               maxLabel="Taille max"
               onValueChange={([a, b]) => set({ heightMin: a, heightMax: b })}
@@ -530,7 +534,7 @@ function Recherche() {
                       </p>
                       <p className="text-[11px] text-muted-foreground">
                         {s.filters?.city || s.filters?.originLabel || "Partout"}
-                        {s.filters?.radiusEnabled ? ` • Rayon ${s.filters.radiusKm} km` : ""}
+                        {s.filters?.radiusEnabled ? ` • Rayon ${formatDistance(s.filters.radiusKm, locale)}` : ""}
                       </p>
                     </div>
                     <span className="shrink-0 inline-flex items-center justify-center rounded-full bg-accent/10 text-accent text-[11px] font-semibold px-2.5 py-1">

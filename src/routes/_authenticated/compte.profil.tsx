@@ -1,3 +1,5 @@
+import { isImperial } from "@/lib/units";
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +48,8 @@ function MyProfile() {
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
   });
 
+  const { locale } = useI18n();
+  const imperialUnits = isImperial(locale);
   const [form, setForm] = useState<any>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [autoState, setAutoState] = useState<"idle" | "saving" | "saved">("idle");
@@ -206,8 +210,8 @@ function MyProfile() {
               onChange={(v) => setForm({ ...form, birthdate: v })}
             />
           </Field>
-          <Field label="Taille (cm)">
-            <Input className={inputCls} type="number" min={120} max={230} value={form.height_cm ?? ""} onChange={(e) => setForm({ ...form, height_cm: e.target.value ? Number(e.target.value) : null })} placeholder="Ex. 175" />
+          <Field label={imperialUnits ? "Taille (in)" : "Taille (cm)"}>
+            <Input className={inputCls} type="number" min={imperialUnits ? 47 : 120} max={imperialUnits ? 91 : 230} value={form.height_cm == null ? "" : imperialUnits ? Math.round(form.height_cm / 2.54) : form.height_cm} onChange={(e) => setForm({ ...form, height_cm: e.target.value ? (imperialUnits ? Math.round(Number(e.target.value) * 2.54) : Number(e.target.value)) : null })} placeholder={imperialUnits ? "E.g. 69" : "Ex. 175"} />
           </Field>
           <Field label="Corpulence">
             <Select value={form.body_type ?? ""} onValueChange={(v) => setForm({ ...form, body_type: v })}>

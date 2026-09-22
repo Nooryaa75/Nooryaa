@@ -1058,7 +1058,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "ar": "المسافة القصوى"
   },
   "Distance maximale (km)": {
-    "en": "Maximum distance (km)",
+    "en": "Maximum distance (miles)",
     "ar": "المسافة القصوى (كم)"
   },
   "Divorcé·e": {
@@ -3369,16 +3369,32 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Dashboard — Nooryaa Admin",
     "ar": "لوحة التحكم — إدارة Nooryaa"
   },
+  "Taille (in)": {
+    "en": "Height (in)",
+    "ar": "الطول (سم)"
+  },
+  "Distance maximale (miles)": {
+    "en": "Maximum distance (miles)",
+    "ar": "أقصى مسافة (كم)"
+  },
+  "Taille minimum (in)": {
+    "en": "Minimum height (in)",
+    "ar": "الطول الأدنى (سم)"
+  },
+  "Taille maximum (in)": {
+    "en": "Maximum height (in)",
+    "ar": "الطول الأقصى (سم)"
+  },
   "Taille (cm)": {
-    "en": "Height (cm)",
+    "en": "Height",
     "ar": "الطول (سم)"
   },
   "Taille maximum (cm)": {
-    "en": "Maximum height (cm)",
+    "en": "Maximum height (in)",
     "ar": "الطول الأقصى (سم)"
   },
   "Taille minimum (cm)": {
-    "en": "Minimum height (cm)",
+    "en": "Minimum height (in)",
     "ar": "الطول الأدنى (سم)"
   },
   "Taille recherchée": {
@@ -3866,15 +3882,15 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "ar": "وفقًا لمعاييرك وتفضيلاتك."
   },
   "Les profils des femmes dans un rayon de 20 km.": {
-    "en": "Women's profiles within a 20 km radius.",
+    "en": "Women's profiles within a 12 mile radius.",
     "ar": "ملفات النساء في نطاق 20 كم."
   },
   "Les profils des hommes dans un rayon de 20 km.": {
-    "en": "Men's profiles within a 20 km radius.",
+    "en": "Men's profiles within a 12 mile radius.",
     "ar": "ملفات الرجال في نطاق 20 كم."
   },
   "Les profils dans un rayon de 20 km.": {
-    "en": "Profiles within a 20 km radius.",
+    "en": "Profiles within a 12 mile radius.",
     "ar": "ملفات شخصية في نطاق 20 كم."
   },
   "Les inscriptions des 7 derniers jours.": {

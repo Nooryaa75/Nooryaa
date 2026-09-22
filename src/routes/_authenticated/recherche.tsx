@@ -128,13 +128,13 @@ function Recherche() {
 
   async function saveCurrentSearch() {
     const name = searchName.trim();
-    if (!name) { toast.error("Donnez un nom à votre recherche"); return; }
+    if (!name) { toast.error(tr("Donnez un nom à votre recherche")); return; }
     const { error } = await supabase.from("saved_searches").insert({
       user_id: ctx.userId, name, filters: filters as any, last_notified_at: new Date().toISOString(),
     } as any);
     if (error) { toast.error(frenchError(error)); return; }
     setSearchName("");
-    toast.success("Recherche enregistrée");
+    toast.success(tr("Recherche enregistrée"));
     qc.invalidateQueries({ queryKey: ["saved-searches", ctx.userId] });
   }
 
@@ -153,7 +153,7 @@ function Recherche() {
     });
     setActiveSearchName(row.name ?? null);
     setTab("resultats");
-    toast.success(`Recherche « ${row.name} » appliquée`);
+    toast.success(`${tr("Recherche")} « ${row.name} » ${tr("appliquée")}`);
     await supabase
       .from("saved_searches")
       .update({ last_notified_at: new Date().toISOString() } as any)
@@ -498,7 +498,7 @@ function Recherche() {
             className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors"
           >
             <RotateCcw className="h-4 w-4" />
-            Réinitialiser les filtres
+            <span data-no-translate>{tr("Réinitialiser les filtres")}</span>
           </button>
         </div>
       )}

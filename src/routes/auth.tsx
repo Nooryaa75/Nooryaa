@@ -345,6 +345,12 @@ function AuthPage() {
           Continuer avec Apple
         </Button>
 
+        {mode === "signup" && (
+          <p className="text-center text-[11px] text-muted-foreground">
+            En continuant avec Google ou Apple, vous acceptez les CGU et la politique de confidentialité de Nooryaa.
+          </p>
+        )}
+
         <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
           <div className="flex-1 h-px bg-border" />ou<div className="flex-1 h-px bg-border" />
         </div>

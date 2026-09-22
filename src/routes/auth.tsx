@@ -189,9 +189,10 @@ function AuthPage() {
             lastName: lastName.trim(),
             phone: phone.trim(),
             origin: window.location.origin,
+            locale,
           },
         });
-        void sendWelcomeEmail({ data: { email: email.trim().toLowerCase() } }).catch(() => {});
+        void sendWelcomeEmail({ data: { email: email.trim().toLowerCase(), locale } }).catch(() => {});
         setSignupEmailSent(true);
         if (signupResult?.emailSent) {
           toast.success("Email de confirmation envoyé ! Vérifiez votre boîte de réception.");

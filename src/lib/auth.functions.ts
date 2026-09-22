@@ -10,6 +10,7 @@ const signUpSchema = z.object({
   lastName: z.string().min(2).max(60),
   phone: z.string().min(8).max(20),
   origin: z.string().url().optional(),
+  locale: z.string().optional(),
 });
 
 function friendlySignupError(error: any): string {
@@ -68,6 +69,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
           first_name: data.firstName.trim(),
           last_name: data.lastName.trim(),
           phone,
+          locale: (data.locale ?? "fr").slice(0, 2),
         },
         redirectTo: `${data.origin ?? SITE_URL}/onboarding`,
       },
@@ -84,6 +86,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
       email,
       firstName: data.firstName.trim(),
       confirmationUrl: linkData.properties.action_link,
+      locale: data.locale,
     }).catch(() => ({ sent: false as const }));
 
     return { ok: true as const, email, emailSent: sendResult.sent };
@@ -93,6 +96,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
 const resendSchema = z.object({
   email: z.string().email(),
   origin: z.string().url().optional(),
+  locale: z.string().optional(),
 });
 
 /** Renvoie l'email de confirmation d'inscription à un compte non encore validé. */
@@ -104,7 +108,7 @@ export const resendSignupConfirmation = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("first_name")
+      .select("first_name, locale")
       .ilike("email", email)
       .maybeSingle();
 
@@ -125,6 +129,7 @@ export const resendSignupConfirmation = createServerFn({ method: "POST" })
       email,
       firstName: profile?.first_name ?? "",
       confirmationUrl: linkData.properties.action_link,
+      locale: data.locale ?? (profile as any)?.locale,
     }).catch(() => ({ sent: false as const }));
 
     return { ok: true as const, emailSent: sendResult.sent };

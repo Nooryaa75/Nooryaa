@@ -357,7 +357,7 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
         body: JSON.stringify({
           from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
           to: [profile.email],
-          subject: `Bienvenue sur ${SITE_NAME} 🌙`,
+          subject: c.welcome.subject(SITE_NAME),
           html,
         }),
       });

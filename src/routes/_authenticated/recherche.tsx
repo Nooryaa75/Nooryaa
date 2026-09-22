@@ -327,19 +327,22 @@ function Recherche() {
 
           {/* Âge */}
           <div className="space-y-2">
-            <SectionTitle>Âge</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Âge")}</span></SectionTitle>
             <DualRangeSlider
               value={[filters.ageMin, filters.ageMax]}
               min={18}
               max={90}
               step={1}
+              minLabel={tr("Âge minimum")}
+              maxLabel={tr("Âge maximum")}
+              unit={tr("ans")}
               onValueChange={([a, b]) => set({ ageMin: a, ageMax: b })}
             />
           </div>
 
           {/* Taille */}
           <div className="space-y-2">
-            <SectionTitle>Taille</SectionTitle>
+            <SectionTitle><span data-no-translate>{tr("Taille")}</span></SectionTitle>
             <DualRangeSlider
               value={[filters.heightMin ?? 120, filters.heightMax ?? 230]}
               min={120}
@@ -347,8 +350,8 @@ function Recherche() {
               step={1}
               unit=""
               formatValue={(v) => formatHeight(v, locale) ?? String(v)}
-              minLabel="Taille min"
-              maxLabel="Taille max"
+              minLabel={tr("Taille min")}
+              maxLabel={tr("Taille max")}
               onValueChange={([a, b]) => set({ heightMin: a, heightMax: b })}
             />
           </div>

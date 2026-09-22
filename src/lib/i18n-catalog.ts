@@ -4009,6 +4009,10 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Date of birth",
     "ar": "تاريخ الميلاد"
   },
+  "CGU": {
+    "en": "Terms of Use",
+    "ar": "شروط الاستخدام"
+  },
   "Dernière mise à jour :": {
     "en": "Last updated:",
     "ar": "آخر تحديث:"

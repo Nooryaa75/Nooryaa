@@ -20,18 +20,18 @@ export const Route = createFileRoute("/_authenticated/compte/cgu")({
 
 function CguPage() {
   const fetchDocument = useServerFn(fetchPublishedLegalDocument);
-  const { locale, formatDate } = useI18n();
+  const { locale, formatDate, t } = useI18n();
   const { data } = useQuery({ queryKey: ["legal-document", "terms"], queryFn: () => fetchDocument({ data: { key: "terms" } }), staleTime: 60000 });
   const content = isLegalContent(data?.content) ? data.content : DEFAULT_LEGAL_CONTENT.terms;
   const document = content[locale];
   return (
     <div className="space-y-4" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="relative flex items-center justify-center">
-        <Link to="/compte" aria-label="Retour" className="absolute start-0 text-primary"><ChevronLeft className="h-6 w-6 rtl-flip" /></Link>
+        <Link to="/compte" aria-label={t("Retour")} className="absolute start-0 text-primary"><ChevronLeft className="h-6 w-6 rtl-flip" /></Link>
         <h1 className="text-lg font-bold text-primary flex items-center gap-2"><FileText className="h-5 w-5" />{document.title}</h1>
       </div>
       <div className="bg-card rounded-2xl p-6 border border-border/60 shadow-[var(--shadow-card)] space-y-5">
-        <p className="text-xs text-muted-foreground">{data?.publishedAt ? `Dernière mise à jour : ${formatDate(data.publishedAt, { dateStyle: "long" })}` : "Version intégrée"}</p>
+        <p className="text-xs text-muted-foreground" data-no-translate>{data?.publishedAt ? `${t("Dernière mise à jour :")} ${formatDate(data.publishedAt, { dateStyle: "long" })}` : t("Version intégrée")}</p>
         {document.sections.map((section, index) => <section key={`${section.title}-${index}`} className="space-y-1.5"><h3 className="font-semibold">{section.title}</h3><p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.body}</p></section>)}
       </div>
     </div>

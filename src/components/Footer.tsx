@@ -27,7 +27,7 @@ export function Footer() {
             to="/terms"
             className="text-muted-foreground transition-colors hover:text-primary hover:underline"
           >
-            {t("Conditions Générales d'Utilisation — Nooryaa").replace(" — Nooryaa", "")}
+            {t("Conditions d'utilisation")}
           </Link>
         </nav>
       </div>

@@ -240,6 +240,10 @@ const SOURCE_NAMES: Record<string, { en: string; ar: string }> = {
   Bukhari: { en: "Bukhari", ar: "البخاري" },
   Muslim: { en: "Muslim", ar: "مسلم" },
   Tirmidhi: { en: "Tirmidhi", ar: "الترمذي" },
+  "Abu Dawud": { en: "Abu Dawud", ar: "أبو داود" },
+  Ahmad: { en: "Ahmad", ar: "أحمد" },
+  Bayhaqi: { en: "Bayhaqi", ar: "البيهقي" },
+  "Ibn Majah": { en: "Ibn Majah", ar: "ابن ماجه" },
 };
 
 function localizeSource(source: string | undefined, locale: "fr" | "en" | "ar") {

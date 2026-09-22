@@ -559,13 +559,11 @@ export async function requestSelfieRedo(opts: {
     ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">${escapeHtml(opts.reason)}</p>`
     : "";
   const html = layout(
-    "Vérification de votre profil à refaire",
-    `<p>Assalamu alaykum ${name},</p>
-     <p>Lors de l'ajout d'une nouvelle photo sur votre profil <strong>${SITE_NAME}</strong>, notre contrôle automatique n'a pas pu confirmer qu'il s'agit bien de vous. Par mesure de sécurité, votre badge « Profil vérifié » a été temporairement retiré.</p>
-     ${reasonBlock}
-     <p>Pour retrouver votre badge, refaites simplement la vérification par selfie depuis <strong>Mon compte → Profil</strong>. Cela ne prend que quelques secondes.</p>`,
-    "Refaire ma vérification",
+    c.selfie.title,
+    `<p>${c.greeting(name)}</p>${c.selfie.body(SITE_NAME)}${reasonBlock}<p>${c.selfie.inAppBody}</p>`,
+    c.selfie.cta,
     `${SITE_URL}/compte/profil`,
+    locale,
   );
 
   let status = "sent";

@@ -315,10 +315,12 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("id, email, pseudo, first_name")
+      .select("id, email, pseudo, first_name, locale")
       .ilike("email", data.email)
       .maybeSingle();
     if (!profile?.email) return { sent: false, reason: "no_account" as const };
+    const locale = normalizeLocale(data.locale ?? (profile as any)?.locale);
+    const c = copyFor(locale);
 
     const { data: already } = await supabaseAdmin
       .from("email_notifications")

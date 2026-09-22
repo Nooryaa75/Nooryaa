@@ -88,53 +88,49 @@ function actorAvatar(avatarUrl?: string | null, actorName?: string, blurred?: bo
   return `<div style="text-align:center;margin:0 0 16px;"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(actorName || "Membre")}" width="72" height="72" style="display:block;margin:0 auto;border-radius:50%;object-fit:cover;border:3px solid #e6e3f2;" /></div>`;
 }
 
-function buildEmail(kind: NotifyKind, recipientName: string, actorName: string, preview?: string | null, actorAvatarUrl?: string | null, actorBlurred?: boolean) {
-  const who = escapeHtml(actorName || "Un membre");
-  const hi = `Assalamu alaykum ${escapeHtml(recipientName || "")},`.trim();
+function buildEmail(
+  kind: NotifyKind,
+  recipientName: string,
+  actorName: string,
+  preview?: string | null,
+  actorAvatarUrl?: string | null,
+  actorBlurred?: boolean,
+  locale: MailLocale = "fr",
+) {
+  const c = copyFor(locale);
+  const who = escapeHtml(actorName || c.memberFallback);
+  const hi = c.greeting(escapeHtml(recipientName || "")).trim();
   const avatar = actorAvatar(actorAvatarUrl, actorName, actorBlurred);
+  const quote = locale === "en" ? (s: string) => `“${s}”` : locale === "ar" ? (s: string) => `«${s}»` : (s: string) => `« ${s} »`;
 
   switch (kind) {
     case "like":
       return {
-        subject: `${who} vous a liké sur ${SITE_NAME} 💜`,
-        html: layout(
-          "Vous avez un nouveau coup de cœur",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vient de vous liker sur ${SITE_NAME}. Découvrez son profil et, si le cœur y est, likez à votre tour pour ouvrir la conversation.</p>`,
-          "Voir qui m'a liké",
-          `${SITE_URL}/likes`,
-        ),
+        subject: c.like.subject(who, SITE_NAME),
+        html: layout(c.like.title, `${avatar}<p>${hi}</p><p>${c.like.body(who, SITE_NAME)}</p>`, c.like.cta, `${SITE_URL}/likes`, locale),
       };
     case "match":
       return {
-        subject: `C'est un match avec ${who} ! 🎉`,
-        html: layout(
-          "Vous avez un nouveau match",
-          `${avatar}<p>${hi}</p><p>Vous et <strong>${who}</strong> vous êtes likés mutuellement. Vous pouvez désormais échanger dans le respect de la charte ${SITE_NAME}.</p>`,
-          "Démarrer la conversation",
-          `${SITE_URL}/matchs`,
-        ),
+        subject: c.match.subject(who),
+        html: layout(c.match.title, `${avatar}<p>${hi}</p><p>${c.match.body(who, SITE_NAME)}</p>`, c.match.cta, `${SITE_URL}/matchs`, locale),
       };
     case "message":
       return {
-        subject: `Nouveau message de ${who}`,
+        subject: c.message.subject(who),
         html: layout(
-          "Vous avez reçu un message",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> vous a envoyé un message sur ${SITE_NAME}.</p>${
-            preview ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">« ${escapeHtml(preview.slice(0, 140))} »</p>` : ""
+          c.message.title,
+          `${avatar}<p>${hi}</p><p>${c.message.body(who, SITE_NAME)}</p>${
+            preview ? `<p style="padding:12px 14px;background:#faf9ff;border-radius:12px;color:#2b1f57;">${quote(escapeHtml(preview.slice(0, 140)))}</p>` : ""
           }`,
-          "Lire le message",
+          c.message.cta,
           `${SITE_URL}/messages`,
+          locale,
         ),
       };
     case "visit":
       return {
-        subject: `${who} a consulté votre profil`,
-        html: layout(
-          "Votre profil a été consulté",
-          `${avatar}<p>${hi}</p><p><strong>${who}</strong> a récemment visité votre profil sur ${SITE_NAME}.</p>`,
-          "Voir mon profil",
-          `${SITE_URL}/compte/profil`,
-        ),
+        subject: c.visit.subject(who),
+        html: layout(c.visit.title, `${avatar}<p>${hi}</p><p>${c.visit.body(who, SITE_NAME)}</p>`, c.visit.cta, `${SITE_URL}/compte/profil`, locale),
       };
   }
 }

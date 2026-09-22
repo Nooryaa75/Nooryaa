@@ -4286,4 +4286,20 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Subject",
     "ar": "الموضوع"
   },
+  "Accueil": {
+    "en": "Home",
+    "ar": "الرئيسية"
+  },
+  "Compte": {
+    "en": "Account",
+    "ar": "الحساب"
+  },
+  "Likes": {
+    "en": "Likes",
+    "ar": "الإعجابات"
+  },
+  "Messages": {
+    "en": "Messages",
+    "ar": "الرسائل"
+  },
 };

@@ -1225,6 +1225,14 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Send a like",
     "ar": "إرسال إعجاب"
   },
+  "Vous pourrez lui écrire lorsqu'elle vous aura envoyé un coup de cœur.": {
+    "en": "You will be able to write to her once she has sent you a like.",
+    "ar": "يمكنك مراسلتها بعد أن ترسل لك إعجابًا."
+  },
+  "Vous pourrez lui écrire lorsqu'il vous aura envoyé un coup de cœur.": {
+    "en": "You will be able to write to him once he has sent you a like.",
+    "ar": "يمكنك مراسلته بعد أن يرسل لك إعجابًا."
+  },
   "Envoyer un message": {
     "en": "Send a message",
     "ar": "إرسال رسالة"

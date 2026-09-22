@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred } from "@/lib/reveal";
+import { useI18n, type Locale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/messages")({
   head: () => ({ meta: [{ title: "Messages — Nooryaa" }] }),
@@ -33,16 +34,16 @@ type Convo = {
   liked: boolean;
 };
 
-function formatWhen(iso: string | null): string {
+function formatWhen(iso: string | null, locale: Locale, yesterday: string): string {
   if (!iso) return "";
   const d = new Date(iso);
   const now = new Date();
-  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+  const languageTag = locale === "ar" ? "ar" : locale === "en" ? "en-GB" : "fr-FR";
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString(languageTag, { hour: "2-digit", minute: "2-digit" });
   const diff = (now.getTime() - d.getTime()) / 86400000;
-  if (diff < 2) return "Hier";
-  if (diff < 7) return days[d.getDay()];
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  if (diff < 2) return yesterday;
+  if (diff < 7) return d.toLocaleDateString(languageTag, { weekday: "short" });
+  return d.toLocaleDateString(languageTag, { day: "2-digit", month: "2-digit" });
 }
 
 /** Présence en ligne partagée (point vert à côté du prénom). */
@@ -65,6 +66,7 @@ function useOnlineUsers(userId: string) {
 
 function MessagesLayout() {
   const ctx = Route.useRouteContext();
+  const { locale, t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isDetail = pathname !== "/messages";
   const qc = useQueryClient();
@@ -120,11 +122,11 @@ function MessagesLayout() {
         const e = byPeer.get(p.id);
         const last = e?.last;
         const lastText = !last
-          ? "Démarrez la conversation"
+          ? t("Démarrez la conversation")
           : last.audio_path
-            ? "🎤 Message vocal"
+            ? `🎤 ${t("Message vocal")}`
             : last.image_path
-              ? "📷 Photo"
+              ? `📷 ${t("Photo")}`
               : (last.content as string) ?? "";
         return {
           id: p.id,
@@ -187,7 +189,7 @@ function MessagesLayout() {
       }
     },
     onSuccess: () => {
-      toast.success("Conversation supprimée");
+      toast.success(t("Conversation supprimée"));
       if (confirmDelete) {
         qc.setQueryData(["conversations", ctx.userId], (old: any) => Array.isArray(old) ? old.filter((p) => p.id !== confirmDelete.id) : old);
       }
@@ -210,7 +212,7 @@ function MessagesLayout() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Signalement envoyé à la modération");
+      toast.success(t("Signalement envoyé à la modération"));
       setReportOpen(null);
       setReportReason("");
     },
@@ -306,12 +308,12 @@ function MessagesLayout() {
                       {online.has(p.id) && <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" aria-label="En ligne" />}
                     </p>
                     <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">
-                      {p.lastIsMine && "Vous : "}{p.lastText}
+                      {p.lastIsMine && `${t("Vous")} : `}{p.lastText}
                     </p>
                   </div>
                 </Link>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <span className="text-xs text-muted-foreground">{formatWhen(p.lastAt)}</span>
+                  <span className="text-xs text-muted-foreground">{formatWhen(p.lastAt, locale, t("Hier"))}</span>
                   {p.unread > 0 ? (
                     <span className="min-w-5 h-5 px-1.5 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center">
                       {p.unread}

@@ -20,6 +20,7 @@ import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { useI18n } from "@/lib/i18n";
+import { formatDistance, formatHeight } from "@/lib/units";
 
 type Props = {
   title: string;
@@ -55,7 +56,7 @@ function boolLabel(value: boolean | null | undefined, yes = "Oui", no = "Non"): 
 /** Fiche plein écran : photo + infos, détails en dessous, décision par boutons. */
 export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true, hideHeader = false }: Props) {
   const queryClient = useQueryClient();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [localLikedIds, setLocalLikedIds] = useState<string[]>([]);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [isDeciding, setIsDeciding] = useState(false);
@@ -255,7 +256,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
                 <div className="mt-1 flex items-center gap-1 text-xs uppercase tracking-wider text-white/90">
                   <MapPin className="h-3.5 w-3.5" />
-                  {typeof current._distance === "number" && <span>À {Math.round(current._distance)} km,</span>}
+                  {typeof current._distance === "number" && <span data-no-translate>{t("À")} {formatDistance(current._distance, locale)},</span>}
                   <span className="truncate">{[current.city, current.country].filter(Boolean).join(", ") || "—"}</span>
                 </div>
                 <div className="mt-2 space-y-1 text-sm text-white/90">
@@ -399,7 +400,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
             >
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <Info icon={<Sparkles className="h-4 w-4" />} label="Statut" value={current.marital_status ? MARITAL_LABELS[current.marital_status] : null} />
-                <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={current.height_cm ? `${current.height_cm} cm` : null} />
+                <Info icon={<Ruler className="h-4 w-4" />} label="Taille" value={formatHeight(current.height_cm, locale)} />
                 <Info icon={<Ruler className="h-4 w-4" />} label="Corpulence" value={(current as any).body_type ?? null} />
                 <Info icon={<GraduationCap className="h-4 w-4" />} label="Études" value={current.education_level} />
                 <Info icon={<Globe className="h-4 w-4" />} label="Origine" value={current.country_origin} />
@@ -511,6 +512,7 @@ function AccordionSection({
 }
 
 function SearchingFor({ profile }: { profile: any }) {
+  const { locale } = useI18n();
   const prefs = profile?.preferences ?? {};
   const hasPrefs = Object.keys(prefs).length > 0;
   if (!hasPrefs) return <p className="text-sm text-muted-foreground italic">Aucun critère de recherche renseigné.</p>;
@@ -527,7 +529,7 @@ function SearchingFor({ profile }: { profile: any }) {
     <dl className="grid grid-cols-2 gap-3 text-sm">
       <Info icon={<Sparkles className="h-4 w-4" />} label="Âge recherché" value={range(prefs.age_min, prefs.age_max)} />
       <Info icon={<Ruler className="h-4 w-4" />} label="Taille recherchée" value={range(prefs.height_min, prefs.height_max)} />
-      <Info icon={<MapPin className="h-4 w-4" />} label="Distance max" value={prefs.distance_km ? `${prefs.distance_km} km` : null} />
+      <Info icon={<MapPin className="h-4 w-4" />} label="Distance max" value={formatDistance(prefs.distance_km, locale)} />
       <Info icon={<Globe className="h-4 w-4" />} label="Pays de résidence" value={prefs.country} />
       <Info icon={<Globe className="h-4 w-4" />} label="Pays d'origine" value={prefs.country_origin} />
       <Info icon={<Sparkles className="h-4 w-4" />} label="Situation" value={prefs.marital_status} />

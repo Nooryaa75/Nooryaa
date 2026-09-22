@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
+import { formatDistance, formatHeight } from "@/lib/units";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
   head: ({ params }) => ({
@@ -37,7 +38,7 @@ const REPORT_REASONS = ["Contenu inapproprié", "Faux profil", "Harcèlement", "
 
 function ProfileView() {
   const { pseudo } = Route.useParams();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const ctx = Route.useRouteContext();
   const navigate = useNavigate();
   const router = useRouter();
@@ -228,7 +229,7 @@ function ProfileView() {
                 {profile.city ? `${profile.city}, ${profile.country}` : profile.country}
                 {profile.birthdate && <span className="ml-2">· {ageFromBirthdate(profile.birthdate)} ans</span>}
                 {profile.gender && <span className="ml-2">· {GENDER_LABELS[profile.gender]}</span>}
-                {(profile as any).height_cm && <span className="ml-2">· {(profile as any).height_cm} cm</span>}
+                {(profile as any).height_cm && <span className="ml-2" data-no-translate>· {formatHeight((profile as any).height_cm, locale)}</span>}
               </p>
             </div>
 
@@ -339,7 +340,7 @@ function ProfileView() {
                   <Info label="Études" value={profile.education_level} />
                   <Info label="Personnalité" value={profile.personality} />
                   <Info label="Fumeur" value={boolLabel(profile.smoker, "Oui", "Non")} />
-                  <Info label="Taille" value={(profile as any).height_cm ? `${(profile as any).height_cm} cm` : undefined} />
+                  <Info label="Taille" value={formatHeight((profile as any).height_cm, locale) ?? undefined} />
                   <Info label="Corpulence" value={(profile as any).body_type ?? undefined} />
                   {profile.activities && <div className="col-span-2"><Info label="Activités" value={profile.activities} /></div>}
                 </div>
@@ -390,7 +391,7 @@ function ProfileView() {
 }
 
 function Info({ label, value }: { label: string; value?: string | null }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   if (value === null || value === undefined || value === "") return null;
   const translated = value.split(", ").map((part) => t(part)).join(", ");
   return (
@@ -416,9 +417,9 @@ function PreferenceInfo({ profile }: { profile: any }) {
   if (prefs.smoker !== undefined && prefs.smoker !== null) items.push({ label: "Accepte fumeur", value: boolLabel(prefs.smoker) });
   if (prefs.has_children !== undefined && prefs.has_children !== null) items.push({ label: "Accepte enfants", value: boolLabel(prefs.has_children) });
   if (prefs.wants_children !== undefined && prefs.wants_children !== null) items.push({ label: "Souhaite enfants", value: boolLabel(prefs.wants_children) });
-  if (prefs.height_min || prefs.height_max) items.push({ label: "Taille recherchée", value: `${prefs.height_min ?? "—"} - ${prefs.height_max ?? "—"} cm` });
+  if (prefs.height_min || prefs.height_max) items.push({ label: "Taille recherchée", value: `${formatHeight(prefs.height_min, locale) ?? "—"} - ${formatHeight(prefs.height_max, locale) ?? "—"}` });
   if (prefs.min_age || prefs.max_age) items.push({ label: "Tranche d'âge", value: `${prefs.min_age ?? "—"} - ${prefs.max_age ?? "—"} ans` });
-  if (prefs.max_distance) items.push({ label: "Distance max", value: `${prefs.max_distance} km` });
+  if (prefs.max_distance) items.push({ label: "Distance max", value: formatDistance(prefs.max_distance, locale) });
   if (!items.length) return null;
   return (
     <>

@@ -30,16 +30,24 @@ function containsPhrase(text: string, phrase: string): boolean {
   return (` ${text} `).includes(` ${normalizedPhrase} `);
 }
 
-/** Questions ordinaires sur le lieu de vie, avec tolérance aux fautes courantes. */
-export function isSafeLocationQuestion(rawText: string): boolean {
+/**
+ * Échanges personnels ordinaires nécessaires pour faire connaissance.
+ * Ils passent sans analyse IA, sauf s'ils contiennent aussi un élément réellement interdit.
+ */
+export function isSafePersonalConversation(rawText: string): boolean {
   const text = normalize(rawText);
-  const asksWhere = /\b(?:ou|quel(?:le)?|qu elle|quelle ville|dans quelle ville)\b/.test(text);
-  const mentionsLiving = /\b(?:habite|habites|habitez|habiter|habites?|vis|vit|vivez|ville|region|pays|quartier)\b/.test(text);
+  const personalTopic = /\b(?:habite|habites|habitez|habiter|vis|vit|vivez|ville|region|pays|quartier|age|ages|metier|travail|travailles|travaillez|etude|etudes|famille|enfant|enfants|religion|religieuse|pratique|pratiques|pratiquez|mariage|marier|loisir|loisirs|passion|passions|langue|langues|origine|origines)\b/.test(text);
   const containsContactDetails = WARN_PATTERNS[0].words.some((word) => containsPhrase(text, word))
     || PHONE_RE.test(rawText)
     || EMAIL_RE.test(rawText);
+  const containsBlockedContent = BLOCK_PATTERNS.some((group) =>
+    group.words.some((word) => containsPhrase(text, word)),
+  );
+  const containsAbusiveContent = WARN_PATTERNS.slice(1).some((group) =>
+    group.words.some((word) => containsPhrase(text, word)),
+  );
 
-  return asksWhere && mentionsLiving && !containsContactDetails;
+  return personalTopic && !containsContactDetails && !containsBlockedContent && !containsAbusiveContent;
 }
 
 // Interdits stricts : le message est refusé.
@@ -95,6 +103,12 @@ const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
 export function lexiconCheck(rawText: string): ModerationResult {
   const text = normalize(rawText);
   const categories: string[] = [];
+
+  // Les questions personnelles normales (lieu de vie, âge, métier, famille,
+  // pratique, projet de mariage, loisirs…) ne doivent jamais être bloquées.
+  if (isSafePersonalConversation(rawText)) {
+    return { verdict: "allow", categories: [], reason: "" };
+  }
 
   for (const group of BLOCK_PATTERNS) {
     if (group.words.some((word) => containsPhrase(text, word))) categories.push(group.category);

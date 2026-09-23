@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { isSafeLocationQuestion, lexiconCheck, type ModerationResult } from "./moderation-rules";
+import { isSafePersonalConversation, lexiconCheck, type ModerationResult } from "./moderation-rules";
 
 const SYSTEM_PROMPT = `Tu es le modérateur de Nooryaa, une plateforme de mise en relation musulmane sérieuse orientée dîn.
 Tu analyses un message privé envoyé entre deux membres.
@@ -64,10 +64,8 @@ export const moderateMessage = createServerFn({ method: "POST" })
     const content = data.content.trim();
     if (!content) return { verdict: "allow", categories: [], reason: "" };
 
-    // Une question sur la ville ou le lieu de vie n'est jamais une demande
-    // de coordonnées privées. La laisser passer sans solliciter l'IA évite
-    // les faux positifs, y compris avec des fautes de frappe courantes.
-    if (isSafeLocationQuestion(content)) {
+    // Les échanges personnels normaux sont autorisés sans solliciter l'IA.
+    if (isSafePersonalConversation(content)) {
       return { verdict: "allow", categories: [], reason: "" };
     }
 
@@ -149,7 +147,7 @@ export const moderateVoice = createServerFn({ method: "POST" })
     const transcript = (await transcribeAudio(bytes, data.mimeType))?.trim() ?? "";
     if (!transcript) return empty;
 
-    if (isSafeLocationQuestion(transcript)) {
+    if (isSafePersonalConversation(transcript)) {
       return { ...empty, transcript };
     }
 

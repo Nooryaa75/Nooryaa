@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { notifyByEmail } from "@/lib/notify";
 import { useServerFn } from "@tanstack/react-start";
 import { moderateMessage, moderateVoice } from "@/lib/moderation.functions";
-import { lexiconCheck } from "@/lib/moderation-rules";
+import { isSafePersonalConversation, lexiconCheck } from "@/lib/moderation-rules";
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { PrayerChatNotice } from "@/components/PrayerChatNotice";
@@ -184,6 +184,7 @@ function Conversation() {
   // Analyse automatique en arrière-plan : le message part tout de suite,
   // il est retiré immédiatement s'il enfreint la charte.
   function moderateInBackground(content: string, messageId: string) {
+    if (isSafePersonalConversation(content)) return;
     void (async () => {
       try {
         const res = await moderate({ data: { content, targetUserId: peer!.id } });

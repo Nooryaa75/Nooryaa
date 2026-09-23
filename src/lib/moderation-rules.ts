@@ -25,12 +25,17 @@ function normalize(text: string) {
     .trim();
 }
 
+function containsPhrase(text: string, phrase: string): boolean {
+  const normalizedPhrase = normalize(phrase);
+  return (` ${text} `).includes(` ${normalizedPhrase} `);
+}
+
 /** Questions ordinaires sur le lieu de vie, avec tolérance aux fautes courantes. */
 export function isSafeLocationQuestion(rawText: string): boolean {
   const text = normalize(rawText);
-  const asksWhere = /\b(?:ou|quel(?:le)?|quelle ville|dans quelle ville)\b/.test(text);
+  const asksWhere = /\b(?:ou|quel(?:le)?|qu elle|quelle ville|dans quelle ville)\b/.test(text);
   const mentionsLiving = /\b(?:habite|habites|habitez|habiter|habites?|vis|vit|vivez|ville|region|pays|quartier)\b/.test(text);
-  const containsContactDetails = WARN_PATTERNS[0].words.some((word) => text.includes(normalize(word)))
+  const containsContactDetails = WARN_PATTERNS[0].words.some((word) => containsPhrase(text, word))
     || PHONE_RE.test(rawText)
     || EMAIL_RE.test(rawText);
 
@@ -92,7 +97,7 @@ export function lexiconCheck(rawText: string): ModerationResult {
   const categories: string[] = [];
 
   for (const group of BLOCK_PATTERNS) {
-    if (group.words.some((w) => text.includes(normalize(w)))) categories.push(group.category);
+    if (group.words.some((word) => containsPhrase(text, word))) categories.push(group.category);
   }
   if (categories.length > 0) {
     return {
@@ -107,7 +112,7 @@ export function lexiconCheck(rawText: string): ModerationResult {
 
   const warnCats: string[] = [];
   for (const group of WARN_PATTERNS) {
-    if (group.words.some((w) => text.includes(normalize(w)))) warnCats.push(group.category);
+    if (group.words.some((word) => containsPhrase(text, word))) warnCats.push(group.category);
   }
   if (PHONE_RE.test(rawText) || EMAIL_RE.test(rawText)) warnCats.push("Coordonnées personnelles");
 

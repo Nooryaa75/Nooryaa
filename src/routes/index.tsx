@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoTextless from "@/assets/nooryaa-logo-textless.png";
+import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 import { useI18n } from "@/lib/i18n";
 
@@ -64,7 +64,7 @@ function Splash() {
 
       <main className="relative z-10 flex flex-col items-center text-center px-6 animate-in fade-in zoom-in-95 duration-1000">
         <img
-          src={logoTextless}
+          src={logoAsset.url}
           alt="Nooryaa"
           width={1024}
           height={1024}

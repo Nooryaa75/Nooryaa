@@ -29,7 +29,7 @@ export const DEFAULT_FILTERS: Filters = {
   activity: ANY, activities: "", personality: ANY,
   salat: ANY, ramadan: ANY, hadj: ANY, omra: ANY, voile: ANY,
   hasChildren: ANY, wantsChildren: ANY, smoker: ANY,
-  radiusEnabled: false, radiusKm: 50,
+  radiusEnabled: true, radiusKm: 50,
   originLabel: "", originLat: null, originLng: null,
   onlineOnly: false,
 };

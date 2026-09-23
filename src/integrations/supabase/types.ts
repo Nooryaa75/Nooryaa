@@ -1257,6 +1257,10 @@ export type Database = {
         Returns: boolean
       }
       is_blocked_between: { Args: { a: string; b: string }; Returns: boolean }
+      jsonb_replace_text: {
+        Args: { from_text: string; j: Json; to_text: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

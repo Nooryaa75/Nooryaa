@@ -102,7 +102,27 @@ function Conversation() {
     },
   });
 
+  // Marque comme lus les messages reçus dès l'ouverture (et à chaque nouveau message).
+  const unreadIds = (messages ?? [])
+    .filter((m: any) => m.receiver === ctx.userId && !m.read_at && !m.deleted_at && !m.pending)
+    .map((m: any) => m.id)
+    .join(",");
+  useEffect(() => {
+    if (!unreadIds) return;
+    const ids = unreadIds.split(",");
+    const now = new Date().toISOString();
+    (async () => {
+      const { error } = await supabase.from("messages").update({ read_at: now } as any).in("id", ids);
+      if (error) return;
+      patchList((old) => old.map((m) => (ids.includes(m.id) ? { ...m, read_at: now } : m)));
+      qc.invalidateQueries({ queryKey: ["unread-counts"] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unreadIds]);
+
   // Temps réel : on applique directement la modification reçue, sans recharger toute la conversation
+
   useEffect(() => {
     if (!peer) return;
     const apply = async (row: any, event: string) => {

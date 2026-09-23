@@ -25,6 +25,18 @@ function normalize(text: string) {
     .trim();
 }
 
+/** Questions ordinaires sur le lieu de vie, avec tolérance aux fautes courantes. */
+export function isSafeLocationQuestion(rawText: string): boolean {
+  const text = normalize(rawText);
+  const asksWhere = /\b(?:ou|quel(?:le)?|quelle ville|dans quelle ville)\b/.test(text);
+  const mentionsLiving = /\b(?:habite|habites|habitez|habiter|habites?|vis|vit|vivez|ville|region|pays|quartier)\b/.test(text);
+  const containsContactDetails = WARN_PATTERNS[0].words.some((word) => text.includes(normalize(word)))
+    || PHONE_RE.test(rawText)
+    || EMAIL_RE.test(rawText);
+
+  return asksWhere && mentionsLiving && !containsContactDetails;
+}
+
 // Interdits stricts : le message est refusé.
 const BLOCK_PATTERNS: { category: string; words: string[] }[] = [
   {

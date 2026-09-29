@@ -30,7 +30,9 @@ workflows:
       email:
         recipients:
           - karim@nooryaa.com
-        notify: true
+        notify:
+          success: true
+          failure: true
 
   # Version Google Play (AAB signé, à téléverser dans Play Console)
   nooryaa-android-release:

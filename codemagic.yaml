@@ -1,0 +1,31 @@
+# Configuration Codemagic — build Android de Nooryaa
+# Le projet Android est généré à chaque build : aucun dossier à committer.
+workflows:
+  nooryaa-android:
+    name: Nooryaa Android
+    instance_type: linux
+    max_build_duration: 60
+    environment:
+      node: v20.19.0
+      java: 17
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+      - name: Generate Android project
+        script: |
+          npx cap add android
+          npx cap sync android
+      - name: Build APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/debug/*.apk
+    publishing:
+      email:
+        recipients:
+          - karim@nooryaa.com
+        notify: true

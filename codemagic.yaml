@@ -1,6 +1,8 @@
-# Configuration Codemagic — build Android de Nooryaa
+# Configuration Codemagic — builds Android de Nooryaa
 # Le projet Android est généré à chaque build : aucun dossier à committer.
+
 workflows:
+  # Version de test (APK à installer directement sur un téléphone)
   nooryaa-android:
     name: Nooryaa Android
     instance_type: linux
@@ -24,6 +26,40 @@ workflows:
           ./gradlew assembleDebug
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
+    publishing:
+      email:
+        recipients:
+          - karim@nooryaa.com
+        notify: true
+
+  # Version Google Play (AAB signé, à téléverser dans Play Console)
+  nooryaa-android-release:
+    name: Nooryaa Android (Play Store)
+    instance_type: linux
+    max_build_duration: 60
+    environment:
+      node: v20.19.0
+      java: 17
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+      - name: Generate Android project
+        script: |
+          npx cap add android
+          npx cap sync android
+      - name: Build signed AAB
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file="$CM_KEYSTORE_PATH" \
+            -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$CM_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
     publishing:
       email:
         recipients:

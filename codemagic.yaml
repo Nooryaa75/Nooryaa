@@ -66,4 +66,6 @@ workflows:
       email:
         recipients:
           - karim@nooryaa.com
-        notify: true
+        notify:
+          success: true
+          failure: true

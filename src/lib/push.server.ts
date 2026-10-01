@@ -94,8 +94,8 @@ export async function sendPushToUser(
     return;
   }
 
-  const { data: tokens } = await supabaseAdmin
-    .from("push_tokens")
+  // Types automatiques pas encore régénérés pour cette table récente.
+  const { data: tokens } = await (supabaseAdmin.from("push_tokens" as never) as any)
     .select("token")
     .eq("user_id", userId);
   if (!tokens || tokens.length === 0) return;
@@ -124,7 +124,7 @@ export async function sendPushToUser(
         const text = await res.text();
         // Jeton périmé (app désinstallée, etc.) : on le supprime au lieu de réessayer.
         if (res.status === 404 || (res.status === 400 && text.includes("UNREGISTERED"))) {
-          await supabaseAdmin.from("push_tokens").delete().eq("token", row.token);
+          await (supabaseAdmin.from("push_tokens" as never) as any).delete().eq("token", row.token);
         } else {
           console.error(`FCM send failed [${res.status}]: ${text}`);
         }

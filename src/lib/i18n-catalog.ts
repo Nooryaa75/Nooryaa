@@ -2616,6 +2616,10 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "No more profiles in this selection for now.",
     "ar": "لا مزيد من الملفات الشخصية في هذه القائمة حاليًا."
   },
+  "Sécurité des enfants": {
+    "en": "Child safety",
+    "ar": "سلامة الأطفال"
+  },
   "Politique de confidentialité": {
     "en": "Privacy policy",
     "ar": "سياسة الخصوصية"

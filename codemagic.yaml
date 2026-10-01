@@ -14,11 +14,16 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
       - name: Generate Android project
         script: |
           npx cap add android
           npx cap sync android
+      - name: Configure Firebase (notifications push)
+        script: |
+          cp google-services.json android/app/google-services.json
+          sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Build APK
         script: |
           cd android
@@ -48,11 +53,16 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
       - name: Generate Android project
         script: |
           npx cap add android
           npx cap sync android
+      - name: Configure Firebase (notifications push)
+        script: |
+          cp google-services.json android/app/google-services.json
+          sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Build signed AAB
         script: |
           cd android

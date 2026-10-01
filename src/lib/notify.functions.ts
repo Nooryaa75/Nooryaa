@@ -223,6 +223,33 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       }
     }
 
+    // Notification push mobile (application Android) — respecte la préférence
+    // « Push mobile » de Mon compte → Mes notifications. Par défaut, activée
+    // pour les messages, likes et matchs (comme sur la page de réglages).
+    const MOBILE_ON_BY_DEFAULT = new Set<NotifyKind>(["like", "match", "message"]);
+    const mobileEnabled =
+      typeof prefs?.mobile === "boolean" ? prefs.mobile : MOBILE_ON_BY_DEFAULT.has(data.kind);
+    if (mobileEnabled) {
+      const pushTitles: Record<NotifyKind, string> = {
+        like: c.like.inApp(actorName),
+        match: c.match.inApp(actorName),
+        message: c.message.inApp(actorName),
+        visit: c.visit.inApp(actorName),
+      };
+      const pushLinks: Record<NotifyKind, string> = {
+        like: "/likes",
+        match: "/matchs",
+        message: "/messages",
+        visit: "/compte/profil",
+      };
+      const pushBody =
+        data.kind === "message" && data.preview ? `« ${data.preview.slice(0, 140)} »` : null;
+      const { sendPushToUser } = await import("@/lib/push.server");
+      sendPushToUser(recipient.id, pushTitles[data.kind], pushBody, pushLinks[data.kind]).catch(
+        (e) => console.error("Push send failed", e),
+      );
+    }
+
 
     // Aligné sur « Mon compte → Mes notifications » : par défaut, pas d'email
     // pour les messages, likes et visites ; les matchs sont notifiés par email

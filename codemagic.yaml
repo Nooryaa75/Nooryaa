@@ -29,6 +29,10 @@ workflows:
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
+      - name: Set app version (1.0.1)
+        script: |
+          sed -i '' 's/versionCode 1$/versionCode 2/' android/app/build.gradle
+          sed -i '' 's/versionName "1.0.0"/versionName "1.0.1"/' android/app/build.gradle
       - name: Build APK
         script: |
           cd android
@@ -73,6 +77,10 @@ workflows:
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
+      - name: Set app version (1.0.1)
+        script: |
+          sed -i '' 's/versionCode 1$/versionCode 2/' android/app/build.gradle
+          sed -i '' 's/versionName "1.0.0"/versionName "1.0.1"/' android/app/build.gradle
       - name: Build signed AAB
         script: |
           cd android

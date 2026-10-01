@@ -92,8 +92,17 @@ workflows:
             -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$CM_KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+      - name: Collect ProGuard mapping (if present)
+        script: |
+          if [ -f android/app/build/outputs/mapping/release/mapping.txt ]; then
+            cp android/app/build/outputs/mapping/release/mapping.txt mapping.txt
+            echo "mapping.txt collecte"
+          else
+            echo "Aucun mapping.txt (code non obfuscé)"
+          fi
     artifacts:
       - android/app/build/outputs/bundle/release/*.aab
+      - mapping.txt
     publishing:
       email:
         recipients:

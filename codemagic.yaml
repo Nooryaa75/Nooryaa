@@ -24,6 +24,11 @@ workflows:
           cp google-services.json android/app/google-services.json
           sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
+      - name: Configure notification icon
+        script: |
+          cp -R android-assets/ic_notification/* android/app/src/main/res/
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
+          perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
       - name: Build APK
         script: |
           cd android
@@ -63,6 +68,11 @@ workflows:
           cp google-services.json android/app/google-services.json
           sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
+      - name: Configure notification icon
+        script: |
+          cp -R android-assets/ic_notification/* android/app/src/main/res/
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
+          perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
       - name: Build signed AAB
         script: |
           cd android

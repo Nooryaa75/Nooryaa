@@ -192,8 +192,19 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       result.reason =
         result.reason ||
         "Nous n'avons pas pu confirmer que cette photo est bien vous : refaites la vérification par selfie.";
-    } else if (references.length === 0 && profile?.photo_verified) {
+    } else if (
+      references.length === 0 &&
+      profile?.photo_verified &&
+      result.gender_match === "unknown"
+    ) {
+      // Aucune photo de référence disponible, mais le membre est déjà vérifié :
+      // on ne retire le badge que si l'IA n'a même pas pu confirmer la cohérence
+      // avec le sexe déclaré. Une photo cohérente conserve le badge.
+      result.verdict = "review";
       result.require_selfie = true;
+      result.reason =
+        result.reason ||
+        "Nous n'avons pas pu confirmer le contenu de cette photo : refaites la vérification par selfie.";
     }
 
     try {

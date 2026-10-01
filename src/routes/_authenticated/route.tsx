@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { registerPushNotifications } from "@/lib/push";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -50,6 +51,13 @@ function AuthenticatedLayout() {
       cancelled = true;
     };
   }, [userId, navigate]);
+
+  // Notifications push mobiles : enregistre l'appareil (application Android
+  // uniquement ; ne fait rien dans le navigateur).
+  useEffect(() => {
+    if (!userId) return;
+    void registerPushNotifications(userId);
+  }, [userId]);
 
   // Présence temps réel : on rafraîchit last_seen toutes les 2 minutes.
   useEffect(() => {

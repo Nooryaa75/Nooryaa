@@ -47,23 +47,48 @@ export function CityAutocomplete({ value, onChange, placeholder, suggestions = [
     const ctrl = new AbortController();
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,departement,centre&boost=population&limit=8`,
-          { signal: ctrl.signal },
-        );
-        if (!res.ok) return;
-        const data = (await res.json()) as Array<{
-          nom: string;
-          departement?: { nom?: string };
-          centre?: { coordinates?: [number, number] };
-        }>;
-        const labels = data.map((c) => {
-          const label = c.departement?.nom ? `${c.nom} (${c.departement.nom})` : c.nom;
-          const co = c.centre?.coordinates;
-          if (co) coordsMap.current[label] = { longitude: co[0], latitude: co[1] };
-          return label;
-        });
-        setRemote(labels);
+        const [frRes, worldRes] = await Promise.allSettled([
+          fetch(
+            `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,departement,centre&boost=population&limit=6`,
+            { signal: ctrl.signal },
+          ).then((r) => (r.ok ? r.json() : [])),
+          fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=10&language=fr&format=json`,
+            { signal: ctrl.signal },
+          ).then((r) => (r.ok ? r.json() : {})),
+        ]);
+        const labels: string[] = [];
+        if (frRes.status === "fulfilled" && Array.isArray(frRes.value)) {
+          for (const c of frRes.value as Array<{
+            nom: string;
+            departement?: { nom?: string };
+            centre?: { coordinates?: [number, number] };
+          }>) {
+            const label = c.departement?.nom ? `${c.nom} (${c.departement.nom})` : c.nom;
+            const co = c.centre?.coordinates;
+            if (co) coordsMap.current[label] = { longitude: co[0], latitude: co[1] };
+            labels.push(label);
+          }
+        }
+        if (worldRes.status === "fulfilled") {
+          const results = ((worldRes.value as { results?: unknown[] }).results ?? []) as Array<{
+            name: string;
+            country?: string;
+            country_code?: string;
+            admin1?: string;
+            latitude: number;
+            longitude: number;
+          }>;
+          for (const c of results) {
+            if (c.country_code === "FR") continue; // déjà couvert par la liste française
+            const label = [c.name, c.admin1 && c.admin1 !== c.name ? c.admin1 : null, c.country]
+              .filter(Boolean)
+              .join(", ");
+            coordsMap.current[label] = { latitude: c.latitude, longitude: c.longitude };
+            labels.push(label);
+          }
+        }
+        setRemote(labels.slice(0, 10));
       } catch {
         /* ignore */
       }
@@ -78,7 +103,7 @@ export function CityAutocomplete({ value, onChange, placeholder, suggestions = [
     ? suggestions.filter((s) => norm(s).includes(norm(input)))
     : suggestions.slice(0, 8);
 
-  const filtered = Array.from(new Set([...remote, ...local])).slice(0, 8);
+  const filtered = Array.from(new Set([...remote, ...local])).slice(0, 10);
 
   const select = (s: string) => {
     skipFetch.current = true;

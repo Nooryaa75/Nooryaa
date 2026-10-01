@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).

@@ -224,9 +224,12 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     }
 
 
-    // Emails désactivés par défaut à l'inscription : l'utilisateur les active
-    // lui-même dans Mon compte → Mes notifications.
-    const emailEnabled = prefs?.email === true;
+    // Aligné sur « Mon compte → Mes notifications » : par défaut, pas d'email
+    // pour les messages, likes et visites ; les matchs sont notifiés par email
+    // dès l'inscription. Une préférence enregistrée est toujours respectée.
+    const EMAIL_OFF_BY_DEFAULT = new Set<NotifyKind>(["like", "message", "visit"]);
+    const emailEnabled =
+      typeof prefs?.email === "boolean" ? prefs.email : !EMAIL_OFF_BY_DEFAULT.has(data.kind);
     if (!emailEnabled) return { sent: false, reason: "disabled" as const };
 
     // Anti-spam : pas deux emails identiques dans la fenêtre définie.

@@ -25,16 +25,34 @@ function normalize(text: string) {
     .trim();
 }
 
+/**
+ * Recherche d'un mot ou d'une expression dans le texte normalisé.
+ * - expressions de plusieurs mots : correspondance exacte
+ * - mots longs (6+ lettres) : racines fléchies acceptées ("salopes", "prostituée",
+ *   "masturbation", "connards", "drogues"… captent les variantes)
+ * - mots courts : forme exacte + pluriels simples, pour éviter les faux positifs
+ *   (ex. "puter" ne bloque pas "pute", "habites" ne contient pas de blocage).
+ */
 function containsPhrase(text: string, phrase: string): boolean {
-  const normalizedPhrase = normalize(phrase);
-  return (` ${text} `).includes(` ${normalizedPhrase} `);
+  const p = normalize(phrase);
+  if (!p) return false;
+  if (p.includes(" ")) {
+    return (` ${text} `).includes(` ${p} `);
+  }
+  return text.split(" ").some((token) => {
+    if (token === p) return true;
+    if (p.length >= 6) return token.startsWith(p);
+    return token === `${p}s` || token === `${p}es` || token === `${p}e` || token === `${p}x`;
+  });
 }
 
 /**
  * Échanges personnels ordinaires nécessaires pour faire connaissance.
- * Ils passent sans analyse IA, sauf s'ils contiennent aussi un élément réellement interdit.
+ * Ils passent sans analyse IA, sauf s'ils contiennent un élément réellement interdit
+ * ou s'ils sont trop longs (au-delà de 400 caractères, l'IA analyse le ton).
  */
 export function isSafePersonalConversation(rawText: string): boolean {
+  if (rawText.trim().length > 400) return false;
   const text = normalize(rawText);
   const personalTopic = /\b(?:habite|habites|habitez|habiter|vis|vit|vivez|ville|region|pays|quartier|age|ages|metier|travail|travailles|travaillez|etude|etudes|famille|enfant|enfants|religion|religieuse|pratique|pratiques|pratiquez|mariage|marier|loisir|loisirs|passion|passions|langue|langues|origine|origines)\b/.test(text);
   const containsContactDetails = WARN_PATTERNS[0].words.some((word) => containsPhrase(text, word))

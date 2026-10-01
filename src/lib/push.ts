@@ -19,7 +19,9 @@ export async function registerPushNotifications(userId: string) {
 
     await push.addListener("registration", async (token: PushToken) => {
       if (!token?.value) return;
-      await supabase.from("push_tokens").upsert(
+      // La table push_tokens est récente : les types automatiques ne la
+      // connaissent pas encore, d'où le contournement de typage.
+      await (supabase.from("push_tokens" as never) as any).upsert(
         {
           user_id: userId,
           token: token.value,

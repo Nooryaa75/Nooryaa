@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SecuriteEnfantsRouteImport } from './routes/securite-enfants'
 import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
@@ -62,6 +63,11 @@ import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_aut
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecuriteEnfantsRoute = SecuriteEnfantsRouteImport.update({
+  id: '/securite-enfants',
+  path: '/securite-enfants',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
@@ -322,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
+  '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -372,6 +379,7 @@ export interface FileRoutesByTo {
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
+  '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
+  '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
@@ -475,6 +484,7 @@ export interface FileRouteTypes {
     | '/notre-difference'
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
+    | '/securite-enfants'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/notre-difference'
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
+    | '/securite-enfants'
     | '/sitemap.xml'
     | '/blocked'
     | '/browse'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/notre-difference'
     | '/privacy'
     | '/reinitialiser-mot-de-passe'
+    | '/securite-enfants'
     | '/sitemap.xml'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
@@ -627,6 +639,7 @@ export interface RootRouteChildren {
   NotreDifferenceRoute: typeof NotreDifferenceRoute
   PrivacyRoute: typeof PrivacyRoute
   ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
+  SecuriteEnfantsRoute: typeof SecuriteEnfantsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -657,6 +670,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/securite-enfants': {
+      id: '/securite-enfants'
+      path: '/securite-enfants'
+      fullPath: '/securite-enfants'
+      preLoaderRoute: typeof SecuriteEnfantsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reinitialiser-mot-de-passe': {
@@ -1078,6 +1098,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotreDifferenceRoute: NotreDifferenceRoute,
   PrivacyRoute: PrivacyRoute,
   ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
+  SecuriteEnfantsRoute: SecuriteEnfantsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,

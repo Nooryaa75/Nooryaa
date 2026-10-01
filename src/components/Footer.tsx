@@ -15,12 +15,18 @@ export function Footer() {
         <div className="w-full max-w-xs">
           <LanguageSwitcher inline />
         </div>
-        <nav className="text-xs">
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs">
           <Link
             to="/privacy"
             className="text-muted-foreground transition-colors hover:text-primary hover:underline"
           >
             {t("Politique de confidentialité")}
+          </Link>
+          <Link
+            to="/securite-enfants"
+            className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+          >
+            {t("Sécurité des enfants")}
           </Link>
         </nav>
       </div>

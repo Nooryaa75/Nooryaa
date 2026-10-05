@@ -9,85 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SecuriteEnfantsRouteImport } from './routes/securite-enfants'
-import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
-import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
-import { Route as AdminRgpdRouteImport } from './routes/admin.rgpd'
-import { Route as AdminResetRouteImport } from './routes/admin.reset'
-import { Route as AdminReportsRouteImport } from './routes/admin.reports'
-import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
-import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
-import { Route as AdminContactRouteImport } from './routes/admin.contact'
-import { Route as AdminConfigRouteImport } from './routes/admin.config'
-import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
-import { Route as AdminAdsRouteImport } from './routes/admin.ads'
-import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
-import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
-import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
-import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
-import { Route as AuthenticatedMatchsRouteImport } from './routes/_authenticated/matchs'
-import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
-import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
-import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
+import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
+import { Route as SecuriteEnfantsRouteImport } from './routes/securite-enfants'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
-import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
-import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
-import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
+import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
+import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
+import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
+import { Route as AuthenticatedMatchsRouteImport } from './routes/_authenticated/matchs'
+import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedRechercheRouteImport } from './routes/_authenticated/recherche'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAdsRouteImport } from './routes/admin.ads'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminConfigRouteImport } from './routes/admin.config'
+import { Route as AdminContactRouteImport } from './routes/admin.contact'
+import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
+import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminResetRouteImport } from './routes/admin.reset'
+import { Route as AdminRgpdRouteImport } from './routes/admin.rgpd'
+import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
-import { Route as ApiPublicLegalDocumentsRouteImport } from './routes/api.public.legal-documents'
-import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
-import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
-import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
-import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
-import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authenticated/messages.$pseudo'
-import { Route as AuthenticatedCompteServiceClientRouteImport } from './routes/_authenticated/compte.service-client'
-import { Route as AuthenticatedCompteReglesRouteImport } from './routes/_authenticated/compte.regles'
-import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
-import { Route as AuthenticatedCompteNotificationsRouteImport } from './routes/_authenticated/compte.notifications'
-import { Route as AuthenticatedCompteDonneesRouteImport } from './routes/_authenticated/compte.donnees'
-import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes/_authenticated/compte.confidentialite'
-import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
 import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
+import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
+import { Route as AuthenticatedCompteConfidentialiteRouteImport } from './routes/_authenticated/compte.confidentialite'
+import { Route as AuthenticatedCompteDonneesRouteImport } from './routes/_authenticated/compte.donnees'
+import { Route as AuthenticatedCompteNotificationsRouteImport } from './routes/_authenticated/compte.notifications'
+import { Route as AuthenticatedCompteProfilRouteImport } from './routes/_authenticated/compte.profil'
+import { Route as AuthenticatedCompteReglesRouteImport } from './routes/_authenticated/compte.regles'
+import { Route as AuthenticatedCompteServiceClientRouteImport } from './routes/_authenticated/compte.service-client'
+import { Route as AuthenticatedMessagesPseudoRouteImport } from './routes/_authenticated/messages.$pseudo'
+import { Route as AuthenticatedProfilePseudoRouteImport } from './routes/_authenticated/profile.$pseudo'
+import { Route as AdminConversationsIndexRouteImport } from './routes/admin.conversations.index'
+import { Route as AdminConversationsPairRouteImport } from './routes/admin.conversations.$pair'
+import { Route as AdminProfilesIndexRouteImport } from './routes/admin.profiles.index'
+import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id'
+import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
+import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
+import { Route as ApiPublicLegalDocumentsRouteImport } from './routes/api.public.legal-documents'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SecuriteEnfantsRoute = SecuriteEnfantsRouteImport.update({
-  id: '/securite-enfants',
-  path: '/securite-enfants',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
-  id: '/reinitialiser-mot-de-passe',
-  path: '/reinitialiser-mot-de-passe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotreDifferenceRoute = NotreDifferenceRouteImport.update({
-  id: '/notre-difference',
-  path: '/notre-difference',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
-  id: '/mot-de-passe-oublie',
-  path: '/mot-de-passe-oublie',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -95,88 +74,69 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const NotreDifferenceRoute = NotreDifferenceRouteImport.update({
+  id: '/notre-difference',
+  path: '/notre-difference',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminVisitsRoute = AdminVisitsRouteImport.update({
-  id: '/admin/visits',
-  path: '/admin/visits',
+const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
+  id: '/reinitialiser-mot-de-passe',
+  path: '/reinitialiser-mot-de-passe',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRgpdRoute = AdminRgpdRouteImport.update({
-  id: '/admin/rgpd',
-  path: '/admin/rgpd',
+const SecuriteEnfantsRoute = SecuriteEnfantsRouteImport.update({
+  id: '/securite-enfants',
+  path: '/securite-enfants',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminResetRoute = AdminResetRouteImport.update({
-  id: '/admin/reset',
-  path: '/admin/reset',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/admin/reports',
-  path: '/admin/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminModerationRoute = AdminModerationRouteImport.update({
-  id: '/admin/moderation',
-  path: '/admin/moderation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminFinanceRoute = AdminFinanceRouteImport.update({
-  id: '/admin/finance',
-  path: '/admin/finance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCreditsRoute = AdminCreditsRouteImport.update({
-  id: '/admin/credits',
-  path: '/admin/credits',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminContactRoute = AdminContactRouteImport.update({
-  id: '/admin/contact',
-  path: '/admin/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConfigRoute = AdminConfigRouteImport.update({
-  id: '/admin/config',
-  path: '/admin/config',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/admin/analytics',
-  path: '/admin/analytics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAdsRoute = AdminAdsRouteImport.update({
-  id: '/admin/ads',
-  path: '/admin/ads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRechercheRoute = AuthenticatedRechercheRouteImport.update({
-  id: '/recherche',
-  path: '/recherche',
+const AuthenticatedBlockedRoute = AuthenticatedBlockedRouteImport.update({
+  id: '/blocked',
+  path: '/blocked',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
+const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLikesRoute = AuthenticatedLikesRouteImport.update({
+  id: '/likes',
+  path: '/likes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMatchsRoute = AuthenticatedMatchsRouteImport.update({
+  id: '/matchs',
+  path: '/matchs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNotificationsRoute =
@@ -185,54 +145,79 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
-  id: '/me',
-  path: '/me',
+const AuthenticatedRechercheRoute = AuthenticatedRechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMatchsRoute = AuthenticatedMatchsRouteImport.update({
-  id: '/matchs',
-  path: '/matchs',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedLikesRoute = AuthenticatedLikesRouteImport.update({
-  id: '/likes',
-  path: '/likes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
-  id: '/compte',
-  path: '/compte',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
-  id: '/browse',
-  path: '/browse',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedBlockedRoute = AuthenticatedBlockedRouteImport.update({
-  id: '/blocked',
-  path: '/blocked',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AdminSupportIndexRoute = AdminSupportIndexRouteImport.update({
-  id: '/admin/support/',
-  path: '/admin/support/',
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminProfilesIndexRoute = AdminProfilesIndexRouteImport.update({
-  id: '/admin/profiles/',
-  path: '/admin/profiles/',
+const AdminAdsRoute = AdminAdsRouteImport.update({
+  id: '/admin/ads',
+  path: '/admin/ads',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminConversationsIndexRoute = AdminConversationsIndexRouteImport.update({
-  id: '/admin/conversations/',
-  path: '/admin/conversations/',
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfigRoute = AdminConfigRouteImport.update({
+  id: '/admin/config',
+  path: '/admin/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContactRoute = AdminContactRouteImport.update({
+  id: '/admin/contact',
+  path: '/admin/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCreditsRoute = AdminCreditsRouteImport.update({
+  id: '/admin/credits',
+  path: '/admin/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFinanceRoute = AdminFinanceRouteImport.update({
+  id: '/admin/finance',
+  path: '/admin/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminModerationRoute = AdminModerationRouteImport.update({
+  id: '/admin/moderation',
+  path: '/admin/moderation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminResetRoute = AdminResetRouteImport.update({
+  id: '/admin/reset',
+  path: '/admin/reset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRgpdRoute = AdminRgpdRouteImport.update({
+  id: '/admin/rgpd',
+  path: '/admin/rgpd',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVisitsRoute = AdminVisitsRouteImport.update({
+  id: '/admin/visits',
+  path: '/admin/visits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCompteIndexRoute =
@@ -241,60 +226,21 @@ const AuthenticatedCompteIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
-const ApiPublicLegalDocumentsRoute = ApiPublicLegalDocumentsRouteImport.update({
-  id: '/api/public/legal-documents',
-  path: '/api/public/legal-documents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSupportIdRoute = AdminSupportIdRouteImport.update({
-  id: '/admin/support/$id',
-  path: '/admin/support/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProfilesIdRoute = AdminProfilesIdRouteImport.update({
-  id: '/admin/profiles/$id',
-  path: '/admin/profiles/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConversationsPairRoute = AdminConversationsPairRouteImport.update({
-  id: '/admin/conversations/$pair',
-  path: '/admin/conversations/$pair',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedProfilePseudoRoute =
-  AuthenticatedProfilePseudoRouteImport.update({
-    id: '/profile/$pseudo',
-    path: '/profile/$pseudo',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedMessagesPseudoRoute =
-  AuthenticatedMessagesPseudoRouteImport.update({
-    id: '/$pseudo',
-    path: '/$pseudo',
-    getParentRoute: () => AuthenticatedMessagesRoute,
-  } as any)
-const AuthenticatedCompteServiceClientRoute =
-  AuthenticatedCompteServiceClientRouteImport.update({
-    id: '/service-client',
-    path: '/service-client',
+const AuthenticatedCompteAbonnementRoute =
+  AuthenticatedCompteAbonnementRouteImport.update({
+    id: '/abonnement',
+    path: '/abonnement',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
-const AuthenticatedCompteReglesRoute =
-  AuthenticatedCompteReglesRouteImport.update({
-    id: '/regles',
-    path: '/regles',
-    getParentRoute: () => AuthenticatedCompteRoute,
-  } as any)
-const AuthenticatedCompteProfilRoute =
-  AuthenticatedCompteProfilRouteImport.update({
-    id: '/profil',
-    path: '/profil',
-    getParentRoute: () => AuthenticatedCompteRoute,
-  } as any)
-const AuthenticatedCompteNotificationsRoute =
-  AuthenticatedCompteNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
+const AuthenticatedCompteCguRoute = AuthenticatedCompteCguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => AuthenticatedCompteRoute,
+} as any)
+const AuthenticatedCompteConfidentialiteRoute =
+  AuthenticatedCompteConfidentialiteRouteImport.update({
+    id: '/confidentialite',
+    path: '/confidentialite',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
 const AuthenticatedCompteDonneesRoute =
@@ -303,23 +249,77 @@ const AuthenticatedCompteDonneesRoute =
     path: '/donnees',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
-const AuthenticatedCompteConfidentialiteRoute =
-  AuthenticatedCompteConfidentialiteRouteImport.update({
-    id: '/confidentialite',
-    path: '/confidentialite',
+const AuthenticatedCompteNotificationsRoute =
+  AuthenticatedCompteNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
     getParentRoute: () => AuthenticatedCompteRoute,
   } as any)
-const AuthenticatedCompteCguRoute = AuthenticatedCompteCguRouteImport.update({
-  id: '/cgu',
-  path: '/cgu',
-  getParentRoute: () => AuthenticatedCompteRoute,
+const AuthenticatedCompteProfilRoute =
+  AuthenticatedCompteProfilRouteImport.update({
+    id: '/profil',
+    path: '/profil',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
+const AuthenticatedCompteReglesRoute =
+  AuthenticatedCompteReglesRouteImport.update({
+    id: '/regles',
+    path: '/regles',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
+const AuthenticatedCompteServiceClientRoute =
+  AuthenticatedCompteServiceClientRouteImport.update({
+    id: '/service-client',
+    path: '/service-client',
+    getParentRoute: () => AuthenticatedCompteRoute,
+  } as any)
+const AuthenticatedMessagesPseudoRoute =
+  AuthenticatedMessagesPseudoRouteImport.update({
+    id: '/$pseudo',
+    path: '/$pseudo',
+    getParentRoute: () => AuthenticatedMessagesRoute,
+  } as any)
+const AuthenticatedProfilePseudoRoute =
+  AuthenticatedProfilePseudoRouteImport.update({
+    id: '/profile/$pseudo',
+    path: '/profile/$pseudo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AdminConversationsIndexRoute = AdminConversationsIndexRouteImport.update({
+  id: '/admin/conversations/',
+  path: '/admin/conversations/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCompteAbonnementRoute =
-  AuthenticatedCompteAbonnementRouteImport.update({
-    id: '/abonnement',
-    path: '/abonnement',
-    getParentRoute: () => AuthenticatedCompteRoute,
-  } as any)
+const AdminConversationsPairRoute = AdminConversationsPairRouteImport.update({
+  id: '/admin/conversations/$pair',
+  path: '/admin/conversations/$pair',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProfilesIndexRoute = AdminProfilesIndexRouteImport.update({
+  id: '/admin/profiles/',
+  path: '/admin/profiles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProfilesIdRoute = AdminProfilesIdRouteImport.update({
+  id: '/admin/profiles/$id',
+  path: '/admin/profiles/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportIndexRoute = AdminSupportIndexRouteImport.update({
+  id: '/admin/support/',
+  path: '/admin/support/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportIdRoute = AdminSupportIdRouteImport.update({
+  id: '/admin/support/$id',
+  path: '/admin/support/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLegalDocumentsRoute = ApiPublicLegalDocumentsRouteImport.update({
+  id: '/api/public/legal-documents',
+  path: '/api/public/legal-documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -665,53 +665,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/securite-enfants': {
-      id: '/securite-enfants'
-      path: '/securite-enfants'
-      fullPath: '/securite-enfants'
-      preLoaderRoute: typeof SecuriteEnfantsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reinitialiser-mot-de-passe': {
-      id: '/reinitialiser-mot-de-passe'
-      path: '/reinitialiser-mot-de-passe'
-      fullPath: '/reinitialiser-mot-de-passe'
-      preLoaderRoute: typeof ReinitialiserMotDePasseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notre-difference': {
-      id: '/notre-difference'
-      path: '/notre-difference'
-      fullPath: '/notre-difference'
-      preLoaderRoute: typeof NotreDifferenceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mot-de-passe-oublie': {
-      id: '/mot-de-passe-oublie'
-      path: '/mot-de-passe-oublie'
-      fullPath: '/mot-de-passe-oublie'
-      preLoaderRoute: typeof MotDePasseOublieRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -721,158 +679,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/visits': {
-      id: '/admin/visits'
-      path: '/admin/visits'
-      fullPath: '/admin/visits'
-      preLoaderRoute: typeof AdminVisitsRouteImport
+    '/notre-difference': {
+      id: '/notre-difference'
+      path: '/notre-difference'
+      fullPath: '/notre-difference'
+      preLoaderRoute: typeof NotreDifferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/rgpd': {
-      id: '/admin/rgpd'
-      path: '/admin/rgpd'
-      fullPath: '/admin/rgpd'
-      preLoaderRoute: typeof AdminRgpdRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/reset': {
-      id: '/admin/reset'
-      path: '/admin/reset'
-      fullPath: '/admin/reset'
-      preLoaderRoute: typeof AdminResetRouteImport
+    '/reinitialiser-mot-de-passe': {
+      id: '/reinitialiser-mot-de-passe'
+      path: '/reinitialiser-mot-de-passe'
+      fullPath: '/reinitialiser-mot-de-passe'
+      preLoaderRoute: typeof ReinitialiserMotDePasseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: '/admin/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
+    '/securite-enfants': {
+      id: '/securite-enfants'
+      path: '/securite-enfants'
+      fullPath: '/securite-enfants'
+      preLoaderRoute: typeof SecuriteEnfantsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/moderation': {
-      id: '/admin/moderation'
-      path: '/admin/moderation'
-      fullPath: '/admin/moderation'
-      preLoaderRoute: typeof AdminModerationRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/finance': {
-      id: '/admin/finance'
-      path: '/admin/finance'
-      fullPath: '/admin/finance'
-      preLoaderRoute: typeof AdminFinanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/credits': {
-      id: '/admin/credits'
-      path: '/admin/credits'
-      fullPath: '/admin/credits'
-      preLoaderRoute: typeof AdminCreditsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/contact': {
-      id: '/admin/contact'
-      path: '/admin/contact'
-      fullPath: '/admin/contact'
-      preLoaderRoute: typeof AdminContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/config': {
-      id: '/admin/config'
-      path: '/admin/config'
-      fullPath: '/admin/config'
-      preLoaderRoute: typeof AdminConfigRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/analytics': {
-      id: '/admin/analytics'
-      path: '/admin/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/ads': {
-      id: '/admin/ads'
-      path: '/admin/ads'
-      fullPath: '/admin/ads'
-      preLoaderRoute: typeof AdminAdsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/recherche': {
-      id: '/_authenticated/recherche'
-      path: '/recherche'
-      fullPath: '/recherche'
-      preLoaderRoute: typeof AuthenticatedRechercheRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/onboarding': {
-      id: '/_authenticated/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/messages': {
-      id: '/_authenticated/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/me': {
-      id: '/_authenticated/me'
-      path: '/me'
-      fullPath: '/me'
-      preLoaderRoute: typeof AuthenticatedMeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/matchs': {
-      id: '/_authenticated/matchs'
-      path: '/matchs'
-      fullPath: '/matchs'
-      preLoaderRoute: typeof AuthenticatedMatchsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/likes': {
-      id: '/_authenticated/likes'
-      path: '/likes'
-      fullPath: '/likes'
-      preLoaderRoute: typeof AuthenticatedLikesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/compte': {
-      id: '/_authenticated/compte'
-      path: '/compte'
-      fullPath: '/compte'
-      preLoaderRoute: typeof AuthenticatedCompteRouteImport
+    '/_authenticated/blocked': {
+      id: '/_authenticated/blocked'
+      path: '/blocked'
+      fullPath: '/blocked'
+      preLoaderRoute: typeof AuthenticatedBlockedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/browse': {
@@ -882,32 +742,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBrowseRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/blocked': {
-      id: '/_authenticated/blocked'
-      path: '/blocked'
-      fullPath: '/blocked'
-      preLoaderRoute: typeof AuthenticatedBlockedRouteImport
+    '/_authenticated/compte': {
+      id: '/_authenticated/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof AuthenticatedCompteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/admin/support/': {
-      id: '/admin/support/'
-      path: '/admin/support'
-      fullPath: '/admin/support/'
-      preLoaderRoute: typeof AdminSupportIndexRouteImport
+    '/_authenticated/likes': {
+      id: '/_authenticated/likes'
+      path: '/likes'
+      fullPath: '/likes'
+      preLoaderRoute: typeof AuthenticatedLikesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/matchs': {
+      id: '/_authenticated/matchs'
+      path: '/matchs'
+      fullPath: '/matchs'
+      preLoaderRoute: typeof AuthenticatedMatchsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/me': {
+      id: '/_authenticated/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof AuthenticatedMeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recherche': {
+      id: '/_authenticated/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof AuthenticatedRechercheRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/profiles/': {
-      id: '/admin/profiles/'
-      path: '/admin/profiles'
-      fullPath: '/admin/profiles/'
-      preLoaderRoute: typeof AdminProfilesIndexRouteImport
+    '/admin/ads': {
+      id: '/admin/ads'
+      path: '/admin/ads'
+      fullPath: '/admin/ads'
+      preLoaderRoute: typeof AdminAdsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/conversations/': {
-      id: '/admin/conversations/'
-      path: '/admin/conversations'
-      fullPath: '/admin/conversations/'
-      preLoaderRoute: typeof AdminConversationsIndexRouteImport
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/config': {
+      id: '/admin/config'
+      path: '/admin/config'
+      fullPath: '/admin/config'
+      preLoaderRoute: typeof AdminConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/contact': {
+      id: '/admin/contact'
+      path: '/admin/contact'
+      fullPath: '/admin/contact'
+      preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/credits': {
+      id: '/admin/credits'
+      path: '/admin/credits'
+      fullPath: '/admin/credits'
+      preLoaderRoute: typeof AdminCreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/finance': {
+      id: '/admin/finance'
+      path: '/admin/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AdminFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/moderation': {
+      id: '/admin/moderation'
+      path: '/admin/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AdminModerationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reset': {
+      id: '/admin/reset'
+      path: '/admin/reset'
+      fullPath: '/admin/reset'
+      preLoaderRoute: typeof AdminResetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/rgpd': {
+      id: '/admin/rgpd'
+      path: '/admin/rgpd'
+      fullPath: '/admin/rgpd'
+      preLoaderRoute: typeof AdminRgpdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/visits': {
+      id: '/admin/visits'
+      path: '/admin/visits'
+      fullPath: '/admin/visits'
+      preLoaderRoute: typeof AdminVisitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/compte/': {
@@ -917,88 +896,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteIndexRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
-    '/api/public/legal-documents': {
-      id: '/api/public/legal-documents'
-      path: '/api/public/legal-documents'
-      fullPath: '/api/public/legal-documents'
-      preLoaderRoute: typeof ApiPublicLegalDocumentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/support/$id': {
-      id: '/admin/support/$id'
-      path: '/admin/support/$id'
-      fullPath: '/admin/support/$id'
-      preLoaderRoute: typeof AdminSupportIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/profiles/$id': {
-      id: '/admin/profiles/$id'
-      path: '/admin/profiles/$id'
-      fullPath: '/admin/profiles/$id'
-      preLoaderRoute: typeof AdminProfilesIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/conversations/$pair': {
-      id: '/admin/conversations/$pair'
-      path: '/admin/conversations/$pair'
-      fullPath: '/admin/conversations/$pair'
-      preLoaderRoute: typeof AdminConversationsPairRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/profile/$pseudo': {
-      id: '/_authenticated/profile/$pseudo'
-      path: '/profile/$pseudo'
-      fullPath: '/profile/$pseudo'
-      preLoaderRoute: typeof AuthenticatedProfilePseudoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/messages/$pseudo': {
-      id: '/_authenticated/messages/$pseudo'
-      path: '/$pseudo'
-      fullPath: '/messages/$pseudo'
-      preLoaderRoute: typeof AuthenticatedMessagesPseudoRouteImport
-      parentRoute: typeof AuthenticatedMessagesRoute
-    }
-    '/_authenticated/compte/service-client': {
-      id: '/_authenticated/compte/service-client'
-      path: '/service-client'
-      fullPath: '/compte/service-client'
-      preLoaderRoute: typeof AuthenticatedCompteServiceClientRouteImport
-      parentRoute: typeof AuthenticatedCompteRoute
-    }
-    '/_authenticated/compte/regles': {
-      id: '/_authenticated/compte/regles'
-      path: '/regles'
-      fullPath: '/compte/regles'
-      preLoaderRoute: typeof AuthenticatedCompteReglesRouteImport
-      parentRoute: typeof AuthenticatedCompteRoute
-    }
-    '/_authenticated/compte/profil': {
-      id: '/_authenticated/compte/profil'
-      path: '/profil'
-      fullPath: '/compte/profil'
-      preLoaderRoute: typeof AuthenticatedCompteProfilRouteImport
-      parentRoute: typeof AuthenticatedCompteRoute
-    }
-    '/_authenticated/compte/notifications': {
-      id: '/_authenticated/compte/notifications'
-      path: '/notifications'
-      fullPath: '/compte/notifications'
-      preLoaderRoute: typeof AuthenticatedCompteNotificationsRouteImport
-      parentRoute: typeof AuthenticatedCompteRoute
-    }
-    '/_authenticated/compte/donnees': {
-      id: '/_authenticated/compte/donnees'
-      path: '/donnees'
-      fullPath: '/compte/donnees'
-      preLoaderRoute: typeof AuthenticatedCompteDonneesRouteImport
-      parentRoute: typeof AuthenticatedCompteRoute
-    }
-    '/_authenticated/compte/confidentialite': {
-      id: '/_authenticated/compte/confidentialite'
-      path: '/confidentialite'
-      fullPath: '/compte/confidentialite'
-      preLoaderRoute: typeof AuthenticatedCompteConfidentialiteRouteImport
+    '/_authenticated/compte/abonnement': {
+      id: '/_authenticated/compte/abonnement'
+      path: '/abonnement'
+      fullPath: '/compte/abonnement'
+      preLoaderRoute: typeof AuthenticatedCompteAbonnementRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
     '/_authenticated/compte/cgu': {
@@ -1008,12 +910,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteCguRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
     }
-    '/_authenticated/compte/abonnement': {
-      id: '/_authenticated/compte/abonnement'
-      path: '/abonnement'
-      fullPath: '/compte/abonnement'
-      preLoaderRoute: typeof AuthenticatedCompteAbonnementRouteImport
+    '/_authenticated/compte/confidentialite': {
+      id: '/_authenticated/compte/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/compte/confidentialite'
+      preLoaderRoute: typeof AuthenticatedCompteConfidentialiteRouteImport
       parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/donnees': {
+      id: '/_authenticated/compte/donnees'
+      path: '/donnees'
+      fullPath: '/compte/donnees'
+      preLoaderRoute: typeof AuthenticatedCompteDonneesRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/notifications': {
+      id: '/_authenticated/compte/notifications'
+      path: '/notifications'
+      fullPath: '/compte/notifications'
+      preLoaderRoute: typeof AuthenticatedCompteNotificationsRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/profil': {
+      id: '/_authenticated/compte/profil'
+      path: '/profil'
+      fullPath: '/compte/profil'
+      preLoaderRoute: typeof AuthenticatedCompteProfilRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/regles': {
+      id: '/_authenticated/compte/regles'
+      path: '/regles'
+      fullPath: '/compte/regles'
+      preLoaderRoute: typeof AuthenticatedCompteReglesRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/compte/service-client': {
+      id: '/_authenticated/compte/service-client'
+      path: '/service-client'
+      fullPath: '/compte/service-client'
+      preLoaderRoute: typeof AuthenticatedCompteServiceClientRouteImport
+      parentRoute: typeof AuthenticatedCompteRoute
+    }
+    '/_authenticated/messages/$pseudo': {
+      id: '/_authenticated/messages/$pseudo'
+      path: '/$pseudo'
+      fullPath: '/messages/$pseudo'
+      preLoaderRoute: typeof AuthenticatedMessagesPseudoRouteImport
+      parentRoute: typeof AuthenticatedMessagesRoute
+    }
+    '/_authenticated/profile/$pseudo': {
+      id: '/_authenticated/profile/$pseudo'
+      path: '/profile/$pseudo'
+      fullPath: '/profile/$pseudo'
+      preLoaderRoute: typeof AuthenticatedProfilePseudoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/conversations/': {
+      id: '/admin/conversations/'
+      path: '/admin/conversations'
+      fullPath: '/admin/conversations/'
+      preLoaderRoute: typeof AdminConversationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/conversations/$pair': {
+      id: '/admin/conversations/$pair'
+      path: '/admin/conversations/$pair'
+      fullPath: '/admin/conversations/$pair'
+      preLoaderRoute: typeof AdminConversationsPairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/profiles/': {
+      id: '/admin/profiles/'
+      path: '/admin/profiles'
+      fullPath: '/admin/profiles/'
+      preLoaderRoute: typeof AdminProfilesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/profiles/$id': {
+      id: '/admin/profiles/$id'
+      path: '/admin/profiles/$id'
+      fullPath: '/admin/profiles/$id'
+      preLoaderRoute: typeof AdminProfilesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/support/': {
+      id: '/admin/support/'
+      path: '/admin/support'
+      fullPath: '/admin/support/'
+      preLoaderRoute: typeof AdminSupportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/support/$id': {
+      id: '/admin/support/$id'
+      path: '/admin/support/$id'
+      fullPath: '/admin/support/$id'
+      preLoaderRoute: typeof AdminSupportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/legal-documents': {
+      id: '/api/public/legal-documents'
+      path: '/api/public/legal-documents'
+      fullPath: '/api/public/legal-documents'
+      preLoaderRoute: typeof ApiPublicLegalDocumentsRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }

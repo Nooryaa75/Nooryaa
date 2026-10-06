@@ -12,3 +12,4 @@
 ## Project rules
 
 - Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).
+- Both Android workflows install launcher resources through scripts/configure-android-icon.mjs after project generation; notification icons are separate and do not replace the launcher icon.

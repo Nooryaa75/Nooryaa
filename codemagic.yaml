@@ -24,16 +24,19 @@ workflows:
           cp google-services.json android/app/google-services.json
           sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
+      - name: Configure app launcher icon
+        script: |
+          node scripts/configure-android-icon.mjs
       - name: Configure notification icon
         script: |
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
-      - name: Set app version (1.0.1)
+      - name: Set app version (1.0.2)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 2/; s/versionName\s+"[^"]*"/versionName "1.0.1"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 2' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build APK
         script: |
           cd android
@@ -73,16 +76,19 @@ workflows:
           cp google-services.json android/app/google-services.json
           sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
+      - name: Configure app launcher icon
+        script: |
+          node scripts/configure-android-icon.mjs
       - name: Configure notification icon
         script: |
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
-      - name: Set app version (1.0.1)
+      - name: Set app version (1.0.2)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 2/; s/versionName\s+"[^"]*"/versionName "1.0.1"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 2' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android

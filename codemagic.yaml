@@ -37,11 +37,14 @@ workflows:
         script: |
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
-      - name: Set app version (1.0.2)
+      - name: Set app version (1.0.3)
+
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 4/; s/versionName\s+"[^"]*"/versionName "1.0.3"/' android/app/build.gradle
+
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 4' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+
       - name: Build APK
         script: |
           cd android
@@ -95,11 +98,11 @@ workflows:
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
 
-      - name: Set app version (1.0.2)
+      - name: Set app version (1.0.3)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 4/; s/versionName\s+"[^"]*"/versionName "1.0.3"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 4' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android

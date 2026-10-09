@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
+import { StoreBadges } from "@/components/StoreBadges";
 
 export function Footer() {
   const { t, locale } = useI18n();
@@ -12,6 +13,7 @@ export function Footer() {
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3">
+        <StoreBadges />
         <div className="w-full max-w-xs">
           <LanguageSwitcher inline />
         </div>

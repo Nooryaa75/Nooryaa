@@ -80,7 +80,14 @@ async function redirectAfterAuth(navigate: ReturnType<typeof useNavigate>) {
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Connexion — Nooryaa (Abonnement gratuit)" }] }),
+  head: () => ({ meta: [
+    { title: "Connexion et inscription — Nooryaa" },
+    { name: "description", content: "Connectez-vous ou créez votre compte Nooryaa pour une mise en relation sérieuse dans le dîn." },
+    { property: "og:title", content: "Connexion et inscription — Nooryaa" },
+    { property: "og:description", content: "Retrouvez votre profil ou inscrivez-vous sur Nooryaa pour un mariage halal sérieux." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AuthPage,
 });
 

@@ -1,5 +1,6 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Téléchargez sur": { "en": "Download on", "ar": "حمّلوا من" },
   "Restez informé·e de vos matchs et messages": { "en": "Stay informed about your matches and messages", "ar": "ابقوا على اطلاع بمطابقاتكم ورسائلكم" },
   "Autorisez les notifications pour ne manquer aucune conversation.": { "en": "Allow notifications so you don't miss any conversation.", "ar": "اسمحوا بالإشعارات حتى لا تفوتكم أي محادثة." },
   "Activer les notifications": { "en": "Turn on notifications", "ar": "تفعيل الإشعارات" },

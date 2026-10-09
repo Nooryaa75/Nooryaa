@@ -22,6 +22,11 @@ workflows:
         script: |
           npx cap add android
           npx cap sync android
+      - name: Configure minimum Android SDK (24)
+        script: |
+          perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/' android/variables.gradle
+          grep -Eq 'minSdkVersion\s*=\s*24\b' android/variables.gradle || { echo "SDK minimum 24 non applique"; exit 1; }
+          grep -Eq 'minSdkVersion[[:space:]]+rootProject.ext.minSdkVersion' android/app/build.gradle || { echo "SDK minimum de l application non relie aux variables"; exit 1; }
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
@@ -42,10 +47,10 @@ workflows:
       - name: Set app version (1.0.4)
 
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 5/; s/versionName\s+"[^"]*"/versionName "1.0.4"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 6/; s/versionName\s+"[^"]*"/versionName "1.0.4"/' android/app/build.gradle
 
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 5' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 6' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
 
       - name: Build APK
         script: |
@@ -84,6 +89,11 @@ workflows:
         script: |
           npx cap add android
           npx cap sync android
+      - name: Configure minimum Android SDK (24)
+        script: |
+          perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/' android/variables.gradle
+          grep -Eq 'minSdkVersion\s*=\s*24\b' android/variables.gradle || { echo "SDK minimum 24 non applique"; exit 1; }
+          grep -Eq 'minSdkVersion[[:space:]]+rootProject.ext.minSdkVersion' android/app/build.gradle || { echo "SDK minimum de l application non relie aux variables"; exit 1; }
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
@@ -104,9 +114,9 @@ workflows:
 
       - name: Set app version (1.0.4)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 5/; s/versionName\s+"[^"]*"/versionName "1.0.4"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 6/; s/versionName\s+"[^"]*"/versionName "1.0.4"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 5' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 6' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android

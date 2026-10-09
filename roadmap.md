@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Discussions admin : identifier et corriger les conversations absentes de la liste.
+- [x] Discussions admin : inclure les profils aimés sans premier message, supprimer les plafonds de lecture/liste, ajouter les pages et les aperçus vocaux ; tests réussis sur 2 501 messages et 221 discussions, compilation OK.
 
 - [x] Profils admin : nom/prénom ajoutés, villes du catalogue affichées en français et langue française imposée dans l’administration sans changer celle des membres ; contrôles de langue et de villes réussis.
 

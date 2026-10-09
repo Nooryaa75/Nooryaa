@@ -1,4 +1,4 @@
-import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
+import { PhoneInput } from "@/components/PhoneInput";
 import { isImperial } from "@/lib/units";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";

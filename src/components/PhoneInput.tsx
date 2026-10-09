@@ -24,7 +24,7 @@ const COUNTRIES = getCountries()
 /** Vrai si le numéro (format international +XX…) respecte les règles du pays. */
 export function isValidPhone(value: string | null | undefined): boolean {
   if (!value) return false;
-  const p = parsePhoneNumberFromString(value);
+  const p = parsePhoneNumberFromString(value, "FR");
   return !!p && p.isValid();
 }
 

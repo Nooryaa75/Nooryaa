@@ -99,8 +99,10 @@ function Onboarding() {
   }
   const missingFields = attempted ? computeMissing() : [];
 
+  const [lockedPhone, setLockedPhone] = useState(false);
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
+      if (data && isValidPhone((data as any).phone)) setLockedPhone(true);
       if (data) setForm((f) => ({
         ...f,
         pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,

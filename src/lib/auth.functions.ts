@@ -42,7 +42,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
 
     const email = data.email.trim().toLowerCase();
     const { parsePhoneNumberFromString } = await import("libphonenumber-js");
-    const parsedPhone = parsePhoneNumberFromString(data.phone.trim());
+    const parsedPhone = parsePhoneNumberFromString(data.phone.trim(), "FR");
     if (!parsedPhone || !parsedPhone.isValid()) throw new Error("Numéro de téléphone invalide pour le pays choisi.");
     const phone = parsedPhone.number;
 

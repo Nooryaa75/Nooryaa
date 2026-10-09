@@ -1,10 +1,13 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 import { StoreBadges } from "@/components/StoreBadges";
 
 export function Footer() {
   const { t, locale } = useI18n();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  // La page de connexion affiche déjà les badges juste au-dessus du sélecteur de langue.
+  const showBadges = !pathname.startsWith("/auth");
 
   return (
     <footer
@@ -13,7 +16,7 @@ export function Footer() {
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3">
-        <StoreBadges />
+        {showBadges && <StoreBadges />}
         <div className="w-full max-w-xs">
           <LanguageSwitcher inline />
         </div>

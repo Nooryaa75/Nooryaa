@@ -116,7 +116,7 @@ export async function sendPushToUser(
             token: row.token,
             notification: { title, body: body ?? "" },
             data: { path },
-            android: { priority: "HIGH" },
+            android: { priority: "HIGH", channel_id: "nooryaa" },
           },
         }),
       });

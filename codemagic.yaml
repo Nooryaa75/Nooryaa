@@ -14,7 +14,8 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app
+
       - name: Generate Android project
         script: |
           npx cap add android
@@ -32,11 +33,18 @@ workflows:
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
-      - name: Set app version (1.0.2)
+      - name: Configure notification permission
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
+          perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
+          grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
+      - name: Set app version (1.0.3)
+
+        script: |
+          perl -pi -e 's/versionCode\s+\d+/versionCode 4/; s/versionName\s+"[^"]*"/versionName "1.0.3"/' android/app/build.gradle
+
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 4' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+
       - name: Build APK
         script: |
           cd android
@@ -66,7 +74,8 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app
+
       - name: Generate Android project
         script: |
           npx cap add android
@@ -84,11 +93,16 @@ workflows:
           cp -R android-assets/ic_notification/* android/app/src/main/res/
           echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="nooryaa_notification_color">#5D2A8C</color></resources>' > android/app/src/main/res/values/nooryaa_colors.xml
           perl -0pi -e 's|</application>|    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_notification" />\n    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/nooryaa_notification_color" />\n  </application>|' android/app/src/main/AndroidManifest.xml
-      - name: Set app version (1.0.2)
+      - name: Configure notification permission
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 3/; s/versionName\s+"[^"]*"/versionName "1.0.2"/' android/app/build.gradle
+          perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
+          grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
+
+      - name: Set app version (1.0.3)
+        script: |
+          perl -pi -e 's/versionCode\s+\d+/versionCode 4/; s/versionName\s+"[^"]*"/versionName "1.0.3"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 3' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 4' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android

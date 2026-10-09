@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 import { registerPushNotifications } from "@/lib/push";
+import { PushPermissionNotice } from "@/components/PushPermissionNotice";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -95,7 +97,9 @@ function AuthenticatedLayout() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <AppUpdateChecker />
+      <PushPermissionNotice />
       <main className="container mx-auto px-4 pt-6 pb-24 md:py-8 max-w-6xl">
+
         <Outlet />
       </main>
     </div>

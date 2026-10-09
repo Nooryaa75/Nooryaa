@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { useI18n } from "@/lib/i18n";
 
 type StoreRow = { id: string; network: string; label: string; url: string; active: boolean; sort_order: number };
 
@@ -28,6 +31,24 @@ const STORES: Record<
 };
 
 export function StoreBadges() {
+  const [isWeb, setIsWeb] = useState(false);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    const cap = (window as unknown as {
+      Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string; platform?: string };
+    }).Capacitor;
+    const platform = cap?.getPlatform?.() ?? cap?.platform;
+    setIsWeb(!cap?.isNativePlatform?.() && platform !== "android" && platform !== "ios");
+  }, []);
+
+  // Hidden until hydration determines the platform, including the first native frame.
+  if (!isWeb || pathname.startsWith("/admin")) return null;
+  return <WebStoreBadges />;
+}
+
+function WebStoreBadges() {
+  const { t } = useI18n();
   const { data } = useQuery({
     queryKey: ["store-links"],
     queryFn: async () => {
@@ -40,27 +61,27 @@ export function StoreBadges() {
     },
   });
 
-  const links = (data ?? []).filter((l) => STORES[l.network]);
+  const links = (data ?? []).filter((l) => STORES[l.network] && /^https:\/\//i.test(l.url));
   if (links.length === 0) return null;
 
   return (
-    <section aria-label="Télécharger l'application" className="flex flex-col items-center gap-2 pt-1">
-      <p className="text-xs text-muted-foreground">Téléchargez l'application Nooryaa</p>
+    <section data-no-translate aria-label={t("Téléchargez l'application Nooryaa")} className="flex flex-col items-center gap-2 pt-1">
+      <p className="text-xs text-muted-foreground">{t("Téléchargez sur")}</p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         {links.map((l) => {
           const store = STORES[l.network];
           return (
             <a
               key={l.id}
-              href={l.url || "#"}
+              href={l.url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${store.top}${store.bottom}`}
+              aria-label={`${t(store.top)} ${store.bottom}`}
               className="flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-2 shadow-sm transition-transform hover:scale-105"
             >
               {store.icon}
               <span className="flex flex-col leading-tight text-left">
-                <span className="text-[10px] opacity-80">{store.top}</span>
+                <span className="text-[10px] opacity-80">{t(store.top)}</span>
                 <span className="text-base font-semibold -mt-0.5">{store.bottom}</span>
               </span>
             </a>

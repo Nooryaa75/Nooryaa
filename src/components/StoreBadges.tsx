@@ -61,7 +61,14 @@ function WebStoreBadges() {
     },
   });
 
-  const links = (data ?? []).filter((l) => STORES[l.network] && /^https:\/\//i.test(l.url));
+  const links = (data ?? []).filter((l) => STORES[l.network]).map((link) => ({
+    ...link,
+    url: /^https:\/\//i.test(link.url.trim())
+      ? link.url.trim()
+      : link.network === "googleplay"
+        ? "https://play.google.com/store/apps/details?id=com.nooryaa.app"
+        : "",
+  }));
   if (links.length === 0) return null;
 
   return (
@@ -70,6 +77,20 @@ function WebStoreBadges() {
       <div className="flex flex-wrap items-center justify-center gap-3">
         {links.map((l) => {
           const store = STORES[l.network];
+          const contents = (
+            <>
+              {store.icon}
+              <span className="flex flex-col leading-tight text-left">
+                <span className="text-[10px] opacity-80">{l.url ? t(store.top) : t("Bientôt disponible")}</span>
+                <span className="text-base font-semibold -mt-0.5">{store.bottom}</span>
+              </span>
+            </>
+          );
+          if (!l.url) return (
+            <span key={l.id} aria-label={`${store.bottom} — ${t("Bientôt disponible")}`} className="flex items-center gap-2.5 rounded-xl bg-muted text-muted-foreground px-4 py-2">
+              {contents}
+            </span>
+          );
           return (
             <a
               key={l.id}
@@ -79,11 +100,7 @@ function WebStoreBadges() {
               aria-label={`${t(store.top)} ${store.bottom}`}
               className="flex items-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-2 shadow-sm transition-transform hover:scale-105"
             >
-              {store.icon}
-              <span className="flex flex-col leading-tight text-left">
-                <span className="text-[10px] opacity-80">{t(store.top)}</span>
-                <span className="text-base font-semibold -mt-0.5">{store.bottom}</span>
-              </span>
+              {contents}
             </a>
           );
         })}

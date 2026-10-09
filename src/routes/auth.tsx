@@ -1,3 +1,4 @@
+import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { z } from "zod";
@@ -188,8 +189,7 @@ function AuthPage() {
         if (firstName.trim().length < 2 || lastName.trim().length < 2) {
           throw new Error("Merci d'indiquer votre prénom et votre nom.");
         }
-        const digits = phone.replace(/[^0-9]/g, "");
-        if (digits.length < 8 || digits.length > 15) {
+        if (!isValidPhone(phone)) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
         if (!acceptTerms) {
@@ -379,7 +379,7 @@ function AuthPage() {
               </div>
               <div>
                 <Label htmlFor="phone">Téléphone</Label>
-                <Input id="phone" type="tel" required maxLength={20} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+33 6 12 34 56 78" />
+                <PhoneInput id="phone" required value={phone} onChange={setPhone} />
                 <p className="text-[11px] text-muted-foreground mt-1">Non visible sur votre profil. Sert à garantir un seul compte par personne.</p>
               </div>
             </>

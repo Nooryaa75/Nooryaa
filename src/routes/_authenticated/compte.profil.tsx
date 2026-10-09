@@ -1,3 +1,4 @@
+import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
 import { isImperial } from "@/lib/units";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -202,7 +203,7 @@ function MyProfile() {
           <Field label="Pseudo"><Input className={inputCls} value={profile?.pseudo ?? ""} disabled /></Field>
           <Field label="Email"><Input className={inputCls} value={profile?.email ?? ""} disabled /></Field>
           <Field label="Téléphone">
-            <Input className={inputCls} type="tel" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" />
+            <PhoneInput className={inputCls} value={form.phone ?? ""} onChange={(v) => setForm({ ...form, phone: v })} />
           </Field>
           <Field label={`Date de naissance${form.birthdate ? ` — ${ageFromBirthdate(form.birthdate)} ans` : ""}`}>
             <BirthdatePicker

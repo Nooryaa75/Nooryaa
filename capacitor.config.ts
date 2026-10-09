@@ -16,6 +16,17 @@ const config: CapacitorConfig = {
     overrideUserAgent:
       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
   },
+  // Connexion Google native (Android) : les comptes Google du téléphone sont
+  // proposés directement dans l'appli. serverClientId = clé « Application
+  // Web » de Google Cloud (projet nooryaa-s-firebase).
+  plugins: {
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      serverClientId:
+        '516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true,
+    },
+  },
   server: {
     // L'application affiche le site publié : toutes les mises à jour du site
     // apparaissent dans l'app sans republication sur le store.

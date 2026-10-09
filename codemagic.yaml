@@ -14,7 +14,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app @codetrix-studio/capacitor-google-auth
 
       - name: Generate Android project
         script: |
@@ -74,7 +74,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications @capacitor/app @codetrix-studio/capacitor-google-auth
 
       - name: Generate Android project
         script: |

@@ -239,6 +239,33 @@ function AuthPage() {
 
   async function handleGoogle() {
     setLoading(true);
+    // Dans l'application Android : connexion Google native — les comptes
+    // Google du téléphone sont proposés directement, sans retaper l'email.
+    // Le pont Capacitor est injecté dans la page chargée par l'appli.
+    const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+    const googleAuth = cap?.Plugins?.GoogleAuth;
+    if (cap?.isNativePlatform?.() && googleAuth) {
+      try {
+        const gUser = await googleAuth.signIn();
+        const idToken = gUser?.authentication?.idToken;
+        if (!idToken) throw new Error("missing-id-token");
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: "google",
+          token: idToken,
+        });
+        if (error) throw error;
+        await redirectAfterAuth(navigate);
+        return;
+      } catch (err: any) {
+        // Annulation par l'utilisateur : on referme silencieusement.
+        const msg = String(err?.message ?? err ?? "").toLowerCase();
+        if (!msg.includes("cancel") && !msg.includes("popup_closed") && err !== "user_cancelled") {
+          toast.error("Connexion Google impossible");
+        }
+        setLoading(false);
+        return;
+      }
+    }
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });

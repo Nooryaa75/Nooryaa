@@ -52,7 +52,7 @@ export function AppUpdateChecker() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const check = async () => {
       try {
         const cap = (window as unknown as { Capacitor?: any }).Capacitor;
         if (!cap?.isNativePlatform?.()) return;
@@ -73,9 +73,18 @@ export function AppUpdateChecker() {
       } catch {
         // Silencieux : un échec de vérification ne doit jamais bloquer l'app.
       }
-    })();
+    };
+    void check();
+    // Revérifie quand on revient dans l'appli (elle reste souvent ouverte
+    // en arrière-plan : sans cela, la fenêtre n'apparaît qu'au prochain
+    // lancement complet).
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void check();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

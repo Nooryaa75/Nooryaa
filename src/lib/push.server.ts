@@ -117,6 +117,10 @@ export async function sendPushToUser(
             notification: { title, body: body ?? "" },
             data: { path },
             android: { priority: "HIGH", channel_id: "nooryaa" },
+            // iPhone : sans ces réglages la notification arrive en silence.
+            apns: {
+              payload: { aps: { sound: "default", "interruption-level": "active" } },
+            },
           },
         }),
       });

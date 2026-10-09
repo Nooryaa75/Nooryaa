@@ -94,6 +94,7 @@ function AuthenticatedLayout() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <AppUpdateChecker />
       <main className="container mx-auto px-4 pt-6 pb-24 md:py-8 max-w-6xl">
         <Outlet />
       </main>

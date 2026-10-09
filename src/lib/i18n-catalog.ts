@@ -1,5 +1,11 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Mise à jour obligatoire": { "en": "Update required", "ar": "التحديث إلزامي" },
+  "Mise à jour disponible": { "en": "Update available", "ar": "يتوفر تحديث" },
+  "Pour continuer à utiliser Nooryaa, vous devez installer la dernière version de l'application.": { "en": "To keep using Nooryaa, you must install the latest version of the app.", "ar": "لمواصلة استخدام Nooryaa، يجب تثبيت أحدث إصدار من التطبيق." },
+  "Une nouvelle version de Nooryaa est disponible sur Google Play. Mettez à jour pour profiter des dernières améliorations.": { "en": "A new version of Nooryaa is available on Google Play. Update now to enjoy the latest improvements.", "ar": "يتوفر إصدار جديد من Nooryaa على Google Play. حدّثوا التطبيق للاستفادة من آخر التحسينات." },
+  "Plus tard": { "en": "Later", "ar": "لاحقاً" },
+  "Mettre à jour": { "en": "Update", "ar": "تحديث" },
   "Gestion des cookies": { "en": "Cookie settings", "ar": "إدارة ملفات تعريف الارتباط" },
   "Nooryaa utilise les cookies nécessaires au fonctionnement du service et, avec votre accord, une mesure d'audience anonyme pour améliorer l'application. Vous pouvez changer d'avis à tout moment dans Mon compte.": { "en": "Nooryaa uses the cookies required to run the service and, with your consent, anonymous audience measurement to improve the app. You can change your mind at any time in My Account.", "ar": "تستخدم Nooryaa ملفات تعريف الارتباط اللازمة لتشغيل الخدمة، وبموافقتكم قياساً مجهول الهوية للجمهور لتحسين التطبيق. ويمكنكم تغيير رأيكم في أي وقت من «حسابي»." },
   "Tout accepter": { "en": "Accept all", "ar": "قبول الكل" },

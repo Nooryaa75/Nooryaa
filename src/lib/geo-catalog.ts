@@ -221,6 +221,7 @@ export const GEO_TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Marrakech": { en: "Marrakesh", ar: "مراكش" },
   "Alger": { en: "Algiers", ar: "الجزائر العاصمة" },
   "Oran": { en: "Oran", ar: "وهران" },
+  "Bir el Ater": { en: "Bir el Ater", ar: "بئر العاتر" },
   "Tunis": { en: "Tunis", ar: "تونس العاصمة" },
   "Dakar": { en: "Dakar", ar: "داكار" },
   "Abidjan": { en: "Abidjan", ar: "أبيدجان" },

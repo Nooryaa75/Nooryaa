@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { ageFromBirthdate } from "@/lib/profile";
+import { frenchPlace, PROFILE_STATUS_LABELS } from "@/lib/admin-display";
 
 export const Route = createFileRoute("/admin/profiles/")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Profils — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Profils — Admin Nooryaa" }, { name: "description", content: "Gestion des profils des membres Nooryaa." }, { property: "og:title", content: "Profils — Admin Nooryaa" }, { property: "og:description", content: "Gestion des profils des membres Nooryaa." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/admin/profiles/")({
   component: AdminProfilesList,
 });
 
-const STATUS_LABEL: Record<string, string> = { active: "Actif", suspended: "Suspendu", banned: "Banni" };
+const STATUS_LABEL = PROFILE_STATUS_LABELS;
 const STATUS_CLASS: Record<string, string> = {
   active: "bg-primary/10 text-primary",
   suspended: "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]",
@@ -50,13 +51,15 @@ function AdminProfilesList() {
             { v: "homme", label: "Hommes" },
             { v: "femme", label: "Femmes" },
           ] as const).map((t) => (
-            <button
+            <Button
               key={t.v}
+               variant="ghost"
+               size="sm"
               onClick={() => { setGender(t.v); setPage(0); }}
               className={`px-5 py-1.5 rounded-full text-sm font-medium transition-colors ${gender === t.v ? "bg-primary text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"}`}
             >
               {t.label}
-            </button>
+            </Button>
           ))}
         </div>
         <form onSubmit={(e) => { e.preventDefault(); setPage(0); setSearch(q); }} className="bg-card rounded-2xl p-4 border border-border/60 flex flex-wrap gap-3 items-end">
@@ -79,12 +82,14 @@ function AdminProfilesList() {
           <Button type="submit">Rechercher</Button>
         </form>
 
-        <div className="bg-card rounded-2xl border border-border/60 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border/60 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/40 text-left">
               <tr>
                 <th className="px-4 py-2 font-medium">Photo</th>
                 <th className="px-4 py-2 font-medium">Pseudo</th>
+                <th className="px-4 py-2 font-medium">Nom</th>
+                <th className="px-4 py-2 font-medium">Prénom</th>
                 <th className="px-4 py-2 font-medium">Email</th>
                 <th className="px-4 py-2 font-medium">Téléphone</th>
                 <th className="px-4 py-2 font-medium">Ville</th>
@@ -106,9 +111,11 @@ function AdminProfilesList() {
                     </Link>
                   </td>
                   <td className="px-4 py-2 font-medium text-primary">{p.pseudo}</td>
+                  <td className="px-4 py-2" data-no-translate>{p.last_name || "—"}</td>
+                  <td className="px-4 py-2" data-no-translate>{p.first_name || "—"}</td>
                   <td className="px-4 py-2 text-muted-foreground">{p.email}</td>
                   <td className="px-4 py-2 text-muted-foreground">{p.phone ?? "—"}</td>
-                  <td className="px-4 py-2">{p.city ?? "—"}</td>
+                  <td className="px-4 py-2">{frenchPlace(p.city) ?? "—"}</td>
                   <td className="px-4 py-2">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
                   <td className="px-4 py-2">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
@@ -119,7 +126,7 @@ function AdminProfilesList() {
                 </tr>
               ))}
               {data && data.rows.length === 0 && (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
+                <tr><td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}
             </tbody>
           </table>

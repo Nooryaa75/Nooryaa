@@ -11,6 +11,8 @@
 
 ## Project rules
 
+- Admin language is derived centrally from the current route without overwriting the member’s saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data remains unchanged.
+
 - Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).
 - Both Android workflows install launcher resources through scripts/configure-android-icon.mjs after project generation; notification icons are separate and do not replace the launcher icon.
 - Android builds must declare android.permission.POST_NOTIFICATIONS in the app manifest (codemagic.yaml step "Configure notification permission", kept in both workflows) — Android 13+ never shows the permission prompt and leaves the Settings toggle greyed out without it. The notification channel is created at startup by src/lib/push.ts, and src/lib/push.server.ts must keep sending to that same channel id.

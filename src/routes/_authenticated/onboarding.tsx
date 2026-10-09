@@ -29,6 +29,8 @@ function Onboarding() {
   const { t } = useI18n();
   const [form, setForm] = useState({
     pseudo: "",
+    firstName: "",
+    lastName: "",
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
     height_cm: "",
@@ -68,6 +70,8 @@ function Onboarding() {
 
   function computeMissing(): string[] {
     const missing: string[] = [];
+    if (form.firstName.trim().length < 2) missing.push("Prénom");
+    if (form.lastName.trim().length < 2) missing.push("Nom");
     if (!form.pseudo.trim()) missing.push("Pseudo");
     if (!form.gender) missing.push("Je suis");
     if (!form.birthdate) missing.push("Date de naissance");
@@ -80,7 +84,7 @@ function Onboarding() {
     if (form.has_children === null) missing.push("Avez-vous des enfants");
     if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
     if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
-    if (!form.phone) missing.push("Téléphone");
+    if (form.phone.replace(/[^0-9]/g, "").length < 8) missing.push("Téléphone (numéro valide)");
     if (!form.city) missing.push("Ville de résidence");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");
@@ -99,8 +103,10 @@ function Onboarding() {
       if (data) setForm((f) => ({
         ...f,
         pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
-        // Pré-remplissage avec les infos déjà connues (inscription)
-        phone: (data as any).phone || f.phone,
+        firstName: (data as any).first_name || f.firstName,
+        lastName: (data as any).last_name || f.lastName,
+        // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
+        phone: (data as any).phone && String((data as any).phone).replace(/[^0-9]/g, "").length >= 8 ? (data as any).phone : f.phone,
         gender: ((data as any).gender as any) || f.gender,
         birthdate: (data as any).birthdate || f.birthdate,
         city: (data as any).city || f.city,
@@ -158,6 +164,8 @@ function Onboarding() {
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
+      first_name: form.firstName.trim(),
+      last_name: form.lastName.trim(),
       gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
@@ -210,6 +218,16 @@ function Onboarding() {
         </div>
       )}
       <form onSubmit={submit} className="space-y-5">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="firstName">Prénom *</Label>
+            <Input id="firstName" maxLength={60} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="Amina" />
+          </div>
+          <div>
+            <Label htmlFor="lastName">Nom *</Label>
+            <Input id="lastName" maxLength={60} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Benali" />
+          </div>
+        </div>
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
@@ -217,8 +235,8 @@ function Onboarding() {
         </div>
         <div>
           <Label htmlFor="phone">Téléphone *</Label>
-          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" readOnly={!!form.phone} className={form.phone ? "bg-muted/50" : undefined} />
-          {form.phone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
+          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" readOnly={form.phone.replace(/[^0-9]/g, "").length >= 8} className={form.phone.replace(/[^0-9]/g, "").length >= 8 ? "bg-muted/50" : undefined} />
+          {form.phone.replace(/[^0-9]/g, "").length >= 8 && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
         </div>
         <div>
           <Label>Je suis *</Label>

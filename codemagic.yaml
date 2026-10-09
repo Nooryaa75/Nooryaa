@@ -130,3 +130,120 @@ workflows:
         notify:
           success: true
           failure: true
+
+  # Vérification iPhone : compile l'application pour le simulateur, sans
+  # signature. Cette chaîne fonctionne sans compte Apple : elle sert à
+  # valider la construction (dépendances, icône, notifications, version)
+  # dès maintenant, en attendant la validation du compte développeur.
+  nooryaa-ios-check:
+    name: Nooryaa iPhone (vérification)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      node: v22.12.0
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app
+      - name: Generate iOS project
+        script: |
+          npx cap add ios
+          npx cap sync ios
+      - name: Configure app launcher icon
+        script: |
+          node scripts/configure-ios-icon.mjs
+      - name: Configure push notifications
+        script: |
+          node scripts/configure-ios-push.mjs
+      - name: Set app version (1.0.0)
+        script: |
+          node scripts/set-ios-version.mjs 1.0.0 1
+      - name: Build for simulator (unsigned)
+        script: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
+            -sdk iphonesimulator -arch arm64 CODE_SIGNING_ALLOWED=NO build
+    publishing:
+      email:
+        recipients:
+          - karim@nooryaa.com
+        notify:
+          success: true
+          failure: true
+
+  # Version App Store : archive signée à téléverser dans App Store Connect.
+  # ⚠️ Exige le compte Apple validé, puis dans Codemagic : l'intégration
+  # App Store Connect (clé API) et un certificat de distribution. Sans cela,
+  # l'archive échoue à l'étape de signature.
+  nooryaa-ios-release:
+    name: Nooryaa iPhone (App Store)
+    instance_type: mac_mini_m2
+    max_build_duration: 90
+    environment:
+      node: v22.12.0
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.nooryaa.app
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app
+      - name: Generate iOS project
+        script: |
+          npx cap add ios
+          npx cap sync ios
+      - name: Configure app launcher icon
+        script: |
+          node scripts/configure-ios-icon.mjs
+      - name: Configure push notifications
+        script: |
+          node scripts/configure-ios-push.mjs
+      - name: Set app version (1.0.0)
+        script: |
+          node scripts/set-ios-version.mjs 1.0.0 1
+      - name: Check Apple signing setup
+        script: |
+          if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then
+            echo "Aucune intégration App Store Connect détectée dans Codemagic."
+            echo "Ajoutez la clé API App Store Connect (ou un certificat de distribution)"
+            echo "dans l'onglet Integrations du projet, puis relancez ce workflow."
+            exit 1
+          fi
+      - name: Archive
+        script: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/App.xcarchive \
+            -allowProvisioningUpdates archive
+      - name: Export App Store package
+        script: |
+          cd ios/App
+          cat > ExportOptions.plist <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>destination</key><string>export</string>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa \
+            -exportOptionsPlist ExportOptions.plist -allowProvisioningUpdates
+    artifacts:
+      - ios/App/build/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - karim@nooryaa.com
+        notify:
+          success: true
+          failure: true

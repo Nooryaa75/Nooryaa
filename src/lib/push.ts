@@ -28,11 +28,24 @@ function appPlugin(): any {
 }
 
 /**
+ * Plateforme du téléphone : Android ou iPhone. Le pont Capacitor l'indique
+ * directement ; le reste ne sert que de filet si l'information manque.
+ */
+export function devicePlatform(): "ios" | "android" {
+  const cap = capacitor();
+  if (cap?.platform === "ios" || cap?.platform === "android") return cap.platform;
+  const ua = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  return /iPhone|iPad|iPod/.test(ua) ? "ios" : "android";
+}
+
+/**
  * Déclare le canal de notification. Sans canal, Android n'affiche rien dans
  * les réglages et l'interrupteur reste grisé.
  */
 async function ensureChannel(push: any) {
   try {
+    // Les canaux sont propres à Android ; iPhone gère cela autrement.
+    if (devicePlatform() !== "android") return;
     if (typeof push?.createChannel !== "function") return;
     await push.createChannel({
       id: PUSH_CHANNEL_ID,
@@ -110,7 +123,7 @@ export async function registerPushNotifications(userId: string): Promise<PushSta
           {
             user_id: userId,
             token: token.value,
-            platform: "android",
+            platform: devicePlatform(),
             updated_at: new Date().toISOString(),
           },
           { onConflict: "token" },

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPublicAppVersions, type PublicAppVersion } from "@/lib/app-version.functions";
 import { useI18n } from "@/lib/i18n";
+import { devicePlatform } from "@/lib/push";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.nooryaa.app";
+
+// Identifiant App Store à renseigner dès la première publication de l'app iPhone.
+// Tant qu'il est vide, le bouton ouvre la recherche Nooryaa sur l'App Store.
+const APP_STORE_ID = "";
+const APP_STORE_URL = APP_STORE_ID
+  ? `https://apps.apple.com/app/id${APP_STORE_ID}`
+  : "https://apps.apple.com/fr/search?term=nooryaa";
 
 /** Compare deux versions "1.0.2" : -1 si a < b, 0 si égales, 1 si a > b. */
 function compareVersions(a: string, b: string): number {
@@ -28,15 +36,19 @@ function compareVersions(a: string, b: string): number {
 }
 
 /**
- * Vérifie la version de l'application Android installée et la compare à
- * celle définie dans le configurateur admin :
+ * Vérifie la version de l'application installée (Android ou iPhone) et la
+ * compare à celle définie dans le configurateur admin :
  * - version installée < version minimale → fenêtre bloquante (mise à jour obligatoire) ;
  * - version installée < version publiée → fenêtre simple (mise à jour proposée).
  * Ne fait rien dans le navigateur.
  */
 export function AppUpdateChecker() {
   const { t } = useI18n();
-  const [state, setState] = useState<{ required: boolean; latest: string } | null>(null);
+  const [state, setState] = useState<{
+    required: boolean;
+    latest: string;
+    platform: "ios" | "android";
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,14 +60,15 @@ export function AppUpdateChecker() {
         const installed: string | undefined = info?.version;
         if (!installed) return;
 
+        const platform = devicePlatform();
         const rows: PublicAppVersion[] = await getPublicAppVersions();
-        const android = rows.find((r) => r.platform === "android");
-        if (!android?.version || cancelled) return;
+        const row = rows.find((r) => r.platform === platform);
+        if (!row?.version || cancelled) return;
 
-        if (android.min_version && compareVersions(installed, android.min_version) < 0) {
-          setState({ required: true, latest: android.version });
-        } else if (compareVersions(installed, android.version) < 0) {
-          setState({ required: false, latest: android.version });
+        if (row.min_version && compareVersions(installed, row.min_version) < 0) {
+          setState({ required: true, latest: row.version, platform });
+        } else if (compareVersions(installed, row.version) < 0) {
+          setState({ required: false, latest: row.version, platform });
         }
       } catch {
         // Silencieux : un échec de vérification ne doit jamais bloquer l'app.
@@ -69,7 +82,7 @@ export function AppUpdateChecker() {
   if (!state) return null;
 
   const openStore = () => {
-    window.open(PLAY_STORE_URL, "_blank");
+    window.open(state.platform === "ios" ? APP_STORE_URL : PLAY_STORE_URL, "_blank");
   };
 
   return (
@@ -82,7 +95,9 @@ export function AppUpdateChecker() {
           <AlertDialogDescription>
             {state.required
               ? t("Pour continuer à utiliser Nooryaa, vous devez installer la dernière version de l'application.")
-              : t("Une nouvelle version de Nooryaa est disponible sur Google Play. Mettez à jour pour profiter des dernières améliorations.")}
+              : state.platform === "ios"
+                ? t("Une nouvelle version de Nooryaa est disponible sur l'App Store. Mettez à jour pour profiter des dernières améliorations.")
+                : t("Une nouvelle version de Nooryaa est disponible sur Google Play. Mettez à jour pour profiter des dernières améliorations.")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

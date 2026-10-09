@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { TRANSLATIONS as BASE_TRANSLATIONS } from "./i18n-catalog";
 import { GEO_TRANSLATIONS } from "./geo-catalog";
+import { useRouterState } from "@tanstack/react-router";
 
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   ...GEO_TRANSLATIONS,
@@ -64,7 +65,9 @@ export function translateText(source: string, locale: Locale) {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, updateLocale] = useState<Locale>("fr");
+  const [memberLocale, updateLocale] = useState<Locale>("fr");
+  const isAdmin = useRouterState({ select: (state) => state.location.pathname === "/admin" || state.location.pathname.startsWith("/admin/") });
+  const locale: Locale = isAdmin ? "fr" : memberLocale;
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -82,9 +85,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const currentTitle = document.title;
     const knownTitle = locale === "fr" ? currentTitle : TRANSLATIONS[currentTitle]?.[locale];
     document.title = knownTitle ?? pageTitles[locale];
-  }, [locale]);
+  }, [locale, isAdmin]);
 
   const setLocale = useCallback((next: Locale) => {
+    if (isAdmin) return;
     updateLocale(next);
     window.localStorage.setItem(STORAGE_KEY, next);
     // Mémorise la langue sur le profil : les emails et notifications
@@ -100,7 +104,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         /* silencieux : la langue reste stockée localement */
       }
     })();
-  }, []);
+  }, [isAdmin]);
   const t = useCallback((source: string) => translateText(source, locale), [locale]);
 
   const value = useMemo<I18nValue>(() => ({

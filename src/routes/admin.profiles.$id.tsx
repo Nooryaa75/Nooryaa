@@ -4,14 +4,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminGetProfile, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
-import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
+import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
+import { frenchPlace, PROFILE_STATUS_LABELS, REPORT_STATUS_LABELS } from "@/lib/admin-display";
 import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/profiles/$id")({
   ssr: false,
-  head: ({ params }) => ({ meta: [{ title: `Profil ${params.id.slice(0, 8)} — Admin` }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: ({ params }) => ({ meta: [{ title: `Profil ${params.id.slice(0, 8)} — Admin Nooryaa` }, { name: "description", content: "Détail et gestion d’un profil membre Nooryaa." }, { property: "og:title", content: `Profil ${params.id.slice(0, 8)} — Admin Nooryaa` }, { property: "og:description", content: "Détail et gestion d’un profil membre Nooryaa." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });
@@ -61,7 +62,7 @@ function AdminProfileDetail() {
             <div>
               <h1 className="text-3xl font-serif text-primary">{p.pseudo}</h1>
               <p className="text-xs text-muted-foreground mt-1">ID : {p.id}</p>
-              <p className="text-sm text-muted-foreground">Statut : <strong>{p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
+              <p className="text-sm text-muted-foreground">Statut : <strong>{PROFILE_STATUS_LABELS[p.status] ?? p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {p.status !== "active" && (
@@ -86,14 +87,16 @@ function AdminProfileDetail() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <Field label="Nom" value={p.last_name} />
+            <Field label="Prénom" value={p.first_name} />
             <Field label="Email" value={p.email} />
             <Field label="Téléphone" value={p.phone} />
-            <Field label="Sexe" value={p.gender} />
-            <Field label="Cherche" value={p.looking_for} />
+            <Field label="Sexe" value={p.gender ? GENDER_LABELS[p.gender] : null} />
+            <Field label="Cherche" value={p.looking_for ? GENDER_LABELS[p.looking_for] : null} />
             <Field label="Date de naissance" value={p.birthdate ? `${p.birthdate} (${ageFromBirthdate(p.birthdate)} ans)` : null} />
-            <Field label="Ville" value={p.city} />
-            <Field label="Pays de résidence" value={p.country} />
-            <Field label="Pays d'origine" value={p.country_origin} />
+            <Field label="Ville" value={frenchPlace(p.city)} />
+            <Field label="Pays de résidence" value={frenchPlace(p.country)} />
+            <Field label="Pays d'origine" value={frenchPlace(p.country_origin)} />
             <Field label="Profession" value={p.profession} />
             <Field label="Études" value={p.education_level} />
             <Field label="Religion" value={p.religion} />
@@ -105,7 +108,7 @@ function AdminProfileDetail() {
           </div>
           {p.bio && (
             <div className="bg-secondary/40 rounded-lg p-3">
-              <div className="text-xs text-muted-foreground uppercase mb-1">Bio</div>
+              <div className="text-xs text-muted-foreground uppercase mb-1">Biographie</div>
               <p className="whitespace-pre-wrap text-sm">{p.bio}</p>
             </div>
           )}
@@ -122,12 +125,12 @@ function AdminProfileDetail() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <Block title={`Signalements reçus (${data.reportsAgainst.length})`} accent="text-red-600" icon={AlertOctagon}>
+          <Block title={`Signalements reçus (${data.reportsAgainst.length})`} accent="text-destructive" icon={AlertOctagon}>
             {data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (
               <ul className="space-y-2 text-sm">
                 {data.reportsAgainst.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
-                    <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")} · statut: {r.status}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")} · Statut : {REPORT_STATUS_LABELS[r.status] ?? r.status}</div>
                     <div>{r.reason}</div>
                   </li>
                 ))}
@@ -139,7 +142,7 @@ function AdminProfileDetail() {
               <ul className="space-y-2 text-sm">
                 {data.reportsBy.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
-                    <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")} · statut: {r.status}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")} · Statut : {REPORT_STATUS_LABELS[r.status] ?? r.status}</div>
                     <div>{r.reason}</div>
                   </li>
                 ))}

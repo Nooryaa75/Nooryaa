@@ -10,7 +10,7 @@ import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/conversations/$pair")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Conversation — Admin Nooryaa" }, { name: "robots", content: "noindex,nofollow" }] }),
+  head: () => ({ meta: [{ title: "Conversation — Admin Nooryaa" }, { name: "description", content: "Historique d’une discussion entre membres Nooryaa." }, { property: "og:title", content: "Conversation — Admin Nooryaa" }, { property: "og:description", content: "Historique d’une discussion entre membres Nooryaa." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex,nofollow" }] }),
   beforeLoad: async () => {
     const { authed } = await adminCheckAuth();
     if (!authed) throw redirect({ to: "/admin/login" });
@@ -62,7 +62,7 @@ function AdminConversationView() {
                 <div className={`max-w-[75%] rounded-2xl overflow-hidden text-sm border ${fromA ? "bg-secondary/60 border-border/60" : "bg-primary/10 border-primary/20"}`}>
                   <div className="px-3 pt-2 text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-between gap-3">
                     <span>{author?.pseudo ?? m.sender.slice(0,8)} · {new Date(m.created_at).toLocaleString("fr-FR")}</span>
-                    <button onClick={() => { if (confirm("Supprimer ce message ?")) delMut.mutate(m.id); }} className="text-red-600 hover:text-red-700"><Trash2 className="h-3 w-3" /></button>
+                    <Button variant="ghost" size="icon" aria-label="Supprimer ce message" disabled={delMut.isPending} onClick={() => { if (confirm("Supprimer ce message ?")) delMut.mutate(m.id); }} className="h-6 w-6 text-destructive"><Trash2 className="h-3 w-3" /></Button>
                   </div>
                   {m.image_url && (
                     <a href={m.image_url} target="_blank" rel="noopener noreferrer">
@@ -70,6 +70,8 @@ function AdminConversationView() {
                     </a>
                   )}
                   {m.content && <div className="px-4 py-2">{m.content}</div>}
+                  {m.audio_url && <audio controls preload="none" src={m.audio_url} className="max-w-full p-2" aria-label="Message vocal" />}
+                  {m.deleted_at && <div className="px-4 py-2 text-muted-foreground italic">Message supprimé</div>}
                 </div>
               </div>
             );

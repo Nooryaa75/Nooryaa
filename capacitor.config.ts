@@ -6,8 +6,16 @@ const config: CapacitorConfig = {
   webDir: 'www',
   // Google refuse la connexion dans les vues intégrées (« wv ») : on présente
   // un navigateur mobile standard pour que la connexion reste dans l'appli.
-  overrideUserAgent:
-    'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+  // Google refuse la connexion dans les vues intégrées : on présente un
+  // navigateur mobile standard pour que la connexion reste dans l'appli.
+  android: {
+    overrideUserAgent:
+      'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+  },
+  ios: {
+    overrideUserAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+  },
   server: {
     // L'application affiche le site publié : toutes les mises à jour du site
     // apparaissent dans l'app sans republication sur le store.

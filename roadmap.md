@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Profils admin : ajouter nom/prénom, afficher les villes en français et garder l’administration en français.
+- [x] Profils admin : nom/prénom ajoutés, villes du catalogue affichées en français et langue française imposée dans l’administration sans changer celle des membres ; contrôles de langue et de villes réussis.
 
 - [x] Traduire l’onglet « Mes recherches » de /recherche (titres, listes, menus, aria-labels)
 - [x] Traduire les toasts de la page recherche (enregistrement, application, erreurs) EN/AR

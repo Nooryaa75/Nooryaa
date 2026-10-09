@@ -11,6 +11,8 @@
 
 ## Project rules
 
+- Admin discussions union message pairs with liked-profile pairs to match member inboxes; paginated reads must exhaust all database pages before grouping, and UI pagination must never truncate the available history.
+
 - Admin language is derived centrally from the current route without overwriting the member’s saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data remains unchanged.
 
 - Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).

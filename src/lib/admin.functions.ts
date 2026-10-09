@@ -159,46 +159,36 @@ export const adminResolveReport = createServerFn({ method: "POST" })
 
 // ---------- Discussions / messagerie ----------
 
-function pairKey(a: string, b: string) { return a < b ? `${a}|${b}` : `${b}|${a}`; }
-
 export const adminListConversations = createServerFn({ method: "GET" })
   .inputValidator((data: { q?: string }) => data ?? {})
   .handler(async ({ data }) => {
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows } = await supabaseAdmin
-      .from("messages")
-      .select("id, sender, receiver, content, image_path, created_at")
-      .order("created_at", { ascending: false })
-      .limit(2000);
-    const pairs = new Map<string, { a: string; b: string; last: any; count: number; photos: number }>();
-    for (const m of rows ?? []) {
-      const key = pairKey(m.sender, m.receiver);
-      const cur = pairs.get(key);
-      if (!cur) pairs.set(key, { a: m.sender < m.receiver ? m.sender : m.receiver, b: m.sender < m.receiver ? m.receiver : m.sender, last: m, count: 1, photos: m.image_path ? 1 : 0 });
-      else { cur.count += 1; if (m.image_path) cur.photos += 1; }
+    const { readAllAdminRows, conversationPairs } = await import("./admin-conversations");
+    const [rows, likes] = await Promise.all([
+      readAllAdminRows((from, to) => supabaseAdmin.from("messages")
+        .select("sender, receiver, content, image_path, audio_path, created_at, deleted_at")
+        .order("created_at", { ascending: false }).order("id").range(from, to)),
+      readAllAdminRows((from, to) => supabaseAdmin.from("likes")
+        .select("from_user, to_user, created_at").order("id").range(from, to)),
+    ]);
+    const pairs = conversationPairs(rows, likes);
+    const ids = [...new Set(pairs.flatMap((pair) => [pair.a, pair.b]))];
+    const profs: import("./admin-conversations").Participant[] = [];
+    for (let start = 0; start < ids.length; start += 100) {
+      profs.push(...await readAllAdminRows((from, to) => supabaseAdmin.from("profiles")
+        .select("id, pseudo, email, status").in("id", ids.slice(start, start + 100))
+        .order("id").range(from, to)));
     }
-    const ids = new Set<string>();
-    pairs.forEach((p) => { ids.add(p.a); ids.add(p.b); });
-    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [...ids]);
-    const byId = new Map((profs ?? []).map((p) => [p.id, p]));
-    let list = [...pairs.values()].map((c) => ({
-      key: pairKey(c.a, c.b),
-      a: c.a, b: c.b,
-      aProfile: byId.get(c.a),
-      bProfile: byId.get(c.b),
-      count: c.count,
-      photos: c.photos,
-      lastAt: c.last.created_at,
-      lastPreview: c.last.image_path ? "📷 Photo" : (c.last.content ?? ""),
-    }));
+    const byId = new Map(profs.map((profile) => [profile.id, profile]));
+    let list = pairs.map((pair) => ({ ...pair, aProfile: byId.get(pair.a), bProfile: byId.get(pair.b) }));
     if (data.q && data.q.trim()) {
       const term = data.q.trim().toLowerCase();
       list = list.filter((c) => (c.aProfile?.pseudo ?? "").toLowerCase().includes(term) || (c.bProfile?.pseudo ?? "").toLowerCase().includes(term) || (c.aProfile?.email ?? "").toLowerCase().includes(term) || (c.bProfile?.email ?? "").toLowerCase().includes(term));
     }
     list.sort((x, y) => +new Date(y.lastAt) - +new Date(x.lastAt));
-    return list.slice(0, 200);
+    return list;
   });
 
 export const adminGetConversation = createServerFn({ method: "GET" })
@@ -207,18 +197,22 @@ export const adminGetConversation = createServerFn({ method: "GET" })
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const [{ data: msgs }, { data: profs }] = await Promise.all([
-      supabaseAdmin.from("messages")
-        .select("id, sender, receiver, content, image_path, created_at")
+    const { readAllAdminRows } = await import("./admin-conversations");
+    const [msgs, { data: profs, error: profileError }] = await Promise.all([
+      readAllAdminRows((from, to) => supabaseAdmin.from("messages")
+        .select("id, sender, receiver, content, image_path, audio_path, audio_duration, deleted_at, created_at")
         .or(`and(sender.eq.${data.a},receiver.eq.${data.b}),and(sender.eq.${data.b},receiver.eq.${data.a})`)
-        .order("created_at"),
+        .order("created_at").order("id").range(from, to)),
       supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [data.a, data.b]),
     ]);
+    if (profileError) throw new Error(profileError.message);
     // Sign image URLs (admin uses service role; signed URLs work for private bucket)
     const withImg = await Promise.all((msgs ?? []).map(async (m: any) => {
-      if (!m.image_path) return m;
-      const { data: s } = await supabaseAdmin.storage.from("message-photos").createSignedUrl(m.image_path, 3600);
-      return { ...m, image_url: s?.signedUrl };
+      const [image, audio] = await Promise.all([
+        m.image_path ? supabaseAdmin.storage.from("message-photos").createSignedUrl(m.image_path, 3600) : null,
+        m.audio_path ? supabaseAdmin.storage.from("message-audio").createSignedUrl(m.audio_path, 3600) : null,
+      ]);
+      return { ...m, image_url: image?.data?.signedUrl, audio_url: audio?.data?.signedUrl };
     }));
     return { messages: withImg, participants: profs ?? [] };
   });

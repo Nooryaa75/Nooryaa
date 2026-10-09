@@ -1,5 +1,11 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Restez informé·e de vos matchs et messages": { "en": "Stay informed about your matches and messages", "ar": "ابقوا على اطلاع بمطابقاتكم ورسائلكم" },
+  "Autorisez les notifications pour ne manquer aucune conversation.": { "en": "Allow notifications so you don't miss any conversation.", "ar": "اسمحوا بالإشعارات حتى لا تفوتكم أي محادثة." },
+  "Activer les notifications": { "en": "Turn on notifications", "ar": "تفعيل الإشعارات" },
+  "Ouvrir les réglages du téléphone": { "en": "Open phone settings", "ar": "فتح إعدادات الهاتف" },
+  "Notifications activées. Merci !": { "en": "Notifications are on. Thank you!", "ar": "تم تفعيل الإشعارات. شكراً!" },
+
   "Mise à jour obligatoire": { "en": "Update required", "ar": "التحديث إلزامي" },
   "Mise à jour disponible": { "en": "Update available", "ar": "يتوفر تحديث" },
   "Pour continuer à utiliser Nooryaa, vous devez installer la dernière version de l'application.": { "en": "To keep using Nooryaa, you must install the latest version of the app.", "ar": "لمواصلة استخدام Nooryaa، يجب تثبيت أحدث إصدار من التطبيق." },

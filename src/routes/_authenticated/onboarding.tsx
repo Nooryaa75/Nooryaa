@@ -1,3 +1,4 @@
+import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const ctx = Route.useRouteContext();
   const { t } = useI18n();
+  const [lockedPhone, setLockedPhone] = useState(false);
   const [form, setForm] = useState({
     pseudo: "",
     firstName: "",
@@ -84,7 +86,7 @@ function Onboarding() {
     if (form.has_children === null) missing.push("Avez-vous des enfants");
     if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
     if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
-    if (form.phone.replace(/[^0-9]/g, "").length < 8) missing.push("Téléphone (numéro valide)");
+    if (!isValidPhone(form.phone)) missing.push("Téléphone (numéro valide)");
     if (!form.city) missing.push("Ville de résidence");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");
@@ -100,13 +102,14 @@ function Onboarding() {
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
+      if (data && isValidPhone((data as any).phone)) setLockedPhone(true);
       if (data) setForm((f) => ({
         ...f,
         pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
         firstName: (data as any).first_name || f.firstName,
         lastName: (data as any).last_name || f.lastName,
         // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
-        phone: (data as any).phone && String((data as any).phone).replace(/[^0-9]/g, "").length >= 8 ? (data as any).phone : f.phone,
+        phone: isValidPhone((data as any).phone) ? (data as any).phone : f.phone,
         gender: ((data as any).gender as any) || f.gender,
         birthdate: (data as any).birthdate || f.birthdate,
         city: (data as any).city || f.city,
@@ -235,8 +238,8 @@ function Onboarding() {
         </div>
         <div>
           <Label htmlFor="phone">Téléphone *</Label>
-          <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06 12 34 56 78" readOnly={form.phone.replace(/[^0-9]/g, "").length >= 8} className={form.phone.replace(/[^0-9]/g, "").length >= 8 ? "bg-muted/50" : undefined} />
-          {form.phone.replace(/[^0-9]/g, "").length >= 8 && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
+          <PhoneInput id="phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} readOnly={isValidPhone(form.phone) && lockedPhone} />
+          {lockedPhone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
         </div>
         <div>
           <Label>Je suis *</Label>

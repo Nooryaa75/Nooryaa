@@ -41,7 +41,10 @@ export const signUpByServer = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const email = data.email.trim().toLowerCase();
-    const phone = data.phone.replace(/[^0-9+]/g, "").trim();
+    const { parsePhoneNumberFromString } = await import("libphonenumber-js");
+    const parsedPhone = parsePhoneNumberFromString(data.phone.trim(), "FR");
+    if (!parsedPhone || !parsedPhone.isValid()) throw new Error("Numéro de téléphone invalide pour le pays choisi.");
+    const phone = parsedPhone.number;
 
     // Vérifications explicites pour donner un message clair avant toute création.
     const { data: existingEmail } = await supabaseAdmin

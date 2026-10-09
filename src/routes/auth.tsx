@@ -4,7 +4,6 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
-import { StoreBadges } from "@/components/StoreBadges";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
@@ -325,9 +324,6 @@ function AuthPage() {
           {mode === "signup" ? "Commencez votre recherche aujourd'hui — c'est gratuit." : "Connectez-vous à votre profil"}
         </p>
 
-        <div className="mb-5">
-          <StoreBadges />
-        </div>
 
         <Button
           onClick={handleGoogle}

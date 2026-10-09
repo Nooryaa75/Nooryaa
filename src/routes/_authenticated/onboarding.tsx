@@ -28,6 +28,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const ctx = Route.useRouteContext();
   const { t } = useI18n();
+  const [lockedPhone, setLockedPhone] = useState(false);
   const [form, setForm] = useState({
     pseudo: "",
     firstName: "",

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Discussions admin : identifier et corriger les conversations absentes de la liste.
+
 - [x] Profils admin : nom/prénom ajoutés, villes du catalogue affichées en français et langue française imposée dans l’administration sans changer celle des membres ; contrôles de langue et de villes réussis.
 
 - [x] Traduire l’onglet « Mes recherches » de /recherche (titres, listes, menus, aria-labels)

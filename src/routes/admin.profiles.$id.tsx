@@ -226,3 +226,10 @@ function Empty({ children }: { children: React.ReactNode }) {
 function yn(v: any) {
   return v === true ? "Oui" : v === false ? "Non" : null;
 }
+
+function platformLabel(v: any) {
+  if (v === "android") return "Application Android";
+  if (v === "ios") return "Application iPhone";
+  if (v === "web") return "Site web";
+  return null;
+}

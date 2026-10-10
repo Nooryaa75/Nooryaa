@@ -34,7 +34,8 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
-          sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Configure app launcher icon
         script: |
@@ -48,12 +49,12 @@ workflows:
         script: |
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
-      - name: Set app version (1.0.7)
+      - name: Set app version (1.0.8)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 10/; s/versionName\s+"[^"]*"/versionName "1.0.7"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 11/; s/versionName\s+"[^"]*"/versionName "1.0.8"/' android/app/build.gradle
 
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 10' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 11' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
 
       - name: Build APK
         script: |
@@ -104,7 +105,8 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
-          sed -i '' 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Configure app launcher icon
         script: |
@@ -119,11 +121,11 @@ workflows:
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
 
-      - name: Set app version (1.0.7)
+      - name: Set app version (1.0.8)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 10/; s/versionName\s+"[^"]*"/versionName "1.0.7"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 11/; s/versionName\s+"[^"]*"/versionName "1.0.8"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 10' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 11' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android
@@ -179,9 +181,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.7)
+      - name: Set app version (1.0.8)
         script: |
-          node scripts/set-ios-version.mjs 1.0.7 10
+          node scripts/set-ios-version.mjs 1.0.8 11
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -225,9 +227,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.7)
+      - name: Set app version (1.0.8)
         script: |
-          node scripts/set-ios-version.mjs 1.0.7 10
+          node scripts/set-ios-version.mjs 1.0.8 11
       - name: Check Apple signing setup
         script: |
           if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then

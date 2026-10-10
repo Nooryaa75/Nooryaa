@@ -16,7 +16,7 @@ workflows:
           npm install
           # Capacitor 6 imposé : le module de connexion Google native
           # (@codetrix-studio/capacitor-google-auth) n'est compatible qu'avec v6.
-          npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/push-notifications@6 @capacitor/app@6 @codetrix-studio/capacitor-google-auth
+          npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/push-notifications@6 @capacitor/app@6 @capacitor/app-launcher@6 @codetrix-studio/capacitor-google-auth
 
       - name: Generate Android project
         script: |
@@ -84,7 +84,7 @@ workflows:
           npm install
           # Capacitor 6 imposé : le module de connexion Google native
           # (@codetrix-studio/capacitor-google-auth) n'est compatible qu'avec v6.
-          npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/push-notifications@6 @capacitor/app@6 @codetrix-studio/capacitor-google-auth
+          npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/push-notifications@6 @capacitor/app@6 @capacitor/app-launcher@6 @codetrix-studio/capacitor-google-auth
 
       - name: Generate Android project
         script: |
@@ -164,7 +164,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app @capacitor/app-launcher
       - name: Generate iOS project
         script: |
           npx cap add ios
@@ -210,7 +210,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app
+          npm install --no-save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app @capacitor/app-launcher
       - name: Generate iOS project
         script: |
           npx cap add ios

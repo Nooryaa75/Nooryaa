@@ -119,20 +119,6 @@ export function AppUpdateChecker() {
           }
           if (inferred) outcome += ":inferred";
         }
-          if (!installed) {
-            // Ancienne appli qui ne sait pas donner sa version : on propose
-            // la mise à jour sans bloquer.
-            setState({ required: false, latest: row.version, platform });
-          } else if (required) {
-            setState({ required: true, latest: row.version, platform });
-            outcome = "required";
-          } else if (compareVersions(installed, row.version) < 0) {
-            setState({ required: false, latest: row.version, platform });
-            outcome = "proposed";
-          } else {
-            outcome = "up-to-date";
-          }
-        }
       } catch (e) {
         // Silencieux : un échec de vérification ne doit jamais bloquer l'app.
         outcome = `error:${(e as Error)?.message ?? "?"}`;

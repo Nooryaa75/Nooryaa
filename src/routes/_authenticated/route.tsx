@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
+import { isValidPhone } from "@/components/PhoneInput";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -46,7 +47,16 @@ function AuthenticatedLayout() {
         return;
       }
 
-      if (!profile?.onboarded && window.location.pathname !== "/onboarding") {
+      // Profil terminé mais sans prénom, nom ou téléphone valide (anciens
+      // inscrits) : on renvoie vers la fiche pour compléter.
+      const p = profile as any;
+      const missingIdentity =
+        !!p?.onboarded && !(roles && roles.length > 0) &&
+        ((p.first_name ?? "").trim().length < 2 ||
+          (p.last_name ?? "").trim().length < 2 ||
+          !isValidPhone(p.phone ?? ""));
+
+      if ((!profile?.onboarded || missingIdentity) && window.location.pathname !== "/onboarding") {
         navigate({ to: "/onboarding", replace: true });
         return;
       }

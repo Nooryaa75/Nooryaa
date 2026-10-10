@@ -93,12 +93,49 @@ export async function requestPushPermission(): Promise<PushState> {
   }
 }
 
-/** Ouvre la page de réglages de l'application sur le téléphone. */
+/**
+ * Diagnostic : réponse brute du module de notifications, envoyée dans les
+ * rapports du téléphone pour comprendre pourquoi l'autorisation échoue.
+ */
+export async function pushDiagnostic(action: "check" | "request"): Promise<string> {
+  const cap = capacitor();
+  const push = pushPlugin();
+  const base = `avail=${cap?.isPluginAvailable?.("PushNotifications")} inPlugins=${!!cap?.Plugins?.PushNotifications} plugin=${!!push}`;
+  if (!push) return base;
+  try {
+    const call = action === "check" ? push.checkPermissions() : push.requestPermissions();
+    const res = await Promise.race([
+      Promise.resolve(call),
+      new Promise((resolve) => setTimeout(() => resolve("timeout"), 8000)),
+    ]);
+    return `${base} ${action}=${JSON.stringify(res)}`;
+  } catch (e) {
+    return `${base} ${action}-error=${(e as Error)?.message ?? String(e)}`;
+  }
+}
+
+/**
+ * Ouvre la page de réglages de l'application sur le téléphone.
+ * Renvoie false si l'appli installée ne sait pas le faire : il faut alors
+ * guider l'utilisateur à la main.
+ */
 export function openNotificationSettings(): boolean {
-  const app = appPlugin();
-  if (typeof app?.openSettings !== "function") return false;
-  void app.openSettings();
-  return true;
+  const candidates = [nativePlugin("NativeSettings"), appPlugin()];
+  for (const p of candidates) {
+    try {
+      if (typeof p?.openAndroid === "function") {
+        void Promise.resolve(p.openAndroid({ option: "app_notification" })).catch(() => {});
+        return true;
+      }
+      if (typeof p?.openSettings === "function") {
+        void Promise.resolve(p.openSettings()).catch(() => {});
+        return true;
+      }
+    } catch {
+      /* essai suivant */
+    }
+  }
+  return false;
 }
 
 let listenersReady = false;

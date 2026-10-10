@@ -77,6 +77,14 @@ export function AppUpdateChecker() {
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
         else if (!cancelled) {
+          // Si l'utilisateur a déjà cliqué « Mettre à jour » ou « Plus tard »
+          // pour cette même version cible, on ne redemande pas (évite la
+          // boucle quand le Play Store dit déjà « à jour »).
+          const dismissed = localStorage.getItem("nooryaa-update-dismissed");
+          if (dismissed === row.version) {
+            outcome = "dismissed";
+            return;
+          }
           if (!installed) {
             // Ancienne appli qui ne sait pas donner sa version : on propose
             // la mise à jour sans bloquer.

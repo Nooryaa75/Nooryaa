@@ -20,6 +20,10 @@ const config: CapacitorConfig = {
   // proposés directement dans l'appli. serverClientId = clé « Application
   // Web » de Google Cloud (projet nooryaa-s-firebase).
   plugins: {
+    // Affiche aussi les notifications quand l'appli est ouverte (prochain build).
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
     GoogleAuth: {
       scopes: ['profile', 'email'],
       serverClientId:

@@ -109,6 +109,17 @@ export const adminOverview = createServerFn({ method: "GET" })
       cumulative,
       gender: tally(all.map((p) => p.gender)),
       ageBuckets,
+      platforms: tally(
+        all.map((p: any) =>
+          p.last_platform === "android"
+            ? "Application Android"
+            : p.last_platform === "ios"
+              ? "Application iPhone"
+              : p.last_platform === "web"
+                ? "Site web"
+                : "Jamais connecté",
+        ),
+      ),
       cities: tally(all.map((p) => p.city)).slice(0, 12),
       countries: tally(all.map((p) => p.country)).slice(0, 12),
       origins: tally(all.map((p) => p.country_origin)).slice(0, 12),

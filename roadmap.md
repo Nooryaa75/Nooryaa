@@ -15,5 +15,5 @@
 - [ ] iPhone : à faire après validation du compte — clé API App Store Connect dans Codemagic, puis première archive et téléversement
 
 
-- [ ] Relances email profils incomplets (5 jours) + suppression jour 6
-- [ ] Admin profils : afficher toutes les infos de la fiche
+- [x] Relances email profils incomplets (5 jours) + suppression jour 6
+- [x] Admin profils : afficher toutes les infos de la fiche

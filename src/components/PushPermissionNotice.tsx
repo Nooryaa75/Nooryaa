@@ -23,13 +23,35 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    void checkPushPermission().then((s) => {
-      if (!cancelled) setState(s);
-    });
+
+    // Contrôle l'autorisation ; si elle est accordée, on s'assure que le
+    // téléphone est bien inscrit pour recevoir les notifications.
+    const refresh = async () => {
+      const s = await checkPushPermission();
+      if (cancelled) return;
+      setState(s);
+      if (s === "granted" && userId) void registerPushNotifications(userId);
+    };
+    void refresh();
+
+    // Retour depuis les réglages du téléphone : on revérifie aussitôt,
+    // sinon le bandeau resterait affiché alors que l'autorisation est donnée.
+    const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+    const app = cap?.Plugins?.App;
+    let handle: { remove: () => void } | undefined;
+    if (typeof app?.addListener === "function") {
+      void app.addListener("appStateChange", (st: { isActive: boolean }) => {
+        if (st?.isActive) void refresh();
+      }).then((h: { remove: () => void }) => {
+        handle = h;
+      });
+    }
+
     return () => {
       cancelled = true;
+      handle?.remove();
     };
-  }, []);
+  }, [userId]);
 
   if (dismissed || state !== "denied") return null;
 
@@ -42,8 +64,12 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
     }
     const next = await requestPushPermission();
     setState(next);
-    if (next === "granted") setDismissed(true);
-    else setAlreadyAsked(true);
+    if (next === "granted") {
+      // L'autorisation vient d'être donnée : on inscrit tout de suite le
+      // téléphone, sans attendre une fermeture/réouverture de l'appli.
+      if (userId) void registerPushNotifications(userId);
+      setDismissed(true);
+    } else setAlreadyAsked(true);
     setBusy(false);
   }
 

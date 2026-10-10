@@ -1,3 +1,4 @@
+import { nativePlugin } from "@/lib/native-plugin";
 import { useEffect, useState } from "react";
 import {
   getPublicAppVersions,
@@ -69,7 +70,8 @@ export function AppUpdateChecker() {
         // toujours enregistré côté page : on interroge alors directement
         // le pont natif.
         const getInfo = (): Promise<unknown> | undefined => {
-          if (cap.Plugins?.App?.getInfo) return cap.Plugins.App.getInfo();
+          const app = nativePlugin("App");
+          if (app?.getInfo) return app.getInfo();
           if (cap.isPluginAvailable?.("App") && cap.nativePromise)
             return cap.nativePromise("App", "getInfo", {});
           return undefined;

@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_version_checks: {
+        Row: {
+          created_at: string
+          id: string
+          installed: string
+          outcome: string
+          platform: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          installed?: string
+          outcome?: string
+          platform?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          installed?: string
+          outcome?: string
+          platform?: string
+        }
+        Relationships: []
+      }
       app_versions: {
         Row: {
           created_at: string

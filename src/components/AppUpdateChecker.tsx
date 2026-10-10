@@ -77,11 +77,25 @@ export function AppUpdateChecker() {
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
         else if (!cancelled) {
+          const required = !!(
+            installed &&
+            row.min_version &&
+            compareVersions(installed, row.min_version) < 0
+          );
+          // Si l'utilisateur a déjà cliqué « Mettre à jour » ou « Plus tard »
+          // pour cette même version cible, on ne redemande pas (évite la
+          // boucle quand le Play Store dit déjà « à jour »). Une mise à jour
+          // obligatoire, elle, se réaffiche toujours.
+          const dismissed = localStorage.getItem("nooryaa-update-dismissed");
+          if (!required && dismissed === row.version) {
+            outcome = "dismissed";
+            return;
+          }
           if (!installed) {
             // Ancienne appli qui ne sait pas donner sa version : on propose
             // la mise à jour sans bloquer.
             setState({ required: false, latest: row.version, platform });
-          } else if (row.min_version && compareVersions(installed, row.min_version) < 0) {
+          } else if (required) {
             setState({ required: true, latest: row.version, platform });
             outcome = "required";
           } else if (compareVersions(installed, row.version) < 0) {
@@ -116,7 +130,19 @@ export function AppUpdateChecker() {
 
   if (!state) return null;
 
+  // Mémorise que l'utilisateur a répondu pour cette version cible :
+  // la fenêtre ne se rouvrira pas tant que le configurateur n'annonce
+  // pas une version plus récente.
+  const rememberDismissed = () => {
+    try {
+      localStorage.setItem("nooryaa-update-dismissed", state?.latest ?? "");
+    } catch {
+      /* stockage indisponible : on ignore */
+    }
+  };
+
   const openStore = () => {
+    rememberDismissed();
     const cap = (window as unknown as { Capacitor?: any }).Capacitor;
     if (cap?.isNativePlatform?.()) {
       if (state.platform === "android") {
@@ -140,7 +166,19 @@ export function AppUpdateChecker() {
   };
 
   return (
-    <AlertDialog open onOpenChange={state.required ? () => {} : (o) => !o && setState(null)}>
+    <AlertDialog
+      open
+      onOpenChange={
+        state.required
+          ? () => {}
+          : (o) => {
+              if (!o) {
+                rememberDismissed();
+                setState(null);
+              }
+            }
+      }
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -156,7 +194,14 @@ export function AppUpdateChecker() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           {!state.required && (
-            <AlertDialogCancel onClick={() => setState(null)}>{t("Plus tard")}</AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => {
+                rememberDismissed();
+                setState(null);
+              }}
+            >
+              {t("Plus tard")}
+            </AlertDialogCancel>
           )}
           <AlertDialogAction onClick={openStore}>{t("Mettre à jour")}</AlertDialogAction>
         </AlertDialogFooter>

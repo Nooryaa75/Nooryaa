@@ -20,8 +20,8 @@ export const getPublicAppVersions = createServerFn({ method: "GET" }).handler(as
 });
 
 /**
- * Trace de diagnostic (journal serveur uniquement, rien n'est stocké) :
- * ce que la vérification de version a vu sur le téléphone.
+ * Trace de diagnostic : ce que la vérification de version a vu sur le
+ * téléphone. Stockée dans app_version_checks (lecture réservée au service).
  */
 export const reportAppVersionCheck = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => {
@@ -30,6 +30,11 @@ export const reportAppVersionCheck = createServerFn({ method: "POST" })
     return { platform: s(o.platform), installed: s(o.installed), outcome: s(o.outcome) };
   })
   .handler(async ({ data }) => {
-    console.log("[app-version-check]", JSON.stringify(data));
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await (supabaseAdmin.from("app_version_checks") as any).insert({
+      platform: data.platform,
+      installed: data.installed,
+      outcome: data.outcome,
+    });
     return { ok: true };
   });

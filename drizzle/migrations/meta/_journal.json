@@ -43,6 +43,13 @@
       "when": 1791652220353,
       "tag": "0005_enable_cron",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791655684703,
+      "tag": "0006_restrict_storage_reads",
+      "breakpoints": true
     }
   ]
 }

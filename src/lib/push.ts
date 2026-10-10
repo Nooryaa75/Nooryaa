@@ -1,5 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { nativePlugin } from "@/lib/native-plugin";
+import { reportAppVersionCheck } from "@/lib/app-version.functions";
+
+function reportPush(step: string, detail: unknown) {
+  const text =
+    typeof detail === "string" ? detail : JSON.stringify(detail ?? null);
+  void reportAppVersionCheck({
+    data: { outcome: `push:${step} ${text}` },
+  } as never).catch(() => {});
+}
 
 type PushToken = { value: string };
 
@@ -152,20 +161,29 @@ let listenersReady = false;
  */
 export async function registerPushNotifications(userId: string): Promise<PushState> {
   const push = pushPlugin();
-  if (!push) return "unsupported";
+  if (!push) {
+    reportPush("register-no-plugin", "");
+    return "unsupported";
+  }
 
   try {
     const state = await requestPushPermission();
-    if (state !== "granted") return state;
+    if (state !== "granted") {
+      reportPush("register-not-granted", state);
+      return state;
+    }
 
     if (!listenersReady) {
       listenersReady = true;
 
       await push.addListener("registration", async (token: PushToken) => {
-        if (!token?.value) return;
+        if (!token?.value) {
+          reportPush("registration-empty", token);
+          return;
+        }
         // La table push_tokens est récente : les types automatiques ne la
         // connaissent pas encore, d'où le contournement de typage.
-        await (supabase.from("push_tokens" as never) as any).upsert(
+        const { error } = await (supabase.from("push_tokens" as never) as any).upsert(
           {
             user_id: userId,
             token: token.value,
@@ -174,11 +192,13 @@ export async function registerPushNotifications(userId: string): Promise<PushSta
           },
           { onConflict: "token" },
         );
+        if (error) reportPush("save-error", error.message);
+        else reportPush("saved", devicePlatform());
       });
 
       // Un jeton périmé est remplacé automatiquement par Google.
       await push.addListener("registrationError", (err: unknown) => {
-        console.error("Push registration error", err);
+        reportPush("registration-error", err);
       });
 
       // Tap sur une notification : ouvre la bonne page dans l'appli.
@@ -191,9 +211,10 @@ export async function registerPushNotifications(userId: string): Promise<PushSta
     }
 
     await push.register();
+    reportPush("register-called", devicePlatform());
     return "granted";
   } catch (e) {
-    console.error("Push setup failed", e);
+    reportPush("register-failed", (e as Error)?.message ?? String(e));
     return "denied";
   }
 }

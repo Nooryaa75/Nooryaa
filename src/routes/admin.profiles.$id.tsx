@@ -221,3 +221,7 @@ function Block({ title, children, icon: Icon, accent }: { title: string; childre
 function Empty({ children }: { children: React.ReactNode }) {
   return <p className="text-sm text-muted-foreground italic">{children}</p>;
 }
+
+function yn(v: any) {
+  return v === true ? "Oui" : v === false ? "Non" : null;
+}

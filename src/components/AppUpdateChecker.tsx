@@ -65,12 +65,21 @@ export function AppUpdateChecker() {
       let outcome = "ok";
       try {
         // Délai maximal : si le téléphone ne répond pas, on continue sans bloquer.
+        // Le site étant chargé à distance, le module « App » n'est pas
+        // toujours enregistré côté page : on interroge alors directement
+        // le pont natif.
+        const getInfo = (): Promise<unknown> | undefined => {
+          if (cap.Plugins?.App?.getInfo) return cap.Plugins.App.getInfo();
+          if (cap.isPluginAvailable?.("App") && cap.nativePromise)
+            return cap.nativePromise("App", "getInfo", {});
+          return undefined;
+        };
         const info = await Promise.race([
-          cap.Plugins?.App?.getInfo?.(),
+          Promise.resolve(getInfo()).catch(() => undefined),
           new Promise((r) => setTimeout(() => r(undefined), 3000)),
         ]);
         installed = (info as { version?: string } | undefined)?.version;
-        if (!cap.Plugins?.App?.getInfo) outcome = "no-app-plugin";
+        if (!cap.Plugins?.App?.getInfo && !cap.isPluginAvailable?.("App")) outcome = "no-app-plugin";
         else if (!installed) outcome = "no-version";
 
         const rows: PublicAppVersion[] = await getPublicAppVersions();

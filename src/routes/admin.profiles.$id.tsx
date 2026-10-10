@@ -231,5 +231,5 @@ function platformLabel(v: any) {
   if (v === "android") return "Application Android";
   if (v === "ios") return "Application iPhone";
   if (v === "web") return "Site web";
-  return null;
+  return "Pas encore connu (le membre ne s'est pas reconnecté)";
 }

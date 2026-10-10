@@ -26,7 +26,7 @@ export function PlatformTracker() {
           .from("profiles")
           .update({ last_platform: platform } as never)
           .eq("id", userId)
-          .neq("last_platform", platform);
+          .or(`last_platform.is.null,last_platform.neq.${platform}`);
       } catch {
         // Silencieux : le suivi ne doit jamais gêner le membre.
       }

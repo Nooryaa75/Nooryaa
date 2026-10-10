@@ -182,7 +182,14 @@ export function AppUpdateChecker() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           {!state.required && (
-            <AlertDialogCancel onClick={() => setState(null)}>{t("Plus tard")}</AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => {
+                rememberDismissed();
+                setState(null);
+              }}
+            >
+              {t("Plus tard")}
+            </AlertDialogCancel>
           )}
           <AlertDialogAction onClick={openStore}>{t("Mettre à jour")}</AlertDialogAction>
         </AlertDialogFooter>

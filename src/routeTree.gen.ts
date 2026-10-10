@@ -59,6 +59,7 @@ import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id
 import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
 import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
 import { Route as ApiPublicLegalDocumentsRouteImport } from './routes/api.public.legal-documents'
+import { Route as ApiPublicHooksIncompleteProfilesRouteImport } from './routes/api/public/hooks/incomplete-profiles'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -320,6 +321,12 @@ const ApiPublicLegalDocumentsRoute = ApiPublicLegalDocumentsRouteImport.update({
   path: '/api/public/legal-documents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksIncompleteProfilesRoute =
+  ApiPublicHooksIncompleteProfilesRouteImport.update({
+    id: '/api/public/hooks/incomplete-profiles',
+    path: '/api/public/hooks/incomplete-profiles',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
   '/admin/support/': typeof AdminSupportIndexRoute
+  '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -421,6 +429,7 @@ export interface FileRoutesByTo {
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
   '/admin/support': typeof AdminSupportIndexRoute
+  '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -474,6 +483,7 @@ export interface FileRoutesById {
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
   '/admin/support/': typeof AdminSupportIndexRoute
+  '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -527,6 +537,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/'
     | '/admin/profiles/'
     | '/admin/support/'
+    | '/api/public/hooks/incomplete-profiles'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -577,6 +588,7 @@ export interface FileRouteTypes {
     | '/admin/conversations'
     | '/admin/profiles'
     | '/admin/support'
+    | '/api/public/hooks/incomplete-profiles'
   id:
     | '__root__'
     | '/'
@@ -629,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/'
     | '/admin/profiles/'
     | '/admin/support/'
+    | '/api/public/hooks/incomplete-profiles'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -661,6 +674,7 @@ export interface RootRouteChildren {
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
   AdminSupportIndexRoute: typeof AdminSupportIndexRoute
+  ApiPublicHooksIncompleteProfilesRoute: typeof ApiPublicHooksIncompleteProfilesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1015,6 +1029,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLegalDocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/incomplete-profiles': {
+      id: '/api/public/hooks/incomplete-profiles'
+      path: '/api/public/hooks/incomplete-profiles'
+      fullPath: '/api/public/hooks/incomplete-profiles'
+      preLoaderRoute: typeof ApiPublicHooksIncompleteProfilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1120,6 +1141,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
   AdminSupportIndexRoute: AdminSupportIndexRoute,
+  ApiPublicHooksIncompleteProfilesRoute: ApiPublicHooksIncompleteProfilesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

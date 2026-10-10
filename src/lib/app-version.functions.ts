@@ -18,3 +18,18 @@ export const getPublicAppVersions = createServerFn({ method: "GET" }).handler(as
     .select("platform, version, min_version");
   return (data ?? []) as PublicAppVersion[];
 });
+
+/**
+ * Trace de diagnostic (journal serveur uniquement, rien n'est stocké) :
+ * ce que la vérification de version a vu sur le téléphone.
+ */
+export const reportAppVersionCheck = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => {
+    const o = (d ?? {}) as Record<string, unknown>;
+    const s = (v: unknown) => String(v ?? "").slice(0, 60);
+    return { platform: s(o.platform), installed: s(o.installed), outcome: s(o.outcome) };
+  })
+  .handler(async ({ data }) => {
+    console.log("[app-version-check]", JSON.stringify(data));
+    return { ok: true };
+  });

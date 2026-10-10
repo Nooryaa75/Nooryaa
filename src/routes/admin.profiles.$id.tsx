@@ -104,7 +104,26 @@ function AdminProfileDetail() {
             <Field label="Situation" value={p.marital_status ? MARITAL_LABELS[p.marital_status] : null} />
             <Field label="Objectif" value={p.objective} />
             <Field label="Activités" value={p.activities} />
+            <Field label="Personnalité" value={(p as any).personality} />
+            <Field label="Taille" value={(p as any).height_cm ? `${(p as any).height_cm} cm` : null} />
+            <Field label="Silhouette" value={(p as any).body_type} />
+            <Field label="A grandi à" value={frenchPlace((p as any).grew_up)} />
+            <Field label="Salat quotidienne" value={yn((p as any).salat_quotidienne)} />
+            <Field label="Ramadan" value={yn((p as any).ramadan)} />
+            <Field label="Hadj" value={yn((p as any).hadj)} />
+            <Field label="Omra" value={yn((p as any).omra)} />
+            <Field label="Porte le voile" value={yn((p as any).porte_voile)} />
+            <Field label="A des enfants" value={yn((p as any).has_children)} />
+            <Field label="Nombre d'enfants" value={(p as any).children_count} />
+            <Field label="Veut des enfants" value={yn((p as any).wants_children)} />
+            <Field label="Fumeur" value={yn((p as any).smoker)} />
+            <Field label="Photo vérifiée" value={(p as any).photo_verified ? "Oui" : `Non (${(p as any).photo_verification_status ?? "—"})`} />
+            <Field label="Photo principale floutée" value={yn((p as any).primary_photo_blurred)} />
+            <Field label="Profil terminé" value={yn((p as any).onboarded)} />
+            <Field label="Langue" value={({ fr: "Français", en: "Anglais", ar: "Arabe" } as any)[(p as any).locale] ?? (p as any).locale} />
+            <Field label="Position GPS" value={(p as any).latitude != null ? `${Number((p as any).latitude).toFixed(4)}, ${Number((p as any).longitude).toFixed(4)}` : null} />
             <Field label="Dernière activité" value={new Date(p.last_active).toLocaleString("fr-FR")} />
+            <Field label="Mise à jour" value={(p as any).updated_at ? new Date((p as any).updated_at).toLocaleString("fr-FR") : null} />
           </div>
           {p.bio && (
             <div className="bg-secondary/40 rounded-lg p-3">

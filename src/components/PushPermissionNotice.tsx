@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import {
   checkPushPermission,
   openNotificationSettings,
+  registerPushNotifications,
   requestPushPermission,
   type PushState,
 } from "@/lib/push";
@@ -13,7 +14,7 @@ import {
  * réglages du téléphone si la demande a déjà été refusée.
  * Invisible dans le navigateur et une fois l'autorisation accordée.
  */
-export function PushPermissionNotice() {
+export function PushPermissionNotice({ userId }: { userId: string }) {
   const { t } = useI18n();
   const [state, setState] = useState<PushState>("unsupported");
   const [alreadyAsked, setAlreadyAsked] = useState(false);

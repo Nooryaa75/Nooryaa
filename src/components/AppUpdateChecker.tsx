@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getPublicAppVersions, type PublicAppVersion } from "@/lib/app-version.functions";
+import {
+  getPublicAppVersions,
+  reportAppVersionCheck,
+  type PublicAppVersion,
+} from "@/lib/app-version.functions";
 import { useI18n } from "@/lib/i18n";
 import { devicePlatform } from "@/lib/push";
 import {
@@ -52,26 +56,48 @@ export function AppUpdateChecker() {
 
   useEffect(() => {
     let cancelled = false;
+    let reported = false;
     const check = async () => {
+      const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+      if (!cap?.isNativePlatform?.()) return;
+      const platform = devicePlatform();
+      let installed: string | undefined;
+      let outcome = "ok";
       try {
-        const cap = (window as unknown as { Capacitor?: any }).Capacitor;
-        if (!cap?.isNativePlatform?.()) return;
-        const info = await cap.Plugins?.App?.getInfo?.();
-        const installed: string | undefined = info?.version;
-        if (!installed) return;
+        // Délai maximal : si le téléphone ne répond pas, on continue sans bloquer.
+        const info = await Promise.race([
+          cap.Plugins?.App?.getInfo?.(),
+          new Promise((r) => setTimeout(() => r(undefined), 3000)),
+        ]);
+        installed = (info as { version?: string } | undefined)?.version;
+        if (!cap.Plugins?.App?.getInfo) outcome = "no-app-plugin";
+        else if (!installed) outcome = "no-version";
 
-        const platform = devicePlatform();
         const rows: PublicAppVersion[] = await getPublicAppVersions();
         const row = rows.find((r) => r.platform === platform);
-        if (!row?.version || cancelled) return;
-
-        if (row.min_version && compareVersions(installed, row.min_version) < 0) {
-          setState({ required: true, latest: row.version, platform });
-        } else if (compareVersions(installed, row.version) < 0) {
-          setState({ required: false, latest: row.version, platform });
+        if (!row?.version) outcome = "no-admin-version";
+        else if (!cancelled) {
+          if (!installed) {
+            // Ancienne appli qui ne sait pas donner sa version : on propose
+            // la mise à jour sans bloquer.
+            setState({ required: false, latest: row.version, platform });
+          } else if (row.min_version && compareVersions(installed, row.min_version) < 0) {
+            setState({ required: true, latest: row.version, platform });
+            outcome = "required";
+          } else if (compareVersions(installed, row.version) < 0) {
+            setState({ required: false, latest: row.version, platform });
+            outcome = "proposed";
+          } else {
+            outcome = "up-to-date";
+          }
         }
-      } catch {
+      } catch (e) {
         // Silencieux : un échec de vérification ne doit jamais bloquer l'app.
+        outcome = `error:${(e as Error)?.message ?? "?"}`;
+      }
+      if (!reported) {
+        reported = true;
+        void reportAppVersionCheck({ data: { platform, installed, outcome } }).catch(() => {});
       }
     };
     void check();

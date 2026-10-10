@@ -77,11 +77,17 @@ export function AppUpdateChecker() {
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
         else if (!cancelled) {
+          const required = !!(
+            installed &&
+            row.min_version &&
+            compareVersions(installed, row.min_version) < 0
+          );
           // Si l'utilisateur a déjà cliqué « Mettre à jour » ou « Plus tard »
           // pour cette même version cible, on ne redemande pas (évite la
-          // boucle quand le Play Store dit déjà « à jour »).
+          // boucle quand le Play Store dit déjà « à jour »). Une mise à jour
+          // obligatoire, elle, se réaffiche toujours.
           const dismissed = localStorage.getItem("nooryaa-update-dismissed");
-          if (dismissed === row.version) {
+          if (!required && dismissed === row.version) {
             outcome = "dismissed";
             return;
           }
@@ -89,7 +95,7 @@ export function AppUpdateChecker() {
             // Ancienne appli qui ne sait pas donner sa version : on propose
             // la mise à jour sans bloquer.
             setState({ required: false, latest: row.version, platform });
-          } else if (row.min_version && compareVersions(installed, row.min_version) < 0) {
+          } else if (required) {
             setState({ required: true, latest: row.version, platform });
             outcome = "required";
           } else if (compareVersions(installed, row.version) < 0) {

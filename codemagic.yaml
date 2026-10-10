@@ -34,10 +34,8 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
-          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|sed -i '' 's\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|classpath "com.android.tools.build:gradle:.*"\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|' android/build.gradle\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&
+        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Configure app launcher icon
@@ -108,10 +106,8 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
-          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|sed -i '' 's\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|classpath "com.android.tools.build:gradle:.*"\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|&\n        classpath "com.google.gms:google-services:4.5.0"\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
-          grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }|perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|' android/build.gradle\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
+          perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&
+        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
       - name: Configure app launcher icon

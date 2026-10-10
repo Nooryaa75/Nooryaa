@@ -175,9 +175,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.0)
+      - name: Set app version (1.0.6)
         script: |
-          node scripts/set-ios-version.mjs 1.0.0 1
+          node scripts/set-ios-version.mjs 1.0.6 9
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -221,9 +221,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.0)
+      - name: Set app version (1.0.6)
         script: |
-          node scripts/set-ios-version.mjs 1.0.0 1
+          node scripts/set-ios-version.mjs 1.0.6 9
       - name: Check Apple signing setup
         script: |
           if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then

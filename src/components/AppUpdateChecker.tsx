@@ -130,7 +130,19 @@ export function AppUpdateChecker() {
 
   if (!state) return null;
 
+  // Mémorise que l'utilisateur a répondu pour cette version cible :
+  // la fenêtre ne se rouvrira pas tant que le configurateur n'annonce
+  // pas une version plus récente.
+  const rememberDismissed = () => {
+    try {
+      localStorage.setItem("nooryaa-update-dismissed", state?.latest ?? "");
+    } catch {
+      /* stockage indisponible : on ignore */
+    }
+  };
+
   const openStore = () => {
+    rememberDismissed();
     const cap = (window as unknown as { Capacitor?: any }).Capacitor;
     if (cap?.isNativePlatform?.()) {
       if (state.platform === "android") {

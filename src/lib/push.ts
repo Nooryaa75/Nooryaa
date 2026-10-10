@@ -201,6 +201,20 @@ export async function registerPushNotifications(userId: string): Promise<PushSta
         reportPush("registration-error", err);
       });
 
+      // Appli ouverte : Android n'affiche rien tout seul, on montre un bandeau.
+      await push.addListener("pushNotificationReceived", async (n: any) => {
+        reportPush("received-foreground", n?.title ?? null);
+        const { toast } = await import("sonner");
+        const path = n?.data?.path;
+        toast(n?.title ?? "Nooryaa", {
+          description: n?.body || undefined,
+          action:
+            typeof path === "string" && path.startsWith("/")
+              ? { label: "Voir", onClick: () => { window.location.href = path; } }
+              : undefined,
+        });
+      });
+
       // Tap sur une notification : ouvre la bonne page dans l'appli.
       await push.addListener("pushNotificationActionPerformed", (action: any) => {
         const path = action?.notification?.data?.path;

@@ -166,7 +166,19 @@ export function AppUpdateChecker() {
   };
 
   return (
-    <AlertDialog open onOpenChange={state.required ? () => {} : (o) => !o && setState(null)}>
+    <AlertDialog
+      open
+      onOpenChange={
+        state.required
+          ? () => {}
+          : (o) => {
+              if (!o) {
+                rememberDismissed();
+                setState(null);
+              }
+            }
+      }
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>

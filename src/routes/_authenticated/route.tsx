@@ -34,24 +34,17 @@ function AuthenticatedLayout() {
         return;
       }
 
-      // Comptes administrateurs : pas d'espace membre, accès direct à l'administration.
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .eq("role", "admin");
+      const [{ data: profile }, { data: roles }] = await Promise.all([
+        supabase.from("profiles").select("onboarded").eq("id", userId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin"),
+      ]);
       if (cancelled) return;
-      if (roles && roles.length > 0) {
+
+      // Compte administrateur sans profil membre : accès uniquement à l'administration.
+      if (roles && roles.length > 0 && !profile?.onboarded) {
         navigate({ to: "/admin", replace: true });
         return;
       }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarded")
-        .eq("id", userId)
-        .maybeSingle();
-      if (cancelled) return;
 
       if (!profile?.onboarded && window.location.pathname !== "/onboarding") {
         navigate({ to: "/onboarding", replace: true });

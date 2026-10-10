@@ -25,3 +25,4 @@
 - Push payloads must carry both the Android channel id and an APNs sound: src/lib/push.server.ts sends `android.channel_id` and `apns.payload.aps.sound` in the same message, and src/lib/push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker can pick the matching app_versions row and store link.
 
 - AppUpdateChecker is mounted once in src/routes/__root.tsx (not in a layout) so native users are prompted on every page, including admin and login screens that admin accounts land on.
+- Codemagic workflows must install Capacitor plugins with `npm install --save` (never --no-save) and verify them in android/capacitor.settings.gradle — `cap sync` only bundles plugins listed in package.json, otherwise push, App and GoogleAuth silently disappear from the native app.

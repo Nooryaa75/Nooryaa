@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { nativePlugin } from "@/lib/native-plugin";
 import {
   checkPushPermission,
   openNotificationSettings,
@@ -36,8 +37,7 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
 
     // Retour depuis les réglages du téléphone : on revérifie aussitôt,
     // sinon le bandeau resterait affiché alors que l'autorisation est donnée.
-    const cap = (window as unknown as { Capacitor?: any }).Capacitor;
-    const app = cap?.Plugins?.App;
+    const app = nativePlugin("App");
     let handle: { remove: () => void } | undefined;
     if (typeof app?.addListener === "function") {
       void app.addListener("appStateChange", (st: { isActive: boolean }) => {

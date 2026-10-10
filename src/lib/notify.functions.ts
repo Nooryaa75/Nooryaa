@@ -180,7 +180,10 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     const actorName = actor?.first_name || actor?.pseudo || c.memberFallback;
 
     // Notification in-app (centre de notifications) — respecte la préférence "push in-app".
-    const inAppEnabled = typeof prefs?.in_app === "boolean" ? prefs.in_app : true;
+    // La page de réglages enregistre la clé « inapp » ; on accepte aussi
+    // l'ancienne clé « in_app » pour les préférences déjà sauvegardées.
+    const inAppPref = typeof prefs?.inapp === "boolean" ? prefs.inapp : prefs?.in_app;
+    const inAppEnabled = typeof inAppPref === "boolean" ? inAppPref : true;
     if (inAppEnabled) {
       const titles: Record<NotifyKind, string> = {
         like: c.like.inApp(actorName),

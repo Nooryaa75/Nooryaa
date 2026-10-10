@@ -24,3 +24,4 @@
 - The iOS project is regenerated each build like Android: codemagic.yaml iOS workflows apply scripts/configure-ios-icon.mjs, scripts/configure-ios-push.mjs (push entitlements + background modes) and scripts/set-ios-version.mjs <version> <build>. Keep those three steps in both iOS workflows and bump the iOS version together with the Android one on each release.
 - Push payloads must carry both the Android channel id and an APNs sound: src/lib/push.server.ts sends `android.channel_id` and `apns.payload.aps.sound` in the same message, and src/lib/push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker can pick the matching app_versions row and store link.
 
+- AppUpdateChecker is mounted once in src/routes/__root.tsx (not in a layout) so native users are prompted on every page, including admin and login screens that admin accounts land on.

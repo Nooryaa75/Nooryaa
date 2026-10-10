@@ -2,7 +2,6 @@ import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
-import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
 
@@ -96,7 +95,6 @@ function AuthenticatedLayout() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <AppUpdateChecker />
       <PushPermissionNotice />
       <main className="container mx-auto px-4 pt-6 pb-24 md:py-8 max-w-6xl">
 

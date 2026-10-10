@@ -112,7 +112,10 @@ export function AppUpdateChecker() {
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
         else if (!cancelled) {
+          // Une version devinée (lecture impossible) ne doit jamais
+          // déclencher une fenêtre bloquante : on propose seulement.
           const required = !!(
+            !inferred &&
             installed &&
             row.min_version &&
             compareVersions(installed, row.min_version) < 0

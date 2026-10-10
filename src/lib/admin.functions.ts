@@ -24,11 +24,34 @@ export const adminLogout = createServerFn({ method: "POST" }).handler(async () =
   return { ok: true };
 });
 
-export const adminCheckAuth = createServerFn({ method: "GET" }).handler(async () => {
+const adminCheckAuthServer = createServerFn({ method: "GET" }).handler(async () => {
   const { getAdminIdentity } = await import("./admin-session.server");
   const identity = await getAdminIdentity();
   return { authed: !!identity, email: identity?.email ?? null, via: identity?.via ?? null };
 });
+
+/**
+ * Vérifie l'accès admin en réessayant : juste après une connexion, la session
+ * peut ne pas encore être disponible ou le réseau peut couper une requête.
+ */
+export async function adminCheckAuth() {
+  let last = { authed: false, email: null as string | null, via: null as string | null };
+  for (let i = 0; i < 4; i++) {
+    try {
+      last = await adminCheckAuthServer();
+      if (last.authed) return last;
+    } catch {
+      /* on réessaie */
+    }
+    if (typeof window === "undefined") break;
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) break; // pas connecté : inutile d'insister
+    if (i === 1) await supabase.auth.refreshSession().catch(() => {});
+    await new Promise((r) => setTimeout(r, 600 * (i + 1)));
+  }
+  return last;
+}
 
 
 export const adminStats = createServerFn({ method: "GET" }).handler(async () => {

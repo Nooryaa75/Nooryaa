@@ -34,12 +34,17 @@ function AuthenticatedLayout() {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarded")
-        .eq("id", userId)
-        .maybeSingle();
+      const [{ data: profile }, { data: roles }] = await Promise.all([
+        supabase.from("profiles").select("onboarded").eq("id", userId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin"),
+      ]);
       if (cancelled) return;
+
+      // Compte administrateur sans profil membre : accès uniquement à l'administration.
+      if (roles && roles.length > 0 && !profile?.onboarded) {
+        navigate({ to: "/admin", replace: true });
+        return;
+      }
 
       if (!profile?.onboarded && window.location.pathname !== "/onboarding") {
         navigate({ to: "/onboarding", replace: true });

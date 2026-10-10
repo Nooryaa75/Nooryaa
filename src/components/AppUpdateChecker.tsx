@@ -82,6 +82,16 @@ export function AppUpdateChecker() {
         if (!cap.Plugins?.App?.getInfo && !cap.isPluginAvailable?.("App")) outcome = "no-app-plugin";
         else if (!installed) outcome = "no-version";
 
+        // Les anciennes applis ne savent pas donner leur version. On la
+        // déduit des modules natifs intégrés à chaque build :
+        // AppLauncher depuis la 1.0.6, GoogleAuth depuis la 1.0.4.
+        let inferred = false;
+        if (!installed) {
+          const has = (n: string) => !!cap.isPluginAvailable?.(n);
+          installed = has("AppLauncher") ? "1.0.6" : has("GoogleAuth") ? "1.0.4" : "1.0.3";
+          inferred = true;
+        }
+
         const rows: PublicAppVersion[] = await getPublicAppVersions();
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
@@ -98,8 +108,17 @@ export function AppUpdateChecker() {
           const dismissed = localStorage.getItem("nooryaa-update-dismissed");
           if (!required && dismissed === row.version) {
             outcome = "dismissed";
-            return;
+          } else if (required) {
+            setState({ required: true, latest: row.version, platform });
+            outcome = "required";
+          } else if (compareVersions(installed, row.version) < 0) {
+            setState({ required: false, latest: row.version, platform });
+            outcome = "proposed";
+          } else {
+            outcome = "up-to-date";
           }
+          if (inferred) outcome += ":inferred";
+        }
           if (!installed) {
             // Ancienne appli qui ne sait pas donner sa version : on propose
             // la mise à jour sans bloquer.

@@ -84,13 +84,27 @@ export function AppUpdateChecker() {
         if (!cap.Plugins?.App?.getInfo && !cap.isPluginAvailable?.("App")) outcome = "no-app-plugin";
         else if (!installed) outcome = "no-version";
 
+        // On mémorise la dernière version réellement lue : si une lecture
+        // échoue plus tard (démarrage lent du téléphone), on ne retombe
+        // pas sur une version devinée plus ancienne, ce qui redemandait
+        // la mise à jour alors que l'appli était déjà à jour.
+        let cached: string | undefined;
+        try {
+          cached = localStorage.getItem("nooryaa-installed-version") ?? undefined;
+          if (installed) localStorage.setItem("nooryaa-installed-version", installed);
+        } catch {
+          /* stockage indisponible : on ignore */
+        }
+
         // Les anciennes applis ne savent pas donner leur version. On la
         // déduit des modules natifs intégrés à chaque build :
         // AppLauncher depuis la 1.0.6, GoogleAuth depuis la 1.0.4.
         let inferred = false;
         if (!installed) {
           const has = (n: string) => !!cap.isPluginAvailable?.(n);
-          installed = has("AppLauncher") ? "1.0.6" : has("GoogleAuth") ? "1.0.4" : "1.0.3";
+          const guessed = has("AppLauncher") ? "1.0.6" : has("GoogleAuth") ? "1.0.4" : "1.0.3";
+          installed =
+            cached && compareVersions(cached, guessed) > 0 ? cached : guessed;
           inferred = true;
         }
 
@@ -98,7 +112,10 @@ export function AppUpdateChecker() {
         const row = rows.find((r) => r.platform === platform);
         if (!row?.version) outcome = "no-admin-version";
         else if (!cancelled) {
+          // Une version devinée (lecture impossible) ne doit jamais
+          // déclencher une fenêtre bloquante : on propose seulement.
           const required = !!(
+            !inferred &&
             installed &&
             row.min_version &&
             compareVersions(installed, row.min_version) < 0

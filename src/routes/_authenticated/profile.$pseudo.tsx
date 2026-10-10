@@ -167,6 +167,14 @@ function ProfileView() {
         }]
       : [];
 
+  const safeIdx = displayPhotos.length ? Math.min(activeIdx, displayPhotos.length - 1) : 0;
+  const active = displayPhotos[safeIdx];
+  function showPhoto(i: number) {
+    const n = displayPhotos.length;
+    if (!n) return;
+    setActiveIdx(((i % n) + n) % n);
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 min-w-0 overflow-x-hidden">
       <Button
@@ -182,19 +190,48 @@ function ProfileView() {
       </Button>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <div className="aspect-square rounded-2xl overflow-hidden bg-secondary">
-            {displayPhotos[0] ? (
-              <img src={displayPhotos[0].url} alt={profile.pseudo} className={`w-full h-full object-cover ${displayPhotos[0].blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary">
+            {active ? (
+              <img src={active.url} alt={profile.pseudo} className={`w-full h-full object-cover ${active.blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
+            )}
+            {displayPhotos.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => showPhoto(safeIdx - 1)}
+                  aria-label="Photo précédente"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/85 text-primary shadow-md backdrop-blur transition hover:bg-background"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => showPhoto(safeIdx + 1)}
+                  aria-label="Photo suivante"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/85 text-primary shadow-md backdrop-blur transition hover:bg-background"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+                <span className="absolute bottom-2 right-2 rounded-full bg-background/85 px-2.5 py-0.5 text-[11px] font-semibold text-primary shadow-sm backdrop-blur">
+                  {safeIdx + 1} / {displayPhotos.length}
+                </span>
+              </>
             )}
           </div>
           {displayPhotos.length > 1 && (
             <div className="grid grid-cols-5 gap-2">
-              {displayPhotos.slice(1).map((p) => (
-                <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
+              {displayPhotos.map((p, i) => i !== safeIdx && (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setActiveIdx(i)}
+                  aria-label={`Afficher la photo ${i + 1}`}
+                  className="aspect-square overflow-hidden rounded-lg bg-secondary ring-offset-2 ring-offset-background transition hover:ring-2 hover:ring-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
                   <img src={p.url} alt="" className={`w-full h-full object-cover ${p.blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
-                </div>
+                </button>
               ))}
             </div>
           )}

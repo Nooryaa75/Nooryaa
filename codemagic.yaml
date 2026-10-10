@@ -22,6 +22,8 @@ workflows:
         script: |
           npx cap add android
           npx cap sync android
+          # Les modules du téléphone doivent être intégrés, sinon les notifications ne marchent pas.
+          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
       - name: Configure Android SDK (minimum 24, cible 36)
         script: |
           perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/; s/compileSdkVersion\s*=\s*\d+/compileSdkVersion = 36/; s/targetSdkVersion\s*=\s*\d+/targetSdkVersion = 36/' android/variables.gradle
@@ -46,12 +48,12 @@ workflows:
         script: |
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
-      - name: Set app version (1.0.6)
+      - name: Set app version (1.0.7)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 9/; s/versionName\s+"[^"]*"/versionName "1.0.6"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 10/; s/versionName\s+"[^"]*"/versionName "1.0.7"/' android/app/build.gradle
 
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 9' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 10' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
 
       - name: Build APK
         script: |
@@ -90,6 +92,8 @@ workflows:
         script: |
           npx cap add android
           npx cap sync android
+          # Les modules du téléphone doivent être intégrés, sinon les notifications ne marchent pas.
+          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
       - name: Configure Android SDK (minimum 24, cible 36)
         script: |
           perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/; s/compileSdkVersion\s*=\s*\d+/compileSdkVersion = 36/; s/targetSdkVersion\s*=\s*\d+/targetSdkVersion = 36/' android/variables.gradle
@@ -115,11 +119,11 @@ workflows:
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
 
-      - name: Set app version (1.0.6)
+      - name: Set app version (1.0.7)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 9/; s/versionName\s+"[^"]*"/versionName "1.0.6"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 10/; s/versionName\s+"[^"]*"/versionName "1.0.7"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 9' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 10' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Build signed AAB
         script: |
           cd android
@@ -175,9 +179,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.6)
+      - name: Set app version (1.0.7)
         script: |
-          node scripts/set-ios-version.mjs 1.0.6 9
+          node scripts/set-ios-version.mjs 1.0.7 10
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -221,9 +225,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.6)
+      - name: Set app version (1.0.7)
         script: |
-          node scripts/set-ios-version.mjs 1.0.6 9
+          node scripts/set-ios-version.mjs 1.0.7 10
       - name: Check Apple signing setup
         script: |
           if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then

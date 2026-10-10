@@ -119,21 +119,26 @@ export async function pushDiagnostic(action: "check" | "request"): Promise<strin
  * Renvoie false si l'appli installée ne sait pas le faire : il faut alors
  * guider l'utilisateur à la main.
  */
+function hasNativeMethod(plugin: string, method: string): boolean {
+  const headers = capacitor()?.PluginHeaders;
+  if (!Array.isArray(headers)) return false;
+  const h = headers.find((x: any) => x?.name === plugin);
+  return !!h?.methods?.some((m: any) => m?.name === method);
+}
+
 export function openNotificationSettings(): boolean {
-  const candidates = [nativePlugin("NativeSettings"), appPlugin()];
-  for (const p of candidates) {
-    try {
-      if (typeof p?.openAndroid === "function") {
-        void Promise.resolve(p.openAndroid({ option: "app_notification" })).catch(() => {});
-        return true;
-      }
-      if (typeof p?.openSettings === "function") {
-        void Promise.resolve(p.openSettings()).catch(() => {});
-        return true;
-      }
-    } catch {
-      /* essai suivant */
+  try {
+    if (hasNativeMethod("NativeSettings", "openAndroid")) {
+      const p = nativePlugin("NativeSettings");
+      void Promise.resolve(p.openAndroid({ option: "app_notification" })).catch(() => {});
+      return true;
     }
+    if (hasNativeMethod("App", "openSettings")) {
+      void Promise.resolve(appPlugin().openSettings()).catch(() => {});
+      return true;
+    }
+  } catch {
+    /* indisponible */
   }
   return false;
 }

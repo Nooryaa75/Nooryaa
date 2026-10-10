@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
-  BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft
+  BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -46,6 +46,7 @@ function ProfileView() {
   const [reportOpen, setReportOpen] = useState(false);
   const [reportCategory, setReportCategory] = useState(REPORT_REASONS[0]);
   const [reportDetail, setReportDetail] = useState("");
+  const [activeIdx, setActiveIdx] = useState(0);
   const { data: me } = useMyProfile(ctx.userId);
   const { data: likeGraph } = useLikeGraph(ctx.userId);
 

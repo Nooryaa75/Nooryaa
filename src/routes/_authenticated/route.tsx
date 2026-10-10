@@ -46,7 +46,16 @@ function AuthenticatedLayout() {
         return;
       }
 
-      if (!profile?.onboarded && window.location.pathname !== "/onboarding") {
+      // Profil terminé mais sans prénom, nom ou téléphone valide (anciens
+      // inscrits) : on renvoie vers la fiche pour compléter.
+      const p = profile as any;
+      const missingIdentity =
+        !!p?.onboarded &&
+        ((p.first_name ?? "").trim().length < 2 ||
+          (p.last_name ?? "").trim().length < 2 ||
+          !isValidPhone(p.phone ?? ""));
+
+      if ((!profile?.onboarded || missingIdentity) && window.location.pathname !== "/onboarding") {
         navigate({ to: "/onboarding", replace: true });
         return;
       }

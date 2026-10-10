@@ -19,6 +19,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { TranslatedContent } from "@/components/TranslatedContent";
 import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
+import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 
 function NotFoundComponent() {
   return (
@@ -206,6 +207,8 @@ function RootComponent() {
           <Footer />
         </div>
         <CookieConsent />
+        {/* Vérifie la version de l'appli sur toutes les pages (admin et connexion compris). */}
+        <AppUpdateChecker />
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

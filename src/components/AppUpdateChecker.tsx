@@ -117,7 +117,19 @@ export function AppUpdateChecker() {
   if (!state) return null;
 
   const openStore = () => {
-    window.open(state.platform === "ios" ? APP_STORE_URL : PLAY_STORE_URL, "_blank");
+    const url = state.platform === "ios" ? APP_STORE_URL : PLAY_STORE_URL;
+    const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+    if (cap?.isNativePlatform?.()) {
+      // Dans l'appli, window.open charge la page DANS l'appli : le Play Store
+      // redirige alors vers un lien intent:// que la WebView ne sait pas
+      // ouvrir (ERR_UNKNOWN_URL_SCHEME). AppLauncher sort de l'appli et
+      // ouvre directement le Play Store / l'App Store du téléphone.
+      void import("@capacitor/app-launcher")
+        .then(({ AppLauncher }) => AppLauncher.openUrl({ url }))
+        .catch(() => window.open(url, "_blank"));
+      return;
+    }
+    window.open(url, "_blank");
   };
 
   return (

@@ -23,7 +23,7 @@ workflows:
           npx cap add android
           npx cap sync android
           # Les modules du téléphone doivent être intégrés, sinon les notifications ne marchent pas.
-          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
+          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher capacitor-google-auth; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
       - name: Configure Android SDK (minimum 24, cible 36)
         script: |
           perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/; s/compileSdkVersion\s*=\s*\d+/compileSdkVersion = 36/; s/targetSdkVersion\s*=\s*\d+/targetSdkVersion = 36/' android/variables.gradle
@@ -93,7 +93,7 @@ workflows:
           npx cap add android
           npx cap sync android
           # Les modules du téléphone doivent être intégrés, sinon les notifications ne marchent pas.
-          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
+          for m in capacitor-push-notifications capacitor-app capacitor-app-launcher capacitor-google-auth; do grep -q "$m" android/capacitor.settings.gradle || { echo "Module $m absent"; exit 1; }; done
       - name: Configure Android SDK (minimum 24, cible 36)
         script: |
           perl -pi -e 's/minSdkVersion\s*=\s*\d+/minSdkVersion = 24/; s/compileSdkVersion\s*=\s*\d+/compileSdkVersion = 36/; s/targetSdkVersion\s*=\s*\d+/targetSdkVersion = 36/' android/variables.gradle

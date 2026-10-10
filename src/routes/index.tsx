@@ -33,12 +33,21 @@ function Splash() {
       const { data } = await supabase.auth.getUser();
       let target: { to: string; search?: any } = { to: "/auth", search: { mode: "signin" } };
       if (data.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarded")
-          .eq("id", data.user.id)
-          .maybeSingle();
-        target = { to: profile?.onboarded ? "/browse" : "/onboarding" };
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id)
+          .eq("role", "admin");
+        if (roles && roles.length > 0) {
+          target = { to: "/admin" };
+        } else {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("onboarded")
+            .eq("id", data.user.id)
+            .maybeSingle();
+          target = { to: profile?.onboarded ? "/browse" : "/onboarding" };
+        }
       }
       const wait = Math.max(0, 5000 - (Date.now() - start));
       setTimeout(() => {

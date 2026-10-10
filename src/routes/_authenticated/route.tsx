@@ -34,6 +34,18 @@ function AuthenticatedLayout() {
         return;
       }
 
+      // Comptes administrateurs : pas d'espace membre, accès direct à l'administration.
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin");
+      if (cancelled) return;
+      if (roles && roles.length > 0) {
+        navigate({ to: "/admin", replace: true });
+        return;
+      }
+
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarded")

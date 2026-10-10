@@ -20,6 +20,7 @@ import { TranslatedContent } from "@/components/TranslatedContent";
 import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AppUpdateChecker } from "@/components/AppUpdateChecker";
+import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
   return (

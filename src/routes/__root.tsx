@@ -227,6 +227,8 @@ function RootComponent() {
         <CookieConsent />
         {/* Vérifie la version de l'appli sur toutes les pages (admin et connexion compris). */}
         <AppUpdateChecker />
+        {/* Enregistre le mode d'utilisation (web / Android / iPhone) du membre connecté. */}
+        <PlatformTracker />
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

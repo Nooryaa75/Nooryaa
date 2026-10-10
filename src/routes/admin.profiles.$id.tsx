@@ -122,6 +122,7 @@ function AdminProfileDetail() {
             <Field label="Profil terminé" value={yn((p as any).onboarded)} />
             <Field label="Langue" value={({ fr: "Français", en: "Anglais", ar: "Arabe" } as any)[(p as any).locale] ?? (p as any).locale} />
             <Field label="Position GPS" value={(p as any).latitude != null ? `${Number((p as any).latitude).toFixed(4)}, ${Number((p as any).longitude).toFixed(4)}` : null} />
+            <Field label="Mode d'utilisation" value={platformLabel((p as any).last_platform)} />
             <Field label="Dernière activité" value={new Date(p.last_active).toLocaleString("fr-FR")} />
             <Field label="Mise à jour" value={(p as any).updated_at ? new Date((p as any).updated_at).toLocaleString("fr-FR") : null} />
           </div>
@@ -224,4 +225,11 @@ function Empty({ children }: { children: React.ReactNode }) {
 
 function yn(v: any) {
   return v === true ? "Oui" : v === false ? "Non" : null;
+}
+
+function platformLabel(v: any) {
+  if (v === "android") return "Application Android";
+  if (v === "ios") return "Application iPhone";
+  if (v === "web") return "Site web";
+  return null;
 }

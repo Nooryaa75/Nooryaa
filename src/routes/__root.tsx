@@ -20,6 +20,7 @@ import { TranslatedContent } from "@/components/TranslatedContent";
 import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AppUpdateChecker } from "@/components/AppUpdateChecker";
+import { PlatformTracker } from "@/components/PlatformTracker";
 import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
@@ -227,6 +228,8 @@ function RootComponent() {
         <CookieConsent />
         {/* Vérifie la version de l'appli sur toutes les pages (admin et connexion compris). */}
         <AppUpdateChecker />
+        {/* Enregistre le mode d'utilisation (web / Android / iPhone) du membre connecté. */}
+        <PlatformTracker />
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

@@ -723,6 +723,7 @@ export type Database = {
           identity_key: string | null
           last_active: string
           last_name: string | null
+          last_platform: string | null
           last_seen: string
           latitude: number | null
           locale: string
@@ -776,6 +777,7 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          last_platform?: string | null
           last_seen?: string
           latitude?: number | null
           locale?: string
@@ -829,6 +831,7 @@ export type Database = {
           identity_key?: string | null
           last_active?: string
           last_name?: string | null
+          last_platform?: string | null
           last_seen?: string
           latitude?: number | null
           locale?: string

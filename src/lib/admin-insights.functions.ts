@@ -44,7 +44,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         supabaseAdmin
           .from("profiles")
           .select(
-            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen",
+            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen, last_platform",
           )
           .limit(20000),
         supabaseAdmin.from("likes").select("from_user, to_user, created_at").gte("created_at", fromISO).lte("created_at", toISO),
@@ -109,6 +109,17 @@ export const adminOverview = createServerFn({ method: "GET" })
       cumulative,
       gender: tally(all.map((p) => p.gender)),
       ageBuckets,
+      platforms: tally(
+        all.map((p: any) =>
+          p.last_platform === "android"
+            ? "Application Android"
+            : p.last_platform === "ios"
+              ? "Application iPhone"
+              : p.last_platform === "web"
+                ? "Site web"
+                : "Jamais connecté",
+        ),
+      ),
       cities: tally(all.map((p) => p.city)).slice(0, 12),
       countries: tally(all.map((p) => p.country)).slice(0, 12),
       origins: tally(all.map((p) => p.country_origin)).slice(0, 12),

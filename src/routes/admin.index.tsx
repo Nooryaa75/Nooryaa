@@ -183,6 +183,7 @@ function AdminDashboard() {
           <h2 className="text-lg font-serif text-primary mb-3">Critères de la fiche profil</h2>
           <div className="grid md:grid-cols-3 gap-4">
             <Distribution title="Genre" rows={data?.gender ?? []} />
+            <Distribution title="Mode d'utilisation" rows={data?.platforms ?? []} />
             <Distribution title="Villes" rows={data?.cities ?? []} />
             <Distribution title="Pays de résidence" rows={data?.countries ?? []} />
             <Distribution title="Pays d'origine" rows={data?.origins ?? []} />

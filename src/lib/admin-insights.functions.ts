@@ -44,7 +44,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         supabaseAdmin
           .from("profiles")
           .select(
-            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen",
+            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen, last_platform",
           )
           .limit(20000),
         supabaseAdmin.from("likes").select("from_user, to_user, created_at").gte("created_at", fromISO).lte("created_at", toISO),

@@ -177,7 +177,9 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
     // sont rédigés dans sa langue (fr / en / ar).
     const locale = normalizeLocale((recipient as any)?.locale);
     const c = copyFor(locale);
-    const actorName = actor?.first_name || actor?.pseudo || c.memberFallback;
+    // Le pseudo (identité publique du membre) est toujours utilisé dans les
+    // notifications : jamais le prénom réel. Fallback prénom si pseudo absent.
+    const actorName = actor?.pseudo || actor?.first_name || c.memberFallback;
 
     // Notification in-app (centre de notifications) — respecte la préférence "push in-app".
     // La page de réglages enregistre la clé « inapp » ; on accepte aussi

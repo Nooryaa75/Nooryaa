@@ -20,6 +20,7 @@ import { TranslatedContent } from "@/components/TranslatedContent";
 import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AppUpdateChecker } from "@/components/AppUpdateChecker";
+import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
   return (
@@ -43,11 +44,27 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
+function ErrorComponent({ error }: ErrorComponentProps) {
   console.error(error);
-  const router = useRouter();
+  const err = error instanceof Error ? error : new Error(String(error));
   useEffect(() => {
-    reportLovableError(error instanceof Error ? error : new Error(String(error)), { boundary: "tanstack_root_error_component" });
+    reportLovableError(err, { boundary: "tanstack_root_error_component" });
+    // Dans l'appli Android/iPhone, on envoie le détail de l'erreur pour
+    // pouvoir la diagnostiquer (on ne voit pas la console du téléphone).
+    try {
+      const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+      if (cap?.isNativePlatform?.()) {
+        void reportAppVersionCheck({
+          data: {
+            platform: cap.getPlatform?.() ?? cap.platform ?? "native",
+            installed: "",
+            outcome: `crash:${window.location.pathname}:${err.name}:${err.message} | ${(err.stack ?? "").slice(0, 1200)}`,
+          },
+        }).catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
   }, [error]);
 
   return (
@@ -59,11 +76,12 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
+        <p className="mt-3 break-words text-xs text-muted-foreground/70">{err.message}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
-              router.invalidate();
-              reset();
+              // Rechargement complet : un simple « reset » laissait l'écran figé.
+              window.location.reload();
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >

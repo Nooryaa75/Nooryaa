@@ -119,23 +119,20 @@ export function AppUpdateChecker() {
   const openStore = () => {
     const cap = (window as unknown as { Capacitor?: any }).Capacitor;
     if (cap?.isNativePlatform?.()) {
-      // Dans l'appli, window.open charge la page DANS l'appli : le Play Store
-      // redirige alors vers un lien intent:// que la WebView ne sait pas
-      // ouvrir (ERR_UNKNOWN_URL_SCHEME). AppLauncher sort de l'appli et
-      // ouvre directement le Play Store / l'App Store du téléphone.
-      // Sur Android, le lien market:// ouvre la fiche Play Store sans passer
-      // par le navigateur (plus fiable que le lien https).
-      const url =
-        state.platform === "ios"
-          ? APP_STORE_URL
-          : "market://details?id=com.nooryaa.app";
+      if (state.platform === "android") {
+        // Ne JAMAIS charger https://play.google.com dans l'appli : la page
+        // s'affiche une demi-seconde puis redirige vers un lien intent://
+        // que l'appli ne sait pas ouvrir (ERR_UNKNOWN_URL_SCHEME).
+        // Un lien market:// est intercepté par le cœur de l'appli, qui le
+        // confie directement à l'application Play Store du téléphone
+        // (aucun module supplémentaire nécessaire).
+        window.location.href = "market://details?id=com.nooryaa.app";
+        return;
+      }
       void import("@capacitor/app-launcher")
-        .then(({ AppLauncher }) => AppLauncher.openUrl({ url }))
+        .then(({ AppLauncher }) => AppLauncher.openUrl({ url: APP_STORE_URL }))
         .catch(() => {
-          // Repli : lien web classique si market:// n'est pas accepté.
-          void import("@capacitor/app-launcher")
-            .then(({ AppLauncher }) => AppLauncher.openUrl({ url: PLAY_STORE_URL }))
-            .catch(() => window.open(PLAY_STORE_URL, "_blank"));
+          window.location.href = APP_STORE_URL.replace(/^https:/, "itms-apps:");
         });
       return;
     }

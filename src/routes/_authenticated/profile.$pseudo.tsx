@@ -64,6 +64,11 @@ function ProfileView() {
     if (profile?.id && profile.id !== ctx.userId) notifyByEmail("visit", profile.id);
   }, [profile?.id, ctx.userId]);
 
+  // Changement de profil consulté : on repart sur la photo principale
+  useEffect(() => {
+    setActiveIdx(0);
+  }, [pseudo]);
+
 
 
   const { data: photos } = useQuery({

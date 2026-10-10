@@ -29,6 +29,20 @@
       "when": 1791631342575,
       "tag": "0003_create_app_version_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791652168462,
+      "tag": "0004_internal_cron_tokens",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791652220353,
+      "tag": "0005_enable_cron",
+      "breakpoints": true
     }
   ]
 }

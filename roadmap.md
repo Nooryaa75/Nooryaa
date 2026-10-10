@@ -14,3 +14,6 @@
 - [x] iPhone : préparation de la version (icône 1024, entitlements push, numéros de version, workflows Codemagic vérification + App Store)
 - [ ] iPhone : à faire après validation du compte — clé API App Store Connect dans Codemagic, puis première archive et téléversement
 
+
+- [x] Relances email profils incomplets (5 jours) + suppression jour 6
+- [x] Admin profils : afficher toutes les infos de la fiche

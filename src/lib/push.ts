@@ -5,9 +5,9 @@ import { reportAppVersionCheck } from "@/lib/app-version.functions";
 function reportPush(step: string, detail: unknown) {
   const text =
     typeof detail === "string" ? detail : JSON.stringify(detail ?? null);
-  void reportAppVersionCheck({ outcome: `push:${step} ${text}` }).catch(
-    () => {},
-  );
+  void reportAppVersionCheck({
+    data: { outcome: `push:${step} ${text}` },
+  } as never).catch(() => {});
 }
 
 type PushToken = { value: string };

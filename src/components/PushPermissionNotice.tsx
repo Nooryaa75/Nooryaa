@@ -37,19 +37,33 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
 
     // Retour depuis les réglages du téléphone : on revérifie aussitôt,
     // sinon le bandeau resterait affiché alors que l'autorisation est donnée.
+    // Selon la version du pont natif, addListener renvoie soit directement
+    // la poignée, soit une promesse : on accepte les deux sans jamais planter.
     const app = nativePlugin("App");
-    let handle: { remove: () => void } | undefined;
-    if (typeof app?.addListener === "function") {
-      void app.addListener("appStateChange", (st: { isActive: boolean }) => {
-        if (st?.isActive) void refresh();
-      }).then((h: { remove: () => void }) => {
-        handle = h;
-      });
+    let handle: { remove?: () => void } | undefined;
+    try {
+      if (typeof app?.addListener === "function") {
+        const res = app.addListener("appStateChange", (st: { isActive: boolean }) => {
+          if (st?.isActive) void refresh();
+        });
+        Promise.resolve(res)
+          .then((h: { remove?: () => void }) => {
+            handle = h;
+            if (cancelled) h?.remove?.();
+          })
+          .catch(() => {});
+      }
+    } catch {
+      /* module indisponible : on ignore */
     }
 
     return () => {
       cancelled = true;
-      handle?.remove();
+      try {
+        handle?.remove?.();
+      } catch {
+        /* ignore */
+      }
     };
   }, [userId]);
 

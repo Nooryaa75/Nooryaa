@@ -26,8 +26,15 @@ export const getPublicAppVersions = createServerFn({ method: "GET" }).handler(as
 export const reportAppVersionCheck = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => {
     const o = (d ?? {}) as Record<string, unknown>;
-    const s = (v: unknown) => String(v ?? "").slice(0, 60);
-    return { platform: s(o.platform), installed: s(o.installed), outcome: s(o.outcome) };
+    const s = (v: unknown, n = 60) => String(v ?? "").slice(0, n);
+    // Les rapports de plantage (« crash: ») gardent le message et le début de
+    // la pile d'appels pour pouvoir diagnostiquer l'erreur sur le téléphone.
+    const outcome = String(o.outcome ?? "");
+    return {
+      platform: s(o.platform),
+      installed: s(o.installed),
+      outcome: s(outcome, outcome.startsWith("crash") ? 1500 : 60),
+    };
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

@@ -50,7 +50,7 @@ function AuthenticatedLayout() {
       // inscrits) : on renvoie vers la fiche pour compléter.
       const p = profile as any;
       const missingIdentity =
-        !!p?.onboarded &&
+        !!p?.onboarded && !(roles && roles.length > 0) &&
         ((p.first_name ?? "").trim().length < 2 ||
           (p.last_name ?? "").trim().length < 2 ||
           !isValidPhone(p.phone ?? ""));

@@ -219,8 +219,8 @@ function ProfileView() {
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
-                <span className="absolute bottom-2 right-2 rounded-full bg-background/85 px-2.5 py-0.5 text-[11px] font-semibold text-primary shadow-sm backdrop-blur">
-                  {safeIdx + 1} / {displayPhotos.length}
+                <span key={safeIdx} className="absolute bottom-2 right-2 rounded-full bg-background/85 px-2.5 py-0.5 text-[11px] font-semibold text-primary shadow-sm backdrop-blur">
+                  {`${safeIdx + 1} / ${displayPhotos.length}`}
                 </span>
               </>
             )}

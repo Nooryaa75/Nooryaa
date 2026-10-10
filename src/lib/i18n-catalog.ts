@@ -6,6 +6,8 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Autorisez les notifications pour ne manquer aucune conversation.": { "en": "Allow notifications so you don't miss any conversation.", "ar": "اسمحوا بالإشعارات حتى لا تفوتكم أي محادثة." },
   "Activer les notifications": { "en": "Turn on notifications", "ar": "تفعيل الإشعارات" },
   "Ouvrir les réglages du téléphone": { "en": "Open phone settings", "ar": "فتح إعدادات الهاتف" },
+  "Patientez…": { "en": "Please wait…", "ar": "يرجى الانتظار…" },
+  "Ouvrez les Paramètres du téléphone > Applications > Nooryaa > Notifications, activez-les puis revenez dans Nooryaa.": { "en": "Open your phone Settings > Apps > Nooryaa > Notifications, turn them on, then come back to Nooryaa.", "ar": "افتحوا إعدادات الهاتف > التطبيقات > Nooryaa > الإشعارات، فعّلوها ثم عودوا إلى Nooryaa." },
   "Notifications activées. Merci !": { "en": "Notifications are on. Thank you!", "ar": "تم تفعيل الإشعارات. شكراً!" },
 
   "Mise à jour obligatoire": { "en": "Update required", "ar": "التحديث إلزامي" },

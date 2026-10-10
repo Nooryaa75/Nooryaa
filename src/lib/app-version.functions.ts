@@ -33,7 +33,10 @@ export const reportAppVersionCheck = createServerFn({ method: "POST" })
     return {
       platform: s(o.platform),
       installed: s(o.installed),
-      outcome: s(outcome, outcome.startsWith("crash") ? 1500 : 60),
+      outcome: s(
+        outcome,
+        outcome.startsWith("crash") ? 1500 : outcome.startsWith("push") ? 500 : 60,
+      ),
     };
   })
   .handler(async ({ data }) => {

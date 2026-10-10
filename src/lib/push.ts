@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { nativePlugin } from "@/lib/native-plugin";
 
 type PushToken = { value: string };
 
@@ -17,14 +18,11 @@ function capacitor(): any {
 }
 
 function pushPlugin(): any {
-  const cap = capacitor();
-  if (!cap?.isNativePlatform?.()) return null;
-  return cap.Plugins?.PushNotifications ?? null;
+  return nativePlugin("PushNotifications");
 }
 
 function appPlugin(): any {
-  const cap = capacitor();
-  return cap?.Plugins?.App ?? null;
+  return nativePlugin("App");
 }
 
 /**

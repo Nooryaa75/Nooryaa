@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { nativePlugin } from "@/lib/native-plugin";
+import { reportAppVersionCheck } from "@/lib/app-version.functions";
+
+function report(outcome: string) {
+  void reportAppVersionCheck({
+    data: { platform: devicePlatform(), installed: "", outcome: `push:${outcome}` },
+  }).catch(() => {});
+}
 import {
   checkPushPermission,
+  devicePlatform,
   openNotificationSettings,
+  pushDiagnostic,
   registerPushNotifications,
   requestPushPermission,
   type PushState,
@@ -21,6 +30,7 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
   const [alreadyAsked, setAlreadyAsked] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,6 +44,7 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
       if (s === "granted" && userId) void registerPushNotifications(userId);
     };
     void refresh();
+    void pushDiagnostic("check").then((d) => report(`mount ${d}`));
 
     // Retour depuis les réglages du téléphone : on revérifie aussitôt,
     // sinon le bandeau resterait affiché alors que l'autorisation est donnée.
@@ -71,26 +82,36 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
 
   async function handleClick() {
     setBusy(true);
-    if (alreadyAsked) {
-      openNotificationSettings();
-      setBusy(false);
-      return;
-    }
-    const next = await requestPushPermission();
-    setState(next);
-    if (next === "granted") {
-      // L'autorisation vient d'être donnée : on inscrit tout de suite le
-      // téléphone, sans attendre une fermeture/réouverture de l'appli.
-      if (userId) void registerPushNotifications(userId);
-      setDismissed(true);
-    } else {
+    try {
+      if (alreadyAsked) {
+        const opened = openNotificationSettings();
+        report(`settings opened=${opened}`);
+        if (!opened) setShowHelp(true);
+        return;
+      }
+      const diag = await pushDiagnostic("request");
+      report(`click ${diag}`);
+      const next = await checkPushPermission();
+      setState(next);
+      if (next === "granted") {
+        // L'autorisation vient d'être donnée : on inscrit tout de suite le
+        // téléphone, sans attendre une fermeture/réouverture de l'appli.
+        if (userId) void registerPushNotifications(userId);
+        setDismissed(true);
+        return;
+      }
       // Android ne rouvre pas la fenêtre d'autorisation après un premier
-      // refus : on envoie directement vers les réglages du téléphone,
-      // sinon le bouton donnait l'impression de ne rien faire.
+      // refus : on ouvre les réglages, ou on explique où les trouver.
       setAlreadyAsked(true);
-      openNotificationSettings();
+      const opened = openNotificationSettings();
+      report(`settings opened=${opened}`);
+      if (!opened) setShowHelp(true);
+    } catch (e) {
+      report(`click-error ${(e as Error)?.message ?? String(e)}`);
+      setShowHelp(true);
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   return (
@@ -116,7 +137,11 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
           disabled={busy}
           className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
         >
-          {alreadyAsked ? t("Ouvrir les réglages du téléphone") : t("Activer les notifications")}
+          {busy
+            ? t("Patientez…")
+            : alreadyAsked
+              ? t("Ouvrir les réglages du téléphone")
+              : t("Activer les notifications")}
         </button>
         <button
           type="button"
@@ -126,6 +151,13 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
         >
           ✕
         </button>
+        {showHelp && (
+          <p className="basis-full text-xs text-foreground">
+            {t(
+              "Ouvrez les Paramètres du téléphone > Applications > Nooryaa > Notifications, activez-les puis revenez dans Nooryaa.",
+            )}
+          </p>
+        )}
       </div>
     </div>
   );

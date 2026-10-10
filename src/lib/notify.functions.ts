@@ -248,9 +248,12 @@ export const sendNotificationEmail = createServerFn({ method: "POST" })
       const pushBody =
         data.kind === "message" && data.preview ? `« ${data.preview.slice(0, 140)} »` : null;
       const { sendPushToUser } = await import("@/lib/push.server");
-      sendPushToUser(recipient.id, pushTitles[data.kind], pushBody, pushLinks[data.kind]).catch(
-        (e) => console.error("Push send failed", e),
-      );
+      // Attendu : sinon le serveur s'arrête avant l'envoi et la notification est perdue.
+      try {
+        await sendPushToUser(recipient.id, pushTitles[data.kind], pushBody, pushLinks[data.kind]);
+      } catch (e) {
+        console.error("Push send failed", e);
+      }
     }
 
 

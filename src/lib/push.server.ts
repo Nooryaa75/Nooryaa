@@ -124,7 +124,9 @@ export async function sendPushToUser(
           },
         }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        console.log(`FCM push sent to ${userId}`);
+      } else {
         const text = await res.text();
         // Jeton périmé (app désinstallée, etc.) : on le supprime au lieu de réessayer.
         if (res.status === 404 || (res.status === 400 && text.includes("UNREGISTERED"))) {

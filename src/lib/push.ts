@@ -80,7 +80,13 @@ export async function requestPushPermission(): Promise<PushState> {
   if (!push) return "unsupported";
   try {
     await ensureChannel(push);
-    const res = await push.requestPermissions();
+    // Le pont natif peut ne jamais répondre (fenêtre déjà refusée par le
+    // téléphone) : on abandonne au bout de 5 secondes pour ne pas bloquer
+    // le bouton « Activer les notifications ».
+    const res = await Promise.race([
+      push.requestPermissions(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+    ]);
     return res?.receive === "granted" ? "granted" : "denied";
   } catch {
     return "denied";

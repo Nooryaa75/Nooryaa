@@ -83,7 +83,13 @@ export function PushPermissionNotice({ userId }: { userId: string }) {
       // téléphone, sans attendre une fermeture/réouverture de l'appli.
       if (userId) void registerPushNotifications(userId);
       setDismissed(true);
-    } else setAlreadyAsked(true);
+    } else {
+      // Android ne rouvre pas la fenêtre d'autorisation après un premier
+      // refus : on envoie directement vers les réglages du téléphone,
+      // sinon le bouton donnait l'impression de ne rien faire.
+      setAlreadyAsked(true);
+      openNotificationSettings();
+    }
     setBusy(false);
   }
 

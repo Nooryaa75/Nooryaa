@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
+import { isValidPhone } from "@/components/PhoneInput";
 
 
 export const Route = createFileRoute("/_authenticated")({

@@ -3549,9 +3549,9 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Total registered",
     "ar": "إجمالي المسجلين"
   },
-  "Tous les champs sont obligatoires pour finaliser votre profil.": {
-    "en": "All fields are required to complete your profile.",
-    "ar": "جميع الحقول إلزامية لإكمال ملفك الشخصي."
+  "Les champs marqués * sont obligatoires pour finaliser votre profil.": {
+    "en": "Fields marked * are required to complete your profile.",
+    "ar": "الحقول المميزة بعلامة * إلزامية لإكمال ملفك الشخصي."
   },
   "Tous les statuts": {
     "en": "All statuses",

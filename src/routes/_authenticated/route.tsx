@@ -36,7 +36,11 @@ function AuthenticatedLayout() {
       }
 
       const [{ data: profile }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("onboarded").eq("id", userId).maybeSingle(),
+        supabase
+          .from("profiles")
+          .select("onboarded, first_name, last_name, phone")
+          .eq("id", userId)
+          .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin"),
       ]);
       if (cancelled) return;
@@ -58,7 +62,6 @@ function AuthenticatedLayout() {
 
       if ((!profile?.onboarded || missingIdentity) && window.location.pathname !== "/onboarding") {
         navigate({ to: "/onboarding", replace: true });
-        return;
       }
 
       setStatus("ok");

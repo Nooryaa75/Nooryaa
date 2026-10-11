@@ -209,7 +209,7 @@ function Onboarding() {
   return (
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
-      <p className="text-muted-foreground text-sm mb-6">Tous les champs sont obligatoires pour finaliser votre profil.</p>
+      <p className="text-muted-foreground text-sm mb-6">{t("Les champs marqués * sont obligatoires pour finaliser votre profil.")}</p>
       {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
           <p className="font-semibold text-destructive text-sm">Champs obligatoires à compléter :</p>

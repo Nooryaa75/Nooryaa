@@ -76,26 +76,16 @@ function Onboarding() {
     if (form.lastName.trim().length < 2) missing.push("Nom");
     if (!form.pseudo.trim()) missing.push("Pseudo");
     if (!form.gender) missing.push("Je suis");
+    if (!form.grew_up) missing.push("Où as-tu grandi");
     if (!form.birthdate) missing.push("Date de naissance");
     if (!form.marital_status) missing.push("Situation");
-    if (form.salat_quotidienne === null) missing.push("Salat quotidienne");
-    if (form.ramadan === null) missing.push("Ramadan");
-    if (form.hadj === null) missing.push("Avez-vous fait le Hadj");
-    if (form.omra === null) missing.push("Avez-vous fait la Omra");
-    if (form.gender === "femme" && form.porte_voile === null) missing.push("Portez-vous le voile");
-    if (form.has_children === null) missing.push("Avez-vous des enfants");
-    if (form.has_children === true && !form.children_count) missing.push("Combien d'enfants");
-    if (form.wants_children === null) missing.push("Souhaitez-vous avoir des enfants");
     if (!isValidPhone(form.phone)) missing.push("Téléphone (numéro valide)");
     if (!form.city) missing.push("Ville de résidence");
     if (!form.country) missing.push("Pays de résidence");
     if (!form.country_origin) missing.push("Pays d'origine");
-    if (!form.profession) missing.push("Profession");
-    if (!form.education_level) missing.push("Niveau d'études");
     if (!form.activities) missing.push("Activités / centres d'intérêt");
-    if (form.smoker === null) missing.push("Fumez-vous");
     if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 50 || form.bio.length > 500) missing.push("À propos de vous (50 à 500 caractères)");
+    if (form.bio.length < 30 || form.bio.length > 500) missing.push("À propos de vous (30 à 500 caractères)");
     return missing;
   }
   const missingFields = attempted ? computeMissing() : [];

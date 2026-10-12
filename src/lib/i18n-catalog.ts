@@ -2529,9 +2529,9 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Journey and goal",
     "ar": "المسيرة والهدف"
   },
-  "Parlez de vous… (minimum 50 caractères)": {
-    "en": "Tell us about yourself… (minimum 50 characters)",
-    "ar": "تحدّث عن نفسك… (50 حرفًا على الأقل)"
+  "Parlez de vous… (minimum 30 caractères)": {
+    "en": "Tell us about yourself… (minimum 30 characters)",
+    "ar": "تحدّث عن نفسك… (30 حرفًا على الأقل)"
   },
   "Parlez en bien ou taisez-vous": {
     "en": "Speak well or stay silent",

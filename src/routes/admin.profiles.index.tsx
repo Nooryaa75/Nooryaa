@@ -83,20 +83,20 @@ function AdminProfilesList() {
         </form>
 
         <div className="bg-card rounded-2xl border border-border/60 overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm table-fixed min-w-[760px]">
             <thead className="bg-secondary/40 text-left">
               <tr>
-                <th className="px-4 py-2 font-medium">Photo</th>
-                <th className="px-4 py-2 font-medium">Pseudo</th>
-                <th className="px-4 py-2 font-medium">Nom</th>
-                <th className="px-4 py-2 font-medium">Prénom</th>
-                <th className="px-4 py-2 font-medium">Email</th>
-                <th className="px-4 py-2 font-medium">Téléphone</th>
-                <th className="px-4 py-2 font-medium">Ville</th>
-                <th className="px-4 py-2 font-medium">Pays</th>
-                <th className="px-4 py-2 font-medium">Âge</th>
-                <th className="px-4 py-2 font-medium">Statut</th>
-                <th className="px-4 py-2"></th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[7%]">Photo</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Pseudo</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Nom</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Prénom</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[16%]">Email</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[11%]">Téléphone</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[10%]">Ville</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Pays</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[6%] whitespace-nowrap">Âge</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Statut</th>
+                <th className="px-2.5 py-2 font-medium text-xs w-[5%]"></th>
               </tr>
             </thead>
             <tbody>

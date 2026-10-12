@@ -120,7 +120,7 @@ function AdminProfilesList() {
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={frenchPlace(p.country) ?? ""}>{frenchPlace(p.country) ?? "—"}</span></td>
                   <td className="px-2 py-2 whitespace-nowrap tabular-nums">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
                   <td className="px-2 py-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
+                    <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
                   </td>
                   <td className="px-2 py-2 text-right">
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} className="text-primary underline text-xs">Voir</Link>

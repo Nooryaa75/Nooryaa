@@ -63,20 +63,20 @@ function Onboarding() {
 
   function computeMissing(): string[] {
     const missing: string[] = [];
-    if (form.firstName.trim().length < 2) missing.push("Prénom");
-    if (form.lastName.trim().length < 2) missing.push("Nom");
-    if (!form.pseudo.trim()) missing.push("Pseudo");
-    if (!form.gender) missing.push("Je suis");
-    if (!form.grew_up) missing.push("Où as-tu grandi");
-    if (!form.birthdate) missing.push("Date de naissance");
-    if (!form.marital_status) missing.push("Situation");
-    if (!isValidPhone(form.phone)) missing.push("Téléphone (numéro valide)");
-    if (!form.city) missing.push("Ville de résidence");
-    if (!form.country) missing.push("Pays de résidence");
-    if (!form.country_origin) missing.push("Pays d'origine");
-    if (!form.activities) missing.push("Activités / centres d'intérêt");
-    if (!form.objective) missing.push("Mon objectif sur Nooryaa");
-    if (form.bio.length < 30 || form.bio.length > 500) missing.push("À propos de vous (30 à 500 caractères)");
+    if (form.firstName.trim().length < 2) missing.push(t("Prénom"));
+    if (form.lastName.trim().length < 2) missing.push(t("Nom"));
+    if (!form.pseudo.trim()) missing.push(t("Pseudo"));
+    if (!form.gender) missing.push(t("Je suis"));
+    if (!form.grew_up) missing.push(t("Où as-tu grandi"));
+    if (!form.birthdate) missing.push(t("Date de naissance"));
+    if (!form.marital_status) missing.push(t("Situation"));
+    if (!isValidPhone(form.phone)) missing.push(t("Téléphone (numéro valide)"));
+    if (!form.city) missing.push(t("Ville de résidence"));
+    if (!form.country) missing.push(t("Pays de résidence"));
+    if (!form.country_origin) missing.push(t("Pays d'origine"));
+    if (!form.activities) missing.push(t("Activités / centres d'intérêt"));
+    if (!form.objective) missing.push(t("Mon objectif sur Nooryaa"));
+    if (form.bio.length < 30 || form.bio.length > 500) missing.push(t("À propos de vous (30 à 500 caractères)"));
     return missing;
   }
   const missingFields = attempted ? computeMissing() : [];
@@ -184,9 +184,9 @@ function Onboarding() {
       <p className="text-muted-foreground text-sm mb-6">{t("Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.")}</p>
       {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
-          <p className="font-semibold text-destructive text-sm">Champs obligatoires à compléter :</p>
+          <p className="font-semibold text-destructive text-sm">{t("Champs obligatoires à compléter :")}</p>
           <ul className="mt-1 list-disc pl-5 text-sm text-destructive space-y-0.5">
-            {pseudoError && attempted && <li>Pseudo : {pseudoError}</li>}
+            {pseudoError && attempted && <li>{t("Pseudo :")} {pseudoError}</li>}
             {missingFields.map((m) => <li key={m}>{m}</li>)}
             {extraError && missingFields.length === 0 && <li>{extraError}</li>}
           </ul>

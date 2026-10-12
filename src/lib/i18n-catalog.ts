@@ -1,5 +1,10 @@
 // Generated and reviewed Nooryaa interface translations.
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  "Je suis": { en: "I am", ar: "أنا" },
+  "Où as-tu grandi": { en: "Where you grew up", ar: "أين نشأت" },
+  "Téléphone (numéro valide)": { en: "Phone (valid number)", ar: "الهاتف (رقم صحيح)" },
+  "Ville de résidence": { en: "City of residence", ar: "مدينة الإقامة" },
+  "À propos de vous (30 à 500 caractères)": { en: "About you (30 to 500 characters)", ar: "عنك (من 30 إلى 500 حرف)" },
   "Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.": { en: "Just the essentials to get started. You can add the other details later in My profile.", ar: "المعلومات الأساسية فقط للبدء. يمكنكم إضافة باقي التفاصيل لاحقاً في «ملفي الشخصي»." },
   "Votre photo, votre choix": { en: "Your photo, your choice", ar: "صورتكم، اختياركم" },
   "Vous pouvez flouter vos photos en cochant « Flouter cette photo ». Les autres membres ne les verront pas en clair ; vous seul·e décidez de retirer le floutage.": { en: "You can blur your photos by selecting ‘Blur this photo’. Other members won't see them clearly; only you decide when to remove the blur.", ar: "يمكنكم تمويه صوركم بتحديد «تمويه هذه الصورة». لن يراها الأعضاء الآخرون بوضوح؛ وأنتم وحدكم تقررون إزالة التمويه." },

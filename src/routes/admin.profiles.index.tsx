@@ -90,13 +90,13 @@ function AdminProfilesList() {
                 <th className="px-2 py-2 font-medium text-xs w-[10%]">Pseudo</th>
                 <th className="px-2 py-2 font-medium text-xs w-[9%]">Nom</th>
                 <th className="px-2 py-2 font-medium text-xs w-[9%]">Prénom</th>
-                <th className="px-2 py-2 font-medium text-xs w-[19%]">Email</th>
+                <th className="px-2 py-2 font-medium text-xs w-[17%]">Email</th>
                 <th className="px-2 py-2 font-medium text-xs w-[12%]">Téléphone</th>
                 <th className="px-2 py-2 font-medium text-xs w-[10%]">Ville</th>
                 <th className="px-2 py-2 font-medium text-xs w-[9%]">Pays</th>
                 <th className="px-2 py-2 font-medium text-xs w-[5%] whitespace-nowrap">Âge</th>
                 <th className="px-2 py-2 font-medium text-xs w-[8%]">Statut</th>
-                <th className="px-2 py-2 font-medium text-xs w-[3%]"></th>
+                <th className="px-2 py-2 font-medium text-xs w-[5%]"></th>
               </tr>
             </thead>
             <tbody>

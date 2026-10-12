@@ -396,8 +396,8 @@ function Onboarding() {
           <Label htmlFor="bio">À propos de vous et de votre objectif *</Label>
           <Textarea id="bio" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={5} maxLength={500} placeholder="Présentez-vous et expliquez ce que vous recherchez..." />
           <div className="mt-1 flex items-center justify-between text-xs">
-            {form.bio.length < 50 ? (
-              <span className="font-medium text-destructive">Encore {50 - form.bio.length} caractère{50 - form.bio.length > 1 ? "s" : ""} minimum</span>
+            {form.bio.length < 30 ? (
+              <span className="font-medium text-destructive">Encore {30 - form.bio.length} caractère{30 - form.bio.length > 1 ? "s" : ""} minimum</span>
             ) : (
               <span className="font-medium text-emerald-600">Minimum atteint ✓</span>
             )}

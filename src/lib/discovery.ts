@@ -124,7 +124,15 @@ export async function queryDiscoveryProfiles({
   if (error) throw error;
 
   let rows = (data ?? []).filter((p) => !excludedSet.has(p.id));
-  if (filters.radiusEnabled && originLat != null && originLng != null) {
+  // Ville saisie dans le champ de localisation (ex. « Strasbourg, France » → « strasbourg »).
+  const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const labelCity = norm((filters.originLabel ?? "").split(",")[0] ?? "");
+  const cityMatches = (p: any) => !!labelCity && !!p.city && norm(String(p.city)).includes(labelCity);
+  // Ville tapée sans choisir de suggestion : pas de coordonnées → on cherche par nom de ville.
+  const typedWithoutCoords = !!labelCity && filters.originLat == null;
+  if (filters.radiusEnabled && typedWithoutCoords) {
+    rows = rows.filter(cityMatches);
+  } else if (filters.radiusEnabled && originLat != null && originLng != null) {
     rows = rows
       .map((p) => {
         const lat = (p as any).latitude;
@@ -132,8 +140,9 @@ export async function queryDiscoveryProfiles({
         const d = lat != null && lng != null ? distanceKm(originLat, originLng, lat, lng) : null;
         return { ...p, _distance: d } as any;
       })
-      .filter((p: any) => p._distance != null && p._distance <= filters.radiusKm)
-      .sort((a: any, b: any) => a._distance - b._distance);
+      // Profils sans position enregistrée : gardés si leur ville correspond à celle recherchée.
+      .filter((p: any) => (p._distance != null && p._distance <= filters.radiusKm) || (p._distance == null && cityMatches(p)))
+      .sort((a: any, b: any) => (a._distance ?? 0) - (b._distance ?? 0));
   }
 
   return rows;

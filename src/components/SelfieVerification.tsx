@@ -7,6 +7,7 @@ import { BadgeCheck, Loader2, ScanFace, ShieldAlert, ShieldCheck } from "lucide-
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
 import { verifySelfie } from "@/lib/selfie-verification.functions";
+import { useI18n } from "@/lib/i18n";
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -26,6 +27,7 @@ export function SelfieVerification({
   onVerified?: () => void;
 }) {
   const qc = useQueryClient();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const run = useServerFn(verifySelfie);
@@ -94,11 +96,14 @@ export function SelfieVerification({
         <h2 className="text-xl font-serif text-primary">Vérification par selfie</h2>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        Prenez un selfie en direct : il est comparé à vos photos de profil pour confirmer que
-        c'est bien vous. Le selfie n'est pas enregistré dans votre fiche, seul le résultat de
-        la vérification est conservé.
-      </p>
+      <div className="flex items-start gap-2 rounded-lg bg-secondary/40 p-3">
+        <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+        <div className="text-sm">
+          <p className="font-medium text-primary">{t("Votre selfie reste confidentiel")}</p>
+          <p className="text-muted-foreground">{t("Il ne sera jamais affiché sur la plateforme ni visible par les autres membres. Il sert uniquement à vérifier que c'est bien vous et à éviter les faux profils.")}</p>
+        </div>
+      </div>
+      <p className="text-sm text-muted-foreground">{t("Prenez un selfie en direct : il est comparé à vos photos de profil. Le selfie n'est pas enregistré dans votre fiche ; seul le résultat de la vérification est conservé.")}</p>
 
       {status === "rejected" && (
         <p className="flex items-start gap-2 text-sm text-destructive">

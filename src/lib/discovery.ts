@@ -126,7 +126,7 @@ export async function queryDiscoveryProfiles({
   let rows = (data ?? []).filter((p) => !excludedSet.has(p.id));
   // Ville saisie dans le champ de localisation (ex. « Strasbourg, France » → « strasbourg »).
   const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-  const labelCity = norm((filters.originLabel ?? "").split(",")[0] ?? "");
+  const labelCity = norm((filters.originLabel ?? "").split(/[,(]/)[0] ?? "");
   const cityMatches = (p: any) => !!labelCity && !!p.city && norm(String(p.city)).includes(labelCity);
   // Ville tapée sans choisir de suggestion : pas de coordonnées → on cherche par nom de ville.
   const typedWithoutCoords = !!labelCity && filters.originLat == null;

@@ -289,7 +289,7 @@ function Recherche() {
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary z-10 pointer-events-none" />
               <CityAutocomplete
                 value={filters.originLabel || filters.city}
-                onChange={(v) => set(filters.radiusEnabled ? { originLabel: v } : { city: v })}
+                onChange={(v) => set(filters.radiusEnabled ? { originLabel: v, originLat: null, originLng: null } : { city: v })}
                 onCoords={(c) => set({ originLat: c?.latitude ?? null, originLng: c?.longitude ?? null })}
                 suggestions={CITIES}
                 placeholder={me?.city ?? "Paris, France"}

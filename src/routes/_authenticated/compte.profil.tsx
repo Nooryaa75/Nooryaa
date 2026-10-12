@@ -62,9 +62,9 @@ function MyProfile() {
   /** Construit les données à enregistrer à partir du formulaire. */
   function buildPayload(f: any, opts: { skipInvalidBio?: boolean } = {}) {
     const bio = f.bio || "";
-    const bioInvalid = bio.length > 0 && (bio.length < 50 || bio.length > 500);
+    const bioInvalid = bio.length > 0 && (bio.length < 30 || bio.length > 500);
     if (bioInvalid && !opts.skipInvalidBio) {
-      throw new Error("La bio doit contenir entre 50 et 500 caractères");
+      throw new Error("La bio doit contenir entre 30 et 500 caractères");
     }
     const birthdateInvalid = !!f.birthdate && !isAdult(f.birthdate);
     if (birthdateInvalid && !opts.skipInvalidBio) {
@@ -292,7 +292,7 @@ function MyProfile() {
               onChange={(e) => setForm({ ...form, bio: e.target.value })}
               rows={4}
               maxLength={500}
-              placeholder="Parlez de vous… (minimum 50 caractères)"
+              placeholder="Parlez de vous… (minimum 30 caractères)"
             />
           </div>
         </div>

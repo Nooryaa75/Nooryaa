@@ -8,8 +8,8 @@
 - [x] Traduire les toasts de la page recherche (enregistrement, application, erreurs) EN/AR
 - [x] Ajouter les clés manquantes au catalogue + corriger « Recherche enregistrée » (EN)
 - [x] Vérifier typecheck/build (OK)
-- [ ] Android 1.0.6 (code 9) : build Codemagic à lancer, importer l'AAB sur Google Play, puis indiquer 1.0.6 dans le configurateur
-- [ ] Notifications Android : autorisation ajoutée au build + bandeau in-app — en attente du build Codemagic et de la vérification sur le téléphone
+- [x] Android : version 1.0.8 publiée sur Google Play, confirmée par l'utilisateur.
+- [x] Notifications Android : réception confirmée par l'utilisateur après installation de la version 1.0.8.
 - [ ] iPhone : compte Apple en attente de validation (demandé le 27/09) — relancer l'assistance Apple si rien n'est validé
 - [x] iPhone : préparation de la version (icône 1024, entitlements push, numéros de version, workflows Codemagic vérification + App Store)
 - [ ] iPhone : à faire après validation du compte — clé API App Store Connect dans Codemagic, puis première archive et téléversement
@@ -17,3 +17,5 @@
 
 - [x] Relances email profils incomplets (5 jours) + suppression jour 6
 - [x] Admin profils : afficher toutes les infos de la fiche
+
+- [x] Inscription limitée aux champs obligatoires ; informations facultatives conservées dans Mon profil ; image et rappel spam ajoutés ; floutage et selfie confidentiel mis en avant en FR/EN/AR ; écrans vérifiés avec session authentifiée en lecture seule (rôle simulé), sans créer ni modifier de compte ; publication non demandée.

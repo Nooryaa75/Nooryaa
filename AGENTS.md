@@ -11,6 +11,8 @@
 
 ## Project rules
 
+- Onboarding renders and saves required profile fields only; optional details remain editable in Mon profil and are not cleared when an existing member completes onboarding.
+
 - Store download badges are gated after hydration through the Capacitor bridge so native and admin views never mount their link query (no first-frame native flash); they are always placed directly above the language switcher — inside the auth card on /auth (where the footer hides them to avoid duplication), in the shared footer elsewhere — never below the language controls at the very bottom of a page.
 
 - Admin discussions union message pairs with liked-profile pairs to match member inboxes; paginated reads must exhaust all database pages before grouping, and UI pagination must never truncate the available history.

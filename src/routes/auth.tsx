@@ -15,6 +15,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/notify.functions";
 import { signUpByServer, resendSignupConfirmation } from "@/lib/auth.functions";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
+import signupEmailImage from "@/assets/signup-email-check.jpg";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).catch("signin"),
@@ -297,15 +298,18 @@ function AuthPage() {
       <div className="min-h-screen flex items-center justify-center bg-[color:var(--cream)]/40 px-4">
         <div className="w-full max-w-md bg-card rounded-2xl shadow-[var(--shadow-soft)] p-8 border border-border/60 text-center">
           <Link to="/" className="block text-2xl font-serif text-primary mb-4">Nooryaa</Link>
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-[color:var(--gold)]/15 flex items-center justify-center text-2xl">✉️</div>
+          <img src={signupEmailImage} alt="" width={1152} height={576} loading="lazy" className="w-full h-auto rounded-lg mb-4" />
           <h1 className="text-2xl font-serif text-primary mb-2">Vérifiez votre boîte mail</h1>
           <p className="text-sm text-muted-foreground mb-2">
             Nous avons envoyé un email de confirmation à <span className="font-medium text-foreground">{email}</span>.
           </p>
           <p className="text-sm text-muted-foreground mb-6">
             Cliquez sur le lien reçu pour activer votre compte, puis revenez compléter votre profil.
-            Pensez à regarder dans vos courriers indésirables.
           </p>
+          <div className="mb-6 rounded-lg border border-primary/25 bg-secondary/40 p-3 text-sm" role="note">
+            <p className="font-semibold text-primary">{t("Vérifiez aussi vos spams / courriers indésirables")}</p>
+            <p className="mt-1 text-muted-foreground">{t("Si l'email Nooryaa s'y trouve, ouvrez-le et cliquez sur le lien de confirmation. Vous pouvez ensuite le déplacer dans votre boîte de réception.")}</p>
+          </div>
           <Button asChild className="w-full rounded-full mb-3">
             <Link to="/auth" search={{ mode: "signin" }} onClick={() => setSignupEmailSent(false)}>
               J'ai confirmé, je me connecte
@@ -396,16 +400,16 @@ function AuthPage() {
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="firstName">Prénom</Label>
+                  <Label htmlFor="firstName">Prénom *</Label>
                   <Input id="firstName" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">{t("Nom")}</Label>
+                  <Label htmlFor="lastName">{t("Nom")} *</Label>
                   <Input id="lastName" required maxLength={60} value={lastName} onChange={(e) => setLastName(e.target.value)} />
                 </div>
               </div>
               <div>
-                <Label htmlFor="phone">Téléphone</Label>
+                <Label htmlFor="phone">Téléphone *</Label>
                 <PhoneInput id="phone" required value={phone} onChange={setPhone} />
                 <p className="text-[11px] text-muted-foreground mt-1">Non visible sur votre profil. Sert à garantir un seul compte par personne.</p>
               </div>
@@ -453,6 +457,13 @@ function AuthPage() {
                 </span>
               </label>
             </>
+          )}
+          {mode === "signup" && (
+            <div className="rounded-lg border border-primary/25 bg-secondary/40 p-3" role="note">
+              <img src={signupEmailImage} alt="" width={1152} height={576} loading="lazy" className="mx-auto w-44 max-w-full h-auto rounded-lg mb-2" />
+              <p className="text-sm font-semibold text-primary">{t("Vérifiez aussi vos spams / courriers indésirables")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("Après votre inscription, confirmez votre email grâce au lien reçu. S'il n'apparaît pas dans votre boîte de réception, regardez dans vos spams / courriers indésirables.")}</p>
+            </div>
           )}
           <Button type="submit" disabled={loading} className="w-full rounded-full">
             {loading ? "Chargement..." : mode === "signup" ? "Créer mon compte gratuit" : "Se connecter"}

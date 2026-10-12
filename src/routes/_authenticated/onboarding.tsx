@@ -334,7 +334,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Où as-tu grandi ?</Label>
+            <Label>Où as-tu grandi ? *</Label>
             <Select value={form.grew_up} onValueChange={(v) => setForm({ ...form, grew_up: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
@@ -343,7 +343,7 @@ function Onboarding() {
             </Select>
           </div>
           <div>
-            <Label>Religion *</Label>
+            <Label>Religion</Label>
             <Select value={form.religion} onValueChange={(v) => setForm({ ...form, religion: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>

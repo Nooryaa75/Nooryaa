@@ -83,20 +83,20 @@ function AdminProfilesList() {
         </form>
 
         <div className="bg-card rounded-2xl border border-border/60 overflow-x-auto">
-          <table className="w-full text-sm table-fixed min-w-[760px]">
+          <table className="w-full text-xs table-fixed min-w-[760px]">
             <thead className="bg-secondary/40 text-left">
               <tr>
-                <th className="px-2.5 py-2 font-medium text-xs w-[7%]">Photo</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Pseudo</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Nom</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Prénom</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[16%]">Email</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[11%]">Téléphone</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[10%]">Ville</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Pays</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[6%] whitespace-nowrap">Âge</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[9%]">Statut</th>
-                <th className="px-2.5 py-2 font-medium text-xs w-[5%]"></th>
+                <th className="px-2 py-2 font-medium text-xs w-[6%]">Photo</th>
+                <th className="px-2 py-2 font-medium text-xs w-[10%]">Pseudo</th>
+                <th className="px-2 py-2 font-medium text-xs w-[9%]">Nom</th>
+                <th className="px-2 py-2 font-medium text-xs w-[9%]">Prénom</th>
+                <th className="px-2 py-2 font-medium text-xs w-[19%]">Email</th>
+                <th className="px-2 py-2 font-medium text-xs w-[12%]">Téléphone</th>
+                <th className="px-2 py-2 font-medium text-xs w-[10%]">Ville</th>
+                <th className="px-2 py-2 font-medium text-xs w-[9%]">Pays</th>
+                <th className="px-2 py-2 font-medium text-xs w-[5%] whitespace-nowrap">Âge</th>
+                <th className="px-2 py-2 font-medium text-xs w-[8%]">Statut</th>
+                <th className="px-2 py-2 font-medium text-xs w-[3%]"></th>
               </tr>
             </thead>
             <tbody>

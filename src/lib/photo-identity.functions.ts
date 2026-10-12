@@ -81,6 +81,15 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
 
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey || !data.imageDataUrl.startsWith("data:image/")) return pass;
+    if ((data.imageDataUrl.split(",")[1] ?? "").length < 100) {
+      return {
+        verdict: "review",
+        same_person: "unknown",
+        gender_match: "unknown",
+        require_selfie: false,
+        reason: "La photo est vide ou illisible. Merci de choisir une autre photo (JPEG ou PNG).",
+      };
+    }
 
     const { data: profile } = await supabase
       .from("profiles")

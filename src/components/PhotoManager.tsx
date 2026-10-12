@@ -36,6 +36,8 @@ async function toDataUrl(file: File, max = 768): Promise<string> {
   }
   const raw = await readAsDataUrl(file);
   if (!raw.startsWith("data:image/")) throw new Error("format d'image non pris en charge");
+  if ((raw.split(",")[1] ?? "").length < 100)
+    throw new Error("La photo est vide ou illisible. Choisissez une autre photo (JPEG ou PNG).");
   return raw;
 }
 

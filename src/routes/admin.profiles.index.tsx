@@ -93,6 +93,7 @@ function AdminProfilesList() {
                 <th className="px-4 py-2 font-medium">Email</th>
                 <th className="px-4 py-2 font-medium">Téléphone</th>
                 <th className="px-4 py-2 font-medium">Ville</th>
+                <th className="px-4 py-2 font-medium">Pays</th>
                 <th className="px-4 py-2 font-medium">Âge</th>
                 <th className="px-4 py-2 font-medium">Statut</th>
                 <th className="px-4 py-2"></th>
@@ -116,6 +117,7 @@ function AdminProfilesList() {
                   <td className="px-4 py-2 text-muted-foreground">{p.email}</td>
                   <td className="px-4 py-2 text-muted-foreground">{p.phone ?? "—"}</td>
                   <td className="px-4 py-2">{frenchPlace(p.city) ?? "—"}</td>
+                  <td className="px-4 py-2" data-no-translate>{frenchPlace(p.country) ?? "—"}</td>
                   <td className="px-4 py-2">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
                   <td className="px-4 py-2">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
@@ -126,7 +128,7 @@ function AdminProfilesList() {
                 </tr>
               ))}
               {data && data.rows.length === 0 && (
-                <tr><td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
+                <tr><td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}
             </tbody>
           </table>

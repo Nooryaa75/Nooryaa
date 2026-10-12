@@ -184,7 +184,7 @@ function Onboarding() {
       <p className="text-muted-foreground text-sm mb-6">{t("Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.")}</p>
       {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
-          <p className="font-semibold text-destructive text-sm">Champs obligatoires à compléter :</p>
+          <p className="font-semibold text-destructive text-sm">{t("Champs obligatoires à compléter :")}</p>
           <ul className="mt-1 list-disc pl-5 text-sm text-destructive space-y-0.5">
             {pseudoError && attempted && <li>Pseudo : {pseudoError}</li>}
             {missingFields.map((m) => <li key={m}>{m}</li>)}

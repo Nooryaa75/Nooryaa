@@ -353,7 +353,7 @@ function Onboarding() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Pratique religieuse *</Label>
+          <Label>Pratique religieuse</Label>
           <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
           <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
           <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
@@ -363,7 +363,7 @@ function Onboarding() {
           )}
         </div>
         <div>
-          <Label>Niveau d'études *</Label>
+          <Label>Niveau d'études</Label>
           <Select value={form.education_level} onValueChange={(v) => setForm({ ...form, education_level: v })}>
             <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
             <SelectContent>
@@ -380,7 +380,7 @@ function Onboarding() {
           <PersonalityPicker value={form.personality} onChange={(v) => setForm({ ...form, personality: v ?? "" })} />
         </div>
         <div className="space-y-2">
-          <Label>Mode de vie *</Label>
+          <Label>Mode de vie</Label>
           <YesNoRadio name="smoker" label="Fumez-vous ?" value={form.smoker} onChange={(v) => setForm({ ...form, smoker: v })} />
         </div>
         <div>

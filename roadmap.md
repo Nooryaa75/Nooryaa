@@ -17,3 +17,5 @@
 
 - [x] Relances email profils incomplets (5 jours) + suppression jour 6
 - [x] Admin profils : afficher toutes les infos de la fiche
+
+- [ ] Simplifier l’inscription aux champs obligatoires, mettre en avant les spams avec une image et la confidentialité des photos/selfies ; vérifier les écrans.

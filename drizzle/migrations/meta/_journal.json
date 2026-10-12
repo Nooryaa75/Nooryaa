@@ -50,6 +50,13 @@
       "when": 1791655684703,
       "tag": "0006_restrict_storage_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791807729503,
+      "tag": "0007_migration",
+      "breakpoints": true
     }
   ]
 }

@@ -117,7 +117,7 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
           .limit(5000);
         const { data: photoRows } = await supabaseAdmin.from("photos").select("user_id").limit(20000);
         const withPhoto = new Set((photoRows ?? []).map((r: any) => r.user_id));
-        const SELFIE_AFTER = Date.parse("2026-09-04T00:00:00Z");
+        const SELFIE_AFTER = Date.parse("2026-09-04T18:00:00Z");
         const filled = (v: any) => v !== null && v !== undefined && String(v).trim() !== "";
         const letters = (v: any) => typeof v === "string" && v.replace(/[^\p{L}]/gu, "").length >= 2;
         // Seuls les champs obligatoires de la fiche comptent.

@@ -210,6 +210,14 @@ function RootComponent() {
   const router = useRouter();
   useScreenshotProtection();
 
+  // Administration : sélection et copie de tous les éléments, images comprises.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const adminArea = pathname.startsWith("/admin");
+  useEffect(() => {
+    document.documentElement.classList.toggle("admin-copy-allowed", adminArea);
+  }, [adminArea]);
+
+
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;

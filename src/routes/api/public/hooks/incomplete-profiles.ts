@@ -113,25 +113,12 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
         const { data: allProfiles } = await supabaseAdmin
           .from("profiles")
           .select("id, email, locale, created_at, onboarded, first_name, last_name, pseudo, phone, gender, grew_up, birthdate, marital_status, city, country, country_origin, activities, objective, bio, photo_verified")
+          .eq("onboarded", false)
           .lt("created_at", new Date(now - DAY_MS + 3600 * 1000).toISOString())
           .limit(5000);
-        const { data: photoRows } = await supabaseAdmin.from("photos").select("user_id").limit(20000);
-        const withPhoto = new Set((photoRows ?? []).map((r: any) => r.user_id));
-        const SELFIE_AFTER = Date.parse("2026-09-04T18:00:00Z");
-        const filled = (v: any) => v !== null && v !== undefined && String(v).trim() !== "";
-        const letters = (v: any) => typeof v === "string" && v.replace(/[^\p{L}]/gu, "").length >= 2;
-        // Seuls les champs obligatoires de la fiche comptent.
-        const isIncomplete = (p: any) =>
-          !p.onboarded ||
-          !letters(p.first_name) || !letters(p.last_name) || !filled(p.pseudo) ||
-          (p.phone ?? "").replace(/\D/g, "").length < 8 ||
-          !filled(p.gender) || !filled(p.grew_up) || !filled(p.birthdate) || !filled(p.marital_status) ||
-          !filled(p.city) || !filled(p.country) || !filled(p.country_origin) ||
-          !filled(p.activities) || !filled(p.objective) ||
-          (p.bio ?? "").trim().length < 30 ||
-          !withPhoto.has(p.id) ||
-          (Date.parse(p.created_at) >= SELFIE_AFTER && !p.photo_verified);
-        const profiles = (allProfiles ?? []).filter(isIncomplete);
+        // Sécurité : seules les inscriptions jamais terminées sont relancées / supprimées.
+        // Un membre ayant terminé son inscription n'est jamais supprimé automatiquement.
+        const profiles = (allProfiles ?? []).filter((p: any) => p.onboarded === false);
 
         const { data: staff } = await supabaseAdmin.from("user_roles").select("user_id").in("role", ["admin", "moderator"]);
         const staffIds = new Set((staff ?? []).map((r: any) => r.user_id));

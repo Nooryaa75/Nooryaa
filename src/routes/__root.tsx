@@ -105,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Nooryaa — Site de rencontre musulman Abonnement gratuit pour mariage halal" },
       { name: "description", content: "Nooryaa : site de rencontre musulman Abonnement gratuit, sans abonnement. Célibataires musulmans et musulmanes pour mariage halal sérieux. Messagerie et photos illimitées." },
       { name: "robots", content: "index, follow, max-image-preview:large" },

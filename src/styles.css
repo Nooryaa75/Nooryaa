@@ -260,6 +260,8 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    /* Marge de sécurité pour la barre d'état (heure, batterie) sur mobile natif */
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   html[dir="rtl"] body {

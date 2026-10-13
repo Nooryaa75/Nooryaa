@@ -232,11 +232,13 @@ workflows:
           node scripts/set-ios-version.mjs 1.0.8 11
       - name: Check Apple signing setup
         script: |
-          if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then
-            echo "Aucune intégration App Store Connect détectée dans Codemagic."
-            echo "Ajoutez la clé API App Store Connect (ou un certificat de distribution)"
-            echo "dans l'onglet Integrations du projet, puis relancez ce workflow."
-            exit 1
+          if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$CM_CERTIFICATE_ID" ]; then
+            echo "Aucune intégration Apple détectée dans Codemagic (clé API App Store Connect ou connexion Apple Developer)."
+            echo "Connectez votre compte Apple dans Codemagic : Teams -> Integrations -> Apple,"
+            echo "ou via une clé API App Store Connect, puis relancez ce workflow."
+            echo "Le build continuera : la signature peut aussi venir de la connexion Apple Developer."
+          else
+            echo "Intégration Apple détectée dans Codemagic."
           fi
       - name: Archive
         script: |

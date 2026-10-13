@@ -140,6 +140,10 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
         let deleted = 0;
         for (const p of profiles ?? []) {
           if (!p.email || staffIds.has(p.id)) continue;
+          // Sécurité : ne jamais relancer un compte supprimé (profil restant
+          // sans compte utilisateur, ou suppression en cours).
+          const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(p.id);
+          if (!authUser?.user) continue;
           const { data: sent } = await supabaseAdmin
             .from("email_notifications")
             .select("created_at")

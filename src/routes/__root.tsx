@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -156,7 +157,12 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function useScreenshotProtection() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Dans l'administration, la copie de tous les éléments est autorisée.
+  const adminArea = pathname.startsWith("/admin");
+
   useEffect(() => {
+    if (adminArea) return;
     // Bloque le clic droit (hors champs de saisie pour garder coller/copier utiles)
     const onContextMenu = (e: MouseEvent) => {
       const t = e.target as HTMLElement | null;
@@ -196,13 +202,21 @@ function useScreenshotProtection() {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("dragstart", onDragStart);
     };
-  }, []);
+  }, [adminArea]);
 }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useScreenshotProtection();
+
+  // Administration : sélection et copie de tous les éléments, images comprises.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const adminArea = pathname.startsWith("/admin");
+  useEffect(() => {
+    document.documentElement.classList.toggle("admin-copy-allowed", adminArea);
+  }, [adminArea]);
+
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {

@@ -374,3 +374,10 @@ img {
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* Administration : copie de tous les éléments autorisée (textes, emails, téléphones, images) */
+html.admin-copy-allowed img {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}

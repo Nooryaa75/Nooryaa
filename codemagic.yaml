@@ -232,6 +232,11 @@ workflows:
       - name: Set app version (1.0.1)
         script: |
           node scripts/set-ios-version.mjs 1.0.1 11
+      - name: Set up code signing
+        # Récupère les profils via l'intégration App Store Connect et inscrit
+        # l'équipe Apple dans le projet Xcode (régénéré à chaque build).
+        script: |
+          xcode-project use-profiles
       - name: Check Apple signing setup
         script: |
           if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$CM_CERTIFICATE_ID" ]; then

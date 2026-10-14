@@ -32,4 +32,16 @@ if (after === before && !before.includes(`MARKETING_VERSION = ${version};`)) {
 }
 
 writeFileSync(project, after);
-console.log(`iOS version set to ${version} (build ${build}).`);
+
+// Même exigence côté dépendances (CocoaPods) : sans cela, la compilation
+// signale un décalage entre l'app (iOS 15) et ses modules (iOS 13).
+const podfile = 'ios/App/Podfile';
+if (existsSync(podfile)) {
+  const podBefore = readFileSync(podfile, 'utf8');
+  const podAfter = podBefore.replace(/platform :ios, '[^']+'/, "platform :ios, '15.0'");
+  if (podAfter !== podBefore) {
+    writeFileSync(podfile, podAfter);
+  }
+}
+
+console.log(`iOS version set to ${version} (build ${build}), deployment target 15.0.`);

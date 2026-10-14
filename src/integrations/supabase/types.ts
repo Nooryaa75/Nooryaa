@@ -1333,6 +1333,10 @@ export type Database = {
         Args: { from_text: string; j: Json; to_text: string }
         Returns: Json
       }
+      register_push_token: {
+        Args: { _platform: string; _token: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

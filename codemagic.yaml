@@ -189,7 +189,7 @@ workflows:
           node scripts/configure-ios-push.mjs
       - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.1 13
+          node scripts/set-ios-version.mjs 1.0.1 14
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -237,7 +237,7 @@ workflows:
           node scripts/configure-ios-push.mjs
       - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.1 13
+          node scripts/set-ios-version.mjs 1.0.1 14
       - name: Set up code signing
         # Récupère les profils via l'intégration App Store Connect et inscrit
         # l'équipe Apple dans le projet Xcode (régénéré à chaque build).

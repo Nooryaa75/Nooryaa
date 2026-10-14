@@ -170,7 +170,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app @capacitor/app-launcher
+          npm install --save @capacitor/core@6 @capacitor/cli@6 @capacitor/ios@6 @capacitor/push-notifications@6 @capacitor/app@6 @capacitor/app-launcher@6
       - name: Generate iOS project
         script: |
           npx cap add ios
@@ -218,7 +218,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install --save @capacitor/core @capacitor/cli @capacitor/ios @capacitor/push-notifications @capacitor/app @capacitor/app-launcher
+          npm install --save @capacitor/core@6 @capacitor/cli@6 @capacitor/ios@6 @capacitor/push-notifications@6 @capacitor/app@6 @capacitor/app-launcher@6
       - name: Generate iOS project
         script: |
           npx cap add ios

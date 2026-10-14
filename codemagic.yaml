@@ -181,9 +181,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.8)
+      - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.8 11
+          node scripts/set-ios-version.mjs 1.0.1 11
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -205,6 +205,8 @@ workflows:
     name: Nooryaa iPhone (App Store)
     instance_type: mac_mini_m2
     max_build_duration: 90
+    integrations:
+      app_store_connect: Nooryaa
     environment:
       node: v22.12.0
       xcode: latest
@@ -227,9 +229,9 @@ workflows:
       - name: Configure push notifications
         script: |
           node scripts/configure-ios-push.mjs
-      - name: Set app version (1.0.8)
+      - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.8 11
+          node scripts/set-ios-version.mjs 1.0.1 11
       - name: Check Apple signing setup
         script: |
           if [ -z "$CM_APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$APP_STORE_CONNECT_API_KEY_ID" ] && [ -z "$CM_CERTIFICATE_ID" ]; then
@@ -266,6 +268,10 @@ workflows:
     artifacts:
       - ios/App/build/ipa/*.ipa
     publishing:
+      # Envoi automatique du build vers App Store Connect (TestFlight)
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
       email:
         recipients:
           - karim@nooryaa.com

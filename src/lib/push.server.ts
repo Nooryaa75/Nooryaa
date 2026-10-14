@@ -126,6 +126,7 @@ async function sendApns(
   title: string,
   body: string | null,
   path: string,
+  badge: number,
 ): Promise<boolean> {
   const creds = apnsCredentials();
   if (!creds) return false;
@@ -143,6 +144,7 @@ async function sendApns(
         aps: {
           alert: { title, body: body ?? "" },
           sound: "default",
+          badge,
           "interruption-level": "active",
         },
         path,
@@ -193,11 +195,25 @@ export async function sendPushToUser(
   const token = await accessToken(sa);
   const url = `https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`;
 
+  // Pastille sur l'icône de l'appli : messages non lus + notifications non lues.
+  const [unreadNotifs, unreadMessages] = await Promise.all([
+    (supabaseAdmin.from("notifications" as never) as any)
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .is("read_at", null),
+    (supabaseAdmin.from("messages" as never) as any)
+      .select("id", { count: "exact", head: true })
+      .eq("receiver", userId)
+      .is("read_at", null)
+      .is("deleted_at", null),
+  ]);
+  const badge = (unreadNotifs.count ?? 0) + (unreadMessages.count ?? 0);
+
   for (const row of tokens) {
     try {
       // iPhone : envoi direct à Apple si la clé est configurée.
       if (row.platform === "ios" && useApns) {
-        const ok = await sendApns(row.token, title, body, path);
+        const ok = await sendApns(row.token, title, body, path, badge);
         if (ok) console.log(`APNs push sent to ${userId}`);
         continue;
       }
@@ -215,7 +231,7 @@ export async function sendPushToUser(
             android: { priority: "HIGH", notification: { channel_id: "nooryaa", sound: "default" } },
             // iPhone : sans ces réglages la notification arrive en silence.
             apns: {
-              payload: { aps: { sound: "default", "interruption-level": "active" } },
+              payload: { aps: { sound: "default", badge, "interruption-level": "active" } },
             },
           },
         }),

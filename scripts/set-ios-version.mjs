@@ -17,14 +17,31 @@ if (!existsSync(project)) {
 const before = readFileSync(project, 'utf8');
 const after = before
   .replace(/MARKETING_VERSION = [^;]+;/g, `MARKETING_VERSION = ${version};`)
-  .replace(/CURRENT_PROJECT_VERSION = [^;]+;/g, `CURRENT_PROJECT_VERSION = ${build};`);
+  .replace(/CURRENT_PROJECT_VERSION = [^;]+;/g, `CURRENT_PROJECT_VERSION = ${build};`)
+  // Apple exige iOS 15 minimum pour les envois App Store Connect.
+  .replace(/IPHONEOS_DEPLOYMENT_TARGET = [^;]+;/g, 'IPHONEOS_DEPLOYMENT_TARGET = 15.0;');
 
 if (!after.includes(`MARKETING_VERSION = ${version};`) || !after.includes(`CURRENT_PROJECT_VERSION = ${build};`)) {
   throw new Error(`iOS version ${version} (${build}) was not applied to the project.`);
+}
+if (!after.includes('IPHONEOS_DEPLOYMENT_TARGET = 15.0;')) {
+  throw new Error('iOS deployment target 15.0 was not applied to the project.');
 }
 if (after === before && !before.includes(`MARKETING_VERSION = ${version};`)) {
   throw new Error('No version field found in the iOS project.');
 }
 
 writeFileSync(project, after);
-console.log(`iOS version set to ${version} (build ${build}).`);
+
+// Même exigence côté dépendances (CocoaPods) : sans cela, la compilation
+// signale un décalage entre l'app (iOS 15) et ses modules (iOS 13).
+const podfile = 'ios/App/Podfile';
+if (existsSync(podfile)) {
+  const podBefore = readFileSync(podfile, 'utf8');
+  const podAfter = podBefore.replace(/platform :ios, '[^']+'/, "platform :ios, '15.0'");
+  if (podAfter !== podBefore) {
+    writeFileSync(podfile, podAfter);
+  }
+}
+
+console.log(`iOS version set to ${version} (build ${build}), deployment target 15.0.`);

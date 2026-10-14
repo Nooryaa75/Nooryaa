@@ -247,31 +247,17 @@ workflows:
           else
             echo "Intégration Apple détectée dans Codemagic."
           fi
-      - name: Archive
+      - name: Build signed IPA
+        # Archive + export avec les profils installés par "use-profiles"
+        # (xcodebuild -exportArchive seul ne trouve ni compte ni profil).
         script: |
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
-            -destination 'generic/platform=iOS' -archivePath build/App.xcarchive \
-            -allowProvisioningUpdates archive
-      - name: Export App Store package
-        script: |
-          cd ios/App
-          cat > ExportOptions.plist <<'PLIST'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key><string>app-store</string>
-            <key>signingStyle</key><string>automatic</string>
-            <key>uploadSymbols</key><true/>
-            <key>destination</key><string>export</string>
-          </dict>
-          </plist>
-          PLIST
-          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa \
-            -exportOptionsPlist ExportOptions.plist -allowProvisioningUpdates
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --scheme App \
+            --config Release
     artifacts:
-      - ios/App/build/ipa/*.ipa
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
     publishing:
       # Envoi automatique du build vers App Store Connect (TestFlight)
       app_store_connect:

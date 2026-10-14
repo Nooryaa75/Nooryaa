@@ -69,4 +69,23 @@ if (!result.includes('APS_ENVIRONMENT = development;') || !result.includes('APS_
   throw new Error('iOS push environments were not applied to the project.');
 }
 writeFileSync(project, result);
+
+// Sans ces deux fonctions, iOS donne bien le jeton à l'app mais Capacitor
+// ne le reçoit jamais : le téléphone n'est donc jamais enregistré.
+const delegate = 'ios/App/App/AppDelegate.swift';
+if (!existsSync(delegate)) throw new Error('AppDelegate.swift not found.');
+let swift = readFileSync(delegate, 'utf8');
+if (!swift.includes('capacitorDidRegisterForRemoteNotifications')) {
+  const idx = swift.lastIndexOf('}');
+  swift = `${swift.slice(0, idx)}
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+${swift.slice(idx)}`;
+  writeFileSync(delegate, swift);
+}
 console.log(`Nooryaa iOS push notifications configured (${injected} build settings).`);

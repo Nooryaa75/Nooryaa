@@ -183,15 +183,13 @@ export async function registerPushNotifications(userId: string): Promise<PushSta
         }
         // La table push_tokens est récente : les types automatiques ne la
         // connaissent pas encore, d'où le contournement de typage.
-        const { error } = await (supabase.from("push_tokens" as never) as any).upsert(
-          {
-            user_id: userId,
-            token: token.value,
-            platform: devicePlatform(),
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "token" },
-        );
+        // Le même téléphone peut passer d'un compte à l'autre : la fonction
+        // serveur rattache le jeton au compte actuellement connecté.
+        void userId;
+        const { error } = await (supabase.rpc as any)("register_push_token", {
+          _token: token.value,
+          _platform: devicePlatform(),
+        });
         if (error) reportPush("save-error", error.message);
         else reportPush("saved", devicePlatform());
       });

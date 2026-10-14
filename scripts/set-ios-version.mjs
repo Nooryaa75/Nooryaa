@@ -17,7 +17,9 @@ if (!existsSync(project)) {
 const before = readFileSync(project, 'utf8');
 const after = before
   .replace(/MARKETING_VERSION = [^;]+;/g, `MARKETING_VERSION = ${version};`)
-  .replace(/CURRENT_PROJECT_VERSION = [^;]+;/g, `CURRENT_PROJECT_VERSION = ${build};`);
+  .replace(/CURRENT_PROJECT_VERSION = [^;]+;/g, `CURRENT_PROJECT_VERSION = ${build};`)
+  // Apple exige iOS 15 minimum pour les envois App Store Connect.
+  .replace(/IPHONEOS_DEPLOYMENT_TARGET = [^;]+;/g, 'IPHONEOS_DEPLOYMENT_TARGET = 15.0;');
 
 if (!after.includes(`MARKETING_VERSION = ${version};`) || !after.includes(`CURRENT_PROJECT_VERSION = ${build};`)) {
   throw new Error(`iOS version ${version} (${build}) was not applied to the project.`);

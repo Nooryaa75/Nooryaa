@@ -181,9 +181,6 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
-      - name: Configure Google sign-in (server_client_id)
-        script: |
-          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="server_client_id">516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com</string></resources>' > android/app/src/main/res/values/nooryaa_google.xml
       - name: Configure app launcher icon
         script: |
           node scripts/configure-ios-icon.mjs
@@ -232,9 +229,6 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
-      - name: Configure Google sign-in (server_client_id)
-        script: |
-          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="server_client_id">516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com</string></resources>' > android/app/src/main/res/values/nooryaa_google.xml
       - name: Configure app launcher icon
         script: |
           node scripts/configure-ios-icon.mjs

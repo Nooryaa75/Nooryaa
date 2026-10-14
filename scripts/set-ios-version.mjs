@@ -24,6 +24,9 @@ const after = before
 if (!after.includes(`MARKETING_VERSION = ${version};`) || !after.includes(`CURRENT_PROJECT_VERSION = ${build};`)) {
   throw new Error(`iOS version ${version} (${build}) was not applied to the project.`);
 }
+if (!after.includes('IPHONEOS_DEPLOYMENT_TARGET = 15.0;')) {
+  throw new Error('iOS deployment target 15.0 was not applied to the project.');
+}
 if (after === before && !before.includes(`MARKETING_VERSION = ${version};`)) {
   throw new Error('No version field found in the iOS project.');
 }

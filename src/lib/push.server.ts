@@ -126,6 +126,7 @@ async function sendApns(
   title: string,
   body: string | null,
   path: string,
+  badge: number,
 ): Promise<boolean> {
   const creds = apnsCredentials();
   if (!creds) return false;
@@ -143,6 +144,7 @@ async function sendApns(
         aps: {
           alert: { title, body: body ?? "" },
           sound: "default",
+          badge,
           "interruption-level": "active",
         },
         path,

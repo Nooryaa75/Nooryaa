@@ -261,7 +261,10 @@ function AuthPage() {
         // Annulation par l'utilisateur : on referme silencieusement.
         const msg = String(err?.message ?? err ?? "").toLowerCase();
         if (!msg.includes("cancel") && !msg.includes("popup_closed") && err !== "user_cancelled") {
-          toast.error("Connexion Google impossible");
+          // Le code (ex. 10) permet de diagnostiquer : 10 = empreinte SHA-1
+          // de l'appli non déclarée dans Firebase / Google Cloud.
+          const code = err?.code ?? (msg.match(/\b(\d{1,5})\b/)?.[1] || "");
+          toast.error(`Connexion Google impossible${code ? ` (code ${code})` : ""}`);
         }
         setLoading(false);
         return;

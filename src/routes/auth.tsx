@@ -291,6 +291,16 @@ function AuthPage() {
     await redirectAfterAuth(navigate);
   }
 
+  // Le bouton Apple n'a de sens que sur iPhone et sur le web : sur Android,
+  // il ouvrirait une page web externe. On le masque dans l'appli Android.
+  const [isAndroidApp, setIsAndroidApp] = useState(false);
+  useEffect(() => {
+    const cap = (window as unknown as { Capacitor?: any }).Capacitor;
+    if (cap?.isNativePlatform?.() && cap?.getPlatform?.() === "android") {
+      setIsAndroidApp(true);
+    }
+  }, []);
+
   async function handleApple() {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("apple", {
@@ -387,6 +397,7 @@ function AuthPage() {
           Continuer avec Google
         </Button>
 
+        {!isAndroidApp && (
         <Button
           onClick={handleApple}
           disabled={loading}

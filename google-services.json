@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "516335009400-mg6miv2sed1qlptqtbjj91v2cv66k4qu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nooryaa.app",
+            "certificate_hash": "4eb68a7b02a547aad3ceaa5b978f558536114730"
+          }
+        },
+        {
           "client_id": "516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com",
           "client_type": 3
         }

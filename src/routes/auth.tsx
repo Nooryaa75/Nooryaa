@@ -293,12 +293,16 @@ function AuthPage() {
 
   // Le bouton Apple n'a de sens que sur iPhone et sur le web : sur Android,
   // il ouvrirait une page web externe. On le masque dans l'appli Android.
+  // Symétriquement, Google n'est branché que sur Android : dans l'appli
+  // iPhone, on le masque pour ne montrer que « Continuer avec Apple ».
   const [isAndroidApp, setIsAndroidApp] = useState(false);
+  const [isIosApp, setIsIosApp] = useState(false);
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: any }).Capacitor;
-    if (cap?.isNativePlatform?.() && cap?.getPlatform?.() === "android") {
-      setIsAndroidApp(true);
-    }
+    if (!cap?.isNativePlatform?.()) return;
+    const platform = cap?.getPlatform?.();
+    if (platform === "android") setIsAndroidApp(true);
+    if (platform === "ios") setIsIosApp(true);
   }, []);
 
   async function handleApple() {

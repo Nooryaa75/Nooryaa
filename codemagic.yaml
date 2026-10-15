@@ -36,6 +36,10 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
+          # Preuve dans le journal : fichier Google bien place + empreintes incluses
+          ls -l android/app/google-services.json
+          grep -q '"com.nooryaa.app"' android/app/google-services.json || { echo "google-services.json absent ou mauvais package"; exit 1; }
+          echo "Empreintes SHA-1 presentes dans google-services.json :"; grep certificate_hash android/app/google-services.json
           perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
@@ -123,6 +127,10 @@ workflows:
       - name: Configure Firebase (notifications push)
         script: |
           cp google-services.json android/app/google-services.json
+          # Preuve dans le journal : fichier Google bien place + empreintes incluses
+          ls -l android/app/google-services.json
+          grep -q '"com.nooryaa.app"' android/app/google-services.json || { echo "google-services.json absent ou mauvais package"; exit 1; }
+          echo "Empreintes SHA-1 presentes dans google-services.json :"; grep certificate_hash android/app/google-services.json
           perl -pi -e 's|classpath "com.android.tools.build:gradle:.*"|$&\n        classpath "com.google.gms:google-services:4.5.0"|' android/build.gradle
           grep -q 'com.google.gms:google-services' android/build.gradle || { echo "Plugin Firebase non applique"; exit 1; }
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle

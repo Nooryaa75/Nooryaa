@@ -35,6 +35,23 @@ if (!info.includes('UIBackgroundModes')) {
   writeFileSync(plist, info);
 }
 
+// iOS ferme l'app instantanément si elle demande la position, l'appareil
+// photo, le micro ou les photos sans phrase d'explication déclarée.
+info = readFileSync(plist, 'utf8');
+const usages = {
+  NSLocationWhenInUseUsageDescription: 'Nooryaa utilise votre position pour vous proposer des profils proches de vous.',
+  NSCameraUsageDescription: "Nooryaa utilise l'appareil photo pour vos photos de profil et le selfie de vérification.",
+  NSMicrophoneUsageDescription: 'Nooryaa utilise le micro pour enregistrer vos messages vocaux.',
+  NSPhotoLibraryUsageDescription: 'Nooryaa accède à vos photos pour choisir vos photos de profil.',
+  NSPhotoLibraryAddUsageDescription: 'Nooryaa peut enregistrer des photos dans votre galerie.',
+};
+for (const [key, text] of Object.entries(usages)) {
+  if (info.includes(`<key>${key}</key>`)) continue;
+  info = info.replace(/\n<\/dict>\n<\/plist>/, `\n\t<key>${key}</key>\n\t<string>${text}</string>\n</dict>\n</plist>`);
+  if (!info.includes(`<key>${key}</key>`)) throw new Error(`Info.plist: ${key} could not be added.`);
+}
+writeFileSync(plist, info);
+
 // Chaque configuration de compilation doit connaître le fichier
 // d'autorisations et l'environnement de notification correspondant.
 const lines = readFileSync(project, 'utf8').split('\n');

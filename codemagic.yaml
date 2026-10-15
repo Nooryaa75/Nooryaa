@@ -54,12 +54,13 @@ workflows:
         script: |
           perl -0pi -e 's|(<manifest[^>]*>)|$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />|' android/app/src/main/AndroidManifest.xml
           grep -q 'POST_NOTIFICATIONS' android/app/src/main/AndroidManifest.xml || { echo "Permission notifications non appliquee"; exit 1; }
-      - name: Set app version (1.0.10)
+      - name: Set app version (1.0.11)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 13/; s/versionName\s+"[^"]*"/versionName "1.0.10"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 14/; s/versionName\s+"[^"]*"/versionName "1.0.11"/' android/app/build.gradle
 
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 13' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 14' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionName "1.0.11"' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Show signing fingerprint (SHA-1 a comparer avec Google)
         script: |
           echo "=== SHA-1 de la cle qui signe cette appli ==="

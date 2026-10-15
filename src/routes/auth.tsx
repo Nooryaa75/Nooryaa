@@ -247,6 +247,15 @@ function AuthPage() {
     const googleAuth = cap?.Plugins?.GoogleAuth;
     if (cap?.isNativePlatform?.() && googleAuth) {
       try {
+        // Sur Android, le module Google doit être initialisé avant signIn(),
+        // sinon il plante (client Google nul) et l'appli se ferme.
+        if (typeof googleAuth.initialize === "function") {
+          await googleAuth.initialize({
+            clientId: "516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com",
+            scopes: ["profile", "email"],
+            grantOfflineAccess: false,
+          });
+        }
         const gUser = await googleAuth.signIn();
         const idToken = gUser?.authentication?.idToken;
         if (!idToken) throw new Error("missing-id-token");

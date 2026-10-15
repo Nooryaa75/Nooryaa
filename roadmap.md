@@ -10,6 +10,7 @@
 - [x] Vérifier typecheck/build (OK)
 - [x] Android : version 1.0.8 publiée sur Google Play, confirmée par l'utilisateur.
 - [x] Notifications Android : réception confirmée par l'utilisateur après installation de la version 1.0.8.
+- [ ] Android : connexion Google (code 10) — client Android « Nooryaa Play » ajouté avec la clé de signature Google Play; test en attente après le délai de propagation. Si échec : vérifier l'écran de consentement (Audience → En production).
 - [ ] iPhone : compte Apple en attente de validation (demandé le 27/09) — relancer l'assistance Apple si rien n'est validé
 - [x] iPhone : préparation de la version (icône 1024, entitlements push, numéros de version, workflows Codemagic vérification + App Store)
 - [ ] iPhone : à faire après validation du compte — clé API App Store Connect dans Codemagic, puis première archive et téléversement

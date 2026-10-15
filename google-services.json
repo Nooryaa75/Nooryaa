@@ -12,7 +12,12 @@
           "package_name": "com.nooryaa.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDsAHo2n4IfLbBJnIDPKL4CIhSMVa0XUcY"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516335009400-f78hfgk941t6bjmis93ne0mn6863dci9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

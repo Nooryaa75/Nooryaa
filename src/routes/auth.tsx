@@ -293,12 +293,16 @@ function AuthPage() {
 
   // Le bouton Apple n'a de sens que sur iPhone et sur le web : sur Android,
   // il ouvrirait une page web externe. On le masque dans l'appli Android.
+  // Symétriquement, Google n'est branché que sur Android : dans l'appli
+  // iPhone, on le masque pour ne montrer que « Continuer avec Apple ».
   const [isAndroidApp, setIsAndroidApp] = useState(false);
+  const [isIosApp, setIsIosApp] = useState(false);
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: any }).Capacitor;
-    if (cap?.isNativePlatform?.() && cap?.getPlatform?.() === "android") {
-      setIsAndroidApp(true);
-    }
+    if (!cap?.isNativePlatform?.()) return;
+    const platform = cap?.getPlatform?.();
+    if (platform === "android") setIsAndroidApp(true);
+    if (platform === "ios") setIsIosApp(true);
   }, []);
 
   async function handleApple() {
@@ -387,15 +391,17 @@ function AuthPage() {
         </p>
 
 
-        <Button
-          onClick={handleGoogle}
-          disabled={loading}
-          variant="outline"
-          className="w-full rounded-full mb-3 gap-2"
-        >
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.1l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.1z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.2-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2c-.4.4 6.7-4.9 6.7-14.8 0-1.2-.1-2.4-.4-3.5z"/></svg>
-          Continuer avec Google
-        </Button>
+        {!isIosApp && (
+          <Button
+            onClick={handleGoogle}
+            disabled={loading}
+            variant="outline"
+            className="w-full rounded-full mb-3 gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.1l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.1z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.2-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2c-.4.4 6.7-4.9 6.7-14.8 0-1.2-.1-2.4-.4-3.5z"/></svg>
+            Continuer avec Google
+          </Button>
+        )}
 
         {!isAndroidApp && (
         <Button

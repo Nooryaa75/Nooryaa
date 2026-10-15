@@ -60,6 +60,12 @@ workflows:
 
           grep -E 'versionCode|versionName' android/app/build.gradle
           grep -q 'versionCode 13' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+      - name: Show signing fingerprint (SHA-1 a comparer avec Google)
+        script: |
+          echo "=== SHA-1 de la cle qui signe cette appli ==="
+          keytool -list -v -keystore "$CM_KEYSTORE_PATH" -storepass "$CM_KEYSTORE_PASSWORD" -alias "$CM_KEY_ALIAS" | grep -E "SHA1|SHA-1"
+
+
 
       - name: Build APK
         script: |
@@ -140,6 +146,10 @@ workflows:
           perl -pi -e 's/versionCode\s+\d+/versionCode 13/; s/versionName\s+"[^"]*"/versionName "1.0.10"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
           grep -q 'versionCode 13' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+      - name: Show signing fingerprint (SHA-1 a comparer avec Google)
+        script: |
+          echo "=== SHA-1 de la cle qui signe cette appli ==="
+          keytool -list -v -keystore "$CM_KEYSTORE_PATH" -storepass "$CM_KEYSTORE_PASSWORD" -alias "$CM_KEY_ALIAS" | grep -E "SHA1|SHA-1"
       - name: Build signed AAB
         script: |
           cd android

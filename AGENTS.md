@@ -28,3 +28,4 @@
 
 - AppUpdateChecker is mounted once in src/routes/__root.tsx (not in a layout) so native users are prompted on every page, including admin and login screens that admin accounts land on.
 - Codemagic workflows must install Capacitor plugins with `npm install --save` (never --no-save) and verify them in android/capacitor.settings.gradle — `cap sync` only bundles plugins listed in package.json, otherwise push, App and GoogleAuth silently disappear from the native app.
+- Google sign-in in the Android app only works when BOTH certificate fingerprints (the build keystore SHA-1 and the Google Play app-signing SHA-1) exist as separate Android OAuth clients in Google Cloud Console — Play Store installs are signed by Google's key, so a missing Play client makes signIn() fail with code 10.

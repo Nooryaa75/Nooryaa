@@ -199,7 +199,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     }
     refresh();
     if (identityWarning) toast.warning(identityWarning);
-    else toast.success("Photo ajoutée");
+    else toast.success(translateText("Photo ajoutée", getStoredLocale()));
   }
 
 
@@ -219,7 +219,7 @@ export function PhotoManager({ userId }: { userId: string }) {
   async function makePrimary(photo: any) {
     await supabase.from("profiles").update({ primary_photo_url: photo.url, primary_photo_blurred: photo.blurred ?? false }).eq("id", userId);
     refresh();
-    toast.success("Photo principale mise à jour");
+    toast.success(translateText("Photo principale mise à jour", getStoredLocale()));
   }
 
   async function toggleBlur(photo: any) {
@@ -230,7 +230,7 @@ export function PhotoManager({ userId }: { userId: string }) {
       await supabase.from("profiles").update({ primary_photo_blurred: next }).eq("id", userId);
     }
     refresh();
-    toast.success(next ? "Photo floutée" : "Floutage retiré");
+    toast.success(next ? translateText("Photo floutée", getStoredLocale()) : translateText("Floutage retiré", getStoredLocale()));
   }
 
   return (

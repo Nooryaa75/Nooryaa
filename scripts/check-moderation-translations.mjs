@@ -25,14 +25,16 @@ function isMemberSentence(s) {
   if (s.length < 20) return false;
   if (s.split(/\s+/).length < 3) return false;
   if (/[$<{]|\\n|https?:/.test(s)) return false;
+  if (/^[A-Za-z]+:/.test(s)) return false; // libellés de journal ("PhotoManager: ...")
+  if (/^[a-z0-9 .#/-]+$/.test(s)) return false; // classes CSS, identifiants techniques
   return true;
 }
 
 // Les phrases membres sont assignées à `reason` (serveur) ou passées à un toast
 // ou à translateText (client). Tout le reste (prompt, journal admin, schéma JSON)
-// est ignoré.
+// est ignoré. Les modèles `...` sont retirés : leurs phrases sont dynamiques.
 function collect(src) {
-  const lines = src.split("\n");
+  const lines = src.replace(/`(?:[^`\\]|\\.)*`/g, "``").split("\n");
   const found = new Set();
   lines.forEach((line, i) => {
     const window = lines.slice(Math.max(0, i - 3), i + 2).join("\n");

@@ -1,3 +1,4 @@
+import { getStoredLocale } from "@/lib/i18n";
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -138,7 +139,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
     if (like) {
       setLocalLikedIds((ids) => (ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]));
-      toast.success(`Vous avez aimé ${decidedProfile.pseudo}`);
+      toast.success(({fr:`Vous avez aimé ${decidedProfile.pseudo}`,en:`You liked ${decidedProfile.pseudo}`,ar:`لقد أعجبت بـ ${decidedProfile.pseudo}`} as const)[getStoredLocale()]);
     }
     setDismissedIds((ids) => (ids.includes(decidedProfile.id) ? ids : [...ids, decidedProfile.id]));
     setIsDeciding(false);
@@ -165,7 +166,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
       setLocalLikedIds((ids) => ids.filter((id) => id !== target.id));
     }
     setDismissedIds((ids) => (ids.includes(target.id) ? ids : [...ids, target.id]));
-    toast.success(`${target.pseudo} a été bloqué·e`);
+    toast.success(({fr:`${target.pseudo} a été bloqué·e`,en:`${target.pseudo} has been blocked`,ar:`تم حظر ${target.pseudo}`} as const)[getStoredLocale()]);
     setIsDeciding(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     await refresh();

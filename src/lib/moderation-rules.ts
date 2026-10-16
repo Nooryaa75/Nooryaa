@@ -6,7 +6,10 @@ export type ModerationVerdict = "allow" | "warn" | "block";
 export interface ModerationResult {
   verdict: ModerationVerdict;
   categories: string[];
+  /** Phrase visible par le membre, dans sa langue. */
   reason: string;
+  /** Copie française conservée pour le journal de modération. */
+  reasonFr?: string;
 }
 
 function normalize(text: string) {

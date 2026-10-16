@@ -59,9 +59,9 @@ async function aiCheck(content: string, locale: unknown): Promise<ModerationResu
 
 export const moderateMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { content: string; targetUserId?: string }) => {
+  .inputValidator((data: { content: string; targetUserId?: string; locale?: string }) => {
     const content = String(data?.content ?? "").slice(0, 2000);
-    return { content, targetUserId: data?.targetUserId };
+    return { content, targetUserId: data?.targetUserId, locale: asMemberLocale(data?.locale) };
   })
   .handler(async ({ data, context }): Promise<ModerationResult> => {
     const content = data.content.trim();
@@ -76,7 +76,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
     let result: ModerationResult = lex;
 
     if (lex.verdict !== "block") {
-      const ai = await aiCheck(content);
+      const ai = await aiCheck(content, data.locale);
       if (ai) {
         const rank = { allow: 0, warn: 1, block: 2 } as const;
         result = rank[ai.verdict] >= rank[lex.verdict] ? ai : lex;
@@ -93,7 +93,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
           content,
           verdict: result.verdict,
           categories: result.categories,
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "message",
         });
       } catch {
@@ -101,7 +101,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
       }
     }
 
-    return result;
+    return { verdict: result.verdict, categories: result.categories, reason: result.reason };
   });
 
 async function transcribeAudio(bytes: Uint8Array, mime: string): Promise<string | null> {

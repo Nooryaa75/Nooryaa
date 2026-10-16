@@ -22,6 +22,7 @@ import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 import { PlatformTracker } from "@/components/PlatformTracker";
+import { NativeBadgeSync } from "@/components/NativeBadgeSync";
 import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
@@ -244,6 +245,7 @@ function RootComponent() {
         <AppUpdateChecker />
         {/* Enregistre le mode d'utilisation (web / Android / iPhone) du membre connecté. */}
         <PlatformTracker />
+        <NativeBadgeSync />
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

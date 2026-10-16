@@ -1,6 +1,7 @@
 # Roadmap
 
 - [ ] Corriger la pastille de l’icône iPhone après consultation des notifications et vérifier si une nouvelle version est nécessaire.
+- [ ] Lire le retour de validation Apple et préparer les réponses ou corrections demandées.
 
 - [x] Discussions admin : inclure les profils aimés sans premier message, supprimer les plafonds de lecture/liste, ajouter les pages et les aperçus vocaux ; tests réussis sur 2 501 messages et 221 discussions, compilation OK.
 

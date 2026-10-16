@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/blocked")({
   head: () => ({ meta: [{ title: "Profils bloqués — Nooryaa" }] }),
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/blocked")({
 function BlockedList() {
   const ctx = Route.useRouteContext();
   const qc = useQueryClient();
+  const { t } = useI18n();
 
   const { data: blocks } = useQuery({
     queryKey: ["blocked-list", ctx.userId],
@@ -30,7 +32,7 @@ function BlockedList() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["blocked-list"] });
-      toast.success("Profil débloqué");
+      toast.success(t("Profil débloqué"));
     },
   });
 

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isSafePersonalConversation, lexiconCheck, type ModerationResult } from "./moderation-rules";
+import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 
 const SYSTEM_PROMPT = `Tu es le modérateur de Nooryaa, une plateforme de mise en relation musulmane sérieuse orientée dîn.
 Tu analyses un message privé envoyé entre deux membres.
@@ -14,9 +15,9 @@ Règles de la maison (adab) :
 - Dans le doute, choisis "allow". Ne bloque que les cas manifestement graves listés plus haut.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte en français adressée à l'expéditeur"}`;
+{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte adressée à l'expéditeur, dans la langue demandée","reason_fr":"la même phrase en français"}`;
 
-async function aiCheck(content: string): Promise<ModerationResult | null> {
+async function aiCheck(content: string, locale: unknown): Promise<ModerationResult | null> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return null;
   try {
@@ -26,7 +27,7 @@ async function aiCheck(content: string): Promise<ModerationResult | null> {
       body: JSON.stringify({
         model: "openai/gpt-5.6-luna",
         input: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: `${SYSTEM_PROMPT}\n${memberLanguageRule(locale)}` },
           { role: "user", content: `Message à analyser :\n"""${content.slice(0, 2000)}"""` },
         ],
         max_output_tokens: 2000,
@@ -49,6 +50,7 @@ async function aiCheck(content: string): Promise<ModerationResult | null> {
       verdict,
       categories: Array.isArray(parsed.categories) ? parsed.categories.slice(0, 5).map(String) : [],
       reason: typeof parsed.reason === "string" ? parsed.reason : "",
+      reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
     };
   } catch {
     return null;
@@ -57,9 +59,9 @@ async function aiCheck(content: string): Promise<ModerationResult | null> {
 
 export const moderateMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { content: string; targetUserId?: string }) => {
+  .inputValidator((data: { content: string; targetUserId?: string; locale?: string }) => {
     const content = String(data?.content ?? "").slice(0, 2000);
-    return { content, targetUserId: data?.targetUserId };
+    return { content, targetUserId: data?.targetUserId, locale: asMemberLocale(data?.locale) };
   })
   .handler(async ({ data, context }): Promise<ModerationResult> => {
     const content = data.content.trim();
@@ -74,7 +76,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
     let result: ModerationResult = lex;
 
     if (lex.verdict !== "block") {
-      const ai = await aiCheck(content);
+      const ai = await aiCheck(content, data.locale);
       if (ai) {
         const rank = { allow: 0, warn: 1, block: 2 } as const;
         result = rank[ai.verdict] >= rank[lex.verdict] ? ai : lex;
@@ -91,7 +93,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
           content,
           verdict: result.verdict,
           categories: result.categories,
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "message",
         });
       } catch {
@@ -99,7 +101,7 @@ export const moderateMessage = createServerFn({ method: "POST" })
       }
     }
 
-    return result;
+    return { verdict: result.verdict, categories: result.categories, reason: result.reason };
   });
 
 async function transcribeAudio(bytes: Uint8Array, mime: string): Promise<string | null> {
@@ -129,10 +131,11 @@ async function transcribeAudio(bytes: Uint8Array, mime: string): Promise<string 
 /** Modère un message vocal déjà déposé dans le stockage : transcription puis mêmes règles que le texte. */
 export const moderateVoice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { audioPath: string; mimeType?: string; targetUserId?: string }) => ({
+  .inputValidator((data: { audioPath: string; mimeType?: string; targetUserId?: string; locale?: string }) => ({
     audioPath: String(data?.audioPath ?? ""),
     mimeType: String(data?.mimeType ?? "audio/webm"),
     targetUserId: data?.targetUserId,
+    locale: asMemberLocale(data?.locale),
   }))
   .handler(async ({ data, context }): Promise<ModerationResult & { transcript: string }> => {
     const empty = { verdict: "allow" as const, categories: [] as string[], reason: "", transcript: "" };
@@ -156,7 +159,7 @@ export const moderateVoice = createServerFn({ method: "POST" })
     const lex = lexiconCheck(transcript);
     let result: ModerationResult = lex;
     if (lex.verdict !== "block") {
-      const ai = await aiCheck(transcript);
+      const ai = await aiCheck(transcript, data.locale);
       if (ai) {
         const rank = { allow: 0, warn: 1, block: 2 } as const;
         result = rank[ai.verdict] >= rank[lex.verdict] ? ai : lex;
@@ -173,7 +176,7 @@ export const moderateVoice = createServerFn({ method: "POST" })
           content: transcript.slice(0, 2000),
           verdict: result.verdict,
           categories: result.categories,
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "voice",
         });
       } catch {
@@ -181,5 +184,10 @@ export const moderateVoice = createServerFn({ method: "POST" })
       }
     }
 
-    return { ...result, transcript };
+    return {
+      verdict: result.verdict,
+      categories: result.categories,
+      reason: result.reason,
+      transcript,
+    };
   });

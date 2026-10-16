@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 
 export type SelfieVerdict = "verified" | "review" | "rejected";
 
@@ -9,6 +10,8 @@ export type SelfieVerificationResult = {
   same_person: "yes" | "maybe" | "no" | "unknown";
   live_capture: "yes" | "maybe" | "no";
   reason: string;
+  /** Copie française conservée pour le journal de modération. */
+  reasonFr?: string;
 };
 
 const SYSTEM_PROMPT = `Tu es l'agent de vérification d'identité photo de Nooryaa (plateforme de mise en relation musulmane).
@@ -28,7 +31,7 @@ Verdict :
 - "review" dans les autres cas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte en français adressée à la personne"}`;
+{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -82,8 +85,9 @@ async function downloadPhoto(path: string): Promise<string | null> {
 
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { selfieDataUrl: string }) => ({
+  .inputValidator((data: { selfieDataUrl: string; locale?: string }) => ({
     selfieDataUrl: String(data?.selfieDataUrl ?? ""),
+    locale: asMemberLocale(data?.locale),
   }))
   .handler(async ({ data, context }): Promise<SelfieVerificationResult> => {
     const userId = (context as any).userId as string;
@@ -179,7 +183,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           body: JSON.stringify({
             model: "openai/gpt-5.6-luna",
             input: [
-              { role: "system", content: SYSTEM_PROMPT },
+              { role: "system", content: `${SYSTEM_PROMPT}\n${memberLanguageRule(data.locale)}` },
               {
                 role: "user",
                 content: [
@@ -219,6 +223,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           same_person: safeEnum(parsed.same_person, ["yes", "maybe", "no", "unknown"] as const, "unknown"),
           live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
           reason: typeof parsed.reason === "string" ? parsed.reason : "",
+          reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
         };
         gatewayFailed = false;
       } catch (e) {
@@ -267,7 +272,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           content: `Vérification selfie — une seule tête:${result.single_face} / même personne:${result.same_person} / prise en direct:${result.live_capture}`,
           verdict: result.verdict === "rejected" ? "block" : "warn",
           categories: ["selfie_verification"],
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "photo",
         });
       }

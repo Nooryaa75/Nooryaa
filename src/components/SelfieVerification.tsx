@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getStoredLocale, translateText } from "@/lib/i18n";
 import { BadgeCheck, Loader2, ScanFace, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
@@ -46,15 +47,15 @@ export function SelfieVerification({
     setBusy(true);
     try {
       const selfieDataUrl = await toDataUrl(file);
-      const res = await run({ data: { selfieDataUrl } });
+      const res = await run({ data: { selfieDataUrl, locale: getStoredLocale() } });
       if (res.verdict === "verified") {
-        toast.success(res.reason || "Photo vérifiée ✅");
+        toast.success(translateText(res.reason || "Photo vérifiée ✅", getStoredLocale()));
         onVerified?.();
-      } else if (res.verdict === "rejected") toast.error(res.reason || "Vérification refusée");
-      else toast.warning(res.reason || "Vérification à confirmer");
+      } else if (res.verdict === "rejected") toast.error(translateText(res.reason || "Vérification refusée", getStoredLocale()));
+      else toast.warning(translateText(res.reason || "Vérification à confirmer", getStoredLocale()));
       await qc.invalidateQueries({ queryKey: ["me", userId] });
     } catch {
-      toast.error("La vérification a échoué, réessayez.");
+      toast.error(translateText("La vérification a échoué, réessayez.", getStoredLocale()));
     } finally {
       setBusy(false);
     }
@@ -66,7 +67,7 @@ export function SelfieVerification({
       !!navigator.mediaDevices?.getUserMedia &&
       window.isSecureContext;
     if (!hasMedia) {
-      toast.error("Caméra indisponible sur cet appareil ou ce navigateur.");
+      toast.error(translateText("Caméra indisponible sur cet appareil ou ce navigateur.", getStoredLocale()));
       return;
     }
     setOpen(true);

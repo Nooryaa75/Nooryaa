@@ -6,7 +6,10 @@ export type ModerationVerdict = "allow" | "warn" | "block";
 export interface ModerationResult {
   verdict: ModerationVerdict;
   categories: string[];
+  /** Phrase visible par le membre, dans sa langue. */
   reason: string;
+  /** Copie française conservée pour le journal de modération. */
+  reasonFr?: string;
 }
 
 function normalize(text: string) {
@@ -136,6 +139,8 @@ export function lexiconCheck(rawText: string): ModerationResult {
       verdict: "block",
       categories,
       reason:
+        "Ce message contient des propos contraires à l'adab et à la charte de Nooryaa. Merci de reformuler avec respect.",
+      reasonFr:
         "Ce message contient des propos contraires à l'adab et à la charte de Nooryaa (" +
         categories.join(", ") +
         "). Merci de reformuler avec respect.",

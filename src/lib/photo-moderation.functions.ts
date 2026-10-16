@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
 
@@ -7,6 +8,8 @@ export type PhotoModerationResult = {
   verdict: PhotoVerdict;
   categories: string[];
   reason: string;
+  /** Copie française conservée pour le journal de modération. */
+  reasonFr?: string;
   ai_generated: "no" | "maybe" | "yes";
   filtered: "no" | "light" | "heavy";
   apparent_age_min: number;
@@ -27,7 +30,7 @@ Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte en français adressée à la personne","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -35,12 +38,13 @@ function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallb
 
 export const moderatePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { imageDataUrl: string; declaredAge?: number | null }) => ({
+  .inputValidator((data: { imageDataUrl: string; declaredAge?: number | null; locale?: string }) => ({
     imageDataUrl: String(data?.imageDataUrl ?? ""),
     declaredAge:
       typeof data?.declaredAge === "number" && Number.isFinite(data.declaredAge)
         ? Math.round(data.declaredAge)
         : null,
+    locale: asMemberLocale(data?.locale),
   }))
   .handler(async ({ data, context }): Promise<PhotoModerationResult> => {
     const fallback: PhotoModerationResult = {
@@ -65,7 +69,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         body: JSON.stringify({
           model: "openai/gpt-5.6-luna",
           input: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: `${SYSTEM_PROMPT}\n${memberLanguageRule(data.locale)}` },
             {
               role: "user",
               content: [
@@ -98,6 +102,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         verdict: safeEnum(parsed.verdict, ["allow", "warn", "block"] as const, "allow"),
         categories: Array.isArray(parsed.categories) ? parsed.categories.slice(0, 5).map(String) : [],
         reason: typeof parsed.reason === "string" ? parsed.reason : "",
+        reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
         ai_generated: safeEnum(parsed.ai_generated, ["no", "maybe", "yes"] as const, "no"),
         filtered: safeEnum(parsed.filtered, ["no", "light", "heavy"] as const, "no"),
         apparent_age_min: Number.isFinite(Number(parsed.apparent_age_min)) ? Number(parsed.apparent_age_min) : 0,

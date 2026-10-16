@@ -272,7 +272,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
           content: `Vérification selfie — une seule tête:${result.single_face} / même personne:${result.same_person} / prise en direct:${result.live_capture}`,
           verdict: result.verdict === "rejected" ? "block" : "warn",
           categories: ["selfie_verification"],
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "photo",
         });
       }

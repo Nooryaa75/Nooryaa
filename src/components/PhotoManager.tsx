@@ -7,6 +7,7 @@ import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "l
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
 import { verifyPhotoIdentity } from "@/lib/photo-identity.functions";
 import { CameraCapture } from "@/components/CameraCapture";
+import { getStoredLocale, translateText } from "@/lib/i18n";
 import { frenchError } from "@/lib/errors";
 
 
@@ -81,7 +82,7 @@ export function PhotoManager({ userId }: { userId: string }) {
 
   async function uploadPhoto(file: File) {
     if (!photos) return;
-    if (photos.length >= MAX_PHOTOS) { toast.error(`Maximum ${MAX_PHOTOS} photos`); return; }
+    if (photos.length >= MAX_PHOTOS) { toast.error(translateText("Nombre maximum de photos atteint", getStoredLocale())); return; }
 
     setChecking(true);
     let identityWarning: string | null = null;
@@ -91,7 +92,7 @@ export function PhotoManager({ userId }: { userId: string }) {
         dataUrl = await toDataUrl(file);
       } catch (e) {
         console.error("PhotoManager: image illisible", e);
-        toast.error("Cette image n'a pas pu être lue. Essayez une autre photo (JPEG ou PNG).");
+        toast.error(translateText("Cette image n'a pas pu être lue. Essayez une autre photo (JPEG ou PNG).", getStoredLocale()));
         return;
       }
 
@@ -113,35 +114,35 @@ export function PhotoManager({ userId }: { userId: string }) {
 
       let check: Awaited<ReturnType<typeof checkPhoto>> | null = null;
       try {
-        check = await twice(() => checkPhoto({ data: { imageDataUrl: dataUrl, declaredAge } }));
+        check = await twice(() => checkPhoto({ data: { imageDataUrl: dataUrl, declaredAge, locale: getStoredLocale() } }));
       } catch (e) {
         console.error("PhotoManager: modération indisponible", e);
       }
       if (check?.verdict === "block") {
-        toast.error(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.");
+        toast.error(translateText(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.", getStoredLocale()));
         return;
       }
       if (check?.verdict === "warn") {
-        toast.warning(check.reason || "Photo acceptée mais signalée à la modération.");
+        toast.warning(translateText(check.reason || "Photo acceptée mais signalée à la modération.", getStoredLocale()));
       }
 
       // Contrôle d'identité : la nouvelle photo doit être la même personne que
       // les photos déjà validées et correspondre au sexe déclaré.
       let ident: Awaited<ReturnType<typeof checkIdentity>> | null = null;
       try {
-        ident = await twice(() => checkIdentity({ data: { imageDataUrl: dataUrl } }));
+        ident = await twice(() => checkIdentity({ data: { imageDataUrl: dataUrl, locale: getStoredLocale() } }));
       } catch (e) {
         console.error("PhotoManager: contrôle d'identité indisponible", e);
       }
       if (ident?.verdict === "block") {
-        toast.error(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.");
+        toast.error(translateText(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.", getStoredLocale()));
         return;
       }
       if (!check || !ident || ident.verdict === "review" || ident.require_selfie) {
         identityWarning =
           ident?.verdict === "review" && ident.reason
-            ? `Photo ajoutée. ${ident.reason}`
-            : "Photo ajoutée : elle sera contrôlée par notre équipe. Nous vous contacterons si une nouvelle vérification est nécessaire.";
+            ? `${translateText("Photo ajoutée", getStoredLocale())}. ${translateText(ident.reason, getStoredLocale())}`
+            : translateText("Photo ajoutée : elle sera contrôlée par notre équipe. Nous vous contacterons si une nouvelle vérification est nécessaire.", getStoredLocale());
       }
     } finally {
       setChecking(false);
@@ -151,7 +152,7 @@ export function PhotoManager({ userId }: { userId: string }) {
     const { data: sessionData } = await supabase.auth.getSession();
     const authId = sessionData.session?.user?.id;
     if (!authId) {
-      toast.error("Votre session a expiré. Reconnectez-vous puis réessayez.");
+      toast.error(translateText("Votre session a expiré. Reconnectez-vous puis réessayez.", getStoredLocale()));
       return;
     }
 
@@ -163,19 +164,19 @@ export function PhotoManager({ userId }: { userId: string }) {
     if (upErr) {
       toast.error(
         /row-level security|policy|unauthorized/i.test(upErr.message)
-          ? "Envoi refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez."
+          ? translateText("Envoi refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez.", getStoredLocale())
           : upErr.message,
       );
       return;
     }
     const { data: signed } = await supabase.storage.from("profile-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
-    if (!signed) { toast.error("URL non générée"); return; }
+    if (!signed) { toast.error(translateText("URL non générée", getStoredLocale())); return; }
     const nextPos = (photos.reduce((m, p) => Math.max(m, p.position), 0) || 0) + 1;
     const { error } = await supabase.from("photos").insert({ user_id: authId, url: signed.signedUrl, storage_path: path, position: nextPos });
     if (error) {
       toast.error(
         /row-level security|policy/i.test(error.message)
-          ? "Enregistrement refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez."
+          ? translateText("Enregistrement refusé : votre session n'est plus valide. Reconnectez-vous puis réessayez.", getStoredLocale())
           : frenchError(error),
       );
       return;

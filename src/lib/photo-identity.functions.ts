@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 
 export type PhotoIdentityResult = {
   verdict: "allow" | "review" | "block";
@@ -8,6 +9,8 @@ export type PhotoIdentityResult = {
   /** true : la personne doit (re)faire la vérification par selfie. */
   require_selfie: boolean;
   reason: string;
+  /** Copie française conservée pour le journal de modération. */
+  reasonFr?: string;
 };
 
 const SYSTEM_PROMPT = `Tu es l'agent de contrôle d'identité photo de Nooryaa (plateforme de mise en relation musulmane).
@@ -20,7 +23,7 @@ Analyse :
 Sois strict : le doute ne valide pas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"same_person":"yes|maybe|no|unknown","gender_match":"yes|no|unknown","reason":"phrase courte en français adressée à la personne"}`;
+{"same_person":"yes|maybe|no|unknown","gender_match":"yes|no|unknown","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -64,8 +67,9 @@ async function downloadPhoto(path: string): Promise<string | null> {
  */
 export const verifyPhotoIdentity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { imageDataUrl: string }) => ({
+  .inputValidator((data: { imageDataUrl: string; locale?: string }) => ({
     imageDataUrl: String(data?.imageDataUrl ?? ""),
+    locale: asMemberLocale(data?.locale),
   }))
   .handler(async ({ data, context }): Promise<PhotoIdentityResult> => {
     const userId = (context as any).userId as string;
@@ -127,7 +131,7 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
           body: JSON.stringify({
             model: "openai/gpt-5.6-luna",
             input: [
-              { role: "system", content: SYSTEM_PROMPT },
+              { role: "system", content: `${SYSTEM_PROMPT}\n${memberLanguageRule(data.locale)}` },
               {
                 role: "user",
                 content: [
@@ -184,16 +188,19 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       gender_match: safeEnum(parsed.gender_match, ["yes", "no", "unknown"] as const, "unknown"),
       require_selfie: false,
       reason: typeof parsed.reason === "string" ? parsed.reason : "",
+      reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
     };
 
     if (result.gender_match === "no") {
       result.verdict = "block";
       result.reason =
         "Cette photo ne correspond pas au sexe déclaré sur votre profil. Merci d'utiliser une photo de vous.";
+      result.reasonFr = result.reason;
     } else if (references.length > 0 && result.same_person === "no") {
       result.verdict = "block";
       result.reason =
         "Cette photo ne semble pas être vous : elle ne correspond pas à vos photos de profil. Ajoutez une photo de vous ou refaites la vérification par selfie.";
+      result.reasonFr = result.reason;
     } else if (references.length > 0 && result.same_person !== "yes") {
       // Doute : la photo est acceptée mais la vérification par selfie est à refaire.
       result.verdict = "review";
@@ -224,7 +231,7 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
           content: `Contrôle identité photo — même personne:${result.same_person} / sexe cohérent:${result.gender_match}`,
           verdict: result.verdict === "block" ? "block" : "warn",
           categories: ["photo_identity"],
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "photo",
         });
       }

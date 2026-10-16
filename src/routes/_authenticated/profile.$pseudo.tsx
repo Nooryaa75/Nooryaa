@@ -146,7 +146,7 @@ function ProfileView() {
     const reason = `[${reportCategory}] ${reportDetail.trim()}`.slice(0, 500);
     const { error } = await supabase.from("reports").insert({ reporter: ctx.userId, reported: profile.id, reason });
     if (error) toast.error(frenchError(error));
-    else { toast.success("Signalement envoyé à la modération"); setReportOpen(false); setReportDetail(""); }
+    else { toast.success(t("Signalement envoyé à la modération")); setReportOpen(false); setReportDetail(""); }
   }
 
   if (isLoading) return <div className="text-center py-12 text-muted-foreground">Chargement...</div>;

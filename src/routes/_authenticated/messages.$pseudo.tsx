@@ -187,7 +187,7 @@ function Conversation() {
     if (isSafePersonalConversation(content)) return;
     void (async () => {
       try {
-        const res = await moderate({ data: { content, targetUserId: peer!.id } });
+        const res = await moderate({ data: { content, targetUserId: peer!.id, locale } });
         if (res.verdict === "block") {
           await supabase.from("messages")
             .update({ deleted_at: new Date().toISOString(), content: null } as any)
@@ -195,7 +195,7 @@ function Conversation() {
           patchList((old) => old.filter((m) => m.id !== messageId));
           toast.error(res.reason ? t(res.reason) : t("Ce message ne respecte pas la charte de Nooryaa."));
         } else if (res.verdict === "warn" && res.reason) {
-          toast.warning(res.reason);
+          toast.warning(t(res.reason));
         }
       } catch {
         // analyse indisponible : le filtre local a déjà été appliqué
@@ -394,7 +394,7 @@ function Conversation() {
       // Modération du vocal en arrière-plan : retiré aussitôt s'il enfreint la charte
       void (async () => {
         try {
-          const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id } });
+          const res = await moderateVoiceFn({ data: { audioPath: path, mimeType: blob.type, targetUserId: peer.id, locale } });
           if (res.verdict === "block") {
             await supabase.from("messages")
               .update({ deleted_at: new Date().toISOString(), audio_path: null } as any)
@@ -403,7 +403,7 @@ function Conversation() {
             patchList((old) => old.filter((m) => m.id !== inserted.id));
             toast.error(res.reason ? t(res.reason) : t("Ce vocal ne respecte pas la charte de Nooryaa."));
           } else if (res.verdict === "warn" && res.reason) {
-            toast.warning(res.reason);
+            toast.warning(t(res.reason));
           }
         } catch {
           // analyse indisponible : on laisse passer le vocal

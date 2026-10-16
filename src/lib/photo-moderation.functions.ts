@@ -119,21 +119,27 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         result.verdict = "block";
         result.categories = [...result.categories, "mineur_apparent"];
         result.reason = result.reason || "La personne sur la photo paraît mineure.";
+        result.reasonFr = result.reasonFr || "La personne sur la photo paraît mineure.";
       } else if (data.declaredAge) {
         const gap =
           data.declaredAge < lo ? lo - data.declaredAge : data.declaredAge > hi ? data.declaredAge - hi : 0;
         result.age_match = gap <= 4 ? "ok" : gap <= 10 ? "doubt" : "mismatch";
         if (result.age_match === "mismatch") {
           // Écart supérieur à 10 ans : la photo ne correspond manifestement pas
-          // à la personne déclarée, on la refuse.
+          // à la personne déclarée, on la refuse. Les âges exacts restent dans le journal.
           result.verdict = "block";
           result.categories = [...result.categories, "age_incoherent"];
-          result.reason = `L'âge apparent sur la photo (environ ${lo}-${hi} ans) est trop éloigné de votre âge déclaré (${data.declaredAge} ans). Merci d'utiliser une photo récente de vous.`;
+          result.reason =
+            "L'âge visible sur cette photo ne correspond pas à votre âge déclaré. Merci d'utiliser une photo récente de vous.";
+          result.reasonFr = `L'âge apparent sur la photo (environ ${lo}-${hi} ans) est trop éloigné de votre âge déclaré (${data.declaredAge} ans). Merci d'utiliser une photo récente de vous.`;
         } else if (result.age_match === "doubt" && result.verdict === "allow") {
           result.verdict = "warn";
           result.categories = [...result.categories, "age_a_verifier"];
           result.reason =
             result.reason ||
+            "L'âge visible sur cette photo diffère de votre âge déclaré. Merci d'utiliser une photo récente de vous.";
+          result.reasonFr =
+            result.reasonFr ||
             `L'âge apparent sur la photo (environ ${lo}-${hi} ans) diffère de l'âge déclaré (${data.declaredAge} ans).`;
         }
       }
@@ -152,7 +158,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
           content: `Photo de profil — IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
           verdict: result.verdict,
           categories: result.categories,
-          reason: result.reason,
+          reason: result.reasonFr || result.reason,
           source: "photo",
         });
       } catch {

@@ -15,7 +15,7 @@ function b64urlFromBuffer(buf: ArrayBuffer) {
   let binary = "";
   const bytes = new Uint8Array(buf);
   for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary).replace(/\+/g, "-").replace(/=+$/, "");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /** Échange la clé de compte de service contre un jeton d'accès Google (valable 1 h). */

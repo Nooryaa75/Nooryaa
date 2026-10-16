@@ -1,3 +1,4 @@
+import { getStoredLocale } from "@/lib/i18n";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -62,7 +63,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
       queryClient.invalidateQueries({ queryKey: ["sent-likes-discovery", userId] });
       queryClient.invalidateQueries({ queryKey: ["match-likes", userId] });
       queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] });
-      if (!liked) toast.success(`Vous avez liké ${profile.pseudo} 💜`);
+      if (!liked) toast.success(({fr:`Vous avez liké ${profile.pseudo} 💜`,en:`You liked ${profile.pseudo} 💜`,ar:`لقد أعجبت بـ ${profile.pseudo} 💜`} as const)[getStoredLocale()]);
     },
     onError: () => toast.error("Une erreur est survenue"),
   });

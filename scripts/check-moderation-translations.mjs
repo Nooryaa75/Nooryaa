@@ -27,6 +27,7 @@ function isMemberSentence(s) {
   if (/[$<{]|\\n|https?:/.test(s)) return false;
   if (/^[A-Za-z]+:/.test(s)) return false; // libellés de journal ("PhotoManager: ...")
   if (/^[a-z0-9 .#/-]+$/.test(s)) return false; // classes CSS, identifiants techniques
+  if (/\($/.test(s)) return false; // fragment d'une raison admin construite par concaténation
   return true;
 }
 

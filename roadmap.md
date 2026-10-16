@@ -25,3 +25,4 @@
 - [x] Admin profils : afficher toutes les infos de la fiche
 
 - [x] Inscription limitée aux champs obligatoires ; informations facultatives conservées dans Mon profil ; image et rappel spam ajoutés ; floutage et selfie confidentiel mis en avant en FR/EN/AR ; écrans vérifiés avec session authentifiée en lecture seule (rôle simulé), sans créer ni modifier de compte ; publication non demandée.
+- [ ] Recréer le compte de test Apple (apple-review@nooryaa.com) supprimé par le propriétaire : fiche complète, connexion vérifiée, accès redonnés pour la vérification App Store.

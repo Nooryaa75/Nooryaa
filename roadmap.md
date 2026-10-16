@@ -25,3 +25,4 @@
 - [x] Admin profils : afficher toutes les infos de la fiche
 
 - [x] Inscription limitée aux champs obligatoires ; informations facultatives conservées dans Mon profil ; image et rappel spam ajoutés ; floutage et selfie confidentiel mis en avant en FR/EN/AR ; écrans vérifiés avec session authentifiée en lecture seule (rôle simulé), sans créer ni modifier de compte ; publication non demandée.
+- [x] Recréé le compte de test Apple (apple-review@nooryaa.com / NooryaaReview2026) : email confirmé, fiche complète (Adam Nooryaa, pseudo nooryaa_review, 33 ans, Le Raincy, objectif mariage), connexion vérifiée à l'écran → accueil atteint, 41 profils visibles, aucune erreur. Reste sans photo de profil (un vrai cliché est nécessaire pour passer les contrôles).

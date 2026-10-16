@@ -4680,5 +4680,4 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Vérification à confirmer": { "en": "Verification to be confirmed", "ar": "التحقق بحاجة إلى تأكيد" },
   "Impossible d'enregistrer ce choix.": { "en": "Could not save this choice.", "ar": "تعذّر حفظ هذا الاختيار." },
   "Impossible de bloquer ce profil.": { "en": "Could not block this profile.", "ar": "تعذّر حظر هذا الملف الشخصي." },
-  "URL non générée": { "en": "The photo link could not be created.", "ar": "لم يتم إنشاء رابط الصورة." },
 };

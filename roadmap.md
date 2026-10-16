@@ -1,5 +1,10 @@
 # Roadmap
 
+- [x] Préparer la remise à zéro de la pastille iPhone lorsque notifications et messages sont tous lus ; tests de logique réussis, compilation OK, aucun nouveau module natif ni rebuild nécessaire.
+- [ ] Publier la correction de pastille et vérifier sur un vrai iPhone — publication non demandée, appareil non disponible ici.
+- [x] Lire le retour Apple 2.1 et expliquer les six éléments exigés ainsi que la vidéo obligatoire.
+- [ ] Compléter la réponse Apple avec la vidéo sur iPhone, les accès de test et les renseignements confirmés par le propriétaire — éléments à fournir par l’utilisateur.
+
 - [x] Discussions admin : inclure les profils aimés sans premier message, supprimer les plafonds de lecture/liste, ajouter les pages et les aperçus vocaux ; tests réussis sur 2 501 messages et 221 discussions, compilation OK.
 
 - [x] Profils admin : nom/prénom ajoutés, villes du catalogue affichées en français et langue française imposée dans l’administration sans changer celle des membres ; contrôles de langue et de villes réussis.

@@ -1,4 +1,4 @@
-import { getStoredLocale } from "@/lib/i18n";
+import { getStoredLocale, translateText } from "@/lib/i18n";
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -128,7 +128,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
     const likeSaved = !likeError || likeError.message.includes("duplicate");
 
     if (!swipeSaved || (like && !likeSaved)) {
-      toast.error(swipeError?.message ?? likeError?.message ?? "Impossible d'enregistrer ce choix.");
+      toast.error(swipeError?.message ?? likeError?.message ?? translateText("Impossible d'enregistrer ce choix.", getStoredLocale()));
       setIsDeciding(false);
       return;
     }
@@ -155,7 +155,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
 
     const { error } = await supabase.from("blocks").insert({ blocker: userId, blocked: target.id });
     if (error) {
-      toast.error(error.message || "Impossible de bloquer ce profil.");
+      toast.error(error.message || translateText("Impossible de bloquer ce profil.", getStoredLocale()));
       setIsDeciding(false);
       return;
     }
@@ -323,9 +323,9 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 size="lg"
                 variant="outline"
                 className="rounded-full h-12 w-12 p-0 opacity-50"
-                aria-label={MESSAGE_BLOCKED_HINT}
-                title={MESSAGE_BLOCKED_HINT}
-                onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+                aria-label={translateText(MESSAGE_BLOCKED_HINT, getStoredLocale())}
+                title={translateText(MESSAGE_BLOCKED_HINT, getStoredLocale())}
+                onClick={() => toast.info(translateText(MESSAGE_BLOCKED_HINT, getStoredLocale()))}
               >
                 <MessageCircle className="h-5 w-5" />
               </Button>

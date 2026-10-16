@@ -46,7 +46,7 @@ export function SelfieVerification({
     setBusy(true);
     try {
       const selfieDataUrl = await toDataUrl(file);
-      const res = await run({ data: { selfieDataUrl } });
+      const res = await run({ data: { selfieDataUrl, locale: getStoredLocale() } });
       if (res.verdict === "verified") {
         toast.success(res.reason || "Photo vérifiée ✅");
         onVerified?.();
@@ -66,7 +66,7 @@ export function SelfieVerification({
       !!navigator.mediaDevices?.getUserMedia &&
       window.isSecureContext;
     if (!hasMedia) {
-      toast.error("Caméra indisponible sur cet appareil ou ce navigateur.");
+      toast.error(translateText("Caméra indisponible sur cet appareil ou ce navigateur.", getStoredLocale()));
       return;
     }
     setOpen(true);

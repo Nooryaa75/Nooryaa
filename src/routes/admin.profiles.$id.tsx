@@ -1,11 +1,13 @@
 import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { adminCheckAuth, adminGetProfile, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import { frenchPlace, PROFILE_STATUS_LABELS, REPORT_STATUS_LABELS } from "@/lib/admin-display";
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";

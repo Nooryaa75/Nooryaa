@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
 import { frenchPlace, PROFILE_STATUS_LABELS, REPORT_STATUS_LABELS } from "@/lib/admin-display";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
-import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon } from "lucide-react";
+import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 
@@ -141,8 +141,19 @@ function AdminProfileDetail() {
         <div className="bg-card rounded-2xl p-6 border border-border/60">
           <h2 className="font-serif text-primary mb-3">Photos ({data.photos.length}/6)</h2>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-            {data.photos.map((ph: any) => (
-              <img key={ph.id} src={ph.url} alt="" className="aspect-square object-cover rounded-lg" />
+            {data.photos.map((ph: any, i: number) => (
+              <button
+                key={ph.id}
+                type="button"
+                onClick={() => setPhotoIndex(i)}
+                aria-label={`Agrandir la photo ${i + 1} sur ${data.photos.length}`}
+                className="group relative block aspect-square rounded-lg overflow-hidden border border-border/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <img src={ph.url} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity group-hover:bg-black/25 group-hover:opacity-100">
+                  <Maximize2 className="h-4 w-4" />
+                </span>
+              </button>
             ))}
             {data.photos.length === 0 && <p className="text-sm text-muted-foreground">Aucune photo</p>}
           </div>

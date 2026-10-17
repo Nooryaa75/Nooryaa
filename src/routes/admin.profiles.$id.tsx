@@ -159,6 +159,16 @@ function AdminProfileDetail() {
           </div>
         </div>
 
+        {photoIndex !== null && data.photos.length > 0 && (
+          <PhotoLightbox
+            photos={data.photos.map((ph: any) => ({ url: ph.url, caption: p.pseudo }))}
+            index={Math.min(photoIndex, data.photos.length - 1)}
+            onIndexChange={setPhotoIndex}
+            onClose={() => setPhotoIndex(null)}
+          />
+        )}
+
+
         <div className="grid md:grid-cols-2 gap-4">
           <Block title={`Signalements reçus (${data.reportsAgainst.length})`} accent="text-destructive" icon={AlertOctagon}>
             {data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (

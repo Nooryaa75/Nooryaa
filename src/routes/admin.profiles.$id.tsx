@@ -138,7 +138,7 @@ function AdminProfileDetail() {
           )}
         </div>
 
-        <div className="bg-card rounded-2xl p-6 border border-border/60">
+        <div className="bg-card rounded-2xl p-6 border border-border/60" data-photo-index={photoIndex ?? "none"}>
           <h2 className="font-serif text-primary mb-3">Photos ({data.photos.length}/6)</h2>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
             {data.photos.map((ph: any, i: number) => (

@@ -31,6 +31,8 @@ function AdminProfileDetail() {
   const del = useServerFn(adminDeleteProfile);
 
   const { data } = useQuery({ queryKey: ["admin-profile", id], queryFn: () => get({ data: { id } }) });
+  const [photoIndex, setPhotoIndex] = useState<number | null>(null);
+
 
   const statusMut = useMutation({
     mutationFn: (status: "active" | "suspended" | "banned") => setStatus({ data: { id, status } }),

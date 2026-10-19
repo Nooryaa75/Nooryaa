@@ -1,5 +1,8 @@
-import { describe, expect, test } from "bun:test";
+import { describe, test } from "node:test";
+import { strict as assert } from "node:assert";
 import { needsSocialWelcome } from "./welcome-auth";
+
+const expect = (value: boolean) => ({ toBe: (expected: boolean) => assert.equal(value, expected) });
 
 describe("Bienvenue après connexion sociale", () => {
   test("Google reçoit la bienvenue", () => {

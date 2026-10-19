@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Ajouter l'email de bienvenue pour les comptes Google et Apple, sans doublon, et vérifier le déclenchement.
+
 - [x] Préparer la remise à zéro de la pastille iPhone lorsque notifications et messages sont tous lus ; tests de logique réussis, compilation OK, aucun nouveau module natif ni rebuild nécessaire.
 - [ ] Publier la correction de pastille et vérifier sur un vrai iPhone — publication non demandée, appareil non disponible ici.
 - [x] Lire le retour Apple 2.1 et expliquer les six éléments exigés ainsi que la vidéo obligatoire.

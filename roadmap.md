@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Ajouter l'email de bienvenue pour les comptes Google et Apple : destinataire issu de la session, historique d'envoi et clé anti-doublon ; 5 tests réussis, déclenchements Google/Apple vérifiés avec session connectée et envoi intercepté, compilation OK. La réception réelle et les connexions natives restent à vérifier après publication ; les comptes existants sans bienvenue seront pris en charge à leur prochaine connexion.
+
 - [x] Préparer la remise à zéro de la pastille iPhone lorsque notifications et messages sont tous lus ; tests de logique réussis, compilation OK, aucun nouveau module natif ni rebuild nécessaire.
 - [ ] Publier la correction de pastille et vérifier sur un vrai iPhone — publication non demandée, appareil non disponible ici.
 - [x] Lire le retour Apple 2.1 et expliquer les six éléments exigés ainsi que la vidéo obligatoire.

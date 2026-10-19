@@ -348,7 +348,24 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
     return { email, locale: data?.locale };
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data }) => deliverWelcomeEmail(data));
+
+/** Social sign-in: the recipient is always the authenticated owner, never browser input. */
+export const sendOwnWelcomeEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { locale?: string }) => ({ locale: data?.locale }))
+  .handler(async ({ data, context }) => {
+    const { data: profile, error } = await context.supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!profile?.email) return { sent: false, reason: "no_account" };
+    return deliverWelcomeEmail({ email: profile.email, locale: data.locale });
+  });
+
+async function deliverWelcomeEmail(data: { email: string; locale?: string }) {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profile } = await supabaseAdmin
@@ -360,13 +377,14 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
     const locale = normalizeLocale(data.locale ?? (profile as any)?.locale);
     const c = copyFor(locale);
 
-    const { data: already } = await supabaseAdmin
+    const { data: already, error: historyError } = await supabaseAdmin
       .from("email_notifications")
       .select("id")
       .eq("user_id", profile.id)
       .eq("kind", "welcome")
       .eq("status", "sent")
       .limit(1);
+    if (historyError) throw historyError;
     if (already && already.length > 0) return { sent: false, reason: "already_sent" as const };
 
     const lovableKey = process.env["LOVABLE_API_KEY"];
@@ -391,6 +409,7 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
           "Content-Type": "application/json",
           Authorization: `Bearer ${lovableKey}`,
           "X-Connection-Api-Key": resendKey,
+          "Idempotency-Key": `welcome-${profile.id}`,
         },
         body: JSON.stringify({
           from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
@@ -419,8 +438,8 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
       error: errorText,
     });
 
-    return { sent: status === "sent" };
-  });
+    return { sent: status === "sent", reason: status === "sent" ? "ok" : "failed" };
+}
 
 /**
  * Envoi manuel du lien de confirmation d'email (signup fallback serveur).

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Retour navigateur vers l'application iPhone : bouton iOS, déclaration du lien dans les deux workflows Codemagic, version 1.0.1 (17), tests ; publication et essai sur iPhone après rebuild nécessaires.
+
 - [x] Contrôle d'âge des photos : l'écart moyen (jusqu'à 10 ans) passe désormais sans message ni signalement admin, seul un écart de plus de 10 ans (ou une personne paraissant mineure) est refusé ; 4 tests réussis, compilation OK. Publication du site reste à faire.
 
 

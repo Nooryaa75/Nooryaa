@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Corriger le changement de langue sur les textes déjà affichés et vérifier FR/EN/AR ainsi que les valeurs dynamiques.
+- [x] Corriger le changement de langue sur les textes déjà affichés : passages EN → FR → AR → EN → FR vérifiés sur la connexion, valeurs dynamiques et attributs conservés ; compilation OK, publication non demandée.
 
 - [x] Ajouter l'email de bienvenue pour les comptes Google et Apple : destinataire issu de la session, historique d'envoi et clé anti-doublon ; 5 tests réussis, déclenchements Google/Apple vérifiés avec session connectée et envoi intercepté, compilation OK. La réception réelle et les connexions natives restent à vérifier après publication ; les comptes existants sans bienvenue seront pris en charge à leur prochaine connexion.
 

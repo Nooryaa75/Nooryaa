@@ -383,3 +383,15 @@ html.admin-copy-allowed img {
   user-select: text;
   -webkit-touch-callout: default;
 }
+
+/* Filigrane de dissuasion sur les photos des membres */
+.photo-watermark {
+  background-repeat: repeat;
+  background-size: 220px 110px;
+}
+
+/* iPhone : pendant l'enregistrement ou le partage d'écran, les photos sont masquées */
+.nooryaa-recording [data-photo-guard] img,
+.nooryaa-recording [data-photo-guard] video {
+  visibility: hidden !important;
+}

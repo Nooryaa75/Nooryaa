@@ -232,9 +232,12 @@ workflows:
       - name: Configure deep links
         script: |
           node scripts/configure-ios-deeplinks.mjs
+      - name: Configure screen security
+        script: |
+          node scripts/configure-ios-screen-security.mjs
       - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.1 17
+          node scripts/set-ios-version.mjs 1.0.1 18
       - name: Build for simulator (unsigned)
         script: |
           cd ios/App
@@ -283,9 +286,12 @@ workflows:
       - name: Configure deep links
         script: |
           node scripts/configure-ios-deeplinks.mjs
+      - name: Configure screen security
+        script: |
+          node scripts/configure-ios-screen-security.mjs
       - name: Set app version (1.0.1)
         script: |
-          node scripts/set-ios-version.mjs 1.0.1 17
+          node scripts/set-ios-version.mjs 1.0.1 18
       - name: Set up code signing
         # Récupère les profils via l'intégration App Store Connect et inscrit
         # l'équipe Apple dans le projet Xcode (régénéré à chaque build).

@@ -18,6 +18,7 @@ import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, canMessage, isBlurred, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { useI18n } from "@/lib/i18n";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { PhotoWatermark } from "@/components/PhotoWatermark";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -502,8 +503,9 @@ function Conversation() {
                       </div>
                     )}
                     {m.image_url && (
-                      <a href={m.image_url} target="_blank" rel="noopener noreferrer">
+                      <a href={m.image_url} target="_blank" rel="noopener noreferrer" data-photo-guard className="relative inline-block overflow-hidden rounded-lg">
                          <img src={m.image_url} alt={t("Photo partagée")} className="max-h-72 w-auto object-cover" />
+                         <PhotoWatermark />
                       </a>
                     )}
                     {m.audio_url && (

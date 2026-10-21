@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Contrôle d'âge des photos : l'écart moyen (jusqu'à 10 ans) passe désormais sans message ni signalement admin, seul un écart de plus de 10 ans (ou une personne paraissant mineure) est refusé ; 4 tests réussis, compilation OK. Publication du site reste à faire.
+
+
 - [x] Calendrier Nooryaa à l’inscription : choix mois/année et sélection du 18 avril 1993 vérifiés sur écran mobile en mode sombre, session connectée avec fiche incomplète simulée ; aucune erreur. Publication et essai sur vrai téléphone restent à faire.
 - [x] Selfie de prilege1@gmail.com examiné : naissance déclarée le 10/10/2008, fiche terminée et selfie validé ; le contrôle compare selfie/photos mais ne reçoit pas la date de naissance, donc ne vérifie pas l’âge déclaré. Aucun changement de compte ou de règle effectué.
 

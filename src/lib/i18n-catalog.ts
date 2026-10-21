@@ -55,6 +55,8 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Rectification et suppression": { "en": "Rectification and deletion", "ar": "التصحيح والحذف" },
   "Vous pouvez corriger vos informations depuis Mon profil et supprimer définitivement votre compte depuis Mon abonnement. Pour toute autre demande (accès, opposition, réclamation), écrivez-nous à contact@nooryaa.com.": { "en": "You can correct your information from My Profile and permanently delete your account from My Subscription. For any other request (access, objection, complaint), write to contact@nooryaa.com.", "ar": "يمكنكم تصحيح معلوماتكم من «ملفي الشخصي» وحذف حسابكم نهائياً من «اشتراكي». ولأي طلب آخر (الوصول، الاعتراض، الشكوى)، راسلونا على contact@nooryaa.com." },
   "Ouvrir": { "en": "Open", "ar": "فتح" },
+  "Vous avez déjà l'application Nooryaa ?": { "en": "Already have the Nooryaa app?", "ar": "هل لديكم تطبيق Nooryaa؟" },
+  "Ouvrir l'application": { "en": "Open the app", "ar": "فتح التطبيق" },
   "modifié · ": { "en": "edited · ", "ar": "تم التعديل · " },
   "Modification du message : ": { "en": "Editing message: ", "ar": "تعديل الرسالة: " },
   "Réponse à : ": { "en": "Replying to: ", "ar": "الرد على: " },

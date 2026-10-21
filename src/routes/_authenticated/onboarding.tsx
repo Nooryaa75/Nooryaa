@@ -16,6 +16,7 @@ import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
+import { OpenInAppButton } from "@/components/OpenInAppButton";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -182,6 +183,7 @@ function Onboarding() {
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
       <p className="text-muted-foreground text-sm mb-2">{t("Les champs marqués * sont obligatoires pour finaliser votre profil.")}</p>
       <p className="text-muted-foreground text-sm mb-6">{t("Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.")}</p>
+      <OpenInAppButton />
       {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
           <p className="font-semibold text-destructive text-sm">{t("Champs obligatoires à compléter :")}</p>

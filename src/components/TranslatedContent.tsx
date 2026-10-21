@@ -3,7 +3,7 @@ import { useI18n, translateText } from "@/lib/i18n";
 import { TRANSLATIONS } from "@/lib/i18n-catalog";
 
 const attributes = ["placeholder", "title", "aria-label"] as const;
-const originals = new WeakMap<Text | Element, Map<string, string>>();
+const originals = new WeakMap<Text | Element, Map<string, { source: string; rendered: string }>>();
 const phrases = Object.keys(TRANSLATIONS).sort((a, b) => b.length - a.length);
 
 function translated(source: string, locale: "fr" | "en" | "ar") {
@@ -33,15 +33,15 @@ function desired(node: Text | Element, key: string, current: string, locale: "fr
     values = new Map();
     originals.set(node, values);
   }
-  if (!values.has(key)) {
-    values.set(key, current);
-    return translated(current, locale);
-  }
-  const source = values.get(key)!;
+  const previous = values.get(key);
+  // Compare with our last actual output, not a translation in the new locale.
+  // Only a value replaced by the application becomes a new French source.
+  const source = previous && (current === previous.source || current === previous.rendered)
+    ? previous.source
+    : current;
   const rendered = translated(source, locale);
-  if (current === source || current === rendered) return rendered;
-  values.set(key, current);
-  return translated(current, locale);
+  values.set(key, { source, rendered });
+  return rendered;
 }
 
 function translateTree(root: HTMLElement, locale: "fr" | "en" | "ar") {

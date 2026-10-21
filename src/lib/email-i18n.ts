@@ -113,7 +113,9 @@ const fr: Copy = {
          <li>Vos conversations, photos et coups de cœur sont conservés ;</li>
          <li>Vous ne recevez plus aucune notification ;</li>
          <li>Vous pouvez réactiver votre compte à tout moment en contactant notre service client.</li>
-       </ul>`,
+       </ul>
+       <p>Qu’Allah vous garde, vous protège et vous accorde la paix et la sérénité.</p>
+       <p>Hâte de vous retrouver sur ${site}, in cha Allah.</p>`,
     cta: "Contacter le service client",
   },
   deleted: {
@@ -126,7 +128,9 @@ const fr: Copy = {
          <li>Votre abonnement éventuel n'est plus renouvelé ;</li>
          <li>Cette action est irréversible : ces données ne peuvent pas être restaurées ;</li>
          <li>Vous pouvez créer un nouveau compte plus tard si vous le souhaitez.</li>
-       </ul>`,
+       </ul>
+       <p>Merci pour la confiance que vous nous avez accordée.</p>
+       <p>Qu’Allah vous garde, vous protège et vous guide vers ce qui est bon pour vous.</p>`,
     cta: (site) => `Revenir sur ${site}`,
   },
   reasonLabel: "Motif indiqué",
@@ -210,7 +214,9 @@ const en: Copy = {
          <li>Your conversations, photos and likes are kept;</li>
          <li>You no longer receive any notification;</li>
          <li>You can reactivate your account any time by contacting our support team.</li>
-       </ul>`,
+       </ul>
+       <p>May Allah watch over you, protect you and grant you peace and serenity.</p>
+       <p>We look forward to welcoming you back to ${site}, in sha Allah.</p>`,
     cta: "Contact support",
   },
   deleted: {
@@ -223,7 +229,9 @@ const en: Copy = {
          <li>Any subscription is no longer renewed;</li>
          <li>This action is irreversible: this data cannot be restored;</li>
          <li>You can create a new account later if you wish.</li>
-       </ul>`,
+       </ul>
+       <p>Thank you for the trust you placed in us.</p>
+       <p>May Allah watch over you, protect you and guide you towards what is good for you.</p>`,
     cta: (site) => `Back to ${site}`,
   },
   reasonLabel: "Reason given",
@@ -307,7 +315,9 @@ const ar: Copy = {
          <li>يتم الاحتفاظ بمحادثاتك وصورك وإعجاباتك؛</li>
          <li>لن تصلك أي إشعارات؛</li>
          <li>يمكنك إعادة تفعيل حسابك في أي وقت بالتواصل مع خدمة العملاء.</li>
-       </ul>`,
+       </ul>
+       <p>حفظكم الله ورعاكم ورزقكم السلام والسكينة.</p>
+       <p>نتطلع إلى عودتكم إلى ${site}، إن شاء الله.</p>`,
     cta: "التواصل مع خدمة العملاء",
   },
   deleted: {
@@ -320,7 +330,9 @@ const ar: Copy = {
          <li>لن يتم تجديد أي اشتراك؛</li>
          <li>هذا الإجراء نهائي ولا يمكن استرجاع البيانات؛</li>
          <li>يمكنك إنشاء حساب جديد لاحقًا إن رغبت.</li>
-       </ul>`,
+       </ul>
+       <p>شكرًا على الثقة التي منحتمونا إياها.</p>
+       <p>حفظكم الله ورعاكم وهداكم إلى ما فيه الخير لكم.</p>`,
     cta: (site) => `العودة إلى ${site}`,
   },
   reasonLabel: "السبب المذكور",

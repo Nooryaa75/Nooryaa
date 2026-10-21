@@ -14,6 +14,7 @@
 - Welcome delivery after social authentication is mounted once at the root; its authenticated server function derives the recipient from the session and shares the existing welcome sender, sent-history check and provider idempotency key to avoid duplicate emails across web and native callbacks.
 
 - Onboarding renders and saves required profile fields only; optional details remain editable in Mon profil and are not cleared when an existing member completes onboarding.
+- The member layout rechecks onboarding on every pathname change and withholds the outlet until that path is verified; onboarding hides member navigation so links cannot bypass completion.
 
 - Store download badges are gated after hydration through the Capacitor bridge so native and admin views never mount their link query (no first-frame native flash); they are always placed directly above the language switcher — inside the auth card on /auth (where the footer hides them to avoid duplication), in the shared footer elsewhere — never below the language controls at the very bottom of a page.
 
@@ -33,4 +34,4 @@
 - Google sign-in in the Android app only works when BOTH certificate fingerprints (the build keystore SHA-1 and the Google Play app-signing SHA-1) exist as separate Android OAuth clients in Google Cloud Console — Play Store installs are signed by Google's key, so a missing Play client makes signIn() fail with code 10.
 - NativeBadgeSync is mounted once at the root and clears the iOS icon through the existing PushNotifications v6 bridge only after successful owner-scoped counts confirm no unread notifications or messages; this avoids a native rebuild and preserves unread alerts.
 - The runtime translation layer (src/components/TranslatedContent.tsx) tracks both the source and its last rendered value: only application-made replacements become new sources, so language switches preserve the French source while counters and toggle labels remain dynamic; subtrees that must stay untouched use data-no-translate.
-- Android deep links: scripts/configure-android-deeplinks.mjs declares the nooryaa://open scheme on MainActivity in both Android workflows; the site opens the app via an intent:// URL (OpenInAppButton, shown on Android only) because App Links auto-verification would require hosting assetlinks.json with the signing SHA-256 fingerprints.
+- Android deep links use configure-android-deeplinks.mjs in both workflows and an intent:// link in OpenInAppButton, gated after hydration to Android browsers only (never native); verified App Links require the Play signing SHA-256.

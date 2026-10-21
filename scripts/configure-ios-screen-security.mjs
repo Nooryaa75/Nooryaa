@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 
 // Le projet iOS est régénéré à chaque build : on y injecte la détection
 // d'enregistrement d'écran dans le contrôleur généré par Capacitor.

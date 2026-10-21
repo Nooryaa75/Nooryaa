@@ -6,7 +6,7 @@
  * important (plus de 10 ans) ou une personne paraissant mineure sont refusés.
  */
 
-export type AgeMatch = "ok" | "doubt" | "mismatch" | "unknown";
+export type AgeMatch = "ok" | "mismatch" | "unknown";
 
 /** Au-delà de cet écart, la photo est refusée. */
 export const MAX_AGE_GAP = 10;
@@ -21,10 +21,7 @@ export function ageGap(declaredAge: number, apparentMin: number, apparentMax: nu
   return 0;
 }
 
-/**
- * Qualifie l'écart. `doubt` (écart moyen) reste informatif : il ne bloque pas
- * et ne signale rien à la modération.
- */
+/** Qualifie l'écart : seul un écart de plus de 10 ans est une incohérence. */
 export function ageGapMatch(
   declaredAge: number,
   apparentMin: number,

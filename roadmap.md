@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Préparer la protection des photos sur iPhone et le site : filigrane NOORYAA sur les photos des membres (deck, vignettes, profil, chat, affichage en grand — jamais dans l'administration), masquage des photos pendant l'enregistrement d'écran sur iPhone via le nouveau script Codemagic, version iPhone 1.0.1 (18) ; 4 tests du script réussis, compilation OK.
+- [ ] Publier le site, lancer Codemagic « Nooryaa iPhone (App Store) » en 1.0.1 (18), puis vérifier le filigrane et le masquage sur un vrai iPhone — publication et appareil nécessaires ; la photo partagée dans le chat reste ouvrable dans un onglet via son lien.
+
 - [x] Préparer la protection des captures Android : FLAG_SECURE dès la création de l’activité dans les deux workflows, version 1.0.15 (18) ; 4 tests réussis et script exécuté deux fois sur activité générée simulée.
 - [ ] Lancer Codemagic « Nooryaa Android (Play Store) », publier 1.0.15 (18) puis vérifier captures et enregistrement sur téléphone — build natif et appareil indisponibles ici. Les anciennes versions et le navigateur ne bénéficient pas de cette protection.
 

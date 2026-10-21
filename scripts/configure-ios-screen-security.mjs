@@ -36,13 +36,19 @@ export function secureMainController(source) {
   return out.slice(0, last) + handler + out.slice(last);
 }
 
-const path = 'ios/App/App/MainViewController.swift';
-if (!existsSync(path)) {
-  throw new Error('Generate the iOS project before configuring screen security.');
+function main() {
+  const path = 'ios/App/App/MainViewController.swift';
+  if (!existsSync(path)) {
+    throw new Error('Generate the iOS project before configuring screen security.');
+  }
+  const secured = secureMainController(readFileSync(path, 'utf8'));
+  writeFileSync(path, secured);
+  if (!secured.includes(MARKER)) {
+    throw new Error('Nooryaa iOS screen security was not applied.');
+  }
+  console.log('Nooryaa iOS screen security configured.');
 }
-const secured = secureMainController(readFileSync(path, 'utf8'));
-writeFileSync(path, secured);
-if (!secured.includes(MARKER)) {
-  throw new Error('Nooryaa iOS screen security was not applied.');
-}
-console.log('Nooryaa iOS screen security configured.');
+
+// Effets sur le projet uniquement quand le script est exécuté par Codemagic,
+// pas quand ses fonctions sont importées par les tests.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) main();

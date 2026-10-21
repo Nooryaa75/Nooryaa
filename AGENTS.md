@@ -36,3 +36,4 @@
 - NativeBadgeSync at the root clears the iOS icon through the PushNotifications v6 bridge only after owner-scoped counts confirm no unread notifications or messages, avoiding a native rebuild.
 - The runtime translation layer (src/components/TranslatedContent.tsx) tracks both the source and its last rendered value: only application-made replacements become new sources, so language switches preserve the French source while counters and toggle labels remain dynamic; subtrees that must stay untouched use data-no-translate.
 - Android deep links use configure-android-deeplinks.mjs in both workflows and an intent:// link in OpenInAppButton, gated after hydration to Android browsers only (never native); verified App Links require the Play signing SHA-256.
+- Apparent-age thresholds for photo control live only in src/lib/photo-age.ts; member messages and admin flags follow the verdict, never the raw estimate.

@@ -24,6 +24,7 @@ import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 import { PlatformTracker } from "@/components/PlatformTracker";
 import { NativeBadgeSync } from "@/components/NativeBadgeSync";
 import { SocialWelcomeSync } from "@/components/SocialWelcomeSync";
+import { ScreenCaptureGuard } from "@/components/ScreenCaptureGuard";
 import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
@@ -248,6 +249,8 @@ function RootComponent() {
         <PlatformTracker />
         <NativeBadgeSync />
         <SocialWelcomeSync />
+        {/* Masque les photos des membres quand l'écran iPhone est enregistré ou partagé. */}
+        <ScreenCaptureGuard />
         <Toaster position="top-center" />
       </QueryClientProvider>
     </I18nProvider>

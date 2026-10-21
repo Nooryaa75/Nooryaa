@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
+import { PhotoWatermark } from "@/components/PhotoWatermark";
 
 export interface LightboxPhoto {
   url: string;
@@ -93,7 +94,10 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         </div>
       </div>
 
-      <div className={`flex-1 flex items-center justify-center p-4 ${zoomed ? "overflow-auto" : "overflow-hidden"}`}>
+      <div
+        className={`relative flex-1 flex items-center justify-center p-4 ${zoomed ? "overflow-auto" : "overflow-hidden"}`}
+        data-photo-guard
+      >
         <img
           src={photo.url}
           alt={photo.caption ?? ""}
@@ -105,6 +109,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
             zoomed ? "max-w-none max-h-none cursor-zoom-out" : "max-h-full max-w-full object-contain cursor-zoom-in"
           }`}
         />
+        <PhotoWatermark />
       </div>
 
       {count > 1 && (

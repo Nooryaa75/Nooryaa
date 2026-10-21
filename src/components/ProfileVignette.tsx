@@ -9,6 +9,7 @@ import { notifyLike } from "@/lib/notify";
 import { isOnline } from "@/lib/discovery";
 import { useI18n } from "@/lib/i18n";
 import { formatDistance } from "@/lib/units";
+import { PhotoWatermark } from "@/components/PhotoWatermark";
 
 export function ageFrom(birthdate?: string | null): number | null {
   if (!birthdate) return null;
@@ -76,7 +77,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
   return (
     <div className="group relative w-full rounded-xl overflow-hidden border border-border/40 bg-card shadow-[var(--shadow-card)]">
       <Link to="/profile/$pseudo" params={{ pseudo: profile.pseudo }} className="block w-full h-full">
-        <div className="relative aspect-[2/3] w-full bg-secondary overflow-hidden">
+        <div className="relative aspect-[2/3] w-full bg-secondary overflow-hidden" data-photo-guard>
           {online && (
             <span
               className="absolute top-1.5 left-1.5 z-10 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/80"
@@ -95,6 +96,7 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
               <User className="h-8 w-8 text-muted-foreground/40" />
             </div>
           )}
+          <PhotoWatermark />
 
           {/* Voile sombre en bas pour le texte */}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2 pb-2 pt-8">

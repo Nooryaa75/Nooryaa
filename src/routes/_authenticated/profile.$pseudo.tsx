@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { formatDistance, formatHeight } from "@/lib/units";
+import { PhotoWatermark } from "@/components/PhotoWatermark";
 
 export const Route = createFileRoute("/_authenticated/profile/$pseudo")({
   head: ({ params }) => ({
@@ -195,12 +196,13 @@ function ProfileView() {
       </Button>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary">
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary" data-photo-guard>
             {active ? (
               <img src={active.url} alt={profile.pseudo} className={`w-full h-full object-cover ${active.blurred && !photosRevealed ? "blur-md scale-110" : ""}`} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><User className="h-24 w-24 text-muted-foreground/40" /></div>
             )}
+            <PhotoWatermark />
             {displayPhotos.length > 1 && (
               <>
                 <button

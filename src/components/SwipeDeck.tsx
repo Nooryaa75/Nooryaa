@@ -22,6 +22,7 @@ import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
 import { useI18n } from "@/lib/i18n";
 import { formatDistance, formatHeight } from "@/lib/units";
+import { PhotoWatermark } from "@/components/PhotoWatermark";
 
 type Props = {
   title: string;
@@ -214,7 +215,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
         <div className="mx-auto max-w-md">
           {/* Photo principale plein cadre avec les infos en surimpression */}
           <div className="relative rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-card)] bg-secondary">
-            <div className="relative h-[68vh] max-h-[640px] min-h-[380px]">
+            <div className="relative h-[68vh] max-h-[640px] min-h-[380px]" data-photo-guard>
               {current.primary_photo_url ? (
                 <img
                   src={current.primary_photo_url}
@@ -225,6 +226,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><User className="h-20 w-20 text-muted-foreground/40" /></div>
               )}
+              <PhotoWatermark />
 
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
                 <span data-no-translate className="rounded-full bg-black/45 backdrop-blur px-3 py-1 text-[11px] font-medium text-white">

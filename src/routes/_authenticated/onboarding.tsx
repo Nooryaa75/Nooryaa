@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { OBJECTIVES, COUNTRIES, CITIES, maxBirthdate, minBirthdate, isAdult } from "@/lib/profile";
+import { OBJECTIVES, COUNTRIES, CITIES, isAdult } from "@/lib/profile";
 import { EyeOff } from "lucide-react";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
@@ -17,6 +17,7 @@ import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
+import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -233,7 +234,7 @@ function Onboarding() {
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="birthdate">Date de naissance *</Label>
-            <Input id="birthdate" type="date" required min={minBirthdate()} max={maxBirthdate()} value={form.birthdate} onChange={(e) => setForm({ ...form, birthdate: e.target.value })} />
+            <BirthdateCalendar id="birthdate" value={form.birthdate} onChange={(birthdate) => setForm({ ...form, birthdate })} />
             <p className="text-[11px] text-muted-foreground mt-1">Inscription réservée aux 18 ans et plus.</p>
           </div>
           <div>

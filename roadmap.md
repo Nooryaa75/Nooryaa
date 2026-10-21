@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Remplacer le calendrier de naissance à l’inscription par un calendrier Nooryaa lisible et vérifier la sélection sur téléphone.
+
 - [x] Inscription Android : encart masqué en natif, menus retirés pendant la fiche, accès directs renvoyés vers l’inscription ; 2 tests réussis et essai connecté avec fiche incomplète simulée. Saisie fonctionnelle dans le navigateur et avec pont natif simulé après fermeture des fenêtres ; aucune erreur.
 - [ ] Vérifier le blocage de saisie signalé sur le vrai Android après publication : non reproduit ici, téléphone indisponible.
 

@@ -23,9 +23,9 @@
 
 - Admin language is derived centrally from the current route without overwriting the member’s saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data remains unchanged.
 
-- Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).
+- Android versions live in codemagic.yaml because projects regenerate; update both workflows together and always increase versionCode.
 - Both Android workflows set and verify minSdkVersion 24 and compileSdkVersion/targetSdkVersion 36 in generated Gradle variables before compilation to meet Google Play requirements.
-- Both Android workflows install launcher resources through scripts/configure-android-icon.mjs after project generation; notification icons are separate and do not replace the launcher icon.
+- Both Android workflows configure launcher icons separately from notification icons and run configure-android-screen-security.mjs after generation to set FLAG_SECURE before activity creation, preventing ordinary screen capture.
 - Android builds must declare POST_NOTIFICATIONS, CAMERA, RECORD_AUDIO and location permissions in the manifest (one codemagic.yaml step, both workflows) — without them Android 13+ greys out the notification toggle and the WebView camera fails, blocking the mandatory selfie. The notification channel is created at startup by src/lib/push.ts, and src/lib/push.server.ts must keep sending to that same channel id.
 - The iOS project is regenerated each build like Android: codemagic.yaml iOS workflows apply scripts/configure-ios-icon.mjs, scripts/configure-ios-push.mjs (push entitlements + background modes) and scripts/set-ios-version.mjs <version> <build>. Keep those three steps in both iOS workflows and bump the iOS version together with the Android one on each release.
 - Push payloads must carry both the Android channel id and an APNs sound: src/lib/push.server.ts sends `android.channel_id` and `apns.payload.aps.sound` in the same message, and src/lib/push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker can pick the matching app_versions row and store link.

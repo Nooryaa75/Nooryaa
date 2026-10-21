@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Préparer la protection des captures Android : FLAG_SECURE dès la création de l’activité dans les deux workflows, version 1.0.15 (18) ; 4 tests réussis et script exécuté deux fois sur activité générée simulée.
+- [ ] Lancer Codemagic « Nooryaa Android (Play Store) », publier 1.0.15 (18) puis vérifier captures et enregistrement sur téléphone — build natif et appareil indisponibles ici. Les anciennes versions et le navigateur ne bénéficient pas de cette protection.
+
 - [x] Préparer le retour navigateur vers l'application iPhone : bouton iOS, lien déclaré dans les deux workflows Codemagic, version 1.0.1 (17) ; 6 tests réussis, script idempotent et conservation des autres liens vérifiés, compilation OK.
 - [ ] Publier le site, lancer Codemagic « Nooryaa iPhone (App Store) » puis vérifier le bouton sur un vrai iPhone — actions utilisateur et appareil nécessaires ; le bouton ouvre l'app sans transférer la connexion du navigateur.
 

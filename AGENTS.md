@@ -14,6 +14,7 @@
 - Welcome delivery after social authentication is mounted once at the root; its authenticated server function derives the recipient from the session and shares the existing welcome sender, sent-history check and provider idempotency key to avoid duplicate emails across web and native callbacks.
 
 - Onboarding renders and saves required profile fields only; optional details remain editable in Mon profil and are not cleared when an existing member completes onboarding.
+- Onboarding uses the themed Shadcn BirthdateCalendar, not device dialogs, for legibility; retain age limits and date-only storage.
 - The member layout rechecks onboarding on every pathname change and withholds the outlet until that path is verified; onboarding hides member navigation so links cannot bypass completion.
 
 - Store download badges are gated after hydration through the Capacitor bridge so native and admin views never mount their link query (no first-frame native flash); they are always placed directly above the language switcher — inside the auth card on /auth (where the footer hides them to avoid duplication), in the shared footer elsewhere — never below the language controls at the very bottom of a page.
@@ -23,7 +24,7 @@
 - Admin language is derived centrally from the current route without overwriting the member’s saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data remains unchanged.
 
 - Android versionCode/versionName are set in codemagic.yaml (step "Set app version") because the Android project is regenerated each build — update both workflows together on each version bump (code must always increase).
-- Both Android workflows set and verify minSdkVersion 24 AND compileSdkVersion/targetSdkVersion 36 in the generated Gradle variables before compilation because Google Play requires Android API 24+ (automatic protection) and target API 36 (published apps must target it; warning today, mandatory next year).
+- Both Android workflows set and verify minSdkVersion 24 and compileSdkVersion/targetSdkVersion 36 in generated Gradle variables before compilation to meet Google Play requirements.
 - Both Android workflows install launcher resources through scripts/configure-android-icon.mjs after project generation; notification icons are separate and do not replace the launcher icon.
 - Android builds must declare POST_NOTIFICATIONS, CAMERA, RECORD_AUDIO and location permissions in the manifest (one codemagic.yaml step, both workflows) — without them Android 13+ greys out the notification toggle and the WebView camera fails, blocking the mandatory selfie. The notification channel is created at startup by src/lib/push.ts, and src/lib/push.server.ts must keep sending to that same channel id.
 - The iOS project is regenerated each build like Android: codemagic.yaml iOS workflows apply scripts/configure-ios-icon.mjs, scripts/configure-ios-push.mjs (push entitlements + background modes) and scripts/set-ios-version.mjs <version> <build>. Keep those three steps in both iOS workflows and bump the iOS version together with the Android one on each release.

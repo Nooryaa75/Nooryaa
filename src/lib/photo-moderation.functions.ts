@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
+import { ageGapMatch, appearsMinor, type AgeMatch } from "./photo-age";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
 
@@ -14,7 +15,7 @@ export type PhotoModerationResult = {
   filtered: "no" | "light" | "heavy";
   apparent_age_min: number;
   apparent_age_max: number;
-  age_match: "ok" | "doubt" | "mismatch" | "unknown";
+  age_match: AgeMatch;
 };
 
 const SYSTEM_PROMPT = `Tu es le modérateur photo de Nooryaa, plateforme de mise en relation musulmane sérieuse (pudeur / hayâ).
@@ -115,32 +116,22 @@ export const moderatePhoto = createServerFn({ method: "POST" })
 
     const { apparent_age_min: lo, apparent_age_max: hi } = result;
     if (lo > 0 && hi > 0) {
-      if (hi < 18) {
+      if (appearsMinor(lo, hi)) {
         result.verdict = "block";
         result.categories = [...result.categories, "mineur_apparent"];
         result.reason = result.reason || "La personne sur la photo paraît mineure.";
         result.reasonFr = result.reasonFr || "La personne sur la photo paraît mineure.";
       } else if (data.declaredAge) {
-        const gap =
-          data.declaredAge < lo ? lo - data.declaredAge : data.declaredAge > hi ? data.declaredAge - hi : 0;
-        result.age_match = gap <= 4 ? "ok" : gap <= 10 ? "doubt" : "mismatch";
+        // Un écart moyen (jusqu'à 10 ans) laisse passer la photo, sans message
+        // ni signalement : une photo un peu ancienne ne doit pas pénaliser une
+        // personne honnête. Seul un écart supérieur à 10 ans est refusé.
+        result.age_match = ageGapMatch(data.declaredAge, lo, hi);
         if (result.age_match === "mismatch") {
-          // Écart supérieur à 10 ans : la photo ne correspond manifestement pas
-          // à la personne déclarée, on la refuse. Les âges exacts restent dans le journal.
           result.verdict = "block";
           result.categories = [...result.categories, "age_incoherent"];
           result.reason =
             "L'âge visible sur cette photo ne correspond pas à votre âge déclaré. Merci d'utiliser une photo récente de vous.";
           result.reasonFr = `L'âge apparent sur la photo (environ ${lo}-${hi} ans) est trop éloigné de votre âge déclaré (${data.declaredAge} ans). Merci d'utiliser une photo récente de vous.`;
-        } else if (result.age_match === "doubt" && result.verdict === "allow") {
-          result.verdict = "warn";
-          result.categories = [...result.categories, "age_a_verifier"];
-          result.reason =
-            result.reason ||
-            "L'âge visible sur cette photo diffère de votre âge déclaré. Merci d'utiliser une photo récente de vous.";
-          result.reasonFr =
-            result.reasonFr ||
-            `L'âge apparent sur la photo (environ ${lo}-${hi} ans) diffère de l'âge déclaré (${data.declaredAge} ans).`;
         }
       }
     }

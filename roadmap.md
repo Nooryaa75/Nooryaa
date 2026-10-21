@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Remplacer le calendrier de naissance à l’inscription par un calendrier Nooryaa lisible et vérifier la sélection sur téléphone.
+- [x] Calendrier Nooryaa à l’inscription : choix mois/année et sélection du 18 avril 1993 vérifiés sur écran mobile en mode sombre, session connectée avec fiche incomplète simulée ; aucune erreur. Publication et essai sur vrai téléphone restent à faire.
+- [ ] Examiner le selfie accepté pour prilege1@gmail.com malgré un âge déclaré de 18 ans au lieu de 42 ans.
 
 - [x] Inscription Android : encart masqué en natif, menus retirés pendant la fiche, accès directs renvoyés vers l’inscription ; 2 tests réussis et essai connecté avec fiche incomplète simulée. Saisie fonctionnelle dans le navigateur et avec pont natif simulé après fermeture des fenêtres ; aucune erreur.
 - [ ] Vérifier le blocage de saisie signalé sur le vrai Android après publication : non reproduit ici, téléphone indisponible.

@@ -11,29 +11,29 @@
 
 ## Project rules
 
-- Welcome delivery after social authentication is mounted once at the root; its authenticated server function derives the recipient from the session and shares the existing welcome sender, sent-history check and provider idempotency key to avoid duplicate emails across web and native callbacks.
+- Welcome email after social authentication is mounted once at the root; the authenticated server function derives the recipient from the session and reuses the welcome sender, sent-history check and idempotency key (no duplicates web/native).
 
-- Onboarding renders and saves required profile fields only; optional details remain editable in Mon profil and are not cleared when an existing member completes onboarding.
-- Onboarding uses the themed Shadcn BirthdateCalendar, not device dialogs, for legibility; retain age limits and date-only storage.
-- The member layout rechecks onboarding on every pathname change and withholds the outlet until that path is verified; onboarding hides member navigation so links cannot bypass completion.
+- Onboarding renders and saves required profile fields only; optional details stay editable in Mon profil and are not cleared for existing members.
+- Onboarding uses the themed Shadcn BirthdateCalendar, not device dialogs; retain age limits and date-only storage.
+- The member layout rechecks onboarding on every pathname change and withholds the outlet until verified; onboarding hides member navigation so links cannot bypass completion.
 
-- Store download badges are gated after hydration through the Capacitor bridge so native and admin views never mount their link query (no first-frame native flash); they are always placed directly above the language switcher — inside the auth card on /auth (where the footer hides them to avoid duplication), in the shared footer elsewhere — never below the language controls at the very bottom of a page.
+- Store download badges are gated after hydration through the Capacitor bridge (native and admin never mount their link query); they sit directly above the language switcher — auth card on /auth (footer hides them there), shared footer elsewhere — never below the language controls.
 
-- Admin discussions union message pairs with liked-profile pairs to match member inboxes; paginated reads must exhaust all database pages before grouping, and UI pagination must never truncate the available history.
-
-- Admin language is derived centrally from the current route without overwriting the member’s saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data remains unchanged.
+- Admin discussions union message and liked-profile pairs to match member inboxes; paginated reads must exhaust all database pages before grouping, and UI pagination must never truncate history.
+- Admin language is derived centrally from the current route without overwriting the member's saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data stays unchanged.
 
 - Android versions live in codemagic.yaml because projects regenerate; update both workflows together and always increase versionCode.
-- Both Android workflows set and verify minSdkVersion 24 and compileSdkVersion/targetSdkVersion 36 in generated Gradle variables before compilation to meet Google Play requirements.
-- Both Android workflows configure launcher icons separately from notification icons and run configure-android-screen-security.mjs after generation to set FLAG_SECURE before activity creation, preventing ordinary screen capture.
-- Android builds must declare POST_NOTIFICATIONS, CAMERA, RECORD_AUDIO and location permissions in the manifest (one codemagic.yaml step, both workflows) — without them Android 13+ greys out the notification toggle and the WebView camera fails, blocking the mandatory selfie. The notification channel is created at startup by src/lib/push.ts, and src/lib/push.server.ts must keep sending to that same channel id.
-- The iOS project is regenerated each build like Android: codemagic.yaml iOS workflows apply scripts/configure-ios-icon.mjs, scripts/configure-ios-push.mjs (push entitlements + background modes) and scripts/set-ios-version.mjs <version> <build>. Keep those three steps in both iOS workflows and bump the iOS version together with the Android one on each release.
-- Push payloads must carry both the Android channel id and an APNs sound: src/lib/push.server.ts sends `android.channel_id` and `apns.payload.aps.sound` in the same message, and src/lib/push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker can pick the matching app_versions row and store link.
+- Both Android workflows set and verify minSdkVersion 24 and compileSdkVersion/targetSdkVersion 36 before compilation to meet Google Play requirements.
+- Both Android workflows configure launcher icons separately from notification icons and run configure-android-screen-security.mjs to set FLAG_SECURE before activity creation, preventing ordinary screen capture.
+- Android builds must declare POST_NOTIFICATIONS, CAMERA, RECORD_AUDIO and location permissions in the manifest (one codemagic.yaml step, both workflows) — otherwise Android 13+ greys out the notification toggle and the WebView camera fails, blocking the mandatory selfie. The notification channel is created at startup by src/lib/push.ts; push.server.ts must keep sending to that same channel id.
+- The iOS project is regenerated each build like Android: codemagic.yaml iOS workflows apply scripts/configure-ios-icon.mjs, configure-ios-push.mjs (push entitlements + background modes), configure-ios-deeplinks.mjs, configure-ios-screen-security.mjs (UIScreen.capturedDidChange → WebView) and set-ios-version.mjs <version> <build>. Keep those steps in both iOS workflows and bump the iOS version with the Android one on each release.
+- Member photos carry the PhotoWatermark overlay and data-photo-guard wrappers on member surfaces only (deck, vignettes, profile gallery, chat photos, member lightbox) — never in admin (admin lightbox passes watermarked={false}). ScreenCaptureGuard at the root toggles html.nooryaa-recording from the native iOS captured event so guarded photos hide while the screen is recorded or shared.
+- Push payloads must carry the Android channel id and an APNs sound together (push.server.ts sends `android.channel_id` and `apns.payload.aps.sound`); push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker picks the matching app_versions row and store link.
 
 - AppUpdateChecker is mounted once in src/routes/__root.tsx (not in a layout) so native users are prompted on every page, including admin and login screens that admin accounts land on.
 - Codemagic workflows must install Capacitor plugins with `npm install --save` (never --no-save) and verify them in android/capacitor.settings.gradle — `cap sync` only bundles plugins listed in package.json, otherwise push, App and GoogleAuth silently disappear from the native app.
-- Google sign-in in the Android app only works when BOTH certificate fingerprints (the build keystore SHA-1 and the Google Play app-signing SHA-1) exist as separate Android OAuth clients in Google Cloud Console — Play Store installs are signed by Google's key, so a missing Play client makes signIn() fail with code 10.
+- Google sign-in on Android requires BOTH certificate fingerprints (build keystore SHA-1 and Google Play app-signing SHA-1) as separate Android OAuth clients in Google Cloud Console — Play Store installs are signed by Google's key; a missing Play client makes signIn() fail with code 10.
 - NativeBadgeSync at the root clears the iOS icon through the PushNotifications v6 bridge only after owner-scoped counts confirm no unread notifications or messages, avoiding a native rebuild.
-- The runtime translation layer (src/components/TranslatedContent.tsx) tracks both the source and its last rendered value: only application-made replacements become new sources, so language switches preserve the French source while counters and toggle labels remain dynamic; subtrees that must stay untouched use data-no-translate.
-- OpenInAppButton uses Android intent:// and iOS nooryaa://open, browser-only after hydration. Both platform workflows register the scheme via configure-*-deeplinks.mjs; links reopen the app without transferring sessions. HTTPS links need domain association.
+- The runtime translation layer (TranslatedContent.tsx) tracks source and last rendered value: only application-made replacements become new sources, so language switches preserve the French source while dynamic labels stay dynamic; subtrees opt out with data-no-translate.
+- OpenInAppButton uses Android intent:// and iOS nooryaa://open, browser-only after hydration; both workflows register the scheme via configure-*-deeplinks.mjs and links reopen the app without transferring sessions. HTTPS links need domain association.
 - Apparent-age thresholds for photo control live only in src/lib/photo-age.ts; member messages and admin flags follow the verdict, never the raw estimate.

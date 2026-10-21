@@ -165,6 +165,7 @@ function AdminProfileDetail() {
             index={Math.min(photoIndex, data.photos.length - 1)}
             onIndexChange={setPhotoIndex}
             onClose={() => setPhotoIndex(null)}
+            watermarked={false}
           />
         )}
 

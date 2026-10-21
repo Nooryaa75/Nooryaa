@@ -16,6 +16,8 @@ interface PhotoLightboxProps {
   onIndexChange: (index: number) => void;
   /** Appelé pour fermer l'affichage en grand. */
   onClose: () => void;
+  /** Filigrane de dissuasion ; désactivé dans l'administration. */
+  watermarked?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ interface PhotoLightboxProps {
  * hors de la photo pour fermer, et clic sur la photo pour l'afficher
  * à sa taille réelle.
  */
-export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLightboxProps) {
+export function PhotoLightbox({ photos, index, onIndexChange, onClose, watermarked = true }: PhotoLightboxProps) {
   const [zoomed, setZoomed] = useState(false);
   const count = photos.length;
   const photo = photos[index];
@@ -109,7 +111,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
             zoomed ? "max-w-none max-h-none cursor-zoom-out" : "max-h-full max-w-full object-contain cursor-zoom-in"
           }`}
         />
-        <PhotoWatermark />
+        {watermarked && <PhotoWatermark />}
       </div>
 
       {count > 1 && (

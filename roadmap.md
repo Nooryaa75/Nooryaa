@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Corriger l’inscription Android : masquer l’ouverture de l’application en natif, vérifier les champs et empêcher les menus/liens de contourner la fiche obligatoire.
+- [x] Inscription Android : encart masqué en natif, menus retirés pendant la fiche, accès directs renvoyés vers l’inscription ; 2 tests réussis et essai connecté avec fiche incomplète simulée. Saisie fonctionnelle dans le navigateur et avec pont natif simulé après fermeture des fenêtres ; aucune erreur.
+- [ ] Vérifier le blocage de saisie signalé sur le vrai Android après publication : non reproduit ici, téléphone indisponible.
 
 - [x] Corriger le changement de langue sur les textes déjà affichés : passages EN → FR → AR → EN → FR vérifiés sur la connexion, valeurs dynamiques et attributs conservés ; compilation OK, publication non demandée.
 

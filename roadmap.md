@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Protéger les photos contre les captures Android : FLAG_SECURE appliqué à l’activité dans les deux workflows, version suivante, tests du script ; rebuild et essai téléphone nécessaires.
+
 - [x] Préparer le retour navigateur vers l'application iPhone : bouton iOS, lien déclaré dans les deux workflows Codemagic, version 1.0.1 (17) ; 6 tests réussis, script idempotent et conservation des autres liens vérifiés, compilation OK.
 - [ ] Publier le site, lancer Codemagic « Nooryaa iPhone (App Store) » puis vérifier le bouton sur un vrai iPhone — actions utilisateur et appareil nécessaires ; le bouton ouvre l'app sans transférer la connexion du navigateur.
 

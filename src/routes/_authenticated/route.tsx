@@ -1,10 +1,11 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
 import { isValidPhone } from "@/components/PhoneInput";
+import { onboardingDestination } from "@/lib/onboarding-access";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -24,7 +25,8 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthenticatedLayout() {
   const { userId } = Route.useRouteContext();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<"checking" | "ok">("checking");
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const [verified, setVerified] = useState<{ userId: string; pathname: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,17 +62,19 @@ function AuthenticatedLayout() {
           (p.last_name ?? "").trim().length < 2 ||
           !isValidPhone(p.phone ?? ""));
 
-      if ((!profile?.onboarded || missingIdentity) && window.location.pathname !== "/onboarding") {
-        navigate({ to: "/onboarding", replace: true });
+      const destination = onboardingDestination(!profile?.onboarded || missingIdentity, pathname);
+      if (destination) {
+        await navigate({ to: destination, replace: true });
+        return;
       }
 
-      setStatus("ok");
+      setVerified({ userId, pathname });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [userId, navigate]);
+  }, [userId, navigate, pathname]);
 
   // Notifications push mobiles : enregistre l'appareil (application Android
   // uniquement ; ne fait rien dans le navigateur).
@@ -94,7 +98,7 @@ function AuthenticatedLayout() {
     return () => clearInterval(t);
   }, [userId]);
 
-  if (status === "checking") {
+  if (verified?.userId !== userId || verified?.pathname !== pathname) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex gap-1.5" aria-label="Chargement">
@@ -112,8 +116,8 @@ function AuthenticatedLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
-      <PushPermissionNotice userId={userId} />
+      {pathname !== "/onboarding" && <AppHeader />}
+      {pathname !== "/onboarding" && <PushPermissionNotice userId={userId} />}
       <main className="container mx-auto px-4 pt-6 pb-24 md:py-8 max-w-6xl">
 
         <Outlet />

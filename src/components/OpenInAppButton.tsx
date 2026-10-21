@@ -14,7 +14,12 @@ export function OpenInAppButton() {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    setIsAndroid(/android/i.test(navigator.userAgent));
+    const cap = (window as unknown as {
+      Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string; platform?: string };
+    }).Capacitor;
+    const platform = cap?.getPlatform?.() ?? cap?.platform;
+    const native = cap?.isNativePlatform?.() || platform === "android" || platform === "ios";
+    setIsAndroid(!native && /android/i.test(navigator.userAgent));
   }, []);
 
   if (!isAndroid) return null;

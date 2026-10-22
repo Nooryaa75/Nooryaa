@@ -1,5 +1,6 @@
 import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
 import { YesNoRadio } from "@/components/YesNoRadio";
+import { ChoiceRadio } from "@/components/ChoiceRadio";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 import { practiceChecks } from "@/lib/onboarding-practice";
 import { loadPresignup, clearPresignup, hasPresignup, presignupProfilePatch } from "@/lib/presignup";
+import { wantsChildrenAnswered, wantsChildrenChoice } from "@/lib/wants-children";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -52,7 +54,7 @@ function Onboarding() {
     height_cm: "",
     has_children: null as boolean | null,
     children_count: "",
-    wants_children: null as boolean | null,
+    wants_children: "" as string,
     activities: "",
     salat_quotidienne: null as boolean | null,
     ramadan: null as boolean | null,
@@ -84,7 +86,7 @@ function Onboarding() {
       [0, t("Situation"), !!form.marital_status],
       [0, t("Avez-vous des enfants ?"), form.has_children !== null],
       [0, t("Combien d'enfants ?"), form.has_children !== true || Number(form.children_count) >= 1],
-      [0, t("Voulez-vous des enfants ?"), form.wants_children !== null],
+      [0, t("Voulez-vous des enfants ?"), wantsChildrenAnswered(form.wants_children)],
       [0, t("Taille (en cm)"), Number(form.height_cm) >= 120 && Number(form.height_cm) <= 230],
       [0, t("Ville de résidence"), !!form.city],
       [0, t("Pays de résidence"), !!form.country],
@@ -173,7 +175,8 @@ function Onboarding() {
           marital_status: data?.marital_status || f.marital_status,
           has_children: (data as any)?.has_children ?? f.has_children,
           children_count: (data as any)?.children_count ? String((data as any).children_count) : f.children_count,
-          wants_children: (data as any)?.wants_children ?? f.wants_children,
+          wants_children:
+            wantsChildrenChoice((data as any)?.wants_children_answer ?? (data as any)?.wants_children) || f.wants_children,
           height_cm: (data as any)?.height_cm ? String((data as any).height_cm) : f.height_cm,
           salat_quotidienne: (data as any)?.salat_quotidienne ?? f.salat_quotidienne,
           ramadan: (data as any)?.ramadan ?? f.ramadan,
@@ -250,7 +253,7 @@ function Onboarding() {
       height_cm: Number(form.height_cm),
       has_children: form.has_children,
       children_count: form.has_children ? Number(form.children_count) : null,
-      wants_children: form.wants_children,
+      wants_children_answer: wantsChildrenChoice(form.wants_children) || null,
       activities: form.activities || null,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
@@ -349,7 +352,17 @@ function Onboarding() {
               <Input id="children_count" type="number" inputMode="numeric" min={1} max={20} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: e.target.value.replace(/\D/g, "").slice(0, 2) })} placeholder="1" />
             </div>
           )}
-          <YesNoRadio name="wants_children" label="Voulez-vous des enfants ? *" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
+          <ChoiceRadio
+            name="wants_children"
+            label="Voulez-vous des enfants ? *"
+            value={form.wants_children}
+            onChange={(v) => setForm({ ...form, wants_children: v })}
+            options={[
+              { value: "oui", label: "Oui" },
+              { value: "non", label: "Non" },
+              { value: "je_ne_sais_pas", label: "Je ne sais pas" },
+            ]}
+          />
         </div>
         {(!form.city || !form.country) && (
         <div className="grid md:grid-cols-2 gap-4">

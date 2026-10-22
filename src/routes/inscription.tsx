@@ -144,7 +144,7 @@ function InscriptionWizard() {
           <LanguageSwitcher inline />
         </div>
 
-        <h1 className="text-2xl font-serif text-center text-primary mb-6">{t(STEP_TITLES[step])}</h1>
+        <h1 className="text-2xl font-serif text-center text-primary mb-6">{t(signedIn && step === STEP_TITLES.length - 1 ? "Presque terminé" : STEP_TITLES[step])}</h1>
 
         {step === 0 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">

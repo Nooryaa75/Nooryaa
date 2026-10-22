@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
 import { Route as SecuriteEnfantsRouteImport } from './routes/securite-enfants'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as VerificationEmailRouteImport } from './routes/verification-email'
 import { Route as AuthenticatedBlockedRouteImport } from './routes/_authenticated/blocked'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
@@ -103,6 +104,11 @@ const SecuriteEnfantsRoute = SecuriteEnfantsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationEmailRoute = VerificationEmailRouteImport.update({
+  id: '/verification-email',
+  path: '/verification-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBlockedRoute = AuthenticatedBlockedRouteImport.update({
@@ -337,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verification-email': typeof VerificationEmailRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verification-email': typeof VerificationEmailRoute
   '/blocked': typeof AuthenticatedBlockedRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/likes': typeof AuthenticatedLikesRoute
@@ -442,6 +450,7 @@ export interface FileRoutesById {
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/securite-enfants': typeof SecuriteEnfantsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verification-email': typeof VerificationEmailRoute
   '/_authenticated/blocked': typeof AuthenticatedBlockedRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRouteWithChildren
@@ -496,6 +505,7 @@ export interface FileRouteTypes {
     | '/reinitialiser-mot-de-passe'
     | '/securite-enfants'
     | '/sitemap.xml'
+    | '/verification-email'
     | '/blocked'
     | '/browse'
     | '/compte'
@@ -548,6 +558,7 @@ export interface FileRouteTypes {
     | '/reinitialiser-mot-de-passe'
     | '/securite-enfants'
     | '/sitemap.xml'
+    | '/verification-email'
     | '/blocked'
     | '/browse'
     | '/likes'
@@ -600,6 +611,7 @@ export interface FileRouteTypes {
     | '/reinitialiser-mot-de-passe'
     | '/securite-enfants'
     | '/sitemap.xml'
+    | '/verification-email'
     | '/_authenticated/blocked'
     | '/_authenticated/browse'
     | '/_authenticated/compte'
@@ -654,6 +666,7 @@ export interface RootRouteChildren {
   ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
   SecuriteEnfantsRoute: typeof SecuriteEnfantsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  VerificationEmailRoute: typeof VerificationEmailRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminConfigRoute: typeof AdminConfigRoute
@@ -740,6 +753,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification-email': {
+      id: '/verification-email'
+      path: '/verification-email'
+      fullPath: '/verification-email'
+      preLoaderRoute: typeof VerificationEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/blocked': {
@@ -1121,6 +1141,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
   SecuriteEnfantsRoute: SecuriteEnfantsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  VerificationEmailRoute: VerificationEmailRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminConfigRoute: AdminConfigRoute,

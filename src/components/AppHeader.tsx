@@ -44,12 +44,26 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
+  const { data: me } = useQuery({
+    queryKey: ["me-completion"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      return (await supabase.from("profiles").select("*").eq("id", u.user.id).single()).data;
+    },
+    staleTime: 60_000,
+  });
+  const incomplete = !!me && profileCompletion(me).percent < 100;
 
   function countFor(to: string) {
     if (to === "/likes") return counts?.likes ?? 0;
     if (to === "/messages") return counts?.messages ?? 0;
     return 0;
   }
+  const dot = (to: string) =>
+    to === "/compte" && incomplete ? (
+      <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-card" aria-label={t("Profil à compléter")} />
+    ) : null;
 
 
   async function signOut() {

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { profileCompletion } from "@/lib/profile-completion";
 import {
   User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck, Database,
   ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
@@ -33,6 +34,7 @@ function CompteHome() {
     queryKey: ["me", ctx.userId],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
   });
+  const completion = profileCompletion(profile);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -82,6 +84,32 @@ function CompteHome() {
           </div>
         </div>
       </Link>
+
+      {/* Taux de remplissage du profil */}
+      {profile && completion.percent < 100 && (
+        <Link to="/compte/profil" className="block bg-card rounded-2xl p-4 border border-primary/30 shadow-[var(--shadow-card)]">
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 shrink-0">
+              <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
+                <circle cx="18" cy="18" r="15.9" fill="none" className="stroke-secondary" strokeWidth="3.5" />
+                <circle cx="18" cy="18" r="15.9" fill="none" className="stroke-accent" strokeWidth="3.5"
+                  strokeLinecap="round" strokeDasharray={`${completion.percent} 100`} pathLength={100} />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-primary">{completion.percent}%</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-bold text-primary">Profil complété à {completion.percent} %</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Les profils complets reçoivent jusqu'à 3× plus de likes.</p>
+              <p className="text-xs text-muted-foreground mt-1 truncate">
+                À compléter : {completion.missing.slice(0, 3).map((m) => m.label).join(", ")}
+                {completion.missing.length > 3 ? "…" : ""}
+              </p>
+            </div>
+            <span className="text-accent text-sm font-semibold shrink-0">Compléter</span>
+          </div>
+        </Link>
+      )}
+
 
       {/* Langue */}
       <div className="bg-card rounded-2xl p-4 border border-border/60 shadow-[var(--shadow-card)]">

@@ -40,7 +40,7 @@ function AuthenticatedLayout() {
       const [{ data: profile }, { data: roles }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("onboarded, first_name, last_name, phone")
+          .select("onboarded, phone")
           .eq("id", userId)
           .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin"),
@@ -53,14 +53,13 @@ function AuthenticatedLayout() {
         return;
       }
 
-      // Profil terminé mais sans prénom, nom ou téléphone valide (anciens
-      // inscrits) : on renvoie vers la fiche pour compléter.
+      // Profil terminé mais sans téléphone valide (anciens inscrits ou
+      // inscription Google/Apple) : on renvoie vers la fiche pour compléter.
+      // Le prénom et le nom ne sont plus demandés dans la fiche.
       const p = profile as any;
       const missingIdentity =
         !!p?.onboarded && !(roles && roles.length > 0) &&
-        ((p.first_name ?? "").trim().length < 2 ||
-          (p.last_name ?? "").trim().length < 2 ||
-          !isValidPhone(p.phone ?? ""));
+        !isValidPhone(p.phone ?? "");
 
       const destination = onboardingDestination(!profile?.onboarded || missingIdentity, pathname);
       if (destination) {

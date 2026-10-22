@@ -212,26 +212,20 @@ function Onboarding() {
       )}
       <form onSubmit={submit} className="space-y-5">
         {step === 0 && (<div key="s0" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="firstName">Prénom *</Label>
-            <Input id="firstName" maxLength={60} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="Amina" />
-          </div>
-          <div>
-            <Label htmlFor="lastName">Nom *</Label>
-            <Input id="lastName" maxLength={60} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Benali" />
-          </div>
-        </div>
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
         </div>
-        <div>
-          <Label htmlFor="phone">Téléphone *</Label>
-          <PhoneInput id="phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} readOnly={isValidPhone(form.phone) && lockedPhone} />
-          {lockedPhone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
-        </div>
+        {lockedPhone ? (
+          <p className="text-[11px] text-muted-foreground">{t("Téléphone repris de votre inscription — il garantit un seul compte par personne.")}</p>
+        ) : (
+          <div>
+            <Label htmlFor="phone">Téléphone *</Label>
+            <PhoneInput id="phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+            <p className="text-[11px] text-muted-foreground mt-1">{t("Il garantit un seul compte par personne.")}</p>
+          </div>
+        )}
         <div>
           <Label>Je suis *</Label>
           <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>

@@ -6,8 +6,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Compléter": { en: "Complete", ar: "أكملوا" },
   "Photo de profil": { en: "Profile photo", ar: "صورة الملف" },
   "Mon objectif": { en: "My goal", ar: "هدفي" },
-  "Fumez-vous ?": { en: "Do you smoke?", ar: "هل تدخنون؟" },
-  "Où as-tu grandi ?": { en: "Where did you grow up?", ar: "أين نشأت؟" },
   "Je suis": { en: "I am", ar: "أنا" },
   "Où as-tu grandi": { en: "Where you grew up", ar: "أين نشأت" },
   "Téléphone (numéro valide)": { en: "Phone (valid number)", ar: "الهاتف (رقم صحيح)" },

@@ -87,7 +87,7 @@ function CompteHome() {
 
       {/* Taux de remplissage du profil */}
       {profile && completion.percent < 100 && (
-        <Link to="/compte/profil" className="block bg-card rounded-2xl p-4 border border-primary/30 shadow-[var(--shadow-card)]">
+        <Link data-no-translate to="/compte/profil" className="block bg-card rounded-2xl p-4 border border-primary/30 shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-4">
             <div className="relative h-16 w-16 shrink-0">
               <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">

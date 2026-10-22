@@ -28,3 +28,13 @@ test("domain association uses the supplied Play signing SHA-256", () => {
   assert.equal(entries[0].target.package_name, "com.nooryaa.app");
   assert.deepEqual(entries[0].target.sha256_cert_fingerprints, ["C3:61:A0:DA:8C:3D:E4:CD:E7:05:3F:B9:97:00:95:0C:75:71:BF:32:DB:D1:3E:2B:37:1A:A2:32:4D:D4:28:FE"]);
 });
+
+test("both Android workflows include verified links and the new version", () => {
+  const yaml = readFileSync("codemagic.yaml", "utf8");
+  for (const name of ["nooryaa-android", "nooryaa-android-release"]) {
+    const workflow = yaml.split(`  ${name}:`)[1]?.split(/\n  nooryaa-/)[0];
+    assert.ok(workflow?.includes("node scripts/configure-android-deeplinks.mjs"));
+    assert.ok(workflow?.includes('versionCode 19'));
+    assert.ok(workflow?.includes('versionName "1.0.16"'));
+  }
+});

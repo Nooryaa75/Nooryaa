@@ -18,6 +18,7 @@ import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
+import { practiceChecks } from "@/lib/onboarding-practice";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -80,6 +81,7 @@ function Onboarding() {
       [1, t("Pays de résidence"), !!form.country],
       [1, t("Pays d'origine"), !!form.country_origin],
       [1, t("Où as-tu grandi"), !!form.grew_up],
+      ...practiceChecks(form).map(([label, ok]) => [1, t(label), ok] as [number, string, boolean]),
       [2, t("Mon objectif sur Nooryaa"), !!form.objective],
       [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
     ];
@@ -317,14 +319,15 @@ function Onboarding() {
           </div>
         </div>
         <div className="pt-2">
-          <p className="text-sm font-semibold mb-2">Votre pratique religieuse <span className="text-muted-foreground font-normal">(facultatif)</span></p>
+          <p className="text-sm font-semibold mb-1">Votre pratique religieuse *</p>
+          <p className="text-xs text-muted-foreground mb-2">{t("Merci de répondre à chaque question.")}</p>
           <div className="space-y-2">
-            <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
-            <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
-            <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
-            <YesNoRadio name="omra" label="Avez-vous fait la Omra ?" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
+            <YesNoRadio name="salat" label="Salat quotidienne *" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
+            <YesNoRadio name="ramadan" label="Ramadan *" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
+            <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ? *" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
+            <YesNoRadio name="omra" label="Avez-vous fait la Omra ? *" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
             {form.gender === "femme" && (
-              <YesNoRadio name="voile" label="Portez-vous le voile ?" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
+              <YesNoRadio name="voile" label="Portez-vous le voile ? *" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
             )}
           </div>
         </div>

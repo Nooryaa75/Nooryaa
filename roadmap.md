@@ -63,3 +63,4 @@
 
 - [x] Lien de vérification email : bouton « Ouvrir l'application » (Android) sur la page d'arrivée + scheme nooryaa:// déclaré dans l'appli via configure-android-deeplinks.mjs ; version Android passée à 1.0.14 (17) ; script testé, site sans erreur. Rebuild Codemagic à lancer par l'utilisateur.
 - [x] Indicateur de complétion du profil : cercle « Profil complété à X % » dans Mon compte avec accroche, informations manquantes et bouton « Compléter » ; la pastille rose sur l’onglet « Compte » a été retirée à la demande de Karim ; bloc traduit FR/EN/AR et vérifié à l’écran dans les trois langues, compilation OK.
+- [x] Démarrage Android toujours sur l'accueil (« Je m'inscris / Je me connecte ») : configure-android-cold-start.mjs ignore la dernière page sauvegardée au lancement à froid ; version Android 1.0.18 (21) dans les deux workflows, 16 tests OK. Rebuild Codemagic à lancer par l'utilisateur.

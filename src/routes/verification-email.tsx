@@ -38,7 +38,9 @@ function EmailVerificationPage() {
     void operation.current.then(async (ok) => {
       if (!active) return;
       if (!ok) { setFailed(true); return; }
-      await navigate({ to: "/onboarding", replace: true });
+      // Full page load: the new session is read fresh, so the page never
+      // stays stuck on "Vérification…" during an in-app transition.
+      window.location.replace("/onboarding");
     });
     return () => { active = false; };
   }, [navigate]);

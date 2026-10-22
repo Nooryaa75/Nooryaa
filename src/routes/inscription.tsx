@@ -48,10 +48,19 @@ function InscriptionWizard() {
   const [ageDialogOpen, setAgeDialogOpen] = useState(false);
   const [locating, setLocating] = useState(false);
 
-  // Une personne déjà connectée n'a pas à refaire l'inscription.
+  // Déjà connecté : on renvoie vers la fiche, sauf si les questions guidées
+  // n'ont jamais été posées (compte Google/Apple créé depuis la connexion).
+  const [signedIn, setSignedIn] = useState(false);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/onboarding", replace: true });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      const { data: profile } = await supabase
+        .from("profiles").select("gender, birthdate, onboarded").eq("id", data.session.user.id).maybeSingle();
+      if ((profile as any)?.onboarded || (profile as any)?.gender || (profile as any)?.birthdate) {
+        navigate({ to: "/onboarding", replace: true });
+        return;
+      }
+      setSignedIn(true);
     });
   }, [navigate]);
 
@@ -290,7 +299,18 @@ function InscriptionWizard() {
           </div>
         )}
 
-        {step === 6 && (
+        {step === 6 && signedIn && (
+          <div className="space-y-4 text-center animate-in fade-in slide-in-from-right-4 duration-300">
+            <p className="text-sm text-muted-foreground">
+              {t("Merci ! Il reste quelques questions par thème pour compléter votre profil.")}
+            </p>
+            <Button className="w-full rounded-full" size="lg" onClick={() => navigate({ to: "/onboarding", replace: true })}>
+              {t("Continuer")}
+            </Button>
+          </div>
+        )}
+
+        {step === 6 && !signedIn && (
           <div className="space-y-4 text-center animate-in fade-in slide-in-from-right-4 duration-300">
             <p className="text-sm text-muted-foreground">
               {t("C'est presque fini ! Créez maintenant votre compte avec Google, Apple ou votre email, puis répondez à quelques questions par thème pour compléter votre profil.")}

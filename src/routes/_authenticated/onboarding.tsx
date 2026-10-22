@@ -148,16 +148,11 @@ function Onboarding() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (step < STEPS.length - 1) { await goNext(); return; }
     setAttempted(true);
-    if (!(await checkPseudo(form.pseudo))) {
-      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    const missing = computeMissing();
-    if (missing.length > 0) {
-      errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
+    if (!(await checkPseudo(form.pseudo))) { setStep(0); scrollTop(); return; }
+    const failing = checks().find(([, , ok]) => !ok);
+    if (failing) { setStep(failing[0]); scrollTop(); return; }
     if (!isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }

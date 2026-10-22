@@ -20,7 +20,7 @@ import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 import { practiceChecks } from "@/lib/onboarding-practice";
-import { loadPresignup, clearPresignup } from "@/lib/presignup";
+import { loadPresignup, clearPresignup, hasPresignup, presignupProfilePatch } from "@/lib/presignup";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -115,7 +115,29 @@ function Onboarding() {
   useEffect(() => {
     // Réponses de l'inscription guidée (avant création du compte), lues une seule fois.
     const pre = loadPresignup();
-    supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
+    supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(async ({ data }) => {
+      // Aucune réponse guidée nulle part (ex. compte Google/Apple créé depuis la page
+      // de connexion) : on fait d'abord les questions une par une.
+      if (!(data as any)?.gender && !(data as any)?.birthdate && !hasPresignup(pre)) {
+        navigate({ to: "/inscription", replace: true });
+        return;
+      }
+      // Enregistre tout de suite les réponses guidées dans la fiche pour ne jamais les perdre.
+      if (hasPresignup(pre)) {
+        const patch = presignupProfilePatch(pre, data as any);
+        if (patch.pseudo) {
+          const { data: taken } = await supabase
+            .from("profiles").select("id").eq("pseudo", patch.pseudo).neq("id", ctx.userId).maybeSingle();
+          if (taken) delete patch.pseudo;
+        }
+        if (patch.birthdate && !isAdult(patch.birthdate)) delete patch.birthdate;
+        if (Object.keys(patch).length > 0) {
+          const { error } = await supabase.from("profiles").update(patch as any).eq("id", ctx.userId);
+          if (!error) clearPresignup();
+        } else {
+          clearPresignup();
+        }
+      }
       if (data && isValidPhone((data as any).phone)) setLockedPhone(true);
       setForm((f) => {
         const origins =
@@ -150,14 +172,15 @@ function Onboarding() {
           objective: data?.objective || f.objective,
           bio: data?.bio || f.bio,
           photo_verified: !!(data as any)?.photo_verified,
-          ...(pre.latitude != null && !(data as any)?.latitude
-            ? { latitude: pre.latitude, longitude: pre.longitude }
-            : {}),
+          ...((data as any)?.latitude != null
+            ? { latitude: (data as any).latitude, longitude: (data as any).longitude }
+            : pre.latitude != null
+              ? { latitude: pre.latitude, longitude: pre.longitude }
+              : {}),
         };
       });
-      if (pre.pseudo || pre.gender || pre.birthdate) clearPresignup();
     });
-  }, [ctx.userId]);
+  }, [ctx.userId, navigate]);
 
   async function checkPseudo(p: string) {
     if (!p.trim()) {

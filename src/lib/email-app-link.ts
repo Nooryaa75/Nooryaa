@@ -15,10 +15,27 @@ export function parseEmailVerification(hash: string) {
   return { token_hash, type };
 }
 
+/** Android intent that hands the (unused) token to the installed app. */
+export function androidAppVerificationIntent(hash: string) {
+  const credentials = parseEmailVerification(hash);
+  if (!credentials) return null;
+  const query = new URLSearchParams(credentials).toString();
+  const fallback = encodeURIComponent(`${EMAIL_APP_ORIGIN}${EMAIL_APP_PATH}#${query}`);
+  return `intent://open${EMAIL_APP_PATH}?${query}#Intent;scheme=nooryaa;package=com.nooryaa.app;S.browser_fallback_url=${fallback};end`;
+}
+
 export function nativeEmailDestination(raw: string): string | null {
   try {
     const url = new URL(raw);
-    if (url.origin !== EMAIL_APP_ORIGIN || url.pathname !== EMAIL_APP_PATH || url.username || url.password) return null;
+    if (url.username || url.password) return null;
+    // Custom scheme from the browser hand-off: nooryaa://open/verification-email?token_hash=…
+    if (url.protocol === "nooryaa:") {
+      if (url.host !== "open" || url.pathname !== EMAIL_APP_PATH) return null;
+      const hash = `#${url.search.replace(/^\?/, "")}`;
+      if (!parseEmailVerification(hash)) return null;
+      return `${EMAIL_APP_PATH}${hash}`;
+    }
+    if (url.origin !== EMAIL_APP_ORIGIN || url.pathname !== EMAIL_APP_PATH) return null;
     if (!parseEmailVerification(url.hash)) return null;
     return `${EMAIL_APP_PATH}${url.hash}`;
   } catch {

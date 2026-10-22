@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { OBJECTIVES, COUNTRIES, CITIES, isAdult } from "@/lib/profile";
 import { EyeOff } from "lucide-react";
-import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
@@ -75,7 +74,6 @@ function Onboarding() {
       [1, t("Pays de résidence"), !!form.country],
       [1, t("Pays d'origine"), !!form.country_origin],
       [1, t("Où as-tu grandi"), !!form.grew_up],
-      [2, t("Activités / centres d'intérêt"), !!form.activities],
       [2, t("Mon objectif sur Nooryaa"), !!form.objective],
       [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
     ];
@@ -304,10 +302,6 @@ function Onboarding() {
         </div>
         </div>)}
         {step === 2 && (<div key="s2" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-        <div>
-          <Label>Activités / centres d'intérêt * (3 max)</Label>
-          <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
-        </div>
         <div>
           <Label>Mon objectif sur Nooryaa *</Label>
           <Select value={form.objective} onValueChange={(v) => setForm({ ...form, objective: v })}>

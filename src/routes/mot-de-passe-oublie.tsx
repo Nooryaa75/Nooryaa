@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import { frenchError } from "@/lib/errors";
+import { getStoredLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/mot-de-passe-oublie")({
   head: () => ({
@@ -33,7 +34,7 @@ function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      await requestReset({ data: { email, origin: window.location.origin } });
+      await requestReset({ data: { email, origin: window.location.origin, locale: getStoredLocale() } });
       setSent(true);
     } catch (err: any) {
       toast.error(frenchError(err));

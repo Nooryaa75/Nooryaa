@@ -2,13 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { TRANSLATIONS as BASE_TRANSLATIONS } from "./i18n-catalog";
 import { GEO_TRANSLATIONS } from "./geo-catalog";
 import { useRouterState } from "@tanstack/react-router";
+import { resolveLocale, type Locale } from "./locale";
 
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   ...GEO_TRANSLATIONS,
   ...BASE_TRANSLATIONS,
 };
 
-export type Locale = "fr" | "en" | "ar";
+export type { Locale } from "./locale";
 
 const STORAGE_KEY = "nooryaa-language";
 const localeNames: Record<Locale, string> = { fr: "Français", en: "English", ar: "العربية" };
@@ -71,10 +72,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    const browser = window.navigator.language.toLowerCase();
-    const next: Locale = stored === "en" || stored === "ar" || stored === "fr"
-      ? stored
-      : browser.startsWith("ar") ? "ar" : browser.startsWith("en") ? "en" : "fr";
+    const next = resolveLocale(stored, window.navigator.language);
     updateLocale(next);
   }, []);
 
@@ -127,7 +125,7 @@ export function useI18n() {
 }
 
 export function getStoredLocale(): Locale {
-  if (typeof window === "undefined") return "fr";
+  if (typeof window === "undefined") return resolveLocale(null);
   const value = window.localStorage.getItem(STORAGE_KEY);
-  return value === "en" || value === "ar" ? value : "fr";
+  return resolveLocale(value, window.navigator.language);
 }

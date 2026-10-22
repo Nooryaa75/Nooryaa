@@ -674,11 +674,12 @@ export async function requestSelfieRedo(opts: {
  * Réponse volontairement neutre : on n'indique jamais si l'email existe.
  */
 export const sendPasswordReset = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string; origin?: string }) => {
+  .inputValidator((data: { email: string; origin?: string; locale?: string }) => {
     const email = String(data?.email ?? "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email invalide");
     const origin = typeof data?.origin === "string" && /^https?:\/\//.test(data.origin) ? data.origin : undefined;
-    return { email, origin };
+    const locale = typeof data?.locale === "string" ? normalizeLocale(data.locale) : undefined;
+    return { email, origin, locale };
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -690,7 +691,7 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
       .ilike("email", data.email)
       .maybeSingle();
     if (!profile?.email) return { sent: true };
-    const locale = normalizeLocale((profile as any)?.locale);
+    const locale = normalizeLocale(data.locale ?? (profile as any)?.locale);
     const c = copyFor(locale);
 
     const { data: link, error: linkError } = await supabaseAdmin.auth.admin.generateLink({

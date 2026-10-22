@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { emailVerificationUrl } from "@/lib/email-app-link";
+import { resolveLocale } from "@/lib/locale";
 
 const SITE_URL = "https://nooryaa.lovable.app";
 
@@ -54,6 +55,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const email = data.email.trim().toLowerCase();
+    const locale = resolveLocale(null, data.locale);
     const { parsePhoneNumberFromString } = await import("libphonenumber-js");
     const parsedPhone = parsePhoneNumberFromString(data.phone.trim(), "FR");
     if (!parsedPhone || !parsedPhone.isValid()) throw new Error("Numéro de téléphone invalide pour le pays choisi.");
@@ -85,7 +87,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
           first_name: data.firstName.trim(),
           last_name: data.lastName.trim(),
           phone,
-          locale: (data.locale ?? "fr").slice(0, 2),
+          locale,
         },
         redirectTo: `${data.origin ?? SITE_URL}/onboarding`,
       },
@@ -102,8 +104,8 @@ export const signUpByServer = createServerFn({ method: "POST" })
       await supabaseAdmin
         .from("user_consents")
         .insert([
-          { user_id: newUserId, kind: "terms", accepted: true, locale: data.locale ?? "fr", source: "signup" },
-          { user_id: newUserId, kind: "privacy", accepted: true, locale: data.locale ?? "fr", source: "signup" },
+          { user_id: newUserId, kind: "terms", accepted: true, locale, source: "signup" },
+          { user_id: newUserId, kind: "privacy", accepted: true, locale, source: "signup" },
         ])
         .then(() => undefined, () => undefined);
     }
@@ -133,7 +135,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
       email,
       firstName: data.firstName.trim(),
       confirmationUrl: emailVerificationUrl(linkData.properties.hashed_token, "signup"),
-      locale: data.locale,
+      locale,
     }).catch(() => ({ sent: false as const }));
 
     return { ok: true as const, email, emailSent: sendResult.sent };

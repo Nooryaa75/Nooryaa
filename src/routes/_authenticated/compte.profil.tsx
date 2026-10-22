@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { BODY_TYPES, EDUCATION_LEVELS, OBJECTIVES, RELIGION_OPTIONS, COUNTRIES, CITIES, PROFESSIONS, maxBirthdate, minBirthdate, ageFromBirthdate, isAdult } from "@/lib/profile";
 import { ChevronLeft, Camera, Plus, X, User } from "lucide-react";
 import { YesNoRadio } from "@/components/YesNoRadio";
+import { ChoiceRadio } from "@/components/ChoiceRadio";
+import { wantsChildrenChoice } from "@/lib/wants-children";
 import { PersonalityPicker } from "@/components/PersonalityPicker";
 import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
@@ -84,7 +86,7 @@ function MyProfile() {
       porte_voile: profile?.gender === "femme" ? (f.porte_voile ?? null) : null,
       has_children: f.has_children ?? null,
       children_count: f.has_children ? (Number(f.children_count) || null) : null,
-      wants_children: f.wants_children ?? null,
+      wants_children_answer: wantsChildrenChoice(f.wants_children_answer ?? f.wants_children) || null,
       smoker: f.smoker ?? null,
       religion: f.religion,
       looking_for: profile?.gender === "homme" ? "femme" : "homme",
@@ -365,7 +367,17 @@ function MyProfile() {
             </SelectContent>
           </Select>
         )}
-        <YesNoRadio name="wants_children" label="Souhaitez-vous avoir des enfants ?" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
+        <ChoiceRadio
+          name="wants_children"
+          label="Souhaitez-vous avoir des enfants ?"
+          value={wantsChildrenChoice(form.wants_children_answer ?? form.wants_children)}
+          onChange={(v) => setForm({ ...form, wants_children_answer: v })}
+          options={[
+            { value: "oui", label: "Oui" },
+            { value: "non", label: "Non" },
+            { value: "je_ne_sais_pas", label: "Je ne sais pas" },
+          ]}
+        />
         <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
         <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
         <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />

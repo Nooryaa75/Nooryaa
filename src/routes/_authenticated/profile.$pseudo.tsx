@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
+import { wantsChildrenLabel } from "@/lib/wants-children";
 import {
   Heart, MapPin, MessageCircle, Flag, User, Ban, Briefcase, GraduationCap, Globe, Sparkles,
   BookOpen, Users, Search, Phone, ShieldCheck, ArrowLeft, ChevronLeft, ChevronRight
@@ -400,7 +401,7 @@ function ProfileView() {
                 <div className="grid grid-cols-2 gap-3 pb-2">
                   <Info label="A des enfants" value={boolLabel(profile.has_children)} />
                   {profile.has_children && <Info label="Nombre d'enfants" value={profile.children_count?.toString()} />}
-                  <Info label="Souhaite avoir des enfants" value={boolLabel(profile.wants_children)} />
+                  <Info label="Souhaite avoir des enfants" value={wantsChildrenLabel((profile as any).wants_children_answer ?? (profile as any).wants_children)} />
                 </div>
               </AccordionContent>
             </AccordionItem>

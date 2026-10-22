@@ -110,12 +110,15 @@ export async function queryDiscoveryProfiles({
     ["omra", filters.omra],
     ["porte_voile", filters.voile],
     ["has_children", filters.hasChildren],
-    ["wants_children", filters.wantsChildren],
     ["smoker", filters.smoker],
   ] as const) {
     const b = tri(val);
     if (b !== null) q = q.eq(col, b);
   }
+  // « Voulez-vous des enfants ? » admet un troisième choix (« Je ne sais pas ») :
+  // la recherche ne filtre que sur oui ou non.
+  const wants = tri(filters.wantsChildren);
+  if (wants !== null) q = q.eq("wants_children_answer", wants ? "oui" : "non");
 
   const originLat = filters.originLat ?? (me as any)?.latitude ?? null;
   const originLng = filters.originLng ?? (me as any)?.longitude ?? null;

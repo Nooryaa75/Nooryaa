@@ -755,6 +755,7 @@ export type Database = {
           status: string
           updated_at: string
           wants_children: boolean | null
+          wants_children_answer: string | null
         }
         Insert: {
           activities?: string | null
@@ -810,6 +811,7 @@ export type Database = {
           status?: string
           updated_at?: string
           wants_children?: boolean | null
+          wants_children_answer?: string | null
         }
         Update: {
           activities?: string | null
@@ -865,6 +867,7 @@ export type Database = {
           status?: string
           updated_at?: string
           wants_children?: boolean | null
+          wants_children_answer?: string | null
         }
         Relationships: []
       }

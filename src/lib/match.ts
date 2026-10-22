@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ageFromBirthdate } from "@/lib/profile";
+import { wantsChildrenBool } from "@/lib/wants-children";
 
 type Criterion = {
   weight: number;
@@ -43,7 +44,7 @@ function compatibilityCriteria(me: any, profile: any): Criterion[] {
   add(prefs.profession, profile.profession);
   add(prefs.objective, profile.objective, 2);
   add(prefs.marital_status, profile.marital_status);
-  add(prefs.wants_children, profile.wants_children);
+  add(prefs.wants_children, wantsChildrenBool(profile.wants_children_answer ?? profile.wants_children));
   add(prefs.has_children, profile.has_children);
   add(prefs.smoker, profile.smoker);
   if (me?.gender === "homme") add(prefs.porte_voile, profile.porte_voile, 2);
@@ -90,7 +91,7 @@ function compatibilityCriteria(me: any, profile: any): Criterion[] {
   add(me?.ramadan, profile.ramadan);
   add(me?.objective, profile.objective, 2);
   add(me?.smoker, profile.smoker);
-  add(me?.wants_children, profile.wants_children);
+  add(wantsChildrenBool(me?.wants_children_answer ?? me?.wants_children), wantsChildrenBool(profile.wants_children_answer ?? profile.wants_children));
   add(me?.personality, profile.personality);
 
   const myActivities = activityList(me?.activities);

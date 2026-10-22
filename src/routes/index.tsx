@@ -31,7 +31,7 @@ function Splash() {
 
     async function go() {
       const { data } = await supabase.auth.getUser();
-      let target: { to: string; search?: any } = { to: "/auth", search: { mode: "signin" } };
+      let target: { to: string; search?: any } = { to: "/bienvenue" };
       if (data.user) {
         const { data: roles } = await supabase
           .from("user_roles")

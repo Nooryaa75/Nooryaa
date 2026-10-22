@@ -708,6 +708,7 @@ export type Database = {
           body_type: string | null
           children_count: number | null
           city: string | null
+          countries_origin: string[] | null
           country: string | null
           country_origin: string | null
           created_at: string
@@ -762,6 +763,7 @@ export type Database = {
           body_type?: string | null
           children_count?: number | null
           city?: string | null
+          countries_origin?: string[] | null
           country?: string | null
           country_origin?: string | null
           created_at?: string
@@ -816,6 +818,7 @@ export type Database = {
           body_type?: string | null
           children_count?: number | null
           city?: string | null
+          countries_origin?: string[] | null
           country?: string | null
           country_origin?: string | null
           created_at?: string

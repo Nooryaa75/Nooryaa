@@ -63,25 +63,52 @@ function Onboarding() {
   const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
   const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
 
-  function computeMissing(): string[] {
-    const missing: string[] = [];
-    if (form.firstName.trim().length < 2) missing.push(t("Prénom"));
-    if (form.lastName.trim().length < 2) missing.push(t("Nom"));
-    if (!form.pseudo.trim()) missing.push(t("Pseudo"));
-    if (!form.gender) missing.push(t("Je suis"));
-    if (!form.grew_up) missing.push(t("Où as-tu grandi"));
-    if (!form.birthdate) missing.push(t("Date de naissance"));
-    if (!form.marital_status) missing.push(t("Situation"));
-    if (!isValidPhone(form.phone)) missing.push(t("Téléphone (numéro valide)"));
-    if (!form.city) missing.push(t("Ville de résidence"));
-    if (!form.country) missing.push(t("Pays de résidence"));
-    if (!form.country_origin) missing.push(t("Pays d'origine"));
-    if (!form.activities) missing.push(t("Activités / centres d'intérêt"));
-    if (!form.objective) missing.push(t("Mon objectif sur Nooryaa"));
-    if (form.bio.length < 30 || form.bio.length > 500) missing.push(t("À propos de vous (30 à 500 caractères)"));
-    return missing;
+  const STEPS = ["Qui êtes-vous ?", "Vos origines et votre lieu de vie", "Vos envies et votre objectif", "Vos photos et la vérification"];
+  const [step, setStep] = useState(0);
+
+  function checks(): [number, string, boolean][] {
+    return [
+      [0, t("Prénom"), form.firstName.trim().length >= 2],
+      [0, t("Nom"), form.lastName.trim().length >= 2],
+      [0, t("Pseudo"), !!form.pseudo.trim()],
+      [0, t("Téléphone (numéro valide)"), isValidPhone(form.phone)],
+      [0, t("Je suis"), !!form.gender],
+      [0, t("Date de naissance"), !!form.birthdate],
+      [0, t("Situation"), !!form.marital_status],
+      [1, t("Ville de résidence"), !!form.city],
+      [1, t("Pays de résidence"), !!form.country],
+      [1, t("Pays d'origine"), !!form.country_origin],
+      [1, t("Où as-tu grandi"), !!form.grew_up],
+      [2, t("Activités / centres d'intérêt"), !!form.activities],
+      [2, t("Mon objectif sur Nooryaa"), !!form.objective],
+      [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
+    ];
   }
-  const missingFields = attempted ? computeMissing() : [];
+  function computeMissing(upTo = 3): string[] {
+    return checks().filter(([s, , ok]) => s <= upTo && !ok).map(([, l]) => l);
+  }
+  const missingFields = attempted ? computeMissing(step) : [];
+
+  function scrollTop() {
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  async function goNext() {
+    setAttempted(true);
+    if (step === 0 && !(await checkPseudo(form.pseudo))) { scrollTop(); return; }
+    if (step === 0 && form.birthdate && !isAdult(form.birthdate)) {
+      toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
+    }
+    if (computeMissing(step).length > 0) { scrollTop(); return; }
+    setAttempted(false);
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    scrollTop();
+  }
+  function goBack() {
+    setAttempted(false);
+    setExtraError(null);
+    setStep((s) => Math.max(s - 1, 0));
+    scrollTop();
+  }
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {

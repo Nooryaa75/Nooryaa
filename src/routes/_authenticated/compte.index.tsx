@@ -87,7 +87,7 @@ function CompteHome() {
 
       {/* Taux de remplissage du profil */}
       {profile && completion.percent < 100 && (
-        <Link to="/compte/profil" className="block bg-card rounded-2xl p-4 border border-primary/30 shadow-[var(--shadow-card)]">
+        <Link data-no-translate to="/compte/profil" className="block bg-card rounded-2xl p-4 border border-primary/30 shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-4">
             <div className="relative h-16 w-16 shrink-0">
               <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
@@ -98,14 +98,14 @@ function CompteHome() {
               <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-primary">{completion.percent}%</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-primary">Profil complété à {completion.percent} %</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Les profils complets reçoivent jusqu'à 3× plus de likes.</p>
+              <p className="font-bold text-primary">{t("Profil complété à")} {completion.percent} %</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("Les profils complets reçoivent jusqu'à 3× plus de likes.")}</p>
               <p className="text-xs text-muted-foreground mt-1 truncate">
-                À compléter : {completion.missing.slice(0, 3).map((m) => m.label).join(", ")}
+                {t("À compléter :")} {completion.missing.slice(0, 3).map((m) => t(m.label)).join(", ")}
                 {completion.missing.length > 3 ? "…" : ""}
               </p>
             </div>
-            <span className="text-accent text-sm font-semibold shrink-0">Compléter</span>
+            <span className="text-accent text-sm font-semibold shrink-0">{t("Compléter")}</span>
           </div>
         </Link>
       )}

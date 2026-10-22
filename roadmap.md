@@ -57,3 +57,4 @@
 - [x] Admin profils : clic sur la photo du membre → affichage en grand (compteur 1/3 → 2/3 → 3/3, flèches et clavier, taille réelle, Échap et Fermer) ; les textes qui changent (compteur, intitulés de boutons) ne sont plus figés par la couche de traduction ; FR/EN/AR contrôlés à l'écran.
 
 - [x] Lien de vérification email : bouton « Ouvrir l'application » (Android) sur la page d'arrivée + scheme nooryaa:// déclaré dans l'appli via configure-android-deeplinks.mjs ; version Android passée à 1.0.14 (17) ; script testé, site sans erreur. Rebuild Codemagic à lancer par l'utilisateur.
+- [x] Indicateur de complétion du profil : cercle « Profil complété à X % » dans Mon compte avec accroche, informations manquantes et bouton « Compléter » ; la pastille rose sur l’onglet « Compte » a été retirée à la demande de Karim ; bloc traduit FR/EN/AR et vérifié à l’écran dans les trois langues, compilation OK.

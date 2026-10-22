@@ -49,6 +49,7 @@ function Onboarding() {
     country: "France",
     countries_origin: [] as string[],
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
+    height_cm: "",
     activities: "",
     salat_quotidienne: null as boolean | null,
     ramadan: null as boolean | null,
@@ -78,6 +79,7 @@ function Onboarding() {
       [0, t("Je suis"), !!form.gender],
       [0, t("Date de naissance"), !!form.birthdate],
       [0, t("Situation"), !!form.marital_status],
+      [0, t("Taille (en cm)"), Number(form.height_cm) >= 120 && Number(form.height_cm) <= 230],
       [0, t("Ville de résidence"), !!form.city],
       [0, t("Pays de résidence"), !!form.country],
       [0, t("Pays d'origine"), form.countries_origin.length > 0],
@@ -163,6 +165,7 @@ function Onboarding() {
           country: (data as any)?.country || pre.country || f.country,
           countries_origin: origins,
           marital_status: data?.marital_status || f.marital_status,
+          height_cm: (data as any)?.height_cm ? String((data as any).height_cm) : f.height_cm,
           salat_quotidienne: (data as any)?.salat_quotidienne ?? f.salat_quotidienne,
           ramadan: (data as any)?.ramadan ?? f.ramadan,
           hadj: (data as any)?.hadj ?? f.hadj,
@@ -235,6 +238,7 @@ function Onboarding() {
       country_origin: form.countries_origin[0] || null,
       countries_origin: form.countries_origin.length > 0 ? form.countries_origin : null,
       marital_status: form.marital_status as any,
+      height_cm: Number(form.height_cm),
       activities: form.activities || null,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
@@ -320,6 +324,10 @@ function Onboarding() {
               <SelectItem value="veuf">Veuf·ve</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div>
+          <Label htmlFor="height_cm">Taille (en cm) *</Label>
+          <Input id="height_cm" type="number" inputMode="numeric" min={120} max={230} value={form.height_cm} onChange={(e) => setForm({ ...form, height_cm: e.target.value.replace(/\D/g, "").slice(0, 3) })} placeholder="175" />
         </div>
         {(!form.city || !form.country) && (
         <div className="grid md:grid-cols-2 gap-4">

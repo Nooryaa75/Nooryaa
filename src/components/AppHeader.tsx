@@ -46,7 +46,7 @@ export function AppHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
   const { data: me } = useQuery({
-    queryKey: ["me-completion"],
+    queryKey: ["me", "completion"],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return null;

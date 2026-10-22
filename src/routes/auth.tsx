@@ -489,9 +489,15 @@ function AuthPage() {
 
         <p className="text-center text-sm text-muted-foreground mt-5">
           {mode === "signup" ? "Déjà inscrit·e ? " : "Pas encore de compte ? "}
-          <Link to="/auth" search={{ mode: mode === "signup" ? "signin" : "signup" }} className="text-primary underline underline-offset-4">
-            {mode === "signup" ? "Connexion" : "S'inscrire"}
-          </Link>
+          {mode === "signup" ? (
+            <Link to="/auth" search={{ mode: "signin" }} className="text-primary underline underline-offset-4">
+              Connexion
+            </Link>
+          ) : (
+            <Link to="/inscription" className="text-primary underline underline-offset-4">
+              S'inscrire
+            </Link>
+          )}
         </p>
 
       </div>

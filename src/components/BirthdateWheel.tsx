@@ -97,9 +97,19 @@ export function BirthdateWheel({ value, onChange }: {
   }, [latest, earliest]);
 
   const parsed = value ? new Date(`${value}T12:00:00`) : null;
-  const year = parsed && !isNaN(parsed.getTime()) ? parsed.getFullYear() : latest.getFullYear();
+  // Par défaut : 26 ans (un départ clairement adulte, à faire défiler ensuite).
+  const defaultYear = latest.getFullYear() - 8;
+  const year = parsed && !isNaN(parsed.getTime()) ? parsed.getFullYear() : defaultYear;
   const month = parsed && !isNaN(parsed.getTime()) ? parsed.getMonth() + 1 : 1;
   const day = parsed && !isNaN(parsed.getTime()) ? parsed.getDate() : 1;
+
+  // Sans date initiale, on enregistre tout de suite la date affichée par la roue.
+  useEffect(() => {
+    if (!value) {
+      onChange(`${defaultYear}-01-01`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const maxDay = daysInMonth(year, month);
   const days = useMemo(() => Array.from({ length: maxDay }, (_, i) => i + 1), [maxDay]);

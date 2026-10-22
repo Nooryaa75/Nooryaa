@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { wantsChildrenBool } from "@/lib/wants-children";
 
 export const ANY = "any";
 
@@ -118,7 +117,7 @@ export async function queryDiscoveryProfiles({
   }
   // « Voulez-vous des enfants ? » admet un troisième choix (« Je ne sais pas ») :
   // la recherche ne filtre que sur oui ou non.
-  const wants = wantsChildrenBool(filters.wantsChildren === ANY ? null : filters.wantsChildren === "yes");
+  const wants = tri(filters.wantsChildren);
   if (wants !== null) q = q.eq("wants_children_answer", wants ? "oui" : "non");
 
   const originLat = filters.originLat ?? (me as any)?.latitude ?? null;

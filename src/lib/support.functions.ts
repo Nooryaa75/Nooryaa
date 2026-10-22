@@ -29,3 +29,31 @@ export const createSupportTicket = createServerFn({ method: "POST" })
     if (error) throw error;
     return { ok: true };
   });
+
+/** Liste des demandes du membre avec l'historique des échanges (notes internes exclues). */
+export const listMyTickets = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: tickets, error } = await context.supabase
+      .from("support_tickets")
+      .select("id, category, message, status, created_at")
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    if (!tickets || tickets.length === 0) return { tickets: [] };
+
+    const { data: replies } = await context.supabase
+      .from("ticket_replies")
+      .select("id, ticket_id, author, content, created_at")
+      .in("ticket_id", tickets.map((t) => t.id))
+      .eq("internal", false)
+      .order("created_at");
+
+    return {
+      tickets: tickets.map((t) => ({
+        ...t,
+        replies: (replies ?? []).filter((r) => r.ticket_id === t.id),
+      })),
+    };
+  });

@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { wantsChildrenLabel } from "@/lib/wants-children";
+import { normalizeLocale } from "@/lib/email-i18n";
 
 type Range = { from?: string; to?: string };
 
@@ -433,6 +434,42 @@ export const adminReplyTicket = createServerFn({ method: "POST" })
       .from("support_tickets")
       .update({ last_reply_at: new Date().toISOString(), status: data.status ?? "in_progress" })
       .eq("id", data.id);
+
+    // Le membre est prévenu dans l'application quand la réponse n'est pas une note interne.
+    if (!data.internal) {
+      const { data: ticket } = await supabaseAdmin
+        .from("support_tickets")
+        .select("user_id")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (ticket?.user_id) {
+        const { data: recipient } = await supabaseAdmin
+          .from("profiles")
+          .select("locale")
+          .eq("id", ticket.user_id)
+          .maybeSingle();
+        const locale = normalizeLocale((recipient as any)?.locale);
+        const title =
+          locale === "en" ? "Reply from customer service" : locale === "ar" ? "رد من خدمة العملاء" : "Réponse du service client";
+        try {
+          await supabaseAdmin.from("notifications").insert({
+            user_id: ticket.user_id,
+            kind: "support",
+            title,
+            body: data.content.slice(0, 120),
+            link: "/compte/service-client",
+          });
+        } catch (e) {
+          console.error("Support notification insert failed", e);
+        }
+        try {
+          const { sendPushToUser } = await import("@/lib/push.server");
+          await sendPushToUser(ticket.user_id, title, data.content.slice(0, 120), "/compte/service-client");
+        } catch (e) {
+          console.error("Support push send failed", e);
+        }
+      }
+    }
     return { ok: true };
   });
 

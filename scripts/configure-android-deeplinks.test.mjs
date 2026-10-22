@@ -34,7 +34,7 @@ test("both Android workflows include verified links and the new version", () => 
   for (const name of ["nooryaa-android", "nooryaa-android-release"]) {
     const workflow = yaml.split(`  ${name}:`)[1]?.split(/\n  nooryaa-/)[0];
     assert.ok(workflow?.includes("node scripts/configure-android-deeplinks.mjs"));
-    assert.ok(workflow?.includes('versionCode 20'));
-    assert.ok(workflow?.includes('versionName "1.0.17"'));
+    assert.ok(workflow?.includes('versionCode 21'));
+    assert.ok(workflow?.includes('versionName "1.0.18"'));
   }
 });

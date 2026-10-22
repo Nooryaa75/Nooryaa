@@ -65,13 +65,13 @@ workflows:
       - name: Protect screenshots and screen recording
         script: |
           node scripts/configure-android-screen-security.mjs
-      - name: Set app version (1.0.17)
+      - name: Set app version (1.0.18)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 20/; s/versionName\s+"[^"]*"/versionName "1.0.17"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 21/; s/versionName\s+"[^"]*"/versionName "1.0.18"/' android/app/build.gradle
 
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 20' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
-          grep -q 'versionName "1.0.17"' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 21' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionName "1.0.18"' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Show signing fingerprint (SHA-1 a comparer avec Google)
         script: |
           echo "=== SHA-1 de la cle qui signe cette appli ==="
@@ -164,12 +164,12 @@ workflows:
       - name: Protect screenshots and screen recording
         script: |
           node scripts/configure-android-screen-security.mjs
-      - name: Set app version (1.0.17)
+      - name: Set app version (1.0.18)
         script: |
-          perl -pi -e 's/versionCode\s+\d+/versionCode 20/; s/versionName\s+"[^"]*"/versionName "1.0.17"/' android/app/build.gradle
+          perl -pi -e 's/versionCode\s+\d+/versionCode 21/; s/versionName\s+"[^"]*"/versionName "1.0.18"/' android/app/build.gradle
           grep -E 'versionCode|versionName' android/app/build.gradle
-          grep -q 'versionCode 20' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
-          grep -q 'versionName "1.0.17"' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionCode 21' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
+          grep -q 'versionName "1.0.18"' android/app/build.gradle || { echo "Version non appliquee"; exit 1; }
       - name: Show signing fingerprint (SHA-1 a comparer avec Google)
         script: |
           echo "=== SHA-1 de la cle qui signe cette appli ==="

@@ -1,8 +1,9 @@
 # Roadmap
 
-- [ ] Préparer Android 1.0.17 dans les deux workflows Codemagic avec un numéro de build augmenté.
+- [x] Préparer Android 1.0.17 (20) dans les deux workflows Codemagic ; liens, permissions et protections conservés. iOS 1.0.1 passe au build 20 pour garder les versions synchronisées.
+- [ ] Lancer et publier Android 1.0.17 (20) dans Codemagic / Google Play — accès de lancement Codemagic nécessaire.
 
-- [ ] Utiliser la langue du navigateur/téléphone par défaut, anglais pour les langues non prises en charge ; vérifier inscription et emails.
+- [x] Langue par défaut issue du navigateur/téléphone, anglais si non prise en charge ; choix explicite prioritaire. Même résolution pour inscription email et emails ; mot de passe oublié transmet la langue actuelle. Six tests réussis et affichage FR/AR/EN/japonais→EN vérifié ; demande de réinitialisation vérifiée sans envoi réel.
 
 - [x] « Voulez-vous des enfants ? » propose désormais Oui / Non / Je ne sais pas dans la fiche d’inscription et dans Ma fiche : réponse conservée même pour les anciennes fiches, reprise telle quelle sur les profils, dans l’administration et les statistiques ; « Je ne sais pas » compte comme répondu mais ne filtre jamais une recherche ni une compatibilité ; 6 tests réussis, écrans vérifiés en français, compilation OK.
 - [x] « Où as-tu grandi ? » ajouté sur la page « Vos origines » de l’inscription guidée (facultatif) : la réponse est enregistrée avec les origines et reprise dans la fiche sans jamais écraser une valeur déjà saisie ; 4 tests réussis, page vérifiée à l’écran et réponse retrouvée dans la fiche d’un compte de test, compilation OK.

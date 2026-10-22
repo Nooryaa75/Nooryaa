@@ -43,6 +43,6 @@ test('both iOS workflows apply protection and carry the next build', () => {
   for (const name of ['nooryaa-ios-check', 'nooryaa-ios-release']) {
     const workflow = yaml.split(`  ${name}:`)[1]?.split(/\n  nooryaa-/)[0];
     assert.ok(workflow?.includes('node scripts/configure-ios-screen-security.mjs'));
-    assert.ok(workflow?.includes('set-ios-version.mjs 1.0.1 18'));
+    assert.ok(workflow?.includes('set-ios-version.mjs 1.0.1 20'));
   }
 });

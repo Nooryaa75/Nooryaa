@@ -213,6 +213,19 @@ function AuthPage() {
             phone: phone.trim(),
             origin: window.location.origin,
             locale,
+            presignup: (() => {
+              const p = loadPresignup();
+              return {
+                gender: p.gender,
+                pseudo: p.pseudo?.trim() || undefined,
+                birthdate: p.birthdate || undefined,
+                origins: (p.origins ?? []).slice(0, 3),
+                city: p.city?.trim() || undefined,
+                country: p.country || undefined,
+                latitude: typeof p.latitude === "number" ? p.latitude : null,
+                longitude: typeof p.longitude === "number" ? p.longitude : null,
+              };
+            })(),
           },
         });
         void sendWelcomeEmail({ data: { email: email.trim().toLowerCase(), locale } }).catch(() => {});

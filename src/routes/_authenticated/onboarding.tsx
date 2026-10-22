@@ -1,4 +1,5 @@
 import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
+import { YesNoRadio } from "@/components/YesNoRadio";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";

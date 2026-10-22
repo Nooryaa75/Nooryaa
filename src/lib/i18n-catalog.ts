@@ -4723,4 +4723,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Votre objectif et votre présentation": { en: "Your goal and introduction", ar: "هدفكم وتعريفكم" },
   "Vos photos et la vérification": { en: "Your photos and verification", ar: "صوركم والتحقق" },
   "Merci de répondre à chaque question. Il n'y a pas de bonne ou de mauvaise réponse : elles aident simplement à de belles rencontres.": { en: "Please answer every question. There are no right or wrong answers: they simply help create beautiful encounters.", ar: "يُرجى الإجابة عن كل سؤال. لا توجد إجابة صحيحة أو خاطئة: إنها تساعد فقط على لقاءات جميلة." },
+  "Continuer": { en: "Continue", ar: "متابعة" },
+  "Presque terminé": { en: "Almost done", ar: "اقتربنا من النهاية" },
+  "Merci ! Il reste quelques questions par thème pour compléter votre profil.": { en: "Thank you! A few more questions by theme to complete your profile.", ar: "شكرًا! بقيت بعض الأسئلة حسب المواضيع لإكمال ملفكم." },
 };

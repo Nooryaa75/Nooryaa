@@ -12,6 +12,18 @@ const signUpSchema = z.object({
   phone: z.string().min(8).max(20),
   origin: z.string().url().optional(),
   locale: z.string().optional(),
+  presignup: z
+    .object({
+      gender: z.enum(["homme", "femme"]).optional(),
+      pseudo: z.string().max(40).optional(),
+      birthdate: z.string().max(10).optional(),
+      origins: z.array(z.string().max(80)).max(3).optional(),
+      city: z.string().max(120).optional(),
+      country: z.string().max(80).optional(),
+      latitude: z.number().nullable().optional(),
+      longitude: z.number().nullable().optional(),
+    })
+    .optional(),
 });
 
 function friendlySignupError(error: any): string {
@@ -94,6 +106,25 @@ export const signUpByServer = createServerFn({ method: "POST" })
           { user_id: newUserId, kind: "privacy", accepted: true, locale: data.locale ?? "fr", source: "signup" },
         ])
         .then(() => undefined, () => undefined);
+    }
+
+    // Réponses de l'inscription guidée : enregistrées tout de suite dans la fiche,
+    // pour qu'elles soient retrouvées même si le lien email s'ouvre ailleurs
+    // (application, autre navigateur, autre téléphone).
+    if (newUserId && data.presignup) {
+      const { presignupProfilePatch } = await import("@/lib/presignup");
+      const { isAdult } = await import("@/lib/profile");
+      const patch = presignupProfilePatch(data.presignup, null);
+      if (patch.birthdate && !isAdult(patch.birthdate)) delete patch.birthdate;
+      if (patch.pseudo) {
+        const { data: taken } = await supabaseAdmin
+          .from("profiles").select("id").eq("pseudo", patch.pseudo).neq("id", newUserId).maybeSingle();
+        if (taken) delete patch.pseudo;
+      }
+      if (Object.keys(patch).length > 0) {
+        await supabaseAdmin.from("profiles").update(patch as any).eq("id", newUserId)
+          .then(() => undefined, () => undefined);
+      }
     }
 
     // Envoi du mail de confirmation via le template Nooryaa / Resend.

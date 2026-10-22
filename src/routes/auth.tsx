@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/notify.functions";
 import { signUpByServer, resendSignupConfirmation } from "@/lib/auth.functions";
+import { hasPresignup, loadPresignup } from "@/lib/presignup";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import signupEmailImage from "@/assets/signup-email-check.jpg";
 
@@ -173,6 +174,13 @@ function AuthPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [signupEmailSent, setSignupEmailSent] = useState(false);
 
+  // Une inscription commence toujours par les questions guidées.
+  useEffect(() => {
+    if (mode === "signup" && !hasPresignup(loadPresignup())) {
+      navigate({ to: "/inscription", replace: true });
+    }
+  }, [mode, navigate]);
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
@@ -205,6 +213,19 @@ function AuthPage() {
             phone: phone.trim(),
             origin: window.location.origin,
             locale,
+            presignup: (() => {
+              const p = loadPresignup();
+              return {
+                gender: p.gender,
+                pseudo: p.pseudo?.trim() || undefined,
+                birthdate: p.birthdate || undefined,
+                origins: (p.origins ?? []).slice(0, 3),
+                city: p.city?.trim() || undefined,
+                country: p.country || undefined,
+                latitude: typeof p.latitude === "number" ? p.latitude : null,
+                longitude: typeof p.longitude === "number" ? p.longitude : null,
+              };
+            })(),
           },
         });
         void sendWelcomeEmail({ data: { email: email.trim().toLowerCase(), locale } }).catch(() => {});

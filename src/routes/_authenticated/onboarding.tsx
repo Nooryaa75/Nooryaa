@@ -18,6 +18,7 @@ import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
+import { practiceChecks } from "@/lib/onboarding-practice";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -80,11 +81,7 @@ function Onboarding() {
       [1, t("Pays de résidence"), !!form.country],
       [1, t("Pays d'origine"), !!form.country_origin],
       [1, t("Où as-tu grandi"), !!form.grew_up],
-      [1, t("Salat quotidienne"), form.salat_quotidienne !== null],
-      [1, t("Ramadan"), form.ramadan !== null],
-      [1, t("Avez-vous fait le Hadj ?"), form.hadj !== null],
-      [1, t("Avez-vous fait la Omra ?"), form.omra !== null],
-      [1, t("Portez-vous le voile ?"), form.gender !== "femme" || form.porte_voile !== null],
+      ...practiceChecks(form).map(([label, ok]) => [1, t(label), ok] as [number, string, boolean]),
       [2, t("Mon objectif sur Nooryaa"), !!form.objective],
       [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
     ];

@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/notify.functions";
 import { signUpByServer, resendSignupConfirmation } from "@/lib/auth.functions";
+import { hasPresignup, loadPresignup } from "@/lib/presignup";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 import signupEmailImage from "@/assets/signup-email-check.jpg";
 
@@ -172,6 +173,13 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [signupEmailSent, setSignupEmailSent] = useState(false);
+
+  // Une inscription commence toujours par les questions guidées.
+  useEffect(() => {
+    if (mode === "signup" && !hasPresignup(loadPresignup())) {
+      navigate({ to: "/inscription", replace: true });
+    }
+  }, [mode, navigate]);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {

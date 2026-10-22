@@ -15,6 +15,8 @@ import { loadPresignup, savePresignup, type PresignupAnswers } from "@/lib/presi
 import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
 import { MapPin, ShieldCheck } from "lucide-react";
+import hommeImg from "@/assets/gender-homme.png";
+import femmeImg from "@/assets/gender-femme.png";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
 export const Route = createFileRoute("/inscription")({
@@ -157,7 +159,7 @@ function InscriptionWizard() {
                   answers.gender === "homme" ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 hover:bg-primary/5"
                 }`}
               >
-                <span className="block text-3xl mb-2" aria-hidden>🧔</span>
+                <img src={hommeImg} alt="" width={96} height={96} className="mx-auto mb-2 h-24 w-24 object-contain" />
                 <span className="font-medium">{t("Je suis un homme")}</span>
               </button>
               <button
@@ -167,7 +169,7 @@ function InscriptionWizard() {
                   answers.gender === "femme" ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 hover:bg-primary/5"
                 }`}
               >
-                <span className="block text-3xl mb-2" aria-hidden>🧕</span>
+                <img src={femmeImg} alt="" width={96} height={96} className="mx-auto mb-2 h-24 w-24 object-contain" />
                 <span className="font-medium">{t("Je suis une femme")}</span>
               </button>
             </div>

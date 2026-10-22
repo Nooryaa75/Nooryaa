@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { profileCompletion } from "@/lib/profile-completion";
 import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
@@ -92,7 +93,7 @@ export function AppHeader() {
                 >
                   <span className="relative flex items-center">
                     <l.icon className="h-4 w-4" />
-                    <Badge count={countFor(l.to)} />
+                    <Badge count={countFor(l.to)} />{dot(l.to)}
                   </span>
                    {t(l.label)}
                 </Link>
@@ -122,7 +123,7 @@ export function AppHeader() {
             >
               <span className="relative flex items-center">
                 <l.icon className={`h-6 w-6 ${active && l.fillActive ? "fill-primary" : ""}`} strokeWidth={active ? 2.2 : 1.8} />
-                <Badge count={countFor(l.to)} />
+                <Badge count={countFor(l.to)} />{dot(l.to)}
               </span>
                {t(l.label)}
             </Link>

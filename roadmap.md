@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Ouvrir directement les liens de vérification dans l’application Android : association HTTPS du domaine, traitement du lien dans l’application et nouveau build ; empreinte SHA-256 de signature Google Play à obtenir avant configuration et essai réel sur téléphone.
+
 - [x] Préparer la protection des photos sur iPhone et le site : filigrane NOORYAA sur les photos des membres (deck, vignettes, profil, chat, affichage en grand — jamais dans l'administration), masquage des photos pendant l'enregistrement d'écran sur iPhone via le nouveau script Codemagic, version iPhone 1.0.1 (18) ; 4 tests du script réussis, compilation OK.
 - [ ] Publier le site, lancer Codemagic « Nooryaa iPhone (App Store) » en 1.0.1 (18), puis vérifier le filigrane et le masquage sur un vrai iPhone — publication et appareil nécessaires ; la photo partagée dans le chat reste ouvrable dans un onglet via son lien.
 

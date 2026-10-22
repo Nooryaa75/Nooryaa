@@ -71,6 +71,13 @@
       "when": 1792013796464,
       "tag": "0009_register_push_token",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792668738441,
+      "tag": "0010_add_wants_children_answer",
+      "breakpoints": true
     }
   ]
 }

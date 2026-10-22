@@ -185,17 +185,19 @@ function Onboarding() {
       <p className="text-muted-foreground text-sm mb-2">{t("Les champs marqués * sont obligatoires pour finaliser votre profil.")}</p>
       <p className="text-muted-foreground text-sm mb-6">{t("Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.")}</p>
       <OpenInAppButton />
-      {(missingFields.length > 0 || extraError || (attempted && pseudoError)) && (
+      <h2 className="text-lg font-serif text-primary mb-4">{t(STEPS[step])}</h2>
+      {(missingFields.length > 0 || extraError || (attempted && pseudoError && step === 0)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">
           <p className="font-semibold text-destructive text-sm">{t("Champs obligatoires à compléter :")}</p>
           <ul className="mt-1 list-disc pl-5 text-sm text-destructive space-y-0.5">
-            {pseudoError && attempted && <li>{t("Pseudo :")} {pseudoError}</li>}
+            {pseudoError && attempted && step === 0 && <li>{t("Pseudo :")} {pseudoError}</li>}
             {missingFields.map((m) => <li key={m}>{m}</li>)}
             {extraError && missingFields.length === 0 && <li>{extraError}</li>}
           </ul>
         </div>
       )}
       <form onSubmit={submit} className="space-y-5">
+        {step === 0 && (<div key="s0" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label htmlFor="firstName">Prénom *</Label>
@@ -249,6 +251,8 @@ function Onboarding() {
             </Select>
           </div>
         </div>
+        </div>)}
+        {step === 1 && (<div key="s1" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label>Ville de résidence *</Label>
@@ -290,6 +294,8 @@ function Onboarding() {
             </Select>
           </div>
         </div>
+        </div>)}
+        {step === 2 && (<div key="s2" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div>
           <Label>Activités / centres d'intérêt * (3 max)</Label>
           <ActivitiesPicker value={form.activities} onChange={(v) => setForm({ ...form, activities: v })} />
@@ -315,6 +321,8 @@ function Onboarding() {
             <span className={form.bio.length >= 450 ? "font-medium text-destructive" : "text-muted-foreground"}>{form.bio.length}/500</span>
           </div>
         </div>
+        </div>)}
+        {step === 3 && (<div key="s3" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="space-y-2 rounded-xl border border-border/60 p-4">
           <Label>Photos de profil *</Label>
           <div className="flex items-start gap-2 bg-secondary/40 p-3 rounded-lg">
@@ -337,9 +345,32 @@ function Onboarding() {
               ? t("Votre photo est vérifiée ✅")
               : t("Vérification par selfie (facultative) : elle ajoute un badge vérifié à votre profil.")}
         </p>
-        <Button type="submit" disabled={loading} size="lg" className="w-full rounded-full">
-          {loading ? "Enregistrement..." : "Continuer"}
-        </Button>
+        </div>)}
+        <div className="flex gap-3 pt-2">
+          {step > 0 && (
+            <Button type="button" variant="outline" size="lg" className="flex-1 rounded-full" onClick={goBack}>
+              {t("Retour")}
+            </Button>
+          )}
+          {step < STEPS.length - 1 ? (
+            <Button type="button" size="lg" className="flex-1 rounded-full" onClick={goNext}>
+              {t("Suivant")}
+            </Button>
+          ) : (
+            <Button type="submit" disabled={loading} size="lg" className="flex-1 rounded-full">
+              {loading ? "Enregistrement..." : t("Terminer mon profil")}
+            </Button>
+          )}
+        </div>
+        <div className="pt-1">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+            <span>{t(STEPS[step])}</span>
+            <span>{step + 1} / {STEPS.length}</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1}>
+            <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+          </div>
+        </div>
       </form>
     </div>
   );

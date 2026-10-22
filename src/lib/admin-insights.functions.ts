@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { wantsChildrenLabel } from "@/lib/wants-children";
+import { normalizeLocale } from "@/lib/email-i18n";
 
 type Range = { from?: string; to?: string };
 

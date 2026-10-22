@@ -1,4 +1,5 @@
 import { PhoneInput, isValidPhone } from "@/components/PhoneInput";
+import { YesNoRadio } from "@/components/YesNoRadio";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +48,11 @@ function Onboarding() {
     grew_up: "",
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
     activities: "",
+    salat_quotidienne: null as boolean | null,
+    ramadan: null as boolean | null,
+    hadj: null as boolean | null,
+    omra: null as boolean | null,
+    porte_voile: null as boolean | null,
     objective: "",
     bio: "",
     photo_verified: false,
@@ -119,6 +125,11 @@ function Onboarding() {
         country_origin: (data as any).country_origin || f.country_origin,
         grew_up: data.grew_up || f.grew_up,
         marital_status: data.marital_status || f.marital_status,
+        salat_quotidienne: (data as any).salat_quotidienne ?? f.salat_quotidienne,
+        ramadan: (data as any).ramadan ?? f.ramadan,
+        hadj: (data as any).hadj ?? f.hadj,
+        omra: (data as any).omra ?? f.omra,
+        porte_voile: (data as any).porte_voile ?? f.porte_voile,
         activities: data.activities || f.activities,
         objective: data.objective || f.objective,
         bio: data.bio || f.bio,
@@ -181,6 +192,11 @@ function Onboarding() {
       grew_up: form.grew_up || null,
       marital_status: form.marital_status as any,
       activities: form.activities || null,
+      salat_quotidienne: form.salat_quotidienne,
+      ramadan: form.ramadan,
+      hadj: form.hadj,
+      omra: form.omra,
+      porte_voile: form.gender === "femme" ? form.porte_voile : null,
       objective: form.objective || null,
       bio: form.bio || null,
       onboarded: true,
@@ -298,6 +314,18 @@ function Onboarding() {
                 {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+        <div className="pt-2">
+          <p className="text-sm font-semibold mb-2">Votre pratique religieuse <span className="text-muted-foreground font-normal">(facultatif)</span></p>
+          <div className="space-y-2">
+            <YesNoRadio name="salat" label="Salat quotidienne" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
+            <YesNoRadio name="ramadan" label="Ramadan" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />
+            <YesNoRadio name="hadj" label="Avez-vous fait le Hadj ?" value={form.hadj} onChange={(v) => setForm({ ...form, hadj: v })} />
+            <YesNoRadio name="omra" label="Avez-vous fait la Omra ?" value={form.omra} onChange={(v) => setForm({ ...form, omra: v })} />
+            {form.gender === "femme" && (
+              <YesNoRadio name="voile" label="Portez-vous le voile ?" value={form.porte_voile} onChange={(v) => setForm({ ...form, porte_voile: v })} />
+            )}
           </div>
         </div>
         </div>)}

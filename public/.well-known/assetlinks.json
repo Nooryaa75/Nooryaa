@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nooryaa.app",
+      "sha256_cert_fingerprints": ["C3:61:A0:DA:8C:3D:E4:CD:E7:05:3F:B9:97:00:95:0C:75:71:BF:32:DB:D1:3E:2B:37:1A:A2:32:4D:D4:28:FE"]
+    }
+  }
+]

@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { profileCompletion } from "@/lib/profile-completion";
 import { Heart, MessageCircle, Search, User, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
@@ -44,12 +45,26 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: counts } = useUnreadCounts();
+  const { data: me } = useQuery({
+    queryKey: ["me", "completion"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      return (await supabase.from("profiles").select("*").eq("id", u.user.id).single()).data;
+    },
+    staleTime: 60_000,
+  });
+  const incomplete = !!me && profileCompletion(me).percent < 100;
 
   function countFor(to: string) {
     if (to === "/likes") return counts?.likes ?? 0;
     if (to === "/messages") return counts?.messages ?? 0;
     return 0;
   }
+  const dot = (to: string) =>
+    to === "/compte" && incomplete ? (
+      <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-card" aria-label={t("Profil à compléter")} />
+    ) : null;
 
 
   async function signOut() {
@@ -78,7 +93,7 @@ export function AppHeader() {
                 >
                   <span className="relative flex items-center">
                     <l.icon className="h-4 w-4" />
-                    <Badge count={countFor(l.to)} />
+                    <Badge count={countFor(l.to)} />{dot(l.to)}
                   </span>
                    {t(l.label)}
                 </Link>
@@ -108,7 +123,7 @@ export function AppHeader() {
             >
               <span className="relative flex items-center">
                 <l.icon className={`h-6 w-6 ${active && l.fillActive ? "fill-primary" : ""}`} strokeWidth={active ? 2.2 : 1.8} />
-                <Badge count={countFor(l.to)} />
+                <Badge count={countFor(l.to)} />{dot(l.to)}
               </span>
                {t(l.label)}
             </Link>

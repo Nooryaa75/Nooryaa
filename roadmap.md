@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Utiliser la langue du navigateur/téléphone par défaut, anglais pour les langues non prises en charge ; vérifier inscription et emails.
+
 - [x] « Voulez-vous des enfants ? » propose désormais Oui / Non / Je ne sais pas dans la fiche d’inscription et dans Ma fiche : réponse conservée même pour les anciennes fiches, reprise telle quelle sur les profils, dans l’administration et les statistiques ; « Je ne sais pas » compte comme répondu mais ne filtre jamais une recherche ni une compatibilité ; 6 tests réussis, écrans vérifiés en français, compilation OK.
 - [x] « Où as-tu grandi ? » ajouté sur la page « Vos origines » de l’inscription guidée (facultatif) : la réponse est enregistrée avec les origines et reprise dans la fiche sans jamais écraser une valeur déjà saisie ; 4 tests réussis, page vérifiée à l’écran et réponse retrouvée dans la fiche d’un compte de test, compilation OK.
 

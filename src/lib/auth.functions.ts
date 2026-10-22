@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { emailVerificationUrl } from "@/lib/email-app-link";
 
 const SITE_URL = "https://nooryaa.lovable.app";
 
@@ -79,7 +80,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
     });
 
     if (linkError) throw new Error(friendlySignupError(linkError));
-    if (!linkData?.properties?.action_link) {
+    if (!linkData?.properties?.hashed_token) {
       throw new Error("Impossible de générer le lien de confirmation.");
     }
 
@@ -100,7 +101,7 @@ export const signUpByServer = createServerFn({ method: "POST" })
     const sendResult = await sendEmailConfirmation({
       email,
       firstName: data.firstName.trim(),
-      confirmationUrl: linkData.properties.action_link,
+      confirmationUrl: emailVerificationUrl(linkData.properties.hashed_token, "signup"),
       locale: data.locale,
     }).catch(() => ({ sent: false as const }));
 
@@ -135,7 +136,7 @@ export const resendSignupConfirmation = createServerFn({ method: "POST" })
     });
 
 
-    if (linkError || !linkData?.properties?.action_link) {
+    if (linkError || !linkData?.properties?.hashed_token) {
       throw new Error("Impossible de renvoyer l'email de confirmation. Réessayez dans un instant.");
     }
 
@@ -143,7 +144,7 @@ export const resendSignupConfirmation = createServerFn({ method: "POST" })
     const sendResult = await sendEmailConfirmation({
       email,
       firstName: profile?.first_name ?? "",
-      confirmationUrl: linkData.properties.action_link,
+      confirmationUrl: emailVerificationUrl(linkData.properties.hashed_token, "magiclink"),
       locale: data.locale ?? (profile as any)?.locale,
     }).catch(() => ({ sent: false as const }));
 

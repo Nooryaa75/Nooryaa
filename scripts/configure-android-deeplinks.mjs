@@ -6,11 +6,6 @@ import { readFileSync, writeFileSync } from "node:fs";
 const path = "android/app/src/main/AndroidManifest.xml";
 let xml = readFileSync(path, "utf8");
 
-if (xml.includes('android:scheme="nooryaa"')) {
-  console.log("Lien profond nooryaa:// déjà présent.");
-  process.exit(0);
-}
-
 const intentFilter = `
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
@@ -25,12 +20,26 @@ if (!xml.includes("</activity>")) {
   process.exit(1);
 }
 
-xml = xml.replace("</activity>", intentFilter);
+if (!xml.includes('android:scheme="nooryaa"')) {
+  xml = xml.replace("</activity>", intentFilter);
+}
+
+const appLinkFilter = `
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" android:host="app.nooryaa.com" android:path="/verification-email" />
+        </intent-filter>
+    </activity>`;
+if (!xml.includes('android:host="app.nooryaa.com" android:path="/verification-email"')) {
+  xml = xml.replace("</activity>", appLinkFilter);
+}
 writeFileSync(path, xml);
 
 const check = readFileSync(path, "utf8");
-if (!check.includes('android:scheme="nooryaa"')) {
+if (!check.includes('android:scheme="nooryaa"') || !check.includes('android:autoVerify="true"') || !check.includes('android:host="app.nooryaa.com" android:path="/verification-email"')) {
   console.error("Lien profond non appliqué");
   process.exit(1);
 }
-console.log("Lien profond nooryaa://open ajouté à MainActivity.");
+console.log("Liens nooryaa://open et HTTPS de vérification configurés.");

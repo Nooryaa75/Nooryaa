@@ -25,6 +25,7 @@ import { PlatformTracker } from "@/components/PlatformTracker";
 import { NativeBadgeSync } from "@/components/NativeBadgeSync";
 import { SocialWelcomeSync } from "@/components/SocialWelcomeSync";
 import { ScreenCaptureGuard } from "@/components/ScreenCaptureGuard";
+import { NativeEmailLinkSync } from "@/components/NativeEmailLinkSync";
 import { reportAppVersionCheck } from "@/lib/app-version.functions";
 
 function NotFoundComponent() {
@@ -248,6 +249,7 @@ function RootComponent() {
         {/* Enregistre le mode d'utilisation (web / Android / iPhone) du membre connecté. */}
         <PlatformTracker />
         <NativeBadgeSync />
+        <NativeEmailLinkSync />
         <SocialWelcomeSync />
         {/* Masque les photos des membres quand l'écran iPhone est enregistré ou partagé. */}
         <ScreenCaptureGuard />

@@ -232,6 +232,13 @@ function InscriptionWizard() {
               value={answers.origins ?? []}
               onChange={(origins) => update({ origins })}
             />
+            <div className="space-y-1.5">
+              <Label htmlFor="grew_up">{t("Où as-tu grandi ?")}</Label>
+              <Select value={answers.grewUp ?? ""} onValueChange={(v) => update({ grewUp: v })}>
+                <SelectTrigger id="grew_up"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectContent>{COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
             <Button
               className="w-full rounded-full" size="lg"
               disabled={(answers.origins ?? []).length === 0}

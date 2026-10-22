@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] « Voulez-vous des enfants ? » propose désormais Oui / Non / Je ne sais pas dans la fiche d’inscription et dans Ma fiche : réponse conservée même pour les anciennes fiches, reprise telle quelle sur les profils, dans l’administration et les statistiques ; « Je ne sais pas » compte comme répondu mais ne filtre jamais une recherche ni une compatibilité ; 6 tests réussis, écrans vérifiés en français, compilation OK.
+- [x] « Où as-tu grandi ? » ajouté sur la page « Vos origines » de l’inscription guidée (facultatif) : la réponse est enregistrée avec les origines et reprise dans la fiche sans jamais écraser une valeur déjà saisie ; 4 tests réussis, page vérifiée à l’écran et réponse retrouvée dans la fiche d’un compte de test, compilation OK.
+
 - [x] Préparer les liens de vérification HTTPS Android : association avec l’empreinte SHA-256 Google Play fournie, vérification de la connexion dans l’application à l’ouverture, maintien du navigateur sans application ; Codemagic Android 1.0.16 (19).
 - [ ] Publier le site puis construire et publier Android 1.0.16 (19) dans Codemagic / Google Play, demander un nouvel email et vérifier l’ouverture sur téléphone — publication, build et appareil nécessaires ; les anciens emails gardent leur ancien lien.
 

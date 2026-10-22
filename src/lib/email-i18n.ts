@@ -4,13 +4,12 @@
  * Utilisé côté serveur : aucun import React ici.
  */
 
+import { resolveLocale } from "./locale";
+
 export type MailLocale = "fr" | "en" | "ar";
 
 export function normalizeLocale(value: unknown): MailLocale {
-  const v = String(value ?? "").toLowerCase();
-  if (v.startsWith("en")) return "en";
-  if (v.startsWith("ar")) return "ar";
-  return "fr";
+  return resolveLocale(null, typeof value === "string" ? value : undefined);
 }
 
 export function isRtl(locale: MailLocale) {

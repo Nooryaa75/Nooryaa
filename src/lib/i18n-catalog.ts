@@ -4726,4 +4726,6 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Continuer": { en: "Continue", ar: "متابعة" },
   "Presque terminé": { en: "Almost done", ar: "اقتربنا من النهاية" },
   "Merci ! Il reste quelques questions par thème pour compléter votre profil.": { en: "Thank you! A few more questions by theme to complete your profile.", ar: "شكرًا! بقيت بعض الأسئلة حسب المواضيع لإكمال ملفكم." },
+  "Je m'inscris": { en: "Sign up", ar: "إنشاء حساب" },
+  "Je me connecte": { en: "Log in", ar: "تسجيل الدخول" },
 };

@@ -29,7 +29,7 @@ function NotreDifferencePage() {
             <Link to="/">
               <Button variant="ghost" size="sm" className="rounded-full px-3 md:px-4">Accueil</Button>
             </Link>
-            <Link to="/auth" search={{ mode: "signup" }}>
+            <Link to="/inscription">
               <Button size="sm" className="rounded-full px-3 md:px-5 gold-sheen border-0">S'inscrire</Button>
             </Link>
             <Link to="/auth" search={{ mode: "signin" }}>
@@ -97,7 +97,7 @@ function NotreDifferencePage() {
         </article>
 
         <div className="mt-12 flex flex-wrap justify-center gap-3">
-          <Link to="/auth" search={{ mode: "signup" }}>
+          <Link to="/inscription">
             <Button size="lg" className="rounded-full px-8">Rejoindre Nooryaa gratuitement</Button>
           </Link>
           <Link to="/">

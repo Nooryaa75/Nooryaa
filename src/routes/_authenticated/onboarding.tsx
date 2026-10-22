@@ -14,11 +14,13 @@ import { EyeOff } from "lucide-react";
 import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { OriginsPicker } from "@/components/OriginsPicker";
 import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 import { practiceChecks } from "@/lib/onboarding-practice";
+import { loadPresignup, clearPresignup } from "@/lib/presignup";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -45,8 +47,7 @@ function Onboarding() {
     phone: "",
     city: "",
     country: "France",
-    country_origin: "",
-    grew_up: "",
+    countries_origin: [] as string[],
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
     activities: "",
     salat_quotidienne: null as boolean | null,
@@ -67,7 +68,7 @@ function Onboarding() {
   const SELFIE_REQUIRED_AFTER = useMemo(() => new Date("2026-09-04T18:00:00.000Z"), []);
   const selfieRequired = new Date() >= SELFIE_REQUIRED_AFTER;
 
-  const STEPS = ["Qui êtes-vous ?", "Vos origines et votre lieu de vie", "Vos envies et votre objectif", "Vos photos et la vérification"];
+  const STEPS = ["Votre situation", "Votre pratique religieuse", "Votre objectif et votre présentation", "Vos photos et la vérification"];
   const [step, setStep] = useState(0);
 
   function checks(): [number, string, boolean][] {
@@ -77,10 +78,9 @@ function Onboarding() {
       [0, t("Je suis"), !!form.gender],
       [0, t("Date de naissance"), !!form.birthdate],
       [0, t("Situation"), !!form.marital_status],
-      [1, t("Ville de résidence"), !!form.city],
-      [1, t("Pays de résidence"), !!form.country],
-      [1, t("Pays d'origine"), !!form.country_origin],
-      [1, t("Où as-tu grandi"), !!form.grew_up],
+      [0, t("Ville de résidence"), !!form.city],
+      [0, t("Pays de résidence"), !!form.country],
+      [0, t("Pays d'origine"), form.countries_origin.length > 0],
       ...practiceChecks(form).map(([label, ok]) => [1, t(label), ok] as [number, string, boolean]),
       [2, t("Mon objectif sur Nooryaa"), !!form.objective],
       [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
@@ -113,30 +113,49 @@ function Onboarding() {
   }
 
   useEffect(() => {
+    // Réponses de l'inscription guidée (avant création du compte), lues une seule fois.
+    const pre = loadPresignup();
     supabase.from("profiles").select("*").eq("id", ctx.userId).maybeSingle().then(({ data }) => {
       if (data && isValidPhone((data as any).phone)) setLockedPhone(true);
-      if (data) setForm((f) => ({
-        ...f,
-        pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
-        // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
-        phone: isValidPhone((data as any).phone) ? (data as any).phone : f.phone,
-        gender: ((data as any).gender as any) || f.gender,
-        birthdate: (data as any).birthdate || f.birthdate,
-        city: (data as any).city || f.city,
-        country: (data as any).country || f.country,
-        country_origin: (data as any).country_origin || f.country_origin,
-        grew_up: data.grew_up || f.grew_up,
-        marital_status: data.marital_status || f.marital_status,
-        salat_quotidienne: (data as any).salat_quotidienne ?? f.salat_quotidienne,
-        ramadan: (data as any).ramadan ?? f.ramadan,
-        hadj: (data as any).hadj ?? f.hadj,
-        omra: (data as any).omra ?? f.omra,
-        porte_voile: (data as any).porte_voile ?? f.porte_voile,
-        activities: data.activities || f.activities,
-        objective: data.objective || f.objective,
-        bio: data.bio || f.bio,
-        photo_verified: !!(data as any).photo_verified,
-      }));
+      setForm((f) => {
+        const origins =
+          Array.isArray((data as any)?.countries_origin) && (data as any).countries_origin.length > 0
+            ? (data as any).countries_origin as string[]
+            : (data as any)?.country_origin
+              ? [(data as any).country_origin as string]
+              : pre.origins && pre.origins.length > 0
+                ? pre.origins
+                : f.countries_origin;
+        if (!data && !pre.pseudo) return f;
+        return {
+          ...f,
+          pseudo:
+            data?.pseudo && !data.pseudo.startsWith("user_")
+              ? data.pseudo
+              : pre.pseudo || f.pseudo,
+          // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
+          phone: isValidPhone((data as any)?.phone) ? (data as any).phone : f.phone,
+          gender: ((data as any)?.gender as any) || pre.gender || f.gender,
+          birthdate: (data as any)?.birthdate || pre.birthdate || f.birthdate,
+          city: (data as any)?.city || pre.city || f.city,
+          country: (data as any)?.country || pre.country || f.country,
+          countries_origin: origins,
+          marital_status: data?.marital_status || f.marital_status,
+          salat_quotidienne: (data as any)?.salat_quotidienne ?? f.salat_quotidienne,
+          ramadan: (data as any)?.ramadan ?? f.ramadan,
+          hadj: (data as any)?.hadj ?? f.hadj,
+          omra: (data as any)?.omra ?? f.omra,
+          porte_voile: (data as any)?.porte_voile ?? f.porte_voile,
+          activities: data?.activities || f.activities,
+          objective: data?.objective || f.objective,
+          bio: data?.bio || f.bio,
+          photo_verified: !!(data as any)?.photo_verified,
+          ...(pre.latitude != null && !(data as any)?.latitude
+            ? { latitude: pre.latitude, longitude: pre.longitude }
+            : {}),
+        };
+      });
+      if (pre.pseudo || pre.gender || pre.birthdate) clearPresignup();
     });
   }, [ctx.userId]);
 
@@ -190,8 +209,8 @@ function Onboarding() {
       latitude: (form as any).latitude ?? null,
       longitude: (form as any).longitude ?? null,
       country: form.country || null,
-      country_origin: form.country_origin || null,
-      grew_up: form.grew_up || null,
+      country_origin: form.countries_origin[0] || null,
+      countries_origin: form.countries_origin.length > 0 ? form.countries_origin : null,
       marital_status: form.marital_status as any,
       activities: form.activities || null,
       salat_quotidienne: form.salat_quotidienne,
@@ -202,7 +221,7 @@ function Onboarding() {
       objective: form.objective || null,
       bio: form.bio || null,
       onboarded: true,
-    }).eq("id", ctx.userId);
+    } as any).eq("id", ctx.userId);
     setLoading(false);
     if (error) { toast.error(frenchError(error, "L'enregistrement a échoué.")); return; }
     toast.success("Profil créé !");
@@ -213,7 +232,7 @@ function Onboarding() {
     <div className="max-w-2xl mx-auto bg-card rounded-2xl p-6 md:p-8 shadow-[var(--shadow-card)] border border-border/60">
       <h1 className="text-3xl font-serif text-primary mb-1">Votre profil Nooryaa</h1>
       <p className="text-muted-foreground text-sm mb-2">{t("Les champs marqués * sont obligatoires pour finaliser votre profil.")}</p>
-      <p className="text-muted-foreground text-sm mb-6">{t("Seulement l'essentiel pour commencer. Vous pourrez ajouter les autres informations plus tard dans Mon profil.")}</p>
+      <p className="text-muted-foreground text-sm mb-6">{t("Encore quelques questions par thème pour compléter votre profil.")}</p>
       <OpenInAppButton />
       <h2 className="text-lg font-serif text-primary mb-4">{t(STEPS[step])}</h2>
       {(missingFields.length > 0 || extraError || (attempted && pseudoError && step === 0)) && (
@@ -228,11 +247,13 @@ function Onboarding() {
       )}
       <form onSubmit={submit} className="space-y-5">
         {step === 0 && (<div key="s0" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+        {(!form.pseudo.trim() || pseudoError) && (
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
         </div>
+        )}
         {lockedPhone ? (
           <p className="text-[11px] text-muted-foreground">{t("Téléphone repris de votre inscription — il garantit un seul compte par personne.")}</p>
         ) : (
@@ -242,6 +263,7 @@ function Onboarding() {
             <p className="text-[11px] text-muted-foreground mt-1">{t("Il garantit un seul compte par personne.")}</p>
           </div>
         )}
+        {!form.gender && (
         <div>
           <Label>Je suis *</Label>
           <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>
@@ -257,26 +279,26 @@ function Onboarding() {
             </p>
           )}
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="birthdate">Date de naissance *</Label>
-            <BirthdateCalendar id="birthdate" value={form.birthdate} onChange={(birthdate) => setForm({ ...form, birthdate })} />
-            <p className="text-[11px] text-muted-foreground mt-1">Inscription réservée aux 18 ans et plus.</p>
-          </div>
-          <div>
-            <Label>Situation *</Label>
-            <Select value={form.marital_status || undefined} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
-              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="celibataire">Célibataire</SelectItem>
-                <SelectItem value="divorce">Divorcé·e</SelectItem>
-                <SelectItem value="veuf">Veuf·ve</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        )}
+        {!form.birthdate && (
+        <div>
+          <Label htmlFor="birthdate">Date de naissance *</Label>
+          <BirthdateCalendar id="birthdate" value={form.birthdate} onChange={(birthdate) => setForm({ ...form, birthdate })} />
+          <p className="text-[11px] text-muted-foreground mt-1">Inscription réservée aux 18 ans et plus.</p>
         </div>
-        </div>)}
-        {step === 1 && (<div key="s1" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+        )}
+        <div>
+          <Label>Situation *</Label>
+          <Select value={form.marital_status || undefined} onValueChange={(v: any) => setForm({ ...form, marital_status: v })}>
+            <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="celibataire">Célibataire</SelectItem>
+              <SelectItem value="divorce">Divorcé·e</SelectItem>
+              <SelectItem value="veuf">Veuf·ve</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {(!form.city || !form.country) && (
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label>Ville de résidence *</Label>
@@ -298,29 +320,21 @@ function Onboarding() {
             </Select>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label>Pays d'origine *</Label>
-            <Select value={form.country_origin} onValueChange={(v) => setForm({ ...form, country_origin: v })}>
-              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Où as-tu grandi ? *</Label>
-            <Select value={form.grew_up} onValueChange={(v) => setForm({ ...form, grew_up: v })}>
-              <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+        )}
+        {form.countries_origin.length === 0 && (
+        <div>
+          <Label>Pays d'origine *</Label>
+          <p className="text-[11px] text-muted-foreground mb-2">{t("Vous pouvez choisir jusqu'à 3 pays d'origine.")}</p>
+          <OriginsPicker
+            value={form.countries_origin}
+            onChange={(countries_origin) => setForm({ ...form, countries_origin })}
+          />
         </div>
+        )}
+        </div>)}
+        {step === 1 && (<div key="s1" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="pt-2">
-          <p className="text-sm font-semibold mb-1">Votre pratique religieuse *</p>
-          <p className="text-xs text-muted-foreground mb-2">{t("Merci de répondre à chaque question.")}</p>
+          <p className="text-sm text-muted-foreground mb-3">{t("Merci de répondre à chaque question. Il n'y a pas de bonne ou de mauvaise réponse : elles aident simplement à de belles rencontres.")}</p>
           <div className="space-y-2">
             <YesNoRadio name="salat" label="Salat quotidienne *" value={form.salat_quotidienne} onChange={(v) => setForm({ ...form, salat_quotidienne: v })} />
             <YesNoRadio name="ramadan" label="Ramadan *" value={form.ramadan} onChange={(v) => setForm({ ...form, ramadan: v })} />

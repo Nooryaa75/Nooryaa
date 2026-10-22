@@ -395,3 +395,12 @@ html.admin-copy-allowed img {
 .nooryaa-recording [data-photo-guard] video {
   visibility: hidden !important;
 }
+
+/* Roue de sélection (date de naissance) : barre de défilement masquée */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

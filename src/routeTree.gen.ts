@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as NotreDifferenceRouteImport } from './routes/notre-difference'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -74,6 +75,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InscriptionRoute = InscriptionRouteImport.update({
+  id: '/inscription',
+  path: '/inscription',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
@@ -337,6 +343,7 @@ const ApiPublicHooksIncompleteProfilesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/inscription': typeof InscriptionRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
@@ -390,6 +397,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/inscription': typeof InscriptionRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
@@ -444,6 +452,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/inscription': typeof InscriptionRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/notre-difference': typeof NotreDifferenceRoute
   '/privacy': typeof PrivacyRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/inscription'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
     | '/privacy'
@@ -552,6 +562,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/inscription'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
     | '/privacy'
@@ -605,6 +616,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/inscription'
     | '/mot-de-passe-oublie'
     | '/notre-difference'
     | '/privacy'
@@ -660,6 +672,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  InscriptionRoute: typeof InscriptionRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   NotreDifferenceRoute: typeof NotreDifferenceRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -711,6 +724,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inscription': {
+      id: '/inscription'
+      path: '/inscription'
+      fullPath: '/inscription'
+      preLoaderRoute: typeof InscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mot-de-passe-oublie': {
@@ -1135,6 +1155,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  InscriptionRoute: InscriptionRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   NotreDifferenceRoute: NotreDifferenceRoute,
   PrivacyRoute: PrivacyRoute,

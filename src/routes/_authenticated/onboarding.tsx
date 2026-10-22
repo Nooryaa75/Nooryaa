@@ -50,6 +50,9 @@ function Onboarding() {
     countries_origin: [] as string[],
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
     height_cm: "",
+    has_children: null as boolean | null,
+    children_count: "",
+    wants_children: null as boolean | null,
     activities: "",
     salat_quotidienne: null as boolean | null,
     ramadan: null as boolean | null,
@@ -79,6 +82,9 @@ function Onboarding() {
       [0, t("Je suis"), !!form.gender],
       [0, t("Date de naissance"), !!form.birthdate],
       [0, t("Situation"), !!form.marital_status],
+      [0, t("Avez-vous des enfants ?"), form.has_children !== null],
+      [0, t("Combien d'enfants ?"), form.has_children !== true || Number(form.children_count) >= 1],
+      [0, t("Voulez-vous des enfants ?"), form.wants_children !== null],
       [0, t("Taille (en cm)"), Number(form.height_cm) >= 120 && Number(form.height_cm) <= 230],
       [0, t("Ville de résidence"), !!form.city],
       [0, t("Pays de résidence"), !!form.country],
@@ -165,6 +171,9 @@ function Onboarding() {
           country: (data as any)?.country || pre.country || f.country,
           countries_origin: origins,
           marital_status: data?.marital_status || f.marital_status,
+          has_children: (data as any)?.has_children ?? f.has_children,
+          children_count: (data as any)?.children_count ? String((data as any).children_count) : f.children_count,
+          wants_children: (data as any)?.wants_children ?? f.wants_children,
           height_cm: (data as any)?.height_cm ? String((data as any).height_cm) : f.height_cm,
           salat_quotidienne: (data as any)?.salat_quotidienne ?? f.salat_quotidienne,
           ramadan: (data as any)?.ramadan ?? f.ramadan,
@@ -239,6 +248,9 @@ function Onboarding() {
       countries_origin: form.countries_origin.length > 0 ? form.countries_origin : null,
       marital_status: form.marital_status as any,
       height_cm: Number(form.height_cm),
+      has_children: form.has_children,
+      children_count: form.has_children ? Number(form.children_count) : null,
+      wants_children: form.wants_children,
       activities: form.activities || null,
       salat_quotidienne: form.salat_quotidienne,
       ramadan: form.ramadan,
@@ -328,6 +340,16 @@ function Onboarding() {
         <div>
           <Label htmlFor="height_cm">Taille (en cm) *</Label>
           <Input id="height_cm" type="number" inputMode="numeric" min={120} max={230} value={form.height_cm} onChange={(e) => setForm({ ...form, height_cm: e.target.value.replace(/\D/g, "").slice(0, 3) })} placeholder="175" />
+        </div>
+        <div className="space-y-2">
+          <YesNoRadio name="has_children" label="Avez-vous des enfants ? *" value={form.has_children} onChange={(v) => setForm({ ...form, has_children: v, children_count: v ? form.children_count : "" })} />
+          {form.has_children === true && (
+            <div>
+              <Label htmlFor="children_count">Combien d'enfants ? *</Label>
+              <Input id="children_count" type="number" inputMode="numeric" min={1} max={20} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: e.target.value.replace(/\D/g, "").slice(0, 2) })} placeholder="1" />
+            </div>
+          )}
+          <YesNoRadio name="wants_children" label="Voulez-vous des enfants ? *" value={form.wants_children} onChange={(v) => setForm({ ...form, wants_children: v })} />
         </div>
         {(!form.city || !form.country) && (
         <div className="grid md:grid-cols-2 gap-4">

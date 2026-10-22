@@ -4730,4 +4730,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Je me connecte": { en: "Log in", ar: "تسجيل الدخول" },
   "Taille (en cm)": { en: "Height (cm)", ar: "الطول (سم)" },
   "Taille (en cm) *": { en: "Height (cm) *", ar: "الطول (سم) *" },
+  "Avez-vous des enfants ? *": { en: "Do you have children? *", ar: "هل لديكم أطفال؟ *" },
+  "Voulez-vous des enfants ?": { en: "Do you want children?", ar: "هل تريدون أطفالاً؟" },
+  "Voulez-vous des enfants ? *": { en: "Do you want children? *", ar: "هل تريدون أطفالاً؟ *" },
 };

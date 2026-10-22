@@ -15,13 +15,19 @@ export function NativeEmailLinkSync() {
       if (!destination || `${window.location.pathname}${window.location.hash}` === destination) return;
       window.location.assign(destination);
     };
-    void app.addListener("appUrlOpen", open).then((handle: { remove: () => Promise<void> }) => {
-      if (!active) void handle.remove();
-      else listener = handle;
-    }).catch(() => {});
-    void app.getLaunchUrl().then((event?: { url?: string }) => {
-      if (event) open(event);
-    }).catch(() => {});
+    // The native bridge may return a handle directly or a promise: support both.
+    try {
+      Promise.resolve(app.addListener("appUrlOpen", open)).then((handle: any) => {
+        if (!handle?.remove) return;
+        if (!active) void Promise.resolve(handle.remove()).catch(() => {});
+        else listener = handle;
+      }).catch(() => {});
+    } catch { /* ignore */ }
+    try {
+      Promise.resolve(app.getLaunchUrl?.()).then((event?: { url?: string }) => {
+        if (event) open(event);
+      }).catch(() => {});
+    } catch { /* ignore */ }
     return () => {
       active = false;
       void listener?.remove();

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { wantsChildrenLabel } from "@/lib/wants-children";
 
 type Range = { from?: string; to?: string };
 
@@ -44,7 +45,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         supabaseAdmin
           .from("profiles")
           .select(
-            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen, last_platform",
+            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, wants_children_answer, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen, last_platform",
           )
           .limit(20000),
         supabaseAdmin.from("likes").select("from_user, to_user, created_at").gte("created_at", fromISO).lte("created_at", toISO),
@@ -129,7 +130,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         objective: tally(all.map((p) => p.objective)).slice(0, 10),
         body_type: tally(all.map((p) => p.body_type)),
         has_children: tally(all.map((p) => (p.has_children === null ? null : p.has_children ? "Oui" : "Non"))),
-        wants_children: tally(all.map((p) => (p.wants_children === null ? null : p.wants_children ? "Oui" : "Non"))),
+        wants_children: tally(all.map((p) => wantsChildrenLabel((p as any).wants_children_answer ?? (p as any).wants_children) ?? null)),
         smoker: tally(all.map((p) => (p.smoker === null ? null : p.smoker ? "Oui" : "Non"))),
       },
     };

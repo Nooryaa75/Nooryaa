@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { wantsChildrenLabel } from "@/lib/wants-children";
 import { notifyLike } from "@/lib/notify";
 import { Button } from "@/components/ui/button";
 import {
@@ -427,7 +428,7 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
                 {current.has_children && (
                   <Info icon={<Users className="h-4 w-4" />} label="Nombre d'enfants" value={current.children_count?.toString()} />
                 )}
-                <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={boolLabel(current.wants_children)} />
+                <Info icon={<Users className="h-4 w-4" />} label="Souhaite des enfants" value={wantsChildrenLabel((current as any).wants_children_answer ?? (current as any).wants_children)} />
               </dl>
             </AccordionSection>
 

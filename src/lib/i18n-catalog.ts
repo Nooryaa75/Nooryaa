@@ -4733,4 +4733,5 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Avez-vous des enfants ? *": { en: "Do you have children? *", ar: "هل لديكم أطفال؟ *" },
   "Voulez-vous des enfants ?": { en: "Do you want children?", ar: "هل تريدون أطفالاً؟" },
   "Voulez-vous des enfants ? *": { en: "Do you want children? *", ar: "هل تريدون أطفالاً؟ *" },
+  "Je ne sais pas": { en: "I don't know", ar: "لا أدري" },
 };

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { adminCheckAuth, adminGetProfile, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
+import { wantsChildrenLabel } from "@/lib/wants-children";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
@@ -119,7 +120,7 @@ function AdminProfileDetail() {
             <Field label="Porte le voile" value={yn((p as any).porte_voile)} />
             <Field label="A des enfants" value={yn((p as any).has_children)} />
             <Field label="Nombre d'enfants" value={(p as any).children_count} />
-            <Field label="Veut des enfants" value={yn((p as any).wants_children)} />
+            <Field label="Veut des enfants" value={wantsChildrenLabel((p as any).wants_children_answer ?? (p as any).wants_children) ?? null} />
             <Field label="Fumeur" value={yn((p as any).smoker)} />
             <Field label="Photo vérifiée" value={(p as any).photo_verified ? "Oui" : `Non (${(p as any).photo_verification_status ?? "—"})`} />
             <Field label="Photo principale floutée" value={yn((p as any).primary_photo_blurred)} />

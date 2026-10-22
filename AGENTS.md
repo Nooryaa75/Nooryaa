@@ -11,6 +11,8 @@
 
 ## Project rules
 
+- Resolve browser/device language and explicit language choices through src/lib/locale.ts so UI initialization and signup metadata use the same fallback.
+
 - Welcome email after social authentication is mounted once at the root; the authenticated server function derives the recipient from the session and reuses the welcome sender, sent-history check and idempotency key (no duplicates web/native).
 
 - Onboarding renders and saves required profile fields only; optional details stay editable in Mon profil and are not cleared for existing members.

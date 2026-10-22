@@ -39,8 +39,6 @@ function Onboarding() {
   const [lockedPhone, setLockedPhone] = useState(false);
   const [form, setForm] = useState({
     pseudo: "",
-    firstName: "",
-    lastName: "",
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
     phone: "",
@@ -68,10 +66,8 @@ function Onboarding() {
 
   function checks(): [number, string, boolean][] {
     return [
-      [0, t("Prénom"), form.firstName.trim().length >= 2],
-      [0, t("Nom"), form.lastName.trim().length >= 2],
       [0, t("Pseudo"), !!form.pseudo.trim()],
-      [0, t("Téléphone (numéro valide)"), isValidPhone(form.phone)],
+      [0, t("Téléphone (numéro valide)"), lockedPhone || isValidPhone(form.phone)],
       [0, t("Je suis"), !!form.gender],
       [0, t("Date de naissance"), !!form.birthdate],
       [0, t("Situation"), !!form.marital_status],
@@ -116,8 +112,6 @@ function Onboarding() {
       if (data) setForm((f) => ({
         ...f,
         pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
-        firstName: (data as any).first_name || f.firstName,
-        lastName: (data as any).last_name || f.lastName,
         // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
         phone: isValidPhone((data as any).phone) ? (data as any).phone : f.phone,
         gender: ((data as any).gender as any) || f.gender,
@@ -177,8 +171,6 @@ function Onboarding() {
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
-      first_name: form.firstName.trim(),
-      last_name: form.lastName.trim(),
       gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,

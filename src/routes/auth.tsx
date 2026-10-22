@@ -187,9 +187,6 @@ function AuthPage() {
       if (mode === "signup") {
         if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
         if (password !== password2) throw new Error("Les deux mots de passe ne correspondent pas.");
-        if (firstName.trim().length < 2 || lastName.trim().length < 2) {
-          throw new Error("Merci d'indiquer votre prénom et votre nom.");
-        }
         if (!isValidPhone(phone)) {
           throw new Error("Merci d'indiquer un numéro de téléphone valide.");
         }
@@ -428,16 +425,6 @@ function AuthPage() {
         <form onSubmit={handleEmail} className="space-y-4">
           {mode === "signup" && (
             <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="firstName">Prénom *</Label>
-                  <Input id="firstName" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">{t("Nom")} *</Label>
-                  <Input id="lastName" required maxLength={60} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                </div>
-              </div>
               <div>
                 <Label htmlFor="phone">Téléphone *</Label>
                 <PhoneInput id="phone" required value={phone} onChange={setPhone} />

@@ -7,8 +7,8 @@ const SITE_URL = "https://nooryaa.lovable.app";
 const signUpSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  firstName: z.string().min(2).max(60),
-  lastName: z.string().min(2).max(60),
+  firstName: z.string().max(60).optional().default(""),
+  lastName: z.string().max(60).optional().default(""),
   phone: z.string().min(8).max(20),
   origin: z.string().url().optional(),
   locale: z.string().optional(),

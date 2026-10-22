@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { OBJECTIVES, COUNTRIES, CITIES, isAdult } from "@/lib/profile";
 import { EyeOff } from "lucide-react";
-import { ActivitiesPicker } from "@/components/ActivitiesPicker";
 import { PhotoManager } from "@/components/PhotoManager";
 import { SelfieVerification } from "@/components/SelfieVerification";
 import { CityAutocomplete } from "@/components/CityAutocomplete";

@@ -30,7 +30,7 @@ export function NativeEmailLinkSync() {
     } catch { /* ignore */ }
     return () => {
       active = false;
-      void listener?.remove();
+      try { void Promise.resolve(listener?.remove()).catch(() => {}); } catch { /* ignore */ }
     };
   }, []);
   return null;

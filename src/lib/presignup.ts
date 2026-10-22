@@ -7,6 +7,7 @@ export type PresignupAnswers = {
   pseudo?: string;
   birthdate?: string;
   origins?: string[];
+  grewUp?: string;
   city?: string;
   country?: string;
   latitude?: number | null;
@@ -72,6 +73,7 @@ export function presignupProfilePatch(
     patch.countries_origin = origins;
     patch.country_origin = origins[0];
   }
+  if (a.grewUp?.trim() && !ex.grew_up) patch.grew_up = a.grewUp.trim().slice(0, 120);
   if (a.city?.trim() && !ex.city) patch.city = a.city.trim().slice(0, 120);
   if (a.country?.trim() && (!ex.country || !ex.city)) patch.country = a.country.trim();
   if (typeof a.latitude === "number" && typeof a.longitude === "number" && ex.latitude == null) {

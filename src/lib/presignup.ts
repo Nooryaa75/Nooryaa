@@ -47,7 +47,7 @@ export function clearPresignup() {
 }
 
 export function hasPresignup(a: PresignupAnswers): boolean {
-  return !!(a.gender || a.pseudo || a.birthdate || (a.origins && a.origins.length) || a.city);
+  return !!(a.gender || a.pseudo || a.birthdate || (a.origins && a.origins.length) || a.grewUp || a.city);
 }
 
 /**

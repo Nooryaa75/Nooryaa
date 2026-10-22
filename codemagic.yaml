@@ -65,6 +65,9 @@ workflows:
       - name: Protect screenshots and screen recording
         script: |
           node scripts/configure-android-screen-security.mjs
+      - name: Always start on the home page
+        script: |
+          node scripts/configure-android-cold-start.mjs
       - name: Set app version (1.0.18)
         script: |
           perl -pi -e 's/versionCode\s+\d+/versionCode 21/; s/versionName\s+"[^"]*"/versionName "1.0.18"/' android/app/build.gradle
@@ -164,6 +167,9 @@ workflows:
       - name: Protect screenshots and screen recording
         script: |
           node scripts/configure-android-screen-security.mjs
+      - name: Always start on the home page
+        script: |
+          node scripts/configure-android-cold-start.mjs
       - name: Set app version (1.0.18)
         script: |
           perl -pi -e 's/versionCode\s+\d+/versionCode 21/; s/versionName\s+"[^"]*"/versionName "1.0.18"/' android/app/build.gradle

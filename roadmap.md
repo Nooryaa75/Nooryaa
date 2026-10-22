@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Préparer Android 1.0.17 dans les deux workflows Codemagic avec un numéro de build augmenté.
+
 - [ ] Utiliser la langue du navigateur/téléphone par défaut, anglais pour les langues non prises en charge ; vérifier inscription et emails.
 
 - [x] « Voulez-vous des enfants ? » propose désormais Oui / Non / Je ne sais pas dans la fiche d’inscription et dans Ma fiche : réponse conservée même pour les anciennes fiches, reprise telle quelle sur les profils, dans l’administration et les statistiques ; « Je ne sais pas » compte comme répondu mais ne filtre jamais une recherche ni une compatibilité ; 6 tests réussis, écrans vérifiés en français, compilation OK.

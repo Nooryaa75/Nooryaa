@@ -39,8 +39,6 @@ function Onboarding() {
   const [lockedPhone, setLockedPhone] = useState(false);
   const [form, setForm] = useState({
     pseudo: "",
-    firstName: "",
-    lastName: "",
     gender: "" as "homme" | "femme" | "",
     birthdate: "",
     phone: "",
@@ -68,10 +66,8 @@ function Onboarding() {
 
   function checks(): [number, string, boolean][] {
     return [
-      [0, t("Prénom"), form.firstName.trim().length >= 2],
-      [0, t("Nom"), form.lastName.trim().length >= 2],
       [0, t("Pseudo"), !!form.pseudo.trim()],
-      [0, t("Téléphone (numéro valide)"), isValidPhone(form.phone)],
+      [0, t("Téléphone (numéro valide)"), lockedPhone || isValidPhone(form.phone)],
       [0, t("Je suis"), !!form.gender],
       [0, t("Date de naissance"), !!form.birthdate],
       [0, t("Situation"), !!form.marital_status],
@@ -116,8 +112,6 @@ function Onboarding() {
       if (data) setForm((f) => ({
         ...f,
         pseudo: data.pseudo && !data.pseudo.startsWith("user_") ? data.pseudo : f.pseudo,
-        firstName: (data as any).first_name || f.firstName,
-        lastName: (data as any).last_name || f.lastName,
         // Pré-remplissage avec les infos déjà connues (inscription) — on ignore un numéro invalide
         phone: isValidPhone((data as any).phone) ? (data as any).phone : f.phone,
         gender: ((data as any).gender as any) || f.gender,
@@ -177,8 +171,6 @@ function Onboarding() {
     setLoading(true);
     const { error } = await supabase.from("profiles").update({
       pseudo: form.pseudo,
-      first_name: form.firstName.trim(),
-      last_name: form.lastName.trim(),
       gender: form.gender as any,
       looking_for: form.gender === "homme" ? "femme" : "homme",
       birthdate: form.birthdate,
@@ -220,26 +212,20 @@ function Onboarding() {
       )}
       <form onSubmit={submit} className="space-y-5">
         {step === 0 && (<div key="s0" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="firstName">Prénom *</Label>
-            <Input id="firstName" maxLength={60} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="Amina" />
-          </div>
-          <div>
-            <Label htmlFor="lastName">Nom *</Label>
-            <Input id="lastName" maxLength={60} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Benali" />
-          </div>
-        </div>
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
         </div>
-        <div>
-          <Label htmlFor="phone">Téléphone *</Label>
-          <PhoneInput id="phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} readOnly={isValidPhone(form.phone) && lockedPhone} />
-          {lockedPhone && <p className="text-[11px] text-muted-foreground mt-1">Repris de votre inscription — il garantit un seul compte par personne.</p>}
-        </div>
+        {lockedPhone ? (
+          <p className="text-[11px] text-muted-foreground">{t("Téléphone repris de votre inscription — il garantit un seul compte par personne.")}</p>
+        ) : (
+          <div>
+            <Label htmlFor="phone">Téléphone *</Label>
+            <PhoneInput id="phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+            <p className="text-[11px] text-muted-foreground mt-1">{t("Il garantit un seul compte par personne.")}</p>
+          </div>
+        )}
         <div>
           <Label>Je suis *</Label>
           <Select value={form.gender || undefined} onValueChange={(v: any) => setForm({ ...form, gender: v })}>

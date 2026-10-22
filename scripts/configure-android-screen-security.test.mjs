@@ -26,7 +26,7 @@ test('both Android workflows apply protection before building', () => {
   for (const name of ['nooryaa-android', 'nooryaa-android-release']) {
     const workflow = yaml.split(`  ${name}:`)[1]?.split(/\n  nooryaa-/)[0];
     assert.ok(workflow?.includes('node scripts/configure-android-screen-security.mjs'));
-    assert.ok(workflow?.includes('versionCode 19'));
-    assert.ok(workflow?.includes('versionName "1.0.16"'));
+    assert.ok(workflow?.includes('versionCode 20'));
+    assert.ok(workflow?.includes('versionName "1.0.17"'));
   }
 });

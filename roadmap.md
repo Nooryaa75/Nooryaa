@@ -1,5 +1,6 @@
 # Roadmap
 
+- [ ] Corriger les instructions Swift collées dans la protection iOS, reproduire l’erreur et vérifier le contrôleur généré ; conserver iOS 1.0.2 (21).
 - [x] Corriger l’échec iOS « Configure screen security » : sous-classe intégrée dans AppDelegate.swift et reliée au storyboard ; 6 tests réussis et double exécution vérifiée sur le modèle officiel Capacitor 6. iOS 1.0.2 (21) conservé dans les deux workflows.
 - [ ] Relancer « Nooryaa iPhone (App Store) » dans Codemagic pour valider l’archive complète — lancement Codemagic et environnement Apple indisponibles ici.
 

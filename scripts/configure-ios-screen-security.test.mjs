@@ -36,6 +36,13 @@ test('existing controller setup is preserved with protection', () => {
   assert.equal((secured.match(/func viewDidLoad/g) ?? []).length, 1);
 });
 
+test('single-line viewDidLoad keeps injected Swift statements on separate lines', () => {
+  const source = 'class MainViewController: CAPBridgeViewController {\n    override func viewDidLoad() { super.viewDidLoad() }\n}';
+  const secured = secureMainController(source);
+  assert.match(secured, /DispatchQueue\.main\.async \{ self\.screenCapturedChanged\(\) \}\n\s*super\.viewDidLoad\(\)/);
+  assert.equal(secureMainController(secured), secured);
+});
+
 test('unexpected controller templates stop the build rather than omit protection', () => {
   assert.throws(() => secureMainController('class OtherViewController {}'), /not applied/);
 });

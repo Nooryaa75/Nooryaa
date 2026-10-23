@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Corriger l’échec iOS « Configure screen security » : sous-classe intégrée dans AppDelegate.swift et reliée au storyboard ; 6 tests réussis et double exécution vérifiée sur le modèle officiel Capacitor 6. iOS 1.0.2 (21) conservé dans les deux workflows.
+- [ ] Relancer « Nooryaa iPhone (App Store) » dans Codemagic pour valider l’archive complète — lancement Codemagic et environnement Apple indisponibles ici.
+
 - [x] Préparer Android 1.0.17 (20) dans les deux workflows Codemagic ; liens, permissions et protections conservés. iOS 1.0.1 passe au build 20 pour garder les versions synchronisées.
 - [ ] Lancer et publier Android 1.0.17 (20) dans Codemagic / Google Play — accès de lancement Codemagic nécessaire.
 

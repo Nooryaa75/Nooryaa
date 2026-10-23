@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 // Le projet iOS est régénéré à chaque build : on y injecte la détection
@@ -37,16 +38,53 @@ export function secureMainController(source) {
   return out.slice(0, last) + handler + out.slice(last);
 }
 
+// Capacitor 6 ne crée pas MainViewController.swift. La sous-classe est
+// ajoutée au fichier AppDelegate déjà compilé, puis reliée au storyboard.
+export function secureStoryboard(source) {
+  const controller = source.match(/<viewController\b[^>]*customClass="(?:CAPBridgeViewController|MainViewController)"[^>]*>/);
+  if (!controller) throw new Error('Nooryaa iOS screen security was not applied: unexpected storyboard template.');
+  const tag = controller[0]
+    .replace(/customClass="[^"]*"/, 'customClass="MainViewController"')
+    .replace(/\s+customModule(?:Provider)?="[^"]*"/g, '')
+    .replace(/\s*\/?>$/, ' customModule="App" customModuleProvider="target"/>');
+  return source.replace(controller[0], tag);
+}
+
+export function configureScreenSecurity(root = 'ios/App/App') {
+  const path = join(root, 'MainViewController.swift');
+  const delegatePath = join(root, 'AppDelegate.swift');
+  const storyboardPath = join(root, 'Base.lproj/Main.storyboard');
+  if (!existsSync(delegatePath) || !existsSync(storyboardPath)) {
+    throw new Error('Generate the iOS project before configuring screen security: AppDelegate.swift or Main.storyboard missing.');
+  }
+  // Validate both sources before writing so an unexpected template stops the build.
+  const storyboard = secureStoryboard(readFileSync(storyboardPath, 'utf8'));
+  if (existsSync(path)) {
+    writeFileSync(path, secureMainController(readFileSync(path, 'utf8')));
+  } else {
+    let delegate = readFileSync(delegatePath, 'utf8');
+    if (!/class\s+AppDelegate\s*:/.test(delegate)) {
+      throw new Error('Nooryaa iOS screen security was not applied: unexpected AppDelegate template.');
+    }
+    if (!delegate.includes(MARKER)) {
+      const controller = secureMainController([
+        '@objc class MainViewController: CAPBridgeViewController {',
+        '    override func viewDidLoad() { super.viewDidLoad() }',
+        '    override func viewDidAppear(_ animated: Bool) {',
+        '        super.viewDidAppear(animated)',
+        '        screenCapturedChanged()',
+        '    }',
+        '}',
+      ].join('\n'));
+      delegate += `\n\n${controller}\n`;
+    }
+    writeFileSync(delegatePath, delegate);
+  }
+  writeFileSync(storyboardPath, storyboard);
+}
+
 function main() {
-  const path = 'ios/App/App/MainViewController.swift';
-  if (!existsSync(path)) {
-    throw new Error('Generate the iOS project before configuring screen security.');
-  }
-  const secured = secureMainController(readFileSync(path, 'utf8'));
-  writeFileSync(path, secured);
-  if (!secured.includes(MARKER)) {
-    throw new Error('Nooryaa iOS screen security was not applied.');
-  }
+  configureScreenSecurity();
   console.log('Nooryaa iOS screen security configured.');
 }
 

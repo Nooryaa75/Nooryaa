@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { MARKER, secureMainController } from './configure-ios-screen-security.mjs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { configureScreenSecurity, secureStoryboard, secureMainController } from './configure-ios-screen-security.mjs';
 
 const template = [
   'import UIKit',
@@ -43,6 +45,35 @@ test('both iOS workflows apply protection and carry the next build', () => {
   for (const name of ['nooryaa-ios-check', 'nooryaa-ios-release']) {
     const workflow = yaml.split(`  ${name}:`)[1]?.split(/\n  nooryaa-/)[0];
     assert.ok(workflow?.includes('node scripts/configure-ios-screen-security.mjs'));
-    assert.ok(workflow?.includes('set-ios-version.mjs 1.0.1 20'));
+    assert.ok(workflow?.includes('set-ios-version.mjs 1.0.2 21'));
+    assert.ok(workflow.indexOf('npx cap add ios') < workflow.indexOf('node scripts/configure-ios-screen-security.mjs'));
   }
+});
+
+const storyboard = '<document><viewController id="BYZ-38-t0r" customClass="CAPBridgeViewController" customModule="Capacitor" sceneMemberID="viewController"/></document>';
+
+test('Capacitor 6 generated project is protected without a MainViewController file', () => {
+  const root = mkdtempSync(join(tmpdir(), 'nooryaa-ios-security-'));
+  try {
+    mkdirSync(join(root, 'Base.lproj'));
+    const delegate = 'import UIKit\nimport Capacitor\n@UIApplicationMain\nclass AppDelegate: UIResponder, UIApplicationDelegate { var window: UIWindow? }';
+    writeFileSync(join(root, 'AppDelegate.swift'), delegate);
+    writeFileSync(join(root, 'Base.lproj/Main.storyboard'), storyboard);
+    configureScreenSecurity(root);
+    const secured = readFileSync(join(root, 'AppDelegate.swift'), 'utf8');
+    assert.ok(secured.startsWith(delegate));
+    assert.ok(secured.includes(jsEvent));
+    assert.ok(secured.includes('UIScreen.capturedDidChangeNotification'));
+    assert.ok(secured.includes('override func viewDidAppear'));
+    const linked = readFileSync(join(root, 'Base.lproj/Main.storyboard'), 'utf8');
+    assert.ok(linked.includes('customClass="MainViewController"'));
+    assert.ok(linked.includes('customModule="App" customModuleProvider="target"'));
+    configureScreenSecurity(root);
+    assert.equal(readFileSync(join(root, 'AppDelegate.swift'), 'utf8'), secured);
+    assert.equal(readFileSync(join(root, 'Base.lproj/Main.storyboard'), 'utf8'), linked);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('unknown storyboard stops configuration rather than silently omit protection', () => {
+  assert.throws(() => secureStoryboard('<viewController customClass="OtherController"/>'), /not applied/);
 });

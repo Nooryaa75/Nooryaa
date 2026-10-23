@@ -11,7 +11,7 @@ export const MARKER = 'screenCapturedChanged';
 // gestionnaire qui prévient la WebView. Idempotent, échoue (et arrête le
 // build) si le modèle généré ne correspond pas.
 export function secureMainController(source) {
-  if (source.includes(MARKER)) return source;
+  if (/func\s+screenCapturedChanged\s*\(/.test(source)) return source;
   if (!/class\s+MainViewController\s*:\s*CAPBridgeViewController/.test(source)) {
     throw new Error('Nooryaa iOS screen security was not applied: unexpected MainViewController template.');
   }

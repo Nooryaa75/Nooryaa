@@ -22,7 +22,7 @@ export function secureMainController(source) {
   const observer = `${loader[0]}\n` +
     '        // Nooryaa screen security: prévient la WebView quand l\'écran est enregistré ou partagé\n' +
     '        NotificationCenter.default.addObserver(self, selector: #selector(screenCapturedChanged), name: UIScreen.capturedDidChangeNotification, object: nil)\n' +
-    '        DispatchQueue.main.async { self.screenCapturedChanged() }';
+    '        DispatchQueue.main.async { self.screenCapturedChanged() }\n';
   let out = source.replace(loader[0], observer);
   const handler = '\n' +
     '    // Nooryaa screen security\n' +

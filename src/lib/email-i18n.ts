@@ -32,6 +32,14 @@ type Copy = {
   suspend: { subject: (site: string) => string; title: string; body: (site: string) => string; cta: string };
   deleted: { subject: (site: string) => string; title: string; body: (site: string) => string; cta: (site: string) => string };
   reasonLabel: string;
+  // Accusé de réception : signalement, message de contact, demande d'assistance
+  requestAck: {
+    subject: (site: string) => string;
+    title: string;
+    body: (site: string, kindLabel: string) => string;
+    cta: (site: string) => string;
+  };
+  requestKindLabels: { report: string; contact: string; support: string };
   selfie: {
     subject: (site: string) => string;
     title: string;
@@ -133,6 +141,15 @@ const fr: Copy = {
     cta: (site) => `Revenir sur ${site}`,
   },
   reasonLabel: "Motif indiqué",
+  requestAck: {
+    subject: (site) => `${site} : nous avons bien reçu votre demande`,
+    title: "Votre demande est bien prise en compte",
+    body: (site, kindLabel) => `<p>Nous confirmons la bonne réception de votre <strong>${kindLabel}</strong>.</p>
+       <p>Notre équipe va l'examiner avec attention et reviendra vers vous si nécessaire. Merci de contribuer à garder ${site} sûre et bienveillante.</p>
+       <p>Qu'Allah vous garde.</p>`,
+    cta: (site) => `Ouvrir ${site}`,
+  },
+  requestKindLabels: { report: "signalement", contact: "message de contact", support: "demande d'assistance" },
   selfie: {
     subject: (site) => `${site} : refaites votre vérification par selfie`,
     title: "Vérification de votre profil à refaire",
@@ -234,6 +251,15 @@ const en: Copy = {
     cta: (site) => `Back to ${site}`,
   },
   reasonLabel: "Reason given",
+  requestAck: {
+    subject: (site) => `${site}: we have received your request`,
+    title: "Your request has been received",
+    body: (site, kindLabel) => `<p>We confirm that we have received your <strong>${kindLabel}</strong>.</p>
+       <p>Our team will review it carefully and will get back to you if needed. Thank you for helping keep ${site} safe and kind.</p>
+       <p>May Allah protect you.</p>`,
+    cta: (site) => `Open ${site}`,
+  },
+  requestKindLabels: { report: "report", contact: "contact message", support: "support request" },
   selfie: {
     subject: (site) => `${site}: please redo your selfie verification`,
     title: "Your profile verification must be redone",
@@ -335,6 +361,15 @@ const ar: Copy = {
     cta: (site) => `العودة إلى ${site}`,
   },
   reasonLabel: "السبب المذكور",
+  requestAck: {
+    subject: (site) => `${site}: لقد تلقينا طلبك`,
+    title: "تم استلام طلبك بنجاح",
+    body: (site, kindLabel) => `<p>نؤكد أننا تلقينا <strong>${kindLabel}</strong>.</p>
+       <p>سيراجعه فريقنا بعناية وسيعاود التواصل معك إذا لزم الأمر. شكرًا لمساهمتك في الحفاظ على ${site} آمنة ومحترمة.</p>
+       <p>حفظك الله.</p>`,
+    cta: (site) => `فتح ${site}`,
+  },
+  requestKindLabels: { report: "بلاغك", contact: "رسالة الاتصال الخاصة بك", support: "طلب المساعدة الخاص بك" },
   selfie: {
     subject: (site) => `${site}: أعد التحقق بصورة سيلفي`,
     title: "يجب إعادة التحقق من ملفك",

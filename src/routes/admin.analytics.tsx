@@ -50,37 +50,20 @@ function AdminAnalytics() {
           </div>
         </section>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-card rounded-2xl p-5 border border-border/60">
-            <h2 className="text-lg font-serif text-primary mb-3">Rétention</h2>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data?.retention ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="label" fontSize={11} />
-                  <YAxis fontSize={11} unit="%" />
-                  <Tooltip formatter={(v: number) => `${v} %`} />
-                  <Bar dataKey="value" fill="var(--chart-1, #4f46e5)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-
-          <section className="bg-card rounded-2xl p-5 border border-border/60">
-            <h2 className="text-lg font-serif text-primary mb-3">Activité par heure (messages)</h2>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data?.hours ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="hour" fontSize={10} interval={2} />
-                  <YAxis fontSize={11} />
-                  <Tooltip />
-                  <Area dataKey="value" stroke="var(--chart-2, #db2777)" fill="var(--chart-2, #db2777)" fillOpacity={0.2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        </div>
+        <section className="bg-card rounded-2xl p-5 border border-border/60">
+          <h2 className="text-lg font-serif text-primary mb-3">Activité — membres connectés par jour (30 derniers jours)</h2>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data?.connected ?? []}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="day" fontSize={10} interval={2} />
+                <YAxis fontSize={11} allowDecimals={false} />
+                <Tooltip formatter={(v: number) => [`${v} connecté(s)`, ""]} />
+                <Area dataKey="value" stroke="var(--chart-2, #db2777)" fill="var(--chart-2, #db2777)" fillOpacity={0.2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
 
         <section className="bg-card rounded-2xl p-5 border border-border/60">
           <h2 className="text-lg font-serif text-primary mb-1">Connectés en temps réel</h2>

@@ -10,9 +10,6 @@ function bounds(data: Range) {
   return { fromISO: from.toISOString(), toISO: to.toISOString() };
 }
 
-function dayKey(iso: string) {
-  return new Date(iso).toISOString().slice(0, 10);
-}
 
 function ageFromBirthdate(b?: string | null) {
   if (!b) return null;
@@ -58,23 +55,14 @@ export const adminOverview = createServerFn({ method: "GET" })
     const all = profiles ?? [];
     const inRange = all.filter((p) => p.created_at >= fromISO && p.created_at <= toISO);
 
-    const signupsByDay = new Map<string, { total: number; homme: number; femme: number }>();
-    for (const p of inRange) {
-      const k = dayKey(p.created_at);
-      const cur = signupsByDay.get(k) ?? { total: 0, homme: 0, femme: 0 };
-      cur.total += 1;
-      if (p.gender === "homme") cur.homme += 1;
-      if (p.gender === "femme") cur.femme += 1;
-      signupsByDay.set(k, cur);
+    const signupsByMonth = new Map<string, number>();
+    for (const p of all) {
+      const k = p.created_at.slice(0, 7);
+      signupsByMonth.set(k, (signupsByMonth.get(k) ?? 0) + 1);
     }
-    const series = [...signupsByDay.entries()]
-      .map(([day, v]) => ({ day, ...v }))
-      .sort((a, b) => a.day.localeCompare(b.day));
-    let cumul = all.filter((p) => p.created_at < fromISO).length;
-    const cumulative = series.map((s) => {
-      cumul += s.total;
-      return { day: s.day, total: cumul };
-    });
+    const byMonth = [...signupsByMonth.entries()]
+      .map(([month, total]) => ({ month, total }))
+      .sort((a, b) => a.month.localeCompare(b.month));
 
     const ages = all.map((p) => ageFromBirthdate(p.birthdate)).filter((a): a is number => a !== null);
     const ageBuckets = ["18-24", "25-29", "30-34", "35-39", "40-49", "50+"].map((label) => ({ label, homme: 0, femme: 0 }));
@@ -107,8 +95,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         activeSenders: new Set((messages ?? []).map((m) => m.sender)).size,
         avgAge: ages.length ? Math.round((ages.reduce((s, a) => s + a, 0) / ages.length) * 10) / 10 : 0,
       },
-      series,
-      cumulative,
+      byMonth,
       gender: tally(all.map((p) => p.gender)),
       ageBuckets,
       platforms: (() => {

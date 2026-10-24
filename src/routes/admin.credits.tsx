@@ -68,6 +68,16 @@ function AdminCredits() {
 
         <Input placeholder="Rechercher un membre…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
 
+        {term.length === 0 && (
+          <p className="text-sm text-muted-foreground rounded-2xl border border-dashed border-border/60 bg-card/50 p-6 text-center">
+            Recherchez un membre par son pseudo ou son email pour gérer ses likes, super likes et boosts.
+          </p>
+        )}
+        {term.length > 0 && data && data.length === 0 && (
+          <p className="text-sm text-muted-foreground rounded-2xl border border-dashed border-border/60 bg-card/50 p-6 text-center">
+            Aucun membre ne correspond à cette recherche.
+          </p>
+        )}
         <div className="bg-card rounded-2xl border border-border/60 divide-y divide-border/60 overflow-hidden">
           {(data ?? []).map((u) => {
             const c = u.credits;

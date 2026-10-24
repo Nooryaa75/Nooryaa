@@ -28,7 +28,12 @@ function AdminCredits() {
   const adjust = useServerFn(adminAdjustCredits);
   const history = useServerFn(adminCreditHistory);
 
-  const { data } = useQuery({ queryKey: ["admin-credits", q], queryFn: () => list({ data: { q } }) });
+  const term = q.trim();
+  const { data } = useQuery({
+    queryKey: ["admin-credits", term],
+    queryFn: () => list({ data: { q: term } }),
+    enabled: term.length > 0,
+  });
   const { data: events } = useQuery({
     queryKey: ["admin-credit-history", openUser],
     queryFn: () => history({ data: { userId: openUser! } }),
@@ -63,8 +68,19 @@ function AdminCredits() {
 
         <Input placeholder="Rechercher un membre…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
 
+        {term.length === 0 && (
+          <p className="text-sm text-muted-foreground rounded-2xl border border-dashed border-border/60 bg-card/50 p-6 text-center">
+            Recherchez un membre par son pseudo ou son email pour gérer ses likes, super likes et boosts.
+          </p>
+        )}
+        {term.length > 0 && data && data.length === 0 && (
+          <p className="text-sm text-muted-foreground rounded-2xl border border-dashed border-border/60 bg-card/50 p-6 text-center">
+            Aucun membre ne correspond à cette recherche.
+          </p>
+        )}
+        {data && data.length > 0 && (
         <div className="bg-card rounded-2xl border border-border/60 divide-y divide-border/60 overflow-hidden">
-          {(data ?? []).map((u) => {
+          {data.map((u) => {
             const c = u.credits;
             return (
               <div key={u.id} className="p-4 space-y-3">
@@ -132,6 +148,7 @@ function AdminCredits() {
             );
           })}
         </div>
+        )}
       </main>
     </div>
   );

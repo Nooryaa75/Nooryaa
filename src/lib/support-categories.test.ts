@@ -1,21 +1,20 @@
-import { describe, expect, it } from "vitest";
+import { test } from "node:test";
+import assert from "node:assert/strict";
 import { isSupportCategory, supportCategories } from "./support-categories";
 
-describe("sujets du service client", () => {
-  it("ne propose pas le signalement", () => {
-    expect(supportCategories).not.toContain("Signalement");
-    expect(isSupportCategory("Signalement")).toBe(false);
-  });
+test("le service client ne propose pas le signalement", () => {
+  assert.equal(supportCategories.includes("Signalement"), false);
+  assert.equal(isSupportCategory("Signalement"), false);
+});
 
-  it("garde les autres sujets", () => {
-    expect(supportCategories).toEqual([
-      "Partenariat",
-      "Inscription",
-      "Connexion / Email",
-      "Suppression de compte",
-      "Abonnement",
-      "Autres",
-    ]);
-    expect(isSupportCategory("Abonnement")).toBe(true);
-  });
+test("les autres sujets du service client restent disponibles", () => {
+  assert.deepEqual([...supportCategories], [
+    "Partenariat",
+    "Inscription",
+    "Connexion / Email",
+    "Suppression de compte",
+    "Abonnement",
+    "Autres",
+  ]);
+  assert.equal(isSupportCategory("Abonnement"), true);
 });

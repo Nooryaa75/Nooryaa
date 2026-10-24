@@ -23,6 +23,28 @@ function AdminModeration() {
     queryKey: ["admin-moderation", verdict],
     queryFn: () => list({ data: { verdict } }),
   });
+  const [qName, setQName] = useState("");
+  const [qReason, setQReason] = useState("");
+  const [qDate, setQDate] = useState("");
+  const norm = (s: unknown) => String(s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const filtered = (data ?? []).filter((e: any) => {
+    if (qName.trim()) {
+      const n = norm(qName.trim());
+      const hay = [e.author?.pseudo, e.target?.pseudo, e.author?.first_name, e.author?.last_name, e.target?.first_name, e.target?.last_name, e.author?.email, e.target?.email].map(norm).join(" ");
+      if (!hay.includes(n)) return false;
+    }
+    if (qReason.trim()) {
+      const r = norm(qReason.trim());
+      const hay = [e.reason, ...(e.categories ?? []), e.content].map(norm).join(" ");
+      if (!hay.includes(r)) return false;
+    }
+    if (qDate) {
+      const d = new Date(e.created_at);
+      const local = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      if (local !== qDate) return false;
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen mosaic-soft">
@@ -43,8 +65,14 @@ function AdminModeration() {
           Chaque message privé est analysé avant envoi : lexique interdit, ton et contexte. Les messages contraires à la charte sont bloqués, les cas limites sont signalés ici.
         </p>
 
+        <div className="flex flex-wrap gap-2">
+          <Input className="flex-1 min-w-[180px]" placeholder="Rechercher un nom ou pseudo" value={qName} onChange={(e) => setQName(e.target.value)} />
+          <Input className="flex-1 min-w-[180px]" placeholder="Rechercher une raison" value={qReason} onChange={(e) => setQReason(e.target.value)} />
+          <Input type="date" className="w-[170px]" value={qDate} onChange={(e) => setQDate(e.target.value)} aria-label="Date" />
+        </div>
+
         <div className="space-y-3">
-          {(data ?? []).map((e: any) => (
+          {filtered.map((e: any) => (
             <div key={e.id} className="rounded-xl border border-border/60 bg-card p-4 space-y-2">
               <div className="flex items-center justify-between flex-wrap gap-2 text-sm">
                 <span className="font-medium text-primary">
@@ -68,7 +96,7 @@ function AdminModeration() {
               {e.reason && <p className="text-xs text-muted-foreground">Motif : {e.reason}</p>}
             </div>
           ))}
-          {data && data.length === 0 && (
+          {data && filtered.length === 0 && (
             <p className="text-muted-foreground text-sm">Aucun événement de modération.</p>
           )}
         </div>

@@ -148,6 +148,7 @@ function AdminCredits() {
             );
           })}
         </div>
+        )}
       </main>
     </div>
   );

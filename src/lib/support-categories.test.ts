@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { isSupportCategory, supportCategories } from "./support-categories";
 
 test("le service client ne propose pas le signalement", () => {
-  assert.equal(supportCategories.includes("Signalement"), false);
   assert.equal(isSupportCategory("Signalement"), false);
+  assert.equal((supportCategories as readonly string[]).includes("Signalement"), false);
 });
 
 test("les autres sujets du service client restent disponibles", () => {

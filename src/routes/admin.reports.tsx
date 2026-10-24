@@ -6,6 +6,7 @@ import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { frenchError } from "@/lib/errors";
 
@@ -72,7 +73,7 @@ function AdminReports() {
                   <span className="text-muted-foreground"> par </span>
                   <Link to="/admin/profiles/$id" params={{ id: r.reporter }} className="font-medium text-primary underline">{r.reporterProfile?.pseudo ?? r.reporter.slice(0,8)}</Link>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "open" ? "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]" : r.status === "resolved" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{r.status}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "open" ? "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]" : r.status === "resolved" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{r.status === "open" ? "Ouvert" : r.status === "resolved" ? "Résolu" : "Rejeté"}</span>
               </div>
               <p className="text-sm">{r.reason}</p>
               <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")}</div>
@@ -109,6 +110,38 @@ function AdminReports() {
           ))}
         </div>
       </main>
+    </div>
+  );
+}
+function ReportActions({ report, saving, onSave, onSuspend }: {
+  report: any;
+  saving: boolean;
+  onSave: (status: "open" | "resolved" | "rejected", comment: string) => void;
+  onSuspend: () => void;
+}) {
+  const [comment, setComment] = useState<string>(report.admin_comment ?? "");
+  const [st, setSt] = useState<"open" | "resolved" | "rejected">(report.status);
+  return (
+    <div className="space-y-2 pt-1">
+      <Textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Commentaire de l'équipe (visible uniquement par l'administration)"
+        maxLength={2000}
+        rows={2}
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={st} onValueChange={(v) => setSt(v as any)}>
+          <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="open">Ouvert</SelectItem>
+            <SelectItem value="resolved">Résolu</SelectItem>
+            <SelectItem value="rejected">Rejeté</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button size="sm" disabled={saving} onClick={() => onSave(st, comment)}>Enregistrer</Button>
+        <Button size="sm" variant="destructive" onClick={onSuspend}>Suspendre le profil</Button>
+      </div>
     </div>
   );
 }

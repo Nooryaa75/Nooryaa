@@ -5,6 +5,7 @@ import { adminCheckAuth, adminListModeration } from "@/lib/admin.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/admin/moderation")({
   ssr: false,

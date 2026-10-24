@@ -1,18 +1,15 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminSeedTestProfiles } from "@/lib/admin.functions";
-import { adminOverview, adminOnlineNow } from "@/lib/admin-insights.functions";
+import { adminOverview, adminOnlineNow, adminCriteriaDistribution } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
-import {
-  Users, UserCheck, Flag, AlertTriangle, MessageSquare, ArrowRight, Sparkles, Megaphone, Mail,
-  BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3, ShieldCheck,
-
-} from "lucide-react";
+import { Users, UserCheck, Flag, AlertTriangle, Sparkles, BadgeCheck, Euro, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/")({

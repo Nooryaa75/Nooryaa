@@ -154,7 +154,7 @@ function AdminProfilesList() {
                 </tr>
               ))}
               {data && data.rows.length === 0 && (
-                <tr><td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
+                <tr><td colSpan={12} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}
             </tbody>
           </table>

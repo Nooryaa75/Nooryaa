@@ -217,6 +217,7 @@ function MessagesLayout() {
         reporter: ctx.userId,
         reported: reportOpen.id,
         reason: reportReason.trim(),
+        status: "open",
       } as any);
       if (error) throw error;
     },

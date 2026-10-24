@@ -1,18 +1,15 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminSeedTestProfiles } from "@/lib/admin.functions";
-import { adminOverview, adminOnlineNow } from "@/lib/admin-insights.functions";
+import { adminOverview, adminOnlineNow, adminCriteriaDistribution } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
-import {
-  Users, UserCheck, Flag, AlertTriangle, MessageSquare, ArrowRight, Sparkles, Megaphone, Mail,
-  BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3, ShieldCheck,
-
-} from "lucide-react";
+import { Users, UserCheck, Flag, AlertTriangle, Sparkles, BadgeCheck, Euro, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { frenchError } from "@/lib/errors";
 
 export const Route = createFileRoute("/admin/")({
@@ -43,6 +40,69 @@ function Distribution({ title, rows }: { title: string; rows: { label: string; v
         {rows.length === 0 && <p className="text-xs text-muted-foreground">Aucune donnée.</p>}
       </div>
     </div>
+  );
+}
+
+function CriteriaSection() {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const fetchCriteria = useServerFn(adminCriteriaDistribution);
+  const { data } = useQuery({
+    queryKey: ["admin-criteria", from, to],
+    queryFn: () => fetchCriteria({ data: { from: from || undefined, to: to || undefined } }),
+  });
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 className="text-lg font-serif text-primary">Critères de la fiche profil</h2>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <label className="text-muted-foreground" htmlFor="crit-from">Du</label>
+          <input
+            id="crit-from"
+            type="date"
+            value={from}
+            max={to || undefined}
+            onChange={(e) => setFrom(e.target.value)}
+            className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary"
+          />
+          <label className="text-muted-foreground" htmlFor="crit-to">au</label>
+          <input
+            id="crit-to"
+            type="date"
+            value={to}
+            min={from || undefined}
+            onChange={(e) => setTo(e.target.value)}
+            className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary"
+          />
+          {(from || to) && (
+            <button type="button" onClick={() => { setFrom(""); setTo(""); }} className="text-xs text-primary underline underline-offset-2">
+              Réinitialiser
+            </button>
+          )}
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">
+        {from || to
+          ? `${data?.total ?? 0} membre(s) inscrit(s) sur la période choisie.`
+          : "Toutes les périodes confondues — choisissez des dates pour filtrer par date d'inscription."}
+      </p>
+      <div className="grid md:grid-cols-3 gap-4">
+        <Distribution title="Genre" rows={data?.gender ?? []} />
+        <Distribution title="Mode d'utilisation" rows={data?.platforms ?? []} />
+        <Distribution title="Villes" rows={data?.cities ?? []} />
+        <Distribution title="Pays de résidence" rows={data?.countries ?? []} />
+        <Distribution title="Pays d'origine" rows={data?.origins ?? []} />
+        <Distribution title="Situation maritale" rows={data?.criteria.marital_status ?? []} />
+        <Distribution title="Pratique religieuse" rows={data?.criteria.religious_practice ?? []} />
+        <Distribution title="Niveau d'études" rows={data?.criteria.education_level ?? []} />
+        <Distribution title="Objectif" rows={data?.criteria.objective ?? []} />
+        <Distribution title="Corpulence" rows={data?.criteria.body_type ?? []} />
+        <Distribution title="A des enfants" rows={data?.criteria.has_children ?? []} />
+        <Distribution title="Souhaite des enfants" rows={data?.criteria.wants_children ?? []} />
+        <Distribution title="Fumeur" rows={data?.criteria.smoker ?? []} />
+      </div>
+    </section>
   );
 }
 
@@ -84,20 +144,6 @@ function AdminDashboard() {
     { label: "Suspendus / bannis", value: c?.suspended, icon: AlertTriangle, tone: "bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[color:var(--gold)]" },
     { label: "Signalements ouverts", value: c?.openReports, icon: Flag, tone: "bg-destructive/10 text-destructive" },
   ];
-
-  const shortcuts = [
-    { to: "/admin/profiles", label: "Gérer les profils", desc: "Voir, filtrer, suspendre, bannir ou supprimer un membre.", icon: Users },
-    { to: "/admin/finance", label: "Finance", desc: "CA TTC/HT, TVA par jour, semaine, mois, formule et genre.", icon: Euro },
-    { to: "/admin/analytics", label: "Analytics", desc: "Entonnoir de conversion, rétention et activité horaire.", icon: BarChart3 },
-    { to: "/admin/support", label: "Support", desc: "Tickets, statuts et historique des échanges.", icon: LifeBuoy },
-    { to: "/admin/credits", label: "Consommation", desc: "Likes, super likes et boosts par membre.", icon: Zap },
-    { to: "/admin/config", label: "Configurateur", desc: "Prix, durées et quotas des abonnements.", icon: SlidersHorizontal },
-    { to: "/admin/conversations", label: "Discussions", desc: "Lire les échanges entre membres pour modération.", icon: MessageSquare },
-    { to: "/admin/reports", label: "Signalements", desc: "Examiner et résoudre les signalements ouverts.", icon: Flag },
-    { to: "/admin/contact", label: "Messages de contact", desc: "Répondre aux messages du formulaire d'accueil.", icon: Mail },
-    { to: "/admin/ads", label: "Publicités", desc: "Gérer le carrousel d'annonces partenaires.", icon: Megaphone },
-    { to: "/admin/rgpd", label: "RGPD", desc: "Registre des traitements, hébergement et conformité.", icon: ShieldCheck },
-  ] as const;
 
   return (
     <div className="min-h-screen mosaic-soft">
@@ -144,57 +190,7 @@ function AdminDashboard() {
           </div>
         </section>
 
-        <section>
-          <h2 className="text-lg font-serif text-primary mb-3">Répartition par tranche d'âge</h2>
-          <div className="bg-card rounded-2xl p-5 border border-border/60 h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.ageBuckets ?? []}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="label" fontSize={11} />
-                <YAxis fontSize={11} allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="homme" name="Hommes" fill="#4f46e5" />
-                <Bar dataKey="femme" name="Femmes" fill="#db2777" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-serif text-primary mb-3">Critères de la fiche profil</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Distribution title="Genre" rows={data?.gender ?? []} />
-            <Distribution title="Mode d'utilisation" rows={data?.platforms ?? []} />
-            <Distribution title="Villes" rows={data?.cities ?? []} />
-            <Distribution title="Pays de résidence" rows={data?.countries ?? []} />
-            <Distribution title="Pays d'origine" rows={data?.origins ?? []} />
-            <Distribution title="Situation maritale" rows={data?.criteria.marital_status ?? []} />
-            <Distribution title="Pratique religieuse" rows={data?.criteria.religious_practice ?? []} />
-            <Distribution title="Niveau d'études" rows={data?.criteria.education_level ?? []} />
-            <Distribution title="Objectif" rows={data?.criteria.objective ?? []} />
-            <Distribution title="Corpulence" rows={data?.criteria.body_type ?? []} />
-            <Distribution title="A des enfants" rows={data?.criteria.has_children ?? []} />
-            <Distribution title="Souhaite des enfants" rows={data?.criteria.wants_children ?? []} />
-            <Distribution title="Fumeur" rows={data?.criteria.smoker ?? []} />
-          </div>
-        </section>
-
-        <div>
-          <h2 className="text-lg font-serif text-primary mb-3">Raccourcis</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {shortcuts.map((s) => (
-              <Link key={s.to} to={s.to} className="group bg-card rounded-2xl p-5 border border-border/60 hover:border-primary/40 hover:shadow-[var(--shadow-card)] transition-all">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><s.icon className="h-5 w-5" /></div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-                <div className="font-medium text-primary">{s.label}</div>
-                <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
+        <CriteriaSection />
 
         <div className="bg-card rounded-2xl p-5 border border-border/60 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">

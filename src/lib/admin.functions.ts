@@ -103,7 +103,7 @@ async function translateForAdmin(rows: any[]): Promise<Record<string, Record<str
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: "openai/gpt-5.6-luna",
+        model: "openai/gpt-6-astra",
         input: [
           {
             role: "system",

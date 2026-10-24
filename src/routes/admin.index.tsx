@@ -43,6 +43,69 @@ function Distribution({ title, rows }: { title: string; rows: { label: string; v
   );
 }
 
+function CriteriaSection() {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const fetchCriteria = useServerFn(adminCriteriaDistribution);
+  const { data } = useQuery({
+    queryKey: ["admin-criteria", from, to],
+    queryFn: () => fetchCriteria({ data: { from: from || undefined, to: to || undefined } }),
+  });
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 className="text-lg font-serif text-primary">Critères de la fiche profil</h2>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <label className="text-muted-foreground" htmlFor="crit-from">Du</label>
+          <input
+            id="crit-from"
+            type="date"
+            value={from}
+            max={to || undefined}
+            onChange={(e) => setFrom(e.target.value)}
+            className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary"
+          />
+          <label className="text-muted-foreground" htmlFor="crit-to">au</label>
+          <input
+            id="crit-to"
+            type="date"
+            value={to}
+            min={from || undefined}
+            onChange={(e) => setTo(e.target.value)}
+            className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary"
+          />
+          {(from || to) && (
+            <button type="button" onClick={() => { setFrom(""); setTo(""); }} className="text-xs text-primary underline underline-offset-2">
+              Réinitialiser
+            </button>
+          )}
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">
+        {from || to
+          ? `${data?.total ?? 0} membre(s) inscrit(s) sur la période choisie.`
+          : "Toutes les périodes confondues — choisissez des dates pour filtrer par date d'inscription."}
+      </p>
+      <div className="grid md:grid-cols-3 gap-4">
+        <Distribution title="Genre" rows={data?.gender ?? []} />
+        <Distribution title="Mode d'utilisation" rows={data?.platforms ?? []} />
+        <Distribution title="Villes" rows={data?.cities ?? []} />
+        <Distribution title="Pays de résidence" rows={data?.countries ?? []} />
+        <Distribution title="Pays d'origine" rows={data?.origins ?? []} />
+        <Distribution title="Situation maritale" rows={data?.criteria.marital_status ?? []} />
+        <Distribution title="Pratique religieuse" rows={data?.criteria.religious_practice ?? []} />
+        <Distribution title="Niveau d'études" rows={data?.criteria.education_level ?? []} />
+        <Distribution title="Objectif" rows={data?.criteria.objective ?? []} />
+        <Distribution title="Corpulence" rows={data?.criteria.body_type ?? []} />
+        <Distribution title="A des enfants" rows={data?.criteria.has_children ?? []} />
+        <Distribution title="Souhaite des enfants" rows={data?.criteria.wants_children ?? []} />
+        <Distribution title="Fumeur" rows={data?.criteria.smoker ?? []} />
+      </div>
+    </section>
+  );
+}
+
 function AdminDashboard() {
   const period = usePeriod("30j");
   const fetchOverview = useServerFn(adminOverview);

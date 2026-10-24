@@ -78,8 +78,9 @@ function AdminCredits() {
             Aucun membre ne correspond à cette recherche.
           </p>
         )}
+        {data && data.length > 0 && (
         <div className="bg-card rounded-2xl border border-border/60 divide-y divide-border/60 overflow-hidden">
-          {(data ?? []).map((u) => {
+          {data.map((u) => {
             const c = u.credits;
             return (
               <div key={u.id} className="p-4 space-y-3">

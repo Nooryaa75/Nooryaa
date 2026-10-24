@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_closures: {
+        Row: {
+          action: string
+          created_at: string
+          details: string | null
+          id: string
+          reason: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_actions: {
         Row: {
           action: string

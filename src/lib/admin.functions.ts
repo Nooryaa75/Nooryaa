@@ -178,9 +178,32 @@ export const adminGetProfile = createServerFn({ method: "GET" })
       supabaseAdmin.from("reports").select("*").eq("reporter", data.id).order("created_at", { ascending: false }),
       supabaseAdmin.from("blocks").select("*").or(`blocker.eq.${data.id},blocked.eq.${data.id}`),
     ]);
+    // Selfie de vérification (bucket privé) : lien signé temporaire pour l'admin.
+    let verificationSelfieUrl: string | null = null;
+    try {
+      const { data: signed } = await supabaseAdmin.storage
+        .from("verification-selfies")
+        .createSignedUrl(data.id, 60 * 30);
+      verificationSelfieUrl = signed?.signedUrl ?? null;
+    } catch {
+      verificationSelfieUrl = null;
+    }
+    // Modération du chat : avertissements (warn) et messages bloqués (block),
+    // messages texte et vocaux confondus.
+    const { data: chatModeration } = await supabaseAdmin
+      .from("moderation_events")
+      .select("verdict")
+      .eq("user_id", data.id)
+      .in("source", ["message", "voice"])
+      .in("verdict", ["warn", "block"]);
+    const chatWarnings = (chatModeration ?? []).filter((e) => e.verdict === "warn").length;
+    const chatBlocked = (chatModeration ?? []).filter((e) => e.verdict === "block").length;
     return {
       profile: profile.data,
       photos: photos.data ?? [],
+      verificationSelfieUrl,
+      chatWarnings,
+      chatBlocked,
       likesReceived: likesIn.data ?? [],
       likesSent: likesOut.data ?? [],
       messagesReceived: msgsIn.data ?? [],

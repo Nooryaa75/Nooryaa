@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
-import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, ShieldAlert, ShieldCheck, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap, RotateCcw } from "lucide-react";
+import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, ShieldAlert, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
@@ -18,9 +18,7 @@ const links = [
   { to: "/admin/reports", label: "Signalements", icon: Flag, exact: false, badge: "reports" as const },
   { to: "/admin/moderation", label: "Modération", icon: ShieldAlert, exact: false },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
-  { to: "/admin/rgpd", label: "RGPD", icon: ShieldCheck, exact: false },
   
-  { to: "/admin/reset", label: "Données", icon: RotateCcw, exact: false },
 
 ] as const;
 

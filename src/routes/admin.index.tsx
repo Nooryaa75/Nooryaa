@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminSeedTestProfiles } from "@/lib/admin.functions";
-import { adminOverview, adminOnlineNow, adminCriteriaDistribution } from "@/lib/admin-insights.functions";
+import { adminOverview, adminOnlineNow, adminCriteriaDistribution, adminClosureStats } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
 import { Users, UserCheck, Flag, AlertTriangle, Sparkles, BadgeCheck, Euro, Radio } from "lucide-react";
@@ -106,6 +106,58 @@ function CriteriaSection() {
   );
 }
 
+function ClosuresSection() {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const fetchStats = useServerFn(adminClosureStats);
+  const { data } = useQuery({
+    queryKey: ["admin-closures", from, to],
+    queryFn: () => fetchStats({ data: { from: from || undefined, to: to || undefined } }),
+  });
+  const block = (title: string, g?: { count: number; reasons: { label: string; value: number }[]; comments: { text: string; reason: string | null; at: string }[] }) => (
+    <div className="space-y-3">
+      <div className="bg-card rounded-2xl p-5 gold-frame">
+        <div className="text-3xl font-serif text-primary leading-none">{g?.count ?? "—"}</div>
+        <div className="text-xs text-muted-foreground mt-2">{title}</div>
+      </div>
+      <Distribution title={`Raisons — ${title.toLowerCase()}`} rows={g?.reasons ?? []} />
+      {g && g.comments.length > 0 && (
+        <details className="bg-card rounded-2xl p-4 border border-border/60 text-sm">
+          <summary className="cursor-pointer font-medium text-primary">Commentaires laissés ({g.comments.length})</summary>
+          <ul className="mt-2 space-y-2">
+            {g.comments.map((c, i) => (
+              <li key={i} className="rounded-lg bg-muted/40 p-2">
+                <div className="text-[11px] text-muted-foreground">{new Date(c.at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}{c.reason ? ` · ${c.reason}` : ""}</div>
+                <div className="whitespace-pre-wrap">{c.text}</div>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </div>
+  );
+  return (
+    <section>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 className="text-lg font-serif text-primary">Suppressions et suspensions de compte</h2>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <label className="text-muted-foreground" htmlFor="clo-from">Du</label>
+          <input id="clo-from" type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary" />
+          <label className="text-muted-foreground" htmlFor="clo-to">au</label>
+          <input id="clo-to" type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-primary" />
+          {(from || to) && (
+            <button type="button" onClick={() => { setFrom(""); setTo(""); }} className="text-xs text-primary underline underline-offset-2">Réinitialiser</button>
+          )}
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-4">
+        {block("Comptes supprimés", data?.deleted)}
+        {block("Comptes suspendus", data?.suspended)}
+      </div>
+    </section>
+  );
+}
+
 function AdminDashboard() {
   const period = usePeriod("30j");
   const fetchOverview = useServerFn(adminOverview);
@@ -189,6 +241,8 @@ function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </section>
+
+        <ClosuresSection />
 
         <CriteriaSection />
 

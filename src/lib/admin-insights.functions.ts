@@ -687,3 +687,26 @@ export const adminSetSubscriptionsEnabled = createServerFn({ method: "POST" })
     });
     return { ok: true, enabled: data.enabled };
   });
+
+export const adminClosureStats = createServerFn({ method: "GET" })
+  .inputValidator((data: { from?: string; to?: string }) => data ?? {})
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin.from("account_closures").select("action, reason, details, created_at").order("created_at", { ascending: false }).limit(5000);
+    if (data.from) q = q.gte("created_at", `${data.from}T00:00:00`);
+    if (data.to) q = q.lte("created_at", `${data.to}T23:59:59.999`);
+    const { data: rows } = await q;
+    const group = (action: string) => {
+      const list = (rows ?? []).filter((r) => r.action === action);
+      const m = new Map<string, number>();
+      list.forEach((r) => m.set(r.reason || "Non précisé", (m.get(r.reason || "Non précisé") ?? 0) + 1));
+      return {
+        count: list.length,
+        reasons: [...m.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value),
+        comments: list.filter((r) => r.details).slice(0, 20).map((r) => ({ text: r.details as string, reason: r.reason, at: r.created_at })),
+      };
+    };
+    return { deleted: group("delete"), suspended: group("suspend") };
+  });

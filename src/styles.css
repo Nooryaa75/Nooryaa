@@ -94,6 +94,10 @@
   --sage: oklch(0.68 0.19 22);                 /* corail */
   --sage-deep: oklch(0.38 0.155 305);
   --emerald-deep: oklch(0.26 0.028 275);
+  /* Coche « profil vérifié » — vert de validation */
+  --verified: oklch(0.52 0.15 155);
+  --verified-bg: oklch(0.95 0.05 155);
+
   --hero-bg: oklch(0.26 0.028 275);
   --cream: oklch(0.985 0.003 300);
   --sand: oklch(0.945 0.032 305);
@@ -181,6 +185,8 @@
   --success-bg: oklch(0.30 0.05 305);
   --success-text: oklch(0.92 0.03 320);
   --success-border: oklch(0.55 0.16 305);
+  --verified: oklch(0.75 0.16 155);
+  --verified-bg: oklch(0.32 0.07 155);
   --info-bg: oklch(0.30 0.05 305);
   --info-text: oklch(0.92 0.03 320);
   --info-border: oklch(0.55 0.16 305);

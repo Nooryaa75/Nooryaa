@@ -6,9 +6,86 @@ import { Check, ChevronRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+const DROPDOWN_TOUCH_GRACE_MS = 350;
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+type DropdownMenuTouchCtx = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  openedAtRef: React.MutableRefObject<number>;
+  pointerTypeRef: React.MutableRefObject<string>;
+};
+
+const DropdownMenuTouchContext = React.createContext<DropdownMenuTouchCtx | null>(null);
+
+/**
+ * Sur téléphone, le menu s'ouvrait dès l'appui : la première option se retrouvait sous
+ * le doigt et un clic fantôme la déclenchait aussitôt (ex. « Signaler »). Le menu s'ouvre
+ * donc à la fin de l'appui, et toute sélection dans la foulée de l'ouverture est ignorée.
+ */
+const DropdownMenu = ({
+  open: openProp,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) => {
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+  const openedAtRef = React.useRef(0);
+  const pointerTypeRef = React.useRef("");
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : uncontrolledOpen;
+
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen) openedAtRef.current = Date.now();
+      if (!isControlled) setUncontrolledOpen(nextOpen);
+      onOpenChange?.(nextOpen);
+    },
+    [isControlled, onOpenChange],
+  );
+
+  return (
+    <DropdownMenuTouchContext.Provider
+      value={{ open, setOpen: handleOpenChange, openedAtRef, pointerTypeRef }}
+    >
+      <DropdownMenuPrimitive.Root open={open} onOpenChange={handleOpenChange} {...props} />
+    </DropdownMenuTouchContext.Provider>
+  );
+};
+
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>(({ onPointerDown, onPointerUp, onKeyDown, ...props }, ref) => {
+  const context = React.useContext(DropdownMenuTouchContext);
+  const pendingTouchOpen = React.useRef(false);
+
+  return (
+    <DropdownMenuPrimitive.Trigger
+      ref={ref}
+      {...props}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        if (context) context.pointerTypeRef.current = "";
+      }}
+      onPointerDown={(event) => {
+        onPointerDown?.(event);
+        if (!context || event.pointerType !== "touch") return;
+        context.pointerTypeRef.current = "touch";
+        if (context.open) return; // menu déjà ouvert : Radix le referme lui-même
+        if (!event.defaultPrevented) {
+          event.preventDefault(); // évite le clic fantôme sur la première option
+          pendingTouchOpen.current = true;
+        }
+      }}
+      onPointerUp={(event) => {
+        onPointerUp?.(event);
+        if (event.pointerType !== "touch" || !pendingTouchOpen.current) return;
+        pendingTouchOpen.current = false;
+        context?.setOpen(true);
+      }}
+    />
+  );
+});
+DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
@@ -78,17 +155,33 @@ const DropdownMenuItem = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
   }
->(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
-      inset && "pl-8",
-      className,
-    )}
-    {...props}
-  />
-));
+>(({ className, inset, onSelect, ...props }, ref) => {
+  const context = React.useContext(DropdownMenuTouchContext);
+
+  return (
+    <DropdownMenuPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
+        inset && "pl-8",
+        className,
+      )}
+      {...props}
+      onSelect={(event) => {
+        // Clic fantôme : la ligne s'est activée dans la foulée de l'ouverture du menu.
+        if (
+          context &&
+          context.pointerTypeRef.current === "touch" &&
+          Date.now() - context.openedAtRef.current < DROPDOWN_TOUCH_GRACE_MS
+        ) {
+          event.preventDefault();
+          return;
+        }
+        onSelect?.(event);
+      }}
+    />
+  );
+});
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<

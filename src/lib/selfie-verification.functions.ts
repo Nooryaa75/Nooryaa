@@ -93,8 +93,10 @@ export const verifySelfie = createServerFn({ method: "POST" })
     const userId = (context as any).userId as string;
     const supabase = (context as any).supabase;
 
-    // Le selfie est uniquement transmis au modèle de comparaison ; il n'est JAMAIS
-    // stocké dans la fiche profil (ni dans la table photos, ni dans un bucket).
+    // Le selfie n'apparaît JAMAIS dans la fiche profil (ni dans la table photos,
+    // ni dans un bucket public). Il est conservé dans le bucket privé
+    // "verification-selfies", accessible uniquement à l'administration en cas
+    // de doute sur un profil.
     if (!data.selfieDataUrl.startsWith("data:image/")) {
       return {
         verdict: "rejected",
@@ -275,6 +277,20 @@ export const verifySelfie = createServerFn({ method: "POST" })
           reason: result.reasonFr || result.reason,
           source: "photo",
         });
+      }
+      // Conservation du selfie pour l'administration (bucket privé, écrasé à
+      // chaque nouvelle vérification).
+      try {
+        const base64 = data.selfieDataUrl.split(",")[1] ?? "";
+        const mime = data.selfieDataUrl.slice(5, data.selfieDataUrl.indexOf(";")) || "image/jpeg";
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        await supabaseAdmin.storage
+          .from("verification-selfies")
+          .upload(`${userId}`, bytes, { contentType: mime, upsert: true });
+      } catch (e) {
+        console.error("selfie-verification: échec conservation du selfie", e);
       }
     } catch {
       // la persistance ne doit pas casser le retour

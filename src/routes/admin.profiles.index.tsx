@@ -125,7 +125,9 @@ function AdminProfilesList() {
               </tr>
             </thead>
             <tbody>
-              {data?.rows.map((p: any) => (
+              {data?.rows.map((p: any) => {
+                const d = (data.display?.[p.id] ?? {}) as Record<string, string>;
+                return (
                 <tr key={p.id} className="border-t border-border/60">
                   <td className="px-2 py-2">
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} className="block w-10 h-10 rounded-full overflow-hidden bg-secondary border border-border/60">

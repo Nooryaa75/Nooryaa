@@ -276,18 +276,31 @@ export const adminAnalytics = createServerFn({ method: "GET" }).handler(async ()
     { step: "Abonnement payant", value: all.filter((p) => payers.has(p.id)).length },
   ];
 
-  const hours = Array.from({ length: 24 }, (_, h) => ({ hour: `${String(h).padStart(2, "0")}h`, value: 0 }));
-  for (const m of messages ?? []) hours[new Date(m.created_at).getUTCHours()].value += 1;
-
-  const retention = [1, 7, 30].map((d) => {
-    const cohort = all.filter((p) => Date.now() - new Date(p.created_at).getTime() >= d * 86400000);
-    const retained = cohort.filter(
-      (p) => new Date(p.last_seen ?? p.last_active).getTime() - new Date(p.created_at).getTime() >= d * 86400000,
-    );
-    return { label: `J${d}`, value: cohort.length ? Math.round((retained.length / cohort.length) * 1000) / 10 : 0 };
+  // Membres connectés distincts par jour (30 derniers jours, heure de Paris)
+  const since = new Date(Date.now() - 29 * 86400000);
+  since.setUTCHours(0, 0, 0, 0);
+  const visitRows: { user_id: string | null; created_at: string }[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data: page } = await supabaseAdmin
+      .from("visits")
+      .select("user_id, created_at")
+      .not("user_id", "is", null)
+      .gte("created_at", since.toISOString())
+      .order("created_at", { ascending: true })
+      .range(from, from + 999);
+    visitRows.push(...(page ?? []));
+    if (!page || page.length < 1000) break;
+  }
+  const dayKey = (d: Date) => d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+  const perDay = new Map<string, Set<string>>();
+  for (let i = 0; i < 30; i++) perDay.set(dayKey(new Date(since.getTime() + i * 86400000 + 43200000)), new Set());
+  for (const v of visitRows) perDay.get(dayKey(new Date(v.created_at)))?.add(v.user_id as string);
+  const connected = [...perDay.entries()].map(([k, s]) => {
+    const [, m, d] = k.split("-");
+    return { day: `${d}/${m}`, value: s.size };
   });
 
-  return { funnel, hours, retention };
+  return { funnel, connected };
 });
 
 // ---------------- Configurateur (formules) ----------------

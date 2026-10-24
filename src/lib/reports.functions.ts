@@ -24,6 +24,7 @@ export const submitReport = createServerFn({ method: "POST" })
       reporter: context.userId,
       reported: data.reportedId,
       reason: data.reason,
+      status: "open",
     });
     if (error) throw error;
 

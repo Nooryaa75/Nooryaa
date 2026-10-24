@@ -217,6 +217,7 @@ export const adminGetProfile = createServerFn({ method: "GET" })
       profile: profile.data,
       photos: photos.data ?? [],
       verificationSelfieUrl,
+      verificationSelfies,
       chatWarnings,
       chatBlocked,
       likesReceived: likesIn.data ?? [],
@@ -251,7 +252,10 @@ export const adminDeleteProfile = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
     if (error) throw error;
     try {
-      await supabaseAdmin.storage.from("verification-selfies").remove([data.id]);
+      const bucket = supabaseAdmin.storage.from("verification-selfies");
+      const { data: files } = await bucket.list("", { search: data.id, limit: 100 });
+      const names = (files ?? []).map((f) => f.name).filter((n) => n === data.id || n.startsWith(`${data.id}-`));
+      await bucket.remove(names.length > 0 ? names : [data.id]);
     } catch {
       // le nettoyage du selfie ne doit pas bloquer la suppression
     }

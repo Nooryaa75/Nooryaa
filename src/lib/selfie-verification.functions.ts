@@ -278,6 +278,20 @@ export const verifySelfie = createServerFn({ method: "POST" })
           source: "photo",
         });
       }
+      // Conservation du selfie pour l'administration (bucket privé, écrasé à
+      // chaque nouvelle vérification).
+      try {
+        const base64 = data.selfieDataUrl.split(",")[1] ?? "";
+        const mime = data.selfieDataUrl.slice(5, data.selfieDataUrl.indexOf(";")) || "image/jpeg";
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        await supabaseAdmin.storage
+          .from("verification-selfies")
+          .upload(`${userId}`, bytes, { contentType: mime, upsert: true });
+      } catch (e) {
+        console.error("selfie-verification: échec conservation du selfie", e);
+      }
     } catch {
       // la persistance ne doit pas casser le retour
     }

@@ -28,7 +28,12 @@ function AdminCredits() {
   const adjust = useServerFn(adminAdjustCredits);
   const history = useServerFn(adminCreditHistory);
 
-  const { data } = useQuery({ queryKey: ["admin-credits", q], queryFn: () => list({ data: { q } }) });
+  const term = q.trim();
+  const { data } = useQuery({
+    queryKey: ["admin-credits", term],
+    queryFn: () => list({ data: { q: term } }),
+    enabled: term.length > 0,
+  });
   const { data: events } = useQuery({
     queryKey: ["admin-credit-history", openUser],
     queryFn: () => history({ data: { userId: openUser! } }),

@@ -87,18 +87,40 @@ export const adminOverview = createServerFn({ method: "GET" })
         avgAge: ages.length ? Math.round((ages.reduce((s, a) => s + a, 0) / ages.length) * 10) / 10 : 0,
       },
       byMonth,
+    };
+  });
+
+// ---------------- Critères de la fiche profil (filtrable par dates) ----------------
+
+export const adminCriteriaDistribution = createServerFn({ method: "GET" })
+  .inputValidator((data: Range) => data ?? {})
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin
+      .from("profiles")
+      .select(
+        "gender, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, wants_children_answer, smoker, body_type, last_platform, created_at",
+      )
+      .limit(20000);
+    if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
+    if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
+    const { data: profiles } = await q;
+    const all = profiles ?? [];
+
+    const count = (v: string | null) =>
+      all.filter((p: any) => (v === null ? !["web", "android", "ios"].includes(p.last_platform) : p.last_platform === v)).length;
+
+    return {
+      total: all.length,
       gender: tally(all.map((p) => p.gender)),
-      ageBuckets,
-      platforms: (() => {
-        const count = (v: string | null) =>
-          all.filter((p: any) => (v === null ? !["web", "android", "ios"].includes(p.last_platform) : p.last_platform === v)).length;
-        return [
-          { label: "Site web", value: count("web") },
-          { label: "Android", value: count("android") },
-          { label: "iPhone (iOS)", value: count("ios") },
-          { label: "Pas encore connu", value: count(null) },
-        ];
-      })(),
+      platforms: [
+        { label: "Site web", value: count("web") },
+        { label: "Android", value: count("android") },
+        { label: "iPhone (iOS)", value: count("ios") },
+        { label: "Pas encore connu", value: count(null) },
+      ],
       cities: tally(all.map((p) => p.city)).slice(0, 12),
       countries: tally(all.map((p) => p.country)).slice(0, 12),
       origins: tally(all.map((p) => p.country_origin)).slice(0, 12),

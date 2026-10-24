@@ -33,11 +33,13 @@ function AdminProfilesList() {
   const [status, setStatus] = useState("all");
   const [gender, setGender] = useState<"all" | "homme" | "femme">("all");
   const [page, setPage] = useState(0);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const list = useServerFn(adminListProfiles);
 
   const { data } = useQuery({
-    queryKey: ["admin-profiles", search, status, gender, page],
-    queryFn: () => list({ data: { q: search, status, gender, page } }),
+    queryKey: ["admin-profiles", search, status, gender, page, from, to],
+    queryFn: () => list({ data: { q: search, status, gender, page, from: from || undefined, to: to || undefined } }),
   });
 
   return (
@@ -78,6 +80,28 @@ function AdminProfilesList() {
                 <SelectItem value="banned">Bannis</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground" htmlFor="prof-from">Inscrit du</label>
+            <input
+              id="prof-from"
+              type="date"
+              value={from}
+              max={to || undefined}
+              onChange={(e) => { setFrom(e.target.value); setPage(0); }}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground" htmlFor="prof-to">au</label>
+            <input
+              id="prof-to"
+              type="date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => { setTo(e.target.value); setPage(0); }}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
           </div>
           <Button type="submit">Rechercher</Button>
         </form>

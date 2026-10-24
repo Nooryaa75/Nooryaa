@@ -17,7 +17,7 @@
 
 - Onboarding renders and saves required profile fields only; optional details stay editable in Mon profil and are not cleared for existing members.
 - Onboarding uses the themed Shadcn BirthdateCalendar, not device dialogs; retain age limits and date-only storage.
-- The member layout rechecks onboarding on every pathname change and withholds the outlet until verified; onboarding hides member navigation so links cannot bypass completion.
+- The member layout rechecks onboarding on every pathname change, but withholds the outlet only until the member is verified once in the session (showAccessGate in src/lib/onboarding-access.ts): later route changes keep the app mounted while the recheck runs in the background, so decks, chats and scroll position survive navigation; onboarding hides member navigation so links cannot bypass completion.
 
 - Store download badges are gated after hydration through the Capacitor bridge (native and admin never mount their link query); they sit directly above the language switcher — auth card on /auth (footer hides them there), shared footer elsewhere — never below the language controls.
 

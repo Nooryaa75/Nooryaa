@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
 import { isValidPhone } from "@/components/PhoneInput";
-import { onboardingDestination } from "@/lib/onboarding-access";
+import { onboardingDestination, showAccessGate } from "@/lib/onboarding-access";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -26,7 +26,7 @@ function AuthenticatedLayout() {
   const { userId } = Route.useRouteContext();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const [verified, setVerified] = useState<{ userId: string; pathname: string } | null>(null);
+  const [verified, setVerified] = useState<{ userId: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,7 +67,7 @@ function AuthenticatedLayout() {
         return;
       }
 
-      setVerified({ userId, pathname });
+      setVerified({ userId });
     })();
 
     return () => {
@@ -97,7 +97,7 @@ function AuthenticatedLayout() {
     return () => clearInterval(t);
   }, [userId]);
 
-  if (verified?.userId !== userId || verified?.pathname !== pathname) {
+  if (showAccessGate(verified?.userId ?? null, userId)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex gap-1.5" aria-label="Chargement">

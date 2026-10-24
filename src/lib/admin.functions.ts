@@ -269,13 +269,15 @@ export const adminListReports = createServerFn({ method: "GET" })
   });
 
 export const adminResolveReport = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: string; status: "resolved" | "rejected" }) => data)
+  .inputValidator((data: { id: string; status: "open" | "resolved" | "rejected"; comment?: string }) => data)
   .handler(async ({ data }) => {
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("reports").update({ status: data.status }).eq("id", data.id);
-    await supabaseAdmin.from("admin_actions").insert({ action: `report_${data.status}`, details: { report_id: data.id } });
+    const comment = (data.comment ?? "").trim().slice(0, 2000) || null;
+    const { error } = await supabaseAdmin.from("reports").update({ status: data.status, admin_comment: comment } as any).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("admin_actions").insert({ action: `report_${data.status}`, details: { report_id: data.id, comment } });
     return { ok: true };
   });
 
@@ -565,12 +567,12 @@ export const adminListModeration = createServerFn({ method: "GET" })
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let q = supabaseAdmin.from("moderation_events").select("*").order("created_at", { ascending: false }).limit(200);
+    let q = supabaseAdmin.from("moderation_events").select("*").order("created_at", { ascending: false }).limit(1000);
     if (data.verdict && data.verdict !== "all") q = q.eq("verdict", data.verdict);
     const { data: rows } = await q;
     const ids = new Set<string>();
     (rows ?? []).forEach((r: any) => { ids.add(r.user_id); if (r.target_user) ids.add(r.target_user); });
-    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [...ids]);
+    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status, first_name, last_name").in("id", [...ids]);
     const byId = new Map((profs ?? []).map((p) => [p.id, p]));
     return (rows ?? []).map((r: any) => ({ ...r, author: byId.get(r.user_id), target: r.target_user ? byId.get(r.target_user) : null }));
   });

@@ -476,6 +476,19 @@ export const submitContactMessage = createServerFn({ method: "POST" })
       message: data.message.trim(),
     });
     if (error) throw error;
+
+    // Accusé de réception à l'expéditeur + alerte email à l'équipe (sans push).
+    try {
+      const { notifyContactMessage } = await import("./request-alerts.server");
+      await notifyContactMessage({
+        name: data.name.trim(),
+        email: data.email.trim().toLowerCase(),
+        subject: data.subject?.trim() || null,
+        message: data.message.trim(),
+      });
+    } catch (e) {
+      console.error("Contact message notifications failed", e);
+    }
     return { ok: true };
   });
 

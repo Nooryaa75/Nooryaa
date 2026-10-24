@@ -308,12 +308,8 @@ function Conversation() {
   const reportAbuse = useMutation({
     mutationFn: async () => {
       if (!peer) return;
-      const { error } = await supabase.from("reports").insert({
-        reporter: ctx.userId,
-        reported: peer.id,
-        reason: reportReason.trim(),
-      } as any);
-      if (error) throw error;
+      const { submitReport } = await import("@/lib/reports.functions");
+      await submitReport({ data: { reportedId: peer.id, reason: reportReason.trim() } });
     },
     onSuccess: () => {
       toast.success(t("Signalement envoyé à la modération"));

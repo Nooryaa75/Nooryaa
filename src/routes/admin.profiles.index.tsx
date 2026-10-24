@@ -33,11 +33,13 @@ function AdminProfilesList() {
   const [status, setStatus] = useState("all");
   const [gender, setGender] = useState<"all" | "homme" | "femme">("all");
   const [page, setPage] = useState(0);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const list = useServerFn(adminListProfiles);
 
   const { data } = useQuery({
-    queryKey: ["admin-profiles", search, status, gender, page],
-    queryFn: () => list({ data: { q: search, status, gender, page } }),
+    queryKey: ["admin-profiles", search, status, gender, page, from, to],
+    queryFn: () => list({ data: { q: search, status, gender, page, from: from || undefined, to: to || undefined } }),
   });
 
   return (
@@ -79,6 +81,28 @@ function AdminProfilesList() {
               </SelectContent>
             </Select>
           </div>
+          <div>
+            <label className="text-xs text-muted-foreground" htmlFor="prof-from">Inscrit du</label>
+            <input
+              id="prof-from"
+              type="date"
+              value={from}
+              max={to || undefined}
+              onChange={(e) => { setFrom(e.target.value); setPage(0); }}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground" htmlFor="prof-to">au</label>
+            <input
+              id="prof-to"
+              type="date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => { setTo(e.target.value); setPage(0); }}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+          </div>
           <Button type="submit">Rechercher</Button>
         </form>
 
@@ -86,21 +110,24 @@ function AdminProfilesList() {
           <table className="w-full text-xs table-fixed min-w-[760px]">
             <thead className="bg-secondary/40 text-left">
               <tr>
-                <th className="px-2 py-2 font-medium text-xs w-[6%]">Photo</th>
-                <th className="px-2 py-2 font-medium text-xs w-[10%]">Pseudo</th>
-                <th className="px-2 py-2 font-medium text-xs w-[9%]">Nom</th>
-                <th className="px-2 py-2 font-medium text-xs w-[9%]">Prénom</th>
-                <th className="px-2 py-2 font-medium text-xs w-[17%]">Email</th>
-                <th className="px-2 py-2 font-medium text-xs w-[12%]">Téléphone</th>
-                <th className="px-2 py-2 font-medium text-xs w-[10%]">Ville</th>
-                <th className="px-2 py-2 font-medium text-xs w-[9%]">Pays</th>
-                <th className="px-2 py-2 font-medium text-xs w-[5%] whitespace-nowrap">Âge</th>
+                <th className="px-2 py-2 font-medium text-xs w-[5%]">Photo</th>
+                <th className="px-2 py-2 font-medium text-xs w-[9%]">Pseudo</th>
+                <th className="px-2 py-2 font-medium text-xs w-[8%]">Nom</th>
+                <th className="px-2 py-2 font-medium text-xs w-[8%]">Prénom</th>
+                <th className="px-2 py-2 font-medium text-xs w-[14%]">Email</th>
+                <th className="px-2 py-2 font-medium text-xs w-[10%]">Téléphone</th>
+                <th className="px-2 py-2 font-medium text-xs w-[9%]">Ville</th>
+                <th className="px-2 py-2 font-medium text-xs w-[8%]">Pays</th>
+                <th className="px-2 py-2 font-medium text-xs w-[4%] whitespace-nowrap">Âge</th>
+                <th className="px-2 py-2 font-medium text-xs w-[10%] whitespace-nowrap">Inscrit le</th>
                 <th className="px-2 py-2 font-medium text-xs w-[8%]">Statut</th>
-                <th className="px-2 py-2 font-medium text-xs w-[5%]"></th>
+                <th className="px-2 py-2 font-medium text-xs w-[4%]"></th>
               </tr>
             </thead>
             <tbody>
-              {data?.rows.map((p: any) => (
+              {data?.rows.map((p: any) => {
+                const d = (data.display?.[p.id] ?? {}) as Record<string, string>;
+                return (
                 <tr key={p.id} className="border-t border-border/60">
                   <td className="px-2 py-2">
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} className="block w-10 h-10 rounded-full overflow-hidden bg-secondary border border-border/60">
@@ -111,14 +138,15 @@ function AdminProfilesList() {
                       )}
                     </Link>
                   </td>
-                  <td className="px-2 py-2 font-medium text-primary"><span className="block truncate" title={p.pseudo}>{p.pseudo}</span></td>
-                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={p.last_name || ""}>{p.last_name || "—"}</span></td>
-                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={p.first_name || ""}>{p.first_name || "—"}</span></td>
-                  <td className="px-2 py-2 text-muted-foreground"><span className="block truncate" title={p.email}>{p.email}</span></td>
-                  <td className="px-2 py-2 text-muted-foreground"><span className="block truncate" title={p.phone ?? ""}>{p.phone ?? "—"}</span></td>
-                  <td className="px-2 py-2"><span className="block truncate" title={frenchPlace(p.city) ?? ""}>{frenchPlace(p.city) ?? "—"}</span></td>
+                  <td className="px-2 py-2 font-medium text-primary" data-no-translate><span className="block truncate" title={d.pseudo ?? p.pseudo}>{d.pseudo ?? p.pseudo}</span></td>
+                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.last_name ?? p.last_name ?? ""}>{d.last_name ?? p.last_name ?? "—"}</span></td>
+                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.first_name ?? p.first_name ?? ""}>{d.first_name ?? p.first_name ?? "—"}</span></td>
+                  <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.email}>{p.email}</span></td>
+                  <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.phone ?? ""}>{p.phone ?? "—"}</span></td>
+                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.city ?? frenchPlace(p.city) ?? ""}>{d.city ?? frenchPlace(p.city) ?? "—"}</span></td>
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={frenchPlace(p.country) ?? ""}>{frenchPlace(p.country) ?? "—"}</span></td>
                   <td className="px-2 py-2 whitespace-nowrap tabular-nums">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-muted-foreground">{p.created_at ? new Date(p.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"}</td>
                   <td className="px-2 py-2">
                     <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
                   </td>
@@ -126,9 +154,10 @@ function AdminProfilesList() {
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} className="text-primary underline text-xs">Voir</Link>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {data && data.rows.length === 0 && (
-                <tr><td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
+                <tr><td colSpan={12} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}
             </tbody>
           </table>

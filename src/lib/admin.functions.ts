@@ -79,8 +79,68 @@ export const adminStats = createServerFn({ method: "GET" }).handler(async () => 
   };
 });
 
+// Détecte les caractères arabes dans les données de profil.
+const ARABIC_RE = /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/;
+
+/**
+ * Traduit en français (pour l'administration) les champs texte écrits en arabe :
+ * pseudos, prénoms, noms (transcription latine) et villes (nom français).
+ * Les données stockées ne sont jamais modifiées — traduction d'affichage uniquement.
+ */
+async function translateForAdmin(rows: any[]): Promise<Record<string, Record<string, string>>> {
+  const apiKey = process.env["LOVABLE_API_KEY"];
+  if (!apiKey) return {};
+  const items: Array<{ id: string; field: string; text: string }> = [];
+  for (const r of rows) {
+    for (const field of ["pseudo", "city", "first_name", "last_name"]) {
+      const v = r[field];
+      if (typeof v === "string" && ARABIC_RE.test(v)) items.push({ id: r.id, field, text: v });
+    }
+  }
+  if (!items.length) return {};
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "openai/gpt-6-astra",
+        input: [
+          {
+            role: "system",
+            content:
+              "Tu traduis en français des données de profils (pseudos, prénoms, noms, villes) pour l'administration d'un site. " +
+              "Transcris les prénoms, noms et pseudos en alphabet latin (ex. اسلام → Islam). " +
+              "Traduis les villes en français (ex. برج بوعريريج → Bordj Bou Arreridj). " +
+              "Réponds UNIQUEMENT en JSON strict : un tableau d'objets {\"i\": index d'entrée, \"fr\": \"traduction\"}, sans autre texte.",
+          },
+          { role: "user", content: JSON.stringify(items.map((it, i) => ({ i, text: it.text }))) },
+        ],
+        max_output_tokens: 2000,
+      }),
+    });
+    if (!res.ok) return {};
+    const json: any = await res.json();
+    const text: string =
+      json.output_text ??
+      json.output?.flatMap((o: any) => o.content ?? []).map((c: any) => c.text ?? "").join("") ??
+      "";
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) return {};
+    const arr = JSON.parse(match[0]);
+    const out: Record<string, Record<string, string>> = {};
+    for (const entry of arr) {
+      const item = items[entry.i];
+      if (!item || typeof entry.fr !== "string" || !entry.fr.trim()) continue;
+      (out[item.id] ??= {})[item.field] = entry.fr.trim();
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 export const adminListProfiles = createServerFn({ method: "GET" })
-  .inputValidator((data: { q?: string; status?: string; gender?: string; page?: number }) => data)
+  .inputValidator((data: { q?: string; status?: string; gender?: string; page?: number; from?: string; to?: string }) => data)
   .handler(async ({ data }) => {
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
@@ -94,8 +154,11 @@ export const adminListProfiles = createServerFn({ method: "GET" })
     }
     if (data.status && data.status !== "all") q = q.eq("status", data.status);
     if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
+    if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
+    if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
-    return { rows: rows ?? [], count: count ?? 0, page, pageSize };
+    const display = await translateForAdmin(rows ?? []);
+    return { rows: rows ?? [], count: count ?? 0, page, pageSize, display };
   });
 
 export const adminGetProfile = createServerFn({ method: "GET" })

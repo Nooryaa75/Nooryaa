@@ -43,7 +43,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         supabaseAdmin
           .from("profiles")
           .select(
-            "id, pseudo, email, gender, birthdate, city, country, country_origin, marital_status, religious_practice, education_level, objective, has_children, wants_children, wants_children_answer, smoker, body_type, photo_verified, onboarded, status, created_at, last_active, last_seen, last_platform",
+            "id, birthdate, photo_verified, onboarded, status, created_at, last_active, last_seen",
           )
           .limit(20000),
         supabaseAdmin.from("likes").select("from_user, to_user, created_at").gte("created_at", fromISO).lte("created_at", toISO),
@@ -65,15 +65,6 @@ export const adminOverview = createServerFn({ method: "GET" })
       .sort((a, b) => a.month.localeCompare(b.month));
 
     const ages = all.map((p) => ageFromBirthdate(p.birthdate)).filter((a): a is number => a !== null);
-    const ageBuckets = ["18-24", "25-29", "30-34", "35-39", "40-49", "50+"].map((label) => ({ label, homme: 0, femme: 0 }));
-    const bucketOf = (a: number) => (a < 25 ? 0 : a < 30 ? 1 : a < 35 ? 2 : a < 40 ? 3 : a < 50 ? 4 : 5);
-    for (const p of all) {
-      const a = ageFromBirthdate(p.birthdate);
-      if (a === null || a < 18) continue;
-      const b = ageBuckets[bucketOf(a)];
-      if (p.gender === "femme") b.femme += 1;
-      else b.homme += 1;
-    }
 
     const activeSubs = (subs ?? []).filter((s) => s.status === "active");
 

@@ -1,15 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { supportCategories } from "./support-categories";
 
-export const categories = [
-  "Partenariat",
-  "Inscription",
-  "Connexion / Email",
-  "Suppression de compte",
-  "Abonnement",
-  "Autres",
-] as const;
+export const categories = supportCategories;
 
 export const createSupportTicket = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

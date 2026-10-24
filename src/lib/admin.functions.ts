@@ -178,15 +178,30 @@ export const adminGetProfile = createServerFn({ method: "GET" })
       supabaseAdmin.from("reports").select("*").eq("reporter", data.id).order("created_at", { ascending: false }),
       supabaseAdmin.from("blocks").select("*").or(`blocker.eq.${data.id},blocked.eq.${data.id}`),
     ]);
-    // Selfie de vérification (bucket privé) : lien signé temporaire pour l'admin.
+    // Selfies de vérification (bucket privé) : dernier selfie + historique,
+    // liens signés temporaires pour l'admin.
     let verificationSelfieUrl: string | null = null;
+    let verificationSelfies: { url: string; takenAt: string | null }[] = [];
     try {
-      const { data: signed } = await supabaseAdmin.storage
-        .from("verification-selfies")
-        .createSignedUrl(data.id, 60 * 30);
-      verificationSelfieUrl = signed?.signedUrl ?? null;
-    } catch {
-      verificationSelfieUrl = null;
+      const bucket = supabaseAdmin.storage.from("verification-selfies");
+      const { data: files } = await bucket.list("", { search: data.id, limit: 100 });
+      const history = (files ?? [])
+        .filter((f) => f.name.startsWith(`${data.id}-`))
+        .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+      const latest = (files ?? []).find((f) => f.name === data.id);
+      const names = history.length > 0 ? history.map((f) => f) : latest ? [latest] : [];
+      if (names.length > 0) {
+        const { data: signed } = await bucket.createSignedUrls(names.map((f) => f.name), 60 * 60 * 6);
+        verificationSelfies = (signed ?? [])
+          .map((s, i) => ({
+            url: s.signedUrl ?? "",
+            takenAt: names[i]?.updated_at ?? names[i]?.created_at ?? null,
+          }))
+          .filter((s) => !!s.url);
+      }
+      verificationSelfieUrl = verificationSelfies[0]?.url ?? null;
+    } catch (e) {
+      console.error("admin: lecture des selfies impossible", e);
     }
     // Modération du chat : avertissements (warn) et messages bloqués (block),
     // messages texte et vocaux confondus.
@@ -202,6 +217,7 @@ export const adminGetProfile = createServerFn({ method: "GET" })
       profile: profile.data,
       photos: photos.data ?? [],
       verificationSelfieUrl,
+      verificationSelfies,
       chatWarnings,
       chatBlocked,
       likesReceived: likesIn.data ?? [],
@@ -236,7 +252,10 @@ export const adminDeleteProfile = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
     if (error) throw error;
     try {
-      await supabaseAdmin.storage.from("verification-selfies").remove([data.id]);
+      const bucket = supabaseAdmin.storage.from("verification-selfies");
+      const { data: files } = await bucket.list("", { search: data.id, limit: 100 });
+      const names = (files ?? []).map((f) => f.name).filter((n) => n === data.id || n.startsWith(`${data.id}-`));
+      await bucket.remove(names.length > 0 ? names : [data.id]);
     } catch {
       // le nettoyage du selfie ne doit pas bloquer la suppression
     }

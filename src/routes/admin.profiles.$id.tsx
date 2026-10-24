@@ -33,7 +33,7 @@ function AdminProfileDetail() {
 
   const { data } = useQuery({ queryKey: ["admin-profile", id], queryFn: () => get({ data: { id } }) });
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
-  const [selfieOpen, setSelfieOpen] = useState(false);
+  const [selfieIndex, setSelfieIndex] = useState<number | null>(null);
 
 
   const statusMut = useMutation({
@@ -56,6 +56,7 @@ function AdminProfileDetail() {
   );
 
   const p = data.profile;
+  const selfies = data.verificationSelfies ?? [];
 
   return (
     <div className="min-h-screen mosaic-soft">
@@ -163,29 +164,43 @@ function AdminProfileDetail() {
 
         <div className="bg-card rounded-2xl p-6 border border-border/60">
           <h2 className="font-serif text-primary mb-3">Photo de vérification (selfie)</h2>
-          {data.verificationSelfieUrl ? (
-            <button
-              type="button"
-              onClick={() => setSelfieOpen(true)}
-              aria-label="Agrandir la photo de vérification"
-              className="group relative block w-32 aspect-square rounded-lg overflow-hidden border border-border/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <img src={data.verificationSelfieUrl} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
-              <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity group-hover:bg-black/25 group-hover:opacity-100">
-                <Maximize2 className="h-4 w-4" />
-              </span>
-            </button>
+          {selfies.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {selfies.map((s, i) => (
+                <figure key={s.url} className="w-32">
+                  <button
+                    type="button"
+                    onClick={() => setSelfieIndex(i)}
+                    aria-label="Agrandir la photo de vérification"
+                    className="group relative block w-32 aspect-square rounded-lg overflow-hidden border border-border/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    <img src={s.url} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                    <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity group-hover:bg-black/25 group-hover:opacity-100">
+                      <Maximize2 className="h-4 w-4" />
+                    </span>
+                  </button>
+                  <figcaption className="mt-1 text-xs text-muted-foreground">
+                    {i === 0 ? "Dernier · " : ""}
+                    {s.takenAt ? new Date(s.takenAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Paris" }) : ""}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground">Aucune photo de vérification enregistrée pour ce profil.</p>
+            <p className="text-sm text-muted-foreground">
+              {p.photo_verification_status && p.photo_verification_status !== "none"
+                ? "Ce selfie a été pris avant la mise en place de la conservation des selfies : il n'a pas été gardé. Le prochain selfie de ce membre apparaîtra ici."
+                : "Ce membre n'a pas encore fait de selfie de vérification."}
+            </p>
           )}
         </div>
 
-        {selfieOpen && data.verificationSelfieUrl && (
+        {selfieIndex !== null && selfies.length > 0 && (
           <PhotoLightbox
-            photos={[{ url: data.verificationSelfieUrl, caption: `Selfie de vérification — ${p.pseudo}` }]}
-            index={0}
-            onIndexChange={() => {}}
-            onClose={() => setSelfieOpen(false)}
+            photos={selfies.map((s) => ({ url: s.url, caption: `Selfie de vérification — ${p.pseudo}` }))}
+            index={selfieIndex}
+            onIndexChange={setSelfieIndex}
+            onClose={() => setSelfieIndex(null)}
             watermarked={false}
           />
         )}

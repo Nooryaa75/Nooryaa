@@ -107,6 +107,11 @@ export const verifySelfie = createServerFn({ method: "POST" })
       };
     }
 
+    // Conservation immédiate du selfie pour l'administration, AVANT toute
+    // analyse : il est gardé même si la vérification échoue ou s'interrompt.
+    await keepVerificationSelfie(userId, data.selfieDataUrl);
+
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("primary_photo_url")
@@ -277,21 +282,6 @@ export const verifySelfie = createServerFn({ method: "POST" })
           reason: result.reasonFr || result.reason,
           source: "photo",
         });
-      }
-      // Conservation du selfie pour l'administration (bucket privé, écrasé à
-      // chaque nouvelle vérification).
-      try {
-        const base64 = data.selfieDataUrl.split(",")[1] ?? "";
-        const mime = data.selfieDataUrl.slice(5, data.selfieDataUrl.indexOf(";")) || "image/jpeg";
-        const bin = atob(base64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        const { error: upErr } = await supabaseAdmin.storage
-          .from("verification-selfies")
-          .upload(`${userId}`, bytes, { contentType: mime, upsert: true });
-        if (upErr) console.error("selfie-verification: échec conservation du selfie", upErr);
-      } catch (e) {
-        console.error("selfie-verification: échec conservation du selfie", e);
       }
     } catch {
       // la persistance ne doit pas casser le retour

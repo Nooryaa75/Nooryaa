@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Regrouper « Assistance » et « Contact » de l’administration en une seule page à deux onglets ; une seule entrée dans le menu, compteur cumulé, et l’ancienne adresse « /admin/contact » redirige vers l’onglet contact. Vérifié à l’écran (onglets, redirection, absence du bouton Contact). Reste à publier le site.
+
 - [x] Corriger les instructions Swift collées dans la protection iOS : erreur exacte reproduite par un test avant correction, séparation des instructions vérifiée après correction ; 7 tests réussis, iOS 1.0.2 (21) conservé dans les deux workflows. Archive complète à valider dans Codemagic (Xcode indisponible ici).
 - [x] Corriger l’échec iOS « Configure screen security » : sous-classe intégrée dans AppDelegate.swift et reliée au storyboard ; 6 tests réussis et double exécution vérifiée sur le modèle officiel Capacitor 6. iOS 1.0.2 (21) conservé dans les deux workflows.
 - [ ] Relancer « Nooryaa iPhone (App Store) » dans Codemagic pour valider l’archive complète — lancement Codemagic et environnement Apple indisponibles ici.

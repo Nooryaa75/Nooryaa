@@ -257,7 +257,15 @@ export const adminListReports = createServerFn({ method: "GET" })
     (rows ?? []).forEach((r) => { ids.add(r.reporter); ids.add(r.reported); });
     const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [...ids]);
     const byId = new Map((profs ?? []).map((p) => [p.id, p]));
-    return (rows ?? []).map((r) => ({ ...r, reporterProfile: byId.get(r.reporter), reportedProfile: byId.get(r.reported) }));
+    const withChat = await Promise.all((rows ?? []).map(async (r) => {
+      const { data: msgs } = await supabaseAdmin.from("messages")
+        .select("id, sender, content, image_path, audio_path, deleted_at, created_at")
+        .or(`and(sender.eq.${r.reporter},receiver.eq.${r.reported}),and(sender.eq.${r.reported},receiver.eq.${r.reporter})`)
+        .lte("created_at", r.created_at)
+        .order("created_at", { ascending: false }).limit(20);
+      return { ...r, chat: (msgs ?? []).reverse() };
+    }));
+    return withChat.map((r) => ({ ...r, reporterProfile: byId.get(r.reporter), reportedProfile: byId.get(r.reported) }));
   });
 
 export const adminResolveReport = createServerFn({ method: "POST" })

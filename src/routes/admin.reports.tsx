@@ -75,6 +75,29 @@ function AdminReports() {
               </div>
               <p className="text-sm">{r.reason}</p>
               <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")}</div>
+              <details className="rounded-xl border border-border/60 bg-muted/30 p-3 text-sm">
+                <summary className="cursor-pointer font-medium text-primary">Échanges avant le signalement ({r.chat?.length ?? 0})</summary>
+                {!r.chat?.length ? (
+                  <p className="mt-2 text-muted-foreground">Aucun message échangé entre ces deux membres.</p>
+                ) : (
+                  <div className="mt-2 space-y-2 max-h-80 overflow-y-auto">
+                    {r.chat.map((m: any) => {
+                      const byReported = m.sender === r.reported;
+                      return (
+                        <div key={m.id} className={`rounded-lg px-3 py-2 ${byReported ? "bg-destructive/10" : "bg-card"}`}>
+                          <div className="text-[11px] text-muted-foreground">
+                            <strong>{byReported ? (r.reportedProfile?.pseudo ?? "Signalé") : (r.reporterProfile?.pseudo ?? "Auteur")}</strong> · {new Date(m.created_at).toLocaleString("fr-FR")}
+                          </div>
+                          <div className="whitespace-pre-wrap">
+                            {m.deleted_at ? <em>Message supprimé</em> : m.audio_path ? <em>Message vocal</em> : m.image_path ? <em>Photo</em> : m.content}
+                            {m.deleted_at && m.content ? <span className="text-muted-foreground"> — {m.content}</span> : null}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </details>
               {r.status === "open" && (
                 <div className="flex flex-wrap gap-2 pt-1">
                   <Button size="sm" variant="destructive" onClick={() => suspendMut.mutate(r.reported)}>Suspendre le profil</Button>

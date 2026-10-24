@@ -567,12 +567,12 @@ export const adminListModeration = createServerFn({ method: "GET" })
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let q = supabaseAdmin.from("moderation_events").select("*").order("created_at", { ascending: false }).limit(200);
+    let q = supabaseAdmin.from("moderation_events").select("*").order("created_at", { ascending: false }).limit(1000);
     if (data.verdict && data.verdict !== "all") q = q.eq("verdict", data.verdict);
     const { data: rows } = await q;
     const ids = new Set<string>();
     (rows ?? []).forEach((r: any) => { ids.add(r.user_id); if (r.target_user) ids.add(r.target_user); });
-    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status").in("id", [...ids]);
+    const { data: profs } = await supabaseAdmin.from("profiles").select("id, pseudo, email, status, first_name, last_name").in("id", [...ids]);
     const byId = new Map((profs ?? []).map((p) => [p.id, p]));
     return (rows ?? []).map((r: any) => ({ ...r, author: byId.get(r.user_id), target: r.target_user ? byId.get(r.target_user) : null }));
   });

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { onboardingDestination } from "./onboarding-access";
+import { onboardingDestination, showAccessGate } from "./onboarding-access";
 
 test("unfinished members cannot bypass onboarding through menus or direct member links", () => {
   for (const path of ["/browse", "/recherche", "/likes", "/messages", "/compte", "/compte/profil", "/profile/test"]) {

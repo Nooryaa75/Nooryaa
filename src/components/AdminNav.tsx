@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
-import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, Mail, ShieldAlert, ShieldCheck, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap, RotateCcw } from "lucide-react";
+import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, ShieldAlert, ShieldCheck, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
 
@@ -11,13 +11,12 @@ const links = [
   { to: "/admin/profiles", label: "Profils", icon: Users, exact: false },
   { to: "/admin/finance", label: "Finance", icon: Euro, exact: false },
   { to: "/admin/analytics", label: "Statistiques", icon: BarChart3, exact: false },
-  { to: "/admin/support", label: "Assistance", icon: LifeBuoy, exact: false },
+  { to: "/admin/support", label: "Assistance", icon: LifeBuoy, exact: false, badge: "support" as const },
   { to: "/admin/credits", label: "Consommation", icon: Zap, exact: false },
   { to: "/admin/config", label: "Configurateur", icon: SlidersHorizontal, exact: false },
   { to: "/admin/conversations", label: "Discussions", icon: MessageSquare, exact: false },
   { to: "/admin/reports", label: "Signalements", icon: Flag, exact: false, badge: "reports" as const },
   { to: "/admin/moderation", label: "Modération", icon: ShieldAlert, exact: false },
-  { to: "/admin/contact", label: "Contact", icon: Mail, exact: false, badge: "contacts" as const },
   { to: "/admin/ads", label: "Publicités", icon: Megaphone, exact: false },
   { to: "/admin/rgpd", label: "RGPD", icon: ShieldCheck, exact: false },
   
@@ -35,10 +34,10 @@ export function AdminNav() {
     queryFn: () => counts(),
     refetchInterval: 20000,
   });
-  const badgeValue = (b?: "reports" | "contacts") => {
+  const badgeValue = (b?: "reports" | "support") => {
     if (!notif) return 0;
     if (b === "reports") return notif.openReports;
-    if (b === "contacts") return notif.unreadContacts;
+    if (b === "support") return (notif.openTickets ?? 0) + notif.unreadContacts;
     return 0;
   };
 

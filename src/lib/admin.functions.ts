@@ -412,13 +412,15 @@ export const adminNotificationCounts = createServerFn({ method: "GET" }).handler
   const { requireAdminOrThrow } = await import("./admin-session.server");
   await requireAdminOrThrow();
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const [reports, contacts] = await Promise.all([
+  const [reports, contacts, tickets] = await Promise.all([
     supabaseAdmin.from("reports").select("id", { count: "exact", head: true }).eq("status", "open"),
     supabaseAdmin.from("contact_messages").select("id", { count: "exact", head: true }).eq("read", false),
+    supabaseAdmin.from("support_tickets").select("id", { count: "exact", head: true }).eq("status", "open"),
   ]);
   return {
     openReports: reports.count ?? 0,
     unreadContacts: contacts.count ?? 0,
+    openTickets: tickets.count ?? 0,
     total: (reports.count ?? 0) + (contacts.count ?? 0),
   };
 });

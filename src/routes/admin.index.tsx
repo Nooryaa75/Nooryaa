@@ -68,6 +68,10 @@ function AdminDashboard() {
   });
 
   const c = data?.counters;
+  const monthly = (data?.byMonth ?? []).map((m) => ({
+    ...m,
+    label: new Date(`${m.month}-01T12:00:00`).toLocaleDateString("fr-FR", { month: "short", year: "numeric" }),
+  }));
 
 
   const cards = [
@@ -125,39 +129,20 @@ function AdminDashboard() {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-card rounded-2xl p-5 border border-border/60">
-            <h2 className="text-lg font-serif text-primary mb-3">Inscriptions (homme / femme)</h2>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data?.series ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="day" fontSize={10} />
-                  <YAxis fontSize={11} allowDecimals={false} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="homme" name="Hommes" stackId="g" fill="#4f46e5" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="femme" name="Femmes" stackId="g" fill="#db2777" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-
-          <section className="bg-card rounded-2xl p-5 border border-border/60">
-            <h2 className="text-lg font-serif text-primary mb-3">Inscrits cumulés</h2>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data?.cumulative ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="day" fontSize={10} />
-                  <YAxis fontSize={11} allowDecimals={false} />
-                  <Tooltip />
-                  <Area dataKey="total" name="Total" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.18} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        </div>
+        <section className="bg-card rounded-2xl p-5 border border-border/60">
+          <h2 className="text-lg font-serif text-primary mb-3">Inscriptions par mois</h2>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthly}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="label" fontSize={11} />
+                <YAxis fontSize={11} allowDecimals={false} />
+                <Tooltip />
+                <Area dataKey="total" name="Inscrits" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.18} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
 
         <section>
           <h2 className="text-lg font-serif text-primary mb-3">Répartition par tranche d'âge</h2>

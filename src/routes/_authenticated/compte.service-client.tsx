@@ -26,7 +26,6 @@ const categories = [
   "Partenariat",
   "Inscription",
   "Connexion / Email",
-  "Signalement",
   "Suppression de compte",
   "Abonnement",
   "Autres",

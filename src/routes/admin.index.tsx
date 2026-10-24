@@ -85,20 +85,6 @@ function AdminDashboard() {
     { label: "Signalements ouverts", value: c?.openReports, icon: Flag, tone: "bg-destructive/10 text-destructive" },
   ];
 
-  const shortcuts = [
-    { to: "/admin/profiles", label: "Gérer les profils", desc: "Voir, filtrer, suspendre, bannir ou supprimer un membre.", icon: Users },
-    { to: "/admin/finance", label: "Finance", desc: "CA TTC/HT, TVA par jour, semaine, mois, formule et genre.", icon: Euro },
-    { to: "/admin/analytics", label: "Analytics", desc: "Entonnoir de conversion, rétention et activité horaire.", icon: BarChart3 },
-    { to: "/admin/support", label: "Support", desc: "Tickets, statuts et historique des échanges.", icon: LifeBuoy },
-    { to: "/admin/credits", label: "Consommation", desc: "Likes, super likes et boosts par membre.", icon: Zap },
-    { to: "/admin/config", label: "Configurateur", desc: "Prix, durées et quotas des abonnements.", icon: SlidersHorizontal },
-    { to: "/admin/conversations", label: "Discussions", desc: "Lire les échanges entre membres pour modération.", icon: MessageSquare },
-    { to: "/admin/reports", label: "Signalements", desc: "Examiner et résoudre les signalements ouverts.", icon: Flag },
-    { to: "/admin/contact", label: "Messages de contact", desc: "Répondre aux messages du formulaire d'accueil.", icon: Mail },
-    { to: "/admin/ads", label: "Publicités", desc: "Gérer le carrousel d'annonces partenaires.", icon: Megaphone },
-    { to: "/admin/rgpd", label: "RGPD", desc: "Registre des traitements, hébergement et conformité.", icon: ShieldCheck },
-  ] as const;
-
   return (
     <div className="min-h-screen mosaic-soft">
       <AdminNav />

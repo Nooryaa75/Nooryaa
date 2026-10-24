@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminSeedTestProfiles } from "@/lib/admin.functions";
-import { adminOverview, adminOnlineNow, adminCriteriaDistribution } from "@/lib/admin-insights.functions";
+import { adminOverview, adminOnlineNow, adminCriteriaDistribution, adminClosureStats } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
 import { Users, UserCheck, Flag, AlertTriangle, Sparkles, BadgeCheck, Euro, Radio } from "lucide-react";

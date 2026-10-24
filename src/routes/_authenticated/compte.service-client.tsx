@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Headphones, Send, ChevronLeft, ChevronDown, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { createSupportTicket, listMyTickets } from "@/lib/support.functions";
+import { supportCategories } from "@/lib/support-categories";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,15 +23,7 @@ export const Route = createFileRoute("/_authenticated/compte/service-client")({
   component: ServiceClientPage,
 });
 
-const categories = [
-  "Partenariat",
-  "Inscription",
-  "Connexion / Email",
-  "Signalement",
-  "Suppression de compte",
-  "Abonnement",
-  "Autres",
-] as const;
+const categories = supportCategories;
 
 type MyTicket = {
   id: string;

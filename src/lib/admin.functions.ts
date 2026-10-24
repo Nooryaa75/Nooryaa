@@ -80,7 +80,7 @@ export const adminStats = createServerFn({ method: "GET" }).handler(async () => 
 });
 
 export const adminListProfiles = createServerFn({ method: "GET" })
-  .inputValidator((data: { q?: string; status?: string; gender?: string; page?: number }) => data)
+  .inputValidator((data: { q?: string; status?: string; gender?: string; page?: number; from?: string; to?: string }) => data)
   .handler(async ({ data }) => {
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
@@ -94,6 +94,8 @@ export const adminListProfiles = createServerFn({ method: "GET" })
     }
     if (data.status && data.status !== "all") q = q.eq("status", data.status);
     if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
+    if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
+    if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
     return { rows: rows ?? [], count: count ?? 0, page, pageSize };
   });

@@ -279,22 +279,35 @@ export const adminAnalytics = createServerFn({ method: "GET" }).handler(async ()
   // Membres connectés distincts par jour (30 derniers jours, heure de Paris)
   const since = new Date(Date.now() - 29 * 86400000);
   since.setUTCHours(0, 0, 0, 0);
-  const visitRows: { user_id: string | null; created_at: string }[] = [];
-  for (let from = 0; ; from += 1000) {
-    const { data: page } = await supabaseAdmin
-      .from("visits")
-      .select("user_id, created_at")
-      .not("user_id", "is", null)
-      .gte("created_at", since.toISOString())
-      .order("created_at", { ascending: true })
-      .range(from, from + 999);
-    visitRows.push(...(page ?? []));
-    if (!page || page.length < 1000) break;
-  }
+  // Un membre est compté "connecté" un jour s'il a agi ce jour-là (message, like, passage) ou y a été vu en dernier.
+  const sinceIso = since.toISOString();
+  const fetchAll = async (table: "messages" | "likes" | "profile_passes", col: string) => {
+    const rows: Record<string, string>[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data: page } = await supabaseAdmin
+        .from(table)
+        .select(`${col}, created_at`)
+        .gte("created_at", sinceIso)
+        .order("created_at", { ascending: true })
+        .range(from, from + 999);
+      rows.push(...((page ?? []) as unknown as Record<string, string>[]));
+      if (!page || page.length < 1000) break;
+    }
+    return rows.map((r) => ({ user: r[col], at: r.created_at }));
+  };
+  const [m30, l30, p30] = await Promise.all([
+    fetchAll("messages", "sender"),
+    fetchAll("likes", "from_user"),
+    fetchAll("profile_passes", "user_id"),
+  ]);
+  const events = [
+    ...m30, ...l30, ...p30,
+    ...all.filter((p) => p.last_seen && p.last_seen >= sinceIso).map((p) => ({ user: p.id, at: p.last_seen as string })),
+  ];
   const dayKey = (d: Date) => d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
   const perDay = new Map<string, Set<string>>();
   for (let i = 0; i < 30; i++) perDay.set(dayKey(new Date(since.getTime() + i * 86400000 + 43200000)), new Set());
-  for (const v of visitRows) perDay.get(dayKey(new Date(v.created_at)))?.add(v.user_id as string);
+  for (const e of events) perDay.get(dayKey(new Date(e.at)))?.add(e.user);
   const connected = [...perDay.entries()].map(([k, s]) => {
     const [, m, d] = k.split("-");
     return { day: `${d}/${m}`, value: s.size };

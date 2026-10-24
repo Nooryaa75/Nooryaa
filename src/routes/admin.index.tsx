@@ -6,8 +6,9 @@ import { adminOverview, adminOnlineNow } from "@/lib/admin-insights.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminPeriodPicker, usePeriod } from "@/components/AdminPeriodPicker";
 import {
-  Users, UserCheck, Flag, MessageCircle, AlertTriangle, MessageSquare, ArrowRight, Sparkles, Megaphone, Mail,
-  Heart, BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3, ShieldCheck,
+  Users, UserCheck, Flag, AlertTriangle, MessageSquare, ArrowRight, Sparkles, Megaphone, Mail,
+  BadgeCheck, Euro, Radio, LifeBuoy, SlidersHorizontal, Zap, BarChart3, ShieldCheck,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -67,7 +68,7 @@ function AdminDashboard() {
   });
 
   const c = data?.counters;
-  const e = data?.engagement;
+
 
   const cards = [
     { label: "Total inscrits", value: c?.total, icon: Users, tone: "bg-primary/10 text-primary" },
@@ -78,10 +79,6 @@ function AdminDashboard() {
     { label: "Abonnés payants", value: c?.payingNow, icon: Euro, tone: "bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[color:var(--gold)]" },
     { label: "Suspendus / bannis", value: c?.suspended, icon: AlertTriangle, tone: "bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[color:var(--gold)]" },
     { label: "Signalements ouverts", value: c?.openReports, icon: Flag, tone: "bg-destructive/10 text-destructive" },
-    { label: "Likes (période)", value: e?.likes, icon: Heart, tone: "bg-secondary text-primary" },
-    { label: "Messages (période)", value: e?.messages, icon: MessageCircle, tone: "bg-secondary text-primary" },
-    { label: "Membres actifs (msg)", value: e?.activeSenders, icon: Users, tone: "bg-muted text-muted-foreground" },
-    { label: "Âge moyen", value: e?.avgAge, icon: Users, tone: "bg-muted text-muted-foreground" },
   ];
 
   const shortcuts = [

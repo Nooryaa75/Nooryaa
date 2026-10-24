@@ -27,6 +27,14 @@ export const createSupportTicket = createServerFn({ method: "POST" })
       message: data.message,
     });
     if (error) throw error;
+
+    // Accusé de réception au membre + alerte email à l'équipe (sans push).
+    try {
+      const { notifySupportTicket } = await import("./request-alerts.server");
+      await notifySupportTicket({ userId: context.userId, category: data.category, message: data.message });
+    } catch (e) {
+      console.error("Support ticket notifications failed", e);
+    }
     return { ok: true };
   });
 

@@ -235,6 +235,11 @@ export const adminDeleteProfile = createServerFn({ method: "POST" })
     // delete from auth.users cascade → profile, photos, likes, messages, blocks, reports
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
     if (error) throw error;
+    try {
+      await supabaseAdmin.storage.from("verification-selfies").remove([data.id]);
+    } catch {
+      // le nettoyage du selfie ne doit pas bloquer la suppression
+    }
     await supabaseAdmin.from("admin_actions").insert({ action: "delete_profile", target_user: data.id });
     return { ok: true };
   });

@@ -196,31 +196,19 @@ function AdminProfileDetail() {
               </ul>
             )}
           </Block>
-          <Block title={`Coups de cœur reçus (${data.likesReceived.length})`}>
-            <p className="text-sm text-muted-foreground">{data.likesReceived.length} personnes ont aimé ce profil.</p>
+          <Block title="Avertissements dans le chat" accent={data.chatWarnings > 0 ? "text-amber-600" : undefined}>
+            <p className="text-sm text-muted-foreground">
+              {data.chatWarnings === 0
+                ? "Aucun avertissement."
+                : `${data.chatWarnings} message${data.chatWarnings > 1 ? "s" : ""} ou vocal${data.chatWarnings > 1 ? "aux" : ""} signalé${data.chatWarnings > 1 ? "s" : ""} par la modération.`}
+            </p>
           </Block>
-          <Block title={`Coups de cœur envoyés (${data.likesSent.length})`}>
-            <p className="text-sm text-muted-foreground">{data.likesSent.length} profils aimés.</p>
-          </Block>
-          <Block title={`Messages reçus (50 derniers)`}>
-            <ul className="space-y-1 text-xs max-h-64 overflow-y-auto">
-              {data.messagesReceived.map((m: any) => (
-                <li key={m.id} className="border-b border-border/60 pb-1">
-                  <span className="text-muted-foreground">{new Date(m.created_at).toLocaleString("fr-FR")} ← {m.sender.slice(0,8)} :</span> {m.content}
-                </li>
-              ))}
-              {data.messagesReceived.length === 0 && <Empty>Aucun</Empty>}
-            </ul>
-          </Block>
-          <Block title={`Messages envoyés (50 derniers)`}>
-            <ul className="space-y-1 text-xs max-h-64 overflow-y-auto">
-              {data.messagesSent.map((m: any) => (
-                <li key={m.id} className="border-b border-border/60 pb-1">
-                  <span className="text-muted-foreground">{new Date(m.created_at).toLocaleString("fr-FR")} → {m.receiver.slice(0,8)} :</span> {m.content}
-                </li>
-              ))}
-              {data.messagesSent.length === 0 && <Empty>Aucun</Empty>}
-            </ul>
+          <Block title="Messages bloqués dans le chat" accent={data.chatBlocked > 0 ? "text-destructive" : undefined}>
+            <p className="text-sm text-muted-foreground">
+              {data.chatBlocked === 0
+                ? "Aucun message bloqué."
+                : `${data.chatBlocked} message${data.chatBlocked > 1 ? "s" : ""} ou vocal${data.chatBlocked > 1 ? "aux" : ""} bloqué${data.chatBlocked > 1 ? "s" : ""} par la modération.`}
+            </p>
           </Block>
         </div>
       </main>

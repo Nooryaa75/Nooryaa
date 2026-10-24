@@ -127,57 +127,7 @@ function AdminDashboard() {
           </div>
         </section>
 
-        <section>
-          <h2 className="text-lg font-serif text-primary mb-3">Répartition par tranche d'âge</h2>
-          <div className="bg-card rounded-2xl p-5 border border-border/60 h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.ageBuckets ?? []}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="label" fontSize={11} />
-                <YAxis fontSize={11} allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="homme" name="Hommes" fill="#4f46e5" />
-                <Bar dataKey="femme" name="Femmes" fill="#db2777" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-serif text-primary mb-3">Critères de la fiche profil</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Distribution title="Genre" rows={data?.gender ?? []} />
-            <Distribution title="Mode d'utilisation" rows={data?.platforms ?? []} />
-            <Distribution title="Villes" rows={data?.cities ?? []} />
-            <Distribution title="Pays de résidence" rows={data?.countries ?? []} />
-            <Distribution title="Pays d'origine" rows={data?.origins ?? []} />
-            <Distribution title="Situation maritale" rows={data?.criteria.marital_status ?? []} />
-            <Distribution title="Pratique religieuse" rows={data?.criteria.religious_practice ?? []} />
-            <Distribution title="Niveau d'études" rows={data?.criteria.education_level ?? []} />
-            <Distribution title="Objectif" rows={data?.criteria.objective ?? []} />
-            <Distribution title="Corpulence" rows={data?.criteria.body_type ?? []} />
-            <Distribution title="A des enfants" rows={data?.criteria.has_children ?? []} />
-            <Distribution title="Souhaite des enfants" rows={data?.criteria.wants_children ?? []} />
-            <Distribution title="Fumeur" rows={data?.criteria.smoker ?? []} />
-          </div>
-        </section>
-
-        <div>
-          <h2 className="text-lg font-serif text-primary mb-3">Raccourcis</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {shortcuts.map((s) => (
-              <Link key={s.to} to={s.to} className="group bg-card rounded-2xl p-5 border border-border/60 hover:border-primary/40 hover:shadow-[var(--shadow-card)] transition-all">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><s.icon className="h-5 w-5" /></div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-                <div className="font-medium text-primary">{s.label}</div>
-                <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
+        <CriteriaSection />
 
         <div className="bg-card rounded-2xl p-5 border border-border/60 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">

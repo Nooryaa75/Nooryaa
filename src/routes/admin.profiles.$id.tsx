@@ -56,6 +56,7 @@ function AdminProfileDetail() {
   );
 
   const p = data.profile;
+  const selfies = data.verificationSelfies ?? [];
 
   return (
     <div className="min-h-screen mosaic-soft">

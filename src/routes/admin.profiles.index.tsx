@@ -154,7 +154,8 @@ function AdminProfilesList() {
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} className="text-primary underline text-xs">Voir</Link>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {data && data.rows.length === 0 && (
                 <tr><td colSpan={12} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}

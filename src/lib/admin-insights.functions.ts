@@ -276,18 +276,44 @@ export const adminAnalytics = createServerFn({ method: "GET" }).handler(async ()
     { step: "Abonnement payant", value: all.filter((p) => payers.has(p.id)).length },
   ];
 
-  const hours = Array.from({ length: 24 }, (_, h) => ({ hour: `${String(h).padStart(2, "0")}h`, value: 0 }));
-  for (const m of messages ?? []) hours[new Date(m.created_at).getUTCHours()].value += 1;
-
-  const retention = [1, 7, 30].map((d) => {
-    const cohort = all.filter((p) => Date.now() - new Date(p.created_at).getTime() >= d * 86400000);
-    const retained = cohort.filter(
-      (p) => new Date(p.last_seen ?? p.last_active).getTime() - new Date(p.created_at).getTime() >= d * 86400000,
-    );
-    return { label: `J${d}`, value: cohort.length ? Math.round((retained.length / cohort.length) * 1000) / 10 : 0 };
+  // Membres connectés distincts par jour (30 derniers jours, heure de Paris)
+  const since = new Date(Date.now() - 29 * 86400000);
+  since.setUTCHours(0, 0, 0, 0);
+  // Un membre est compté "connecté" un jour s'il a agi ce jour-là (message, like, passage) ou y a été vu en dernier.
+  const sinceIso = since.toISOString();
+  const fetchAll = async (table: "messages" | "likes" | "profile_passes", col: string) => {
+    const rows: Record<string, string>[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data: page } = await supabaseAdmin
+        .from(table)
+        .select(`${col}, created_at`)
+        .gte("created_at", sinceIso)
+        .order("created_at", { ascending: true })
+        .range(from, from + 999);
+      rows.push(...((page ?? []) as unknown as Record<string, string>[]));
+      if (!page || page.length < 1000) break;
+    }
+    return rows.map((r) => ({ user: r[col], at: r.created_at }));
+  };
+  const [m30, l30, p30] = await Promise.all([
+    fetchAll("messages", "sender"),
+    fetchAll("likes", "from_user"),
+    fetchAll("profile_passes", "user_id"),
+  ]);
+  const events = [
+    ...m30, ...l30, ...p30,
+    ...all.filter((p) => p.last_seen && p.last_seen >= sinceIso).map((p) => ({ user: p.id, at: p.last_seen as string })),
+  ];
+  const dayKey = (d: Date) => d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+  const perDay = new Map<string, Set<string>>();
+  for (let i = 0; i < 30; i++) perDay.set(dayKey(new Date(since.getTime() + i * 86400000 + 43200000)), new Set());
+  for (const e of events) perDay.get(dayKey(new Date(e.at)))?.add(e.user);
+  const connected = [...perDay.entries()].map(([k, s]) => {
+    const [, m, d] = k.split("-");
+    return { day: `${d}/${m}`, value: s.size };
   });
 
-  return { funnel, hours, retention };
+  return { funnel, connected };
 });
 
 // ---------------- Configurateur (formules) ----------------

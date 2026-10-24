@@ -32,8 +32,9 @@ function AdminReports() {
   });
 
   const resolveMut = useMutation({
-    mutationFn: (vars: { id: string; status: "resolved" | "rejected" }) => resolve({ data: vars }),
+    mutationFn: (vars: { id: string; status: "open" | "resolved" | "rejected"; comment?: string }) => resolve({ data: vars }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-reports"] }); toast.success("Mis à jour"); },
+    onError: (e: any) => toast.error(frenchError(e)),
   });
 
   const suspendMut = useMutation({

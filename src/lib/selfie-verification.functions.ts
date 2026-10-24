@@ -286,9 +286,10 @@ export const verifySelfie = createServerFn({ method: "POST" })
         const bin = atob(base64);
         const bytes = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        await supabaseAdmin.storage
+        const { error: upErr } = await supabaseAdmin.storage
           .from("verification-selfies")
           .upload(`${userId}`, bytes, { contentType: mime, upsert: true });
+        if (upErr) console.error("selfie-verification: échec conservation du selfie", upErr);
       } catch (e) {
         console.error("selfie-verification: échec conservation du selfie", e);
       }

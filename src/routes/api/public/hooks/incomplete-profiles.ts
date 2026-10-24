@@ -4,8 +4,11 @@ import { normalizeLocale, type MailLocale } from "@/lib/email-i18n";
 
 /**
  * Relance quotidienne des inscriptions non terminées (champs obligatoires manquants) :
- * 5 emails de relance (1 par jour), puis suppression du compte le 6e jour
- * avec un email de confirmation. Appelé une fois par jour par la tâche planifiée.
+ * - email non vérifié (inscription email jamais confirmée) : suppression directe,
+ *   sans relance (on ne peut pas joindre une adresse non confirmée) ;
+ * - email vérifié (lien cliqué, Google ou Apple) : 5 emails de relance (1 par jour),
+ *   puis suppression du compte le 6e jour avec un email de confirmation.
+ * Appelé une fois par jour par la tâche planifiée.
  */
 const SITE_NAME = "Nooryaa";
 const SITE_URL = "https://app.nooryaa.com";
@@ -125,12 +128,30 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
 
         let reminded = 0;
         let deleted = 0;
+        let deletedUnverified = 0;
         for (const p of profiles ?? []) {
           if (!p.email || staffIds.has(p.id)) continue;
           // Sécurité : ne jamais relancer un compte supprimé (profil restant
           // sans compte utilisateur, ou suppression en cours).
           const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(p.id);
           if (!authUser?.user) continue;
+
+          // Règle : tant que l'email n'est pas vérifié (inscription email jamais
+          // confirmée), le compte est supprimé sans relance — on ne peut pas
+          // joindre une adresse non confirmée. Les comptes avec email vérifié
+          // (lien de confirmation cliqué, Google ou Apple) suivent la relance
+          // classique : 5 emails puis suppression le 6e jour.
+          const emailVerified = Boolean(authUser.user.email_confirmed_at ?? authUser.user.confirmed_at);
+          if (!emailVerified) {
+            const { error } = await supabaseAdmin.rpc("delete_own_account", { user_id: p.id });
+            if (error) {
+              console.error("incomplete-profiles delete unverified error", p.id, error.message);
+              continue;
+            }
+            deletedUnverified++;
+            continue;
+          }
+
           const { data: sent } = await supabaseAdmin
             .from("email_notifications")
             .select("created_at")
@@ -166,7 +187,7 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
           }
         }
 
-        return Response.json({ ok: true, reminded, deleted });
+        return Response.json({ ok: true, reminded, deleted, deletedUnverified });
       },
     },
   },

@@ -136,14 +136,15 @@ function AdminProfilesList() {
                       )}
                     </Link>
                   </td>
-                  <td className="px-2 py-2 font-medium text-primary"><span className="block truncate" title={p.pseudo}>{p.pseudo}</span></td>
+                  <td className="px-2 py-2 font-medium text-primary" data-no-translate><span className="block truncate" title={p.pseudo}>{p.pseudo}</span></td>
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={p.last_name || ""}>{p.last_name || "—"}</span></td>
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={p.first_name || ""}>{p.first_name || "—"}</span></td>
-                  <td className="px-2 py-2 text-muted-foreground"><span className="block truncate" title={p.email}>{p.email}</span></td>
-                  <td className="px-2 py-2 text-muted-foreground"><span className="block truncate" title={p.phone ?? ""}>{p.phone ?? "—"}</span></td>
-                  <td className="px-2 py-2"><span className="block truncate" title={frenchPlace(p.city) ?? ""}>{frenchPlace(p.city) ?? "—"}</span></td>
+                  <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.email}>{p.email}</span></td>
+                  <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.phone ?? ""}>{p.phone ?? "—"}</span></td>
+                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={frenchPlace(p.city) ?? ""}>{frenchPlace(p.city) ?? "—"}</span></td>
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={frenchPlace(p.country) ?? ""}>{frenchPlace(p.country) ?? "—"}</span></td>
                   <td className="px-2 py-2 whitespace-nowrap tabular-nums">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-muted-foreground">{p.created_at ? new Date(p.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"}</td>
                   <td className="px-2 py-2">
                     <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
                   </td>

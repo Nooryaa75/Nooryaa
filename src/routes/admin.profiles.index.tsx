@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { BadgeCheck } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
 import { frenchPlace, PROFILE_STATUS_LABELS } from "@/lib/admin-display";
 

@@ -4,8 +4,11 @@ import { normalizeLocale, type MailLocale } from "@/lib/email-i18n";
 
 /**
  * Relance quotidienne des inscriptions non terminées (champs obligatoires manquants) :
- * 5 emails de relance (1 par jour), puis suppression du compte le 6e jour
- * avec un email de confirmation. Appelé une fois par jour par la tâche planifiée.
+ * - email non vérifié (inscription email jamais confirmée) : suppression directe,
+ *   sans relance (on ne peut pas joindre une adresse non confirmée) ;
+ * - email vérifié (lien cliqué, Google ou Apple) : 5 emails de relance (1 par jour),
+ *   puis suppression du compte le 6e jour avec un email de confirmation.
+ * Appelé une fois par jour par la tâche planifiée.
  */
 const SITE_NAME = "Nooryaa";
 const SITE_URL = "https://app.nooryaa.com";
@@ -184,7 +187,7 @@ export const Route = createFileRoute("/api/public/hooks/incomplete-profiles")({
           }
         }
 
-        return Response.json({ ok: true, reminded, deleted });
+        return Response.json({ ok: true, reminded, deleted, deletedUnverified });
       },
     },
   },

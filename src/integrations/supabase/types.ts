@@ -900,6 +900,7 @@ export type Database = {
       }
       reports: {
         Row: {
+          admin_comment: string | null
           created_at: string
           id: string
           reason: string
@@ -908,6 +909,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          admin_comment?: string | null
           created_at?: string
           id?: string
           reason: string
@@ -916,6 +918,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          admin_comment?: string | null
           created_at?: string
           id?: string
           reason?: string

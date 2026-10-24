@@ -269,13 +269,15 @@ export const adminListReports = createServerFn({ method: "GET" })
   });
 
 export const adminResolveReport = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: string; status: "resolved" | "rejected" }) => data)
+  .inputValidator((data: { id: string; status: "open" | "resolved" | "rejected"; comment?: string }) => data)
   .handler(async ({ data }) => {
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("reports").update({ status: data.status }).eq("id", data.id);
-    await supabaseAdmin.from("admin_actions").insert({ action: `report_${data.status}`, details: { report_id: data.id } });
+    const comment = (data.comment ?? "").trim().slice(0, 2000) || null;
+    const { error } = await supabaseAdmin.from("reports").update({ status: data.status, admin_comment: comment } as any).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("admin_actions").insert({ action: `report_${data.status}`, details: { report_id: data.id, comment } });
     return { ok: true };
   });
 

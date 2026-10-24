@@ -98,13 +98,12 @@ function AdminReports() {
                   </div>
                 )}
               </details>
-              {r.status === "open" && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <Button size="sm" variant="destructive" onClick={() => suspendMut.mutate(r.reported)}>Suspendre le profil</Button>
-                  <Button size="sm" variant="outline" onClick={() => resolveMut.mutate({ id: r.id, status: "resolved" })}>Marquer résolu</Button>
-                  <Button size="sm" variant="ghost" onClick={() => resolveMut.mutate({ id: r.id, status: "rejected" })}>Rejeter</Button>
-                </div>
-              )}
+              <ReportActions
+                report={r}
+                saving={resolveMut.isPending}
+                onSave={(st, comment) => resolveMut.mutate({ id: r.id, status: st, comment })}
+                onSuspend={() => suspendMut.mutate(r.reported)}
+              />
             </div>
           ))}
         </div>

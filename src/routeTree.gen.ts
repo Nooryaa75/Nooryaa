@@ -43,7 +43,6 @@ import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminRgpdRouteImport } from './routes/admin.rgpd'
-import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AuthenticatedCompteIndexRouteImport } from './routes/_authenticated/compte.index'
 import { Route as AuthenticatedCompteAbonnementRouteImport } from './routes/_authenticated/compte.abonnement'
 import { Route as AuthenticatedCompteCguRouteImport } from './routes/_authenticated/compte.cgu'
@@ -234,11 +233,6 @@ const AdminRgpdRoute = AdminRgpdRouteImport.update({
   path: '/admin/rgpd',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminVisitsRoute = AdminVisitsRouteImport.update({
-  id: '/admin/visits',
-  path: '/admin/visits',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedCompteIndexRoute =
   AuthenticatedCompteIndexRouteImport.update({
     id: '/',
@@ -379,7 +373,6 @@ export interface FileRoutesByFullPath {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/rgpd': typeof AdminRgpdRoute
-  '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -433,7 +426,6 @@ export interface FileRoutesByTo {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/rgpd': typeof AdminRgpdRoute
-  '/admin/visits': typeof AdminVisitsRoute
   '/admin': typeof AdminIndexRoute
   '/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -490,7 +482,6 @@ export interface FileRoutesById {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/rgpd': typeof AdminRgpdRoute
-  '/admin/visits': typeof AdminVisitsRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/compte/abonnement': typeof AuthenticatedCompteAbonnementRoute
   '/_authenticated/compte/cgu': typeof AuthenticatedCompteCguRoute
@@ -547,7 +538,6 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/reset'
     | '/admin/rgpd'
-    | '/admin/visits'
     | '/admin/'
     | '/compte/abonnement'
     | '/compte/cgu'
@@ -601,7 +591,6 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/reset'
     | '/admin/rgpd'
-    | '/admin/visits'
     | '/admin'
     | '/compte/abonnement'
     | '/compte/cgu'
@@ -657,7 +646,6 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/reset'
     | '/admin/rgpd'
-    | '/admin/visits'
     | '/admin/'
     | '/_authenticated/compte/abonnement'
     | '/_authenticated/compte/cgu'
@@ -704,7 +692,6 @@ export interface RootRouteChildren {
   AdminReportsRoute: typeof AdminReportsRoute
   AdminResetRoute: typeof AdminResetRoute
   AdminRgpdRoute: typeof AdminRgpdRoute
-  AdminVisitsRoute: typeof AdminVisitsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminConversationsPairRoute: typeof AdminConversationsPairRoute
   AdminProfilesIdRoute: typeof AdminProfilesIdRoute
@@ -956,13 +943,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRgpdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/visits': {
-      id: '/admin/visits'
-      path: '/admin/visits'
-      fullPath: '/admin/visits'
-      preLoaderRoute: typeof AdminVisitsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/compte/': {
       id: '/_authenticated/compte/'
       path: '/'
@@ -1195,7 +1175,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReportsRoute: AdminReportsRoute,
   AdminResetRoute: AdminResetRoute,
   AdminRgpdRoute: AdminRgpdRoute,
-  AdminVisitsRoute: AdminVisitsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminConversationsPairRoute: AdminConversationsPairRoute,
   AdminProfilesIdRoute: AdminProfilesIdRoute,

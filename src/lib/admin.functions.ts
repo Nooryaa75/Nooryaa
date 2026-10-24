@@ -157,7 +157,8 @@ export const adminListProfiles = createServerFn({ method: "GET" })
     if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
     if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
-    return { rows: rows ?? [], count: count ?? 0, page, pageSize };
+    const display = await translateForAdmin(rows ?? []);
+    return { rows: rows ?? [], count: count ?? 0, page, pageSize, display };
   });
 
 export const adminGetProfile = createServerFn({ method: "GET" })

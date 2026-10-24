@@ -42,6 +42,10 @@ export const suspendAccount = createServerFn({ method: "POST" })
       .update({ status: "suspended" })
       .eq("id", context.userId);
     if (error) throw error;
+    {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("account_closures").insert({ user_id: context.userId, action: "suspend", reason: data.reason, details: data.details });
+    }
 
     if (profile?.email) {
       await sendAccountClosureEmail({
@@ -75,6 +79,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
       user_id: context.userId,
     });
     if (error) throw error;
+    await supabaseAdmin.from("account_closures").insert({ user_id: context.userId, action: "delete", reason: data.reason, details: data.details });
 
     if (profile?.email) {
       await sendAccountClosureEmail({

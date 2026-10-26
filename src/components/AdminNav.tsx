@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { adminLogout, adminNotificationCounts } from "@/lib/admin.functions";
+import { adminLogout, adminNotificationCounts, clearAdminAuthCache } from "@/lib/admin.functions";
 import { LayoutDashboard, Users, Flag, LogOut, MessageSquare, Megaphone, ShieldAlert, Euro, BarChart3, LifeBuoy, SlidersHorizontal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/nooryaa-logo.png.asset.json";
@@ -40,6 +40,7 @@ export function AdminNav() {
   };
 
   async function handleLogout() {
+    clearAdminAuthCache();
     try {
       await logout();
     } catch {

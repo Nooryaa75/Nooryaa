@@ -167,17 +167,35 @@ export const adminGetProfile = createServerFn({ method: "GET" })
     const { requireAdminOrThrow } = await import("./admin-session.server");
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const [profile, photos, likesIn, likesOut, msgsIn, msgsOut, reportsIn, reportsOut, blocks] = await Promise.all([
+    // Ne lire que les informations affichées sur cette fiche (6 lectures maximum).
+    const [profile, photos, reportsIn, reportsOut, warnings, blocked] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", data.id).maybeSingle(),
       supabaseAdmin.from("photos").select("*").eq("user_id", data.id).order("position"),
-      supabaseAdmin.from("likes").select("from_user, created_at").eq("to_user", data.id),
-      supabaseAdmin.from("likes").select("to_user, created_at").eq("from_user", data.id),
-      supabaseAdmin.from("messages").select("id, sender, content, created_at").eq("receiver", data.id).order("created_at", { ascending: false }).limit(50),
-      supabaseAdmin.from("messages").select("id, receiver, content, created_at").eq("sender", data.id).order("created_at", { ascending: false }).limit(50),
       supabaseAdmin.from("reports").select("*").eq("reported", data.id).order("created_at", { ascending: false }),
       supabaseAdmin.from("reports").select("*").eq("reporter", data.id).order("created_at", { ascending: false }),
-      supabaseAdmin.from("blocks").select("*").or(`blocker.eq.${data.id},blocked.eq.${data.id}`),
+      supabaseAdmin.from("moderation_events").select("id", { count: "exact", head: true }).eq("user_id", data.id).in("source", ["message", "voice"]).eq("verdict", "warn"),
+      supabaseAdmin.from("moderation_events").select("id", { count: "exact", head: true }).eq("user_id", data.id).in("source", ["message", "voice"]).eq("verdict", "block"),
     ]);
+    for (const result of [profile, photos, reportsIn, reportsOut, warnings, blocked]) {
+      if (result.error) throw new Error(result.error.message);
+    }
+    return {
+      profile: profile.data,
+      photos: photos.data ?? [],
+      chatWarnings: warnings.count ?? 0,
+      chatBlocked: blocked.count ?? 0,
+      reportsAgainst: reportsIn.data ?? [],
+      reportsBy: reportsOut.data ?? [],
+    };
+  });
+
+// Les liens privés des selfies ne retardent pas l'affichage de la fiche.
+export const adminGetProfileSelfies = createServerFn({ method: "GET" })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Selfies de vérification (bucket privé) : dernier selfie + historique,
     // liens signés temporaires pour l'admin.
     let verificationSelfieUrl: string | null = null;
@@ -203,31 +221,7 @@ export const adminGetProfile = createServerFn({ method: "GET" })
     } catch (e) {
       console.error("admin: lecture des selfies impossible", e);
     }
-    // Modération du chat : avertissements (warn) et messages bloqués (block),
-    // messages texte et vocaux confondus.
-    const { data: chatModeration } = await supabaseAdmin
-      .from("moderation_events")
-      .select("verdict")
-      .eq("user_id", data.id)
-      .in("source", ["message", "voice"])
-      .in("verdict", ["warn", "block"]);
-    const chatWarnings = (chatModeration ?? []).filter((e) => e.verdict === "warn").length;
-    const chatBlocked = (chatModeration ?? []).filter((e) => e.verdict === "block").length;
-    return {
-      profile: profile.data,
-      photos: photos.data ?? [],
-      verificationSelfieUrl,
-      verificationSelfies,
-      chatWarnings,
-      chatBlocked,
-      likesReceived: likesIn.data ?? [],
-      likesSent: likesOut.data ?? [],
-      messagesReceived: msgsIn.data ?? [],
-      messagesSent: msgsOut.data ?? [],
-      reportsAgainst: reportsIn.data ?? [],
-      reportsBy: reportsOut.data ?? [],
-      blocks: blocks.data ?? [],
-    };
+    return { verificationSelfieUrl, verificationSelfies };
   });
 
 export const adminUpdateStatus = createServerFn({ method: "POST" })

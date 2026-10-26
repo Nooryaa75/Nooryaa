@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCheckAuth, adminListProfiles } from "@/lib/admin.functions";
+import { adminCheckAuth, adminListProfiles, adminGetProfile } from "@/lib/admin.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { BadgeCheck } from "lucide-react";
 import { ageFromBirthdate } from "@/lib/profile";
-import { frenchPlace, PROFILE_STATUS_LABELS } from "@/lib/admin-display";
+import { frenchPlace, PROFILE_STATUS_LABELS, adminProfileStatus } from "@/lib/admin-display";
 
 export const Route = createFileRoute("/admin/profiles/")({
   ssr: false,
@@ -23,7 +23,8 @@ export const Route = createFileRoute("/admin/profiles/")({
 
 const STATUS_LABEL = PROFILE_STATUS_LABELS;
 const STATUS_CLASS: Record<string, string> = {
-  active: "bg-primary/10 text-primary",
+  active: "bg-[color:var(--verified-bg)] text-[color:var(--verified)]",
+  inactive: "bg-muted text-muted-foreground",
   suspended: "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]",
   banned: "bg-destructive/10 text-destructive",
 };
@@ -37,6 +38,12 @@ function AdminProfilesList() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const list = useServerFn(adminListProfiles);
+  const getProfile = useServerFn(adminGetProfile);
+  const qc = useQueryClient();
+  // Prépare la fiche dès que le doigt ou la souris arrive sur le lien.
+  const prefetch = (id: string) => {
+    qc.prefetchQuery({ queryKey: ["admin-profile", id], queryFn: () => getProfile({ data: { id } }), staleTime: 60_000 });
+  };
 
   const { data } = useQuery({
     queryKey: ["admin-profiles", search, status, gender, page, from, to],
@@ -76,7 +83,8 @@ function AdminProfilesList() {
               <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="active">Actifs</SelectItem>
+                <SelectItem value="active">Actifs (vérifiés)</SelectItem>
+                <SelectItem value="inactive">Non actifs (non vérifiés)</SelectItem>
                 <SelectItem value="suspended">Suspendus</SelectItem>
                 <SelectItem value="banned">Bannis</SelectItem>
               </SelectContent>
@@ -145,7 +153,7 @@ function AdminProfilesList() {
                   </td>
                   <td className="px-2 py-2">
 
-                    <Link to="/admin/profiles/$id" params={{ id: p.id }} className="block w-10 h-10 rounded-full overflow-hidden bg-secondary border border-border/60">
+                    <Link to="/admin/profiles/$id" params={{ id: p.id }} onMouseEnter={() => prefetch(p.id)} onTouchStart={() => prefetch(p.id)} onFocus={() => prefetch(p.id)} className="block w-10 h-10 rounded-full overflow-hidden bg-secondary border border-border/60">
                       {p.primary_photo_url ? (
                         <img src={p.primary_photo_url} alt={p.pseudo} className="w-full h-full object-cover" />
                       ) : (
@@ -163,10 +171,10 @@ function AdminProfilesList() {
                   <td className="px-2 py-2 whitespace-nowrap tabular-nums">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
                   <td className="px-2 py-2 whitespace-nowrap text-muted-foreground">{p.created_at ? new Date(p.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"}</td>
                   <td className="px-2 py-2">
-                    <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[p.status] ?? ""}`}>{STATUS_LABEL[p.status] ?? p.status}</span>
+                    <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[adminProfileStatus(p)] ?? ""}`}>{STATUS_LABEL[adminProfileStatus(p)] ?? p.status}</span>
                   </td>
                   <td className="px-2 py-2 text-right">
-                    <Link to="/admin/profiles/$id" params={{ id: p.id }} className="text-primary underline text-xs">Voir</Link>
+                    <Link to="/admin/profiles/$id" params={{ id: p.id }} onMouseEnter={() => prefetch(p.id)} onTouchStart={() => prefetch(p.id)} onFocus={() => prefetch(p.id)} className="text-primary underline text-xs">Voir</Link>
                   </td>
                 </tr>
                 );

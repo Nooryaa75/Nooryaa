@@ -7,7 +7,7 @@ import { wantsChildrenLabel } from "@/lib/wants-children";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS, GENDER_LABELS } from "@/lib/profile";
-import { frenchPlace, PROFILE_STATUS_LABELS, REPORT_STATUS_LABELS } from "@/lib/admin-display";
+import { frenchPlace, PROFILE_STATUS_LABELS, REPORT_STATUS_LABELS, adminProfileStatus } from "@/lib/admin-display";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { ArrowLeft, ShieldOff, ShieldCheck, Trash2, Ban, AlertOctagon, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,7 +32,21 @@ function AdminProfileDetail() {
   const setStatus = useServerFn(adminUpdateStatus);
   const del = useServerFn(adminDeleteProfile);
 
-  const { data } = useQuery({ queryKey: ["admin-profile", id], queryFn: () => get({ data: { id } }) });
+  // Affiche tout de suite la fiche avec la ligne déjà chargée dans la liste,
+  // puis complète photos et signalements dès qu'ils arrivent.
+  const listRow = () => {
+    for (const [, list] of qc.getQueriesData<any>({ queryKey: ["admin-profiles"] })) {
+      const row = list?.rows?.find((r: any) => r.id === id);
+      if (row) return { profile: row, photos: [], chatWarnings: 0, chatBlocked: 0, reportsAgainst: [], reportsBy: [] };
+    }
+    return undefined;
+  };
+  const { data, isPlaceholderData: partial } = useQuery({
+    queryKey: ["admin-profile", id],
+    queryFn: () => get({ data: { id } }),
+    placeholderData: listRow,
+    staleTime: 30_000,
+  });
   const selfieQuery = useQuery({ queryKey: ["admin-profile-selfies", id], queryFn: () => getSelfies({ data: { id } }), staleTime: 5 * 60 * 1000 });
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [selfieIndex, setSelfieIndex] = useState<number | null>(null);
@@ -71,7 +85,7 @@ function AdminProfileDetail() {
             <div>
               <h1 className="text-3xl font-serif text-primary">{p.pseudo}</h1>
               <p className="text-xs text-muted-foreground mt-1">ID : {p.id}</p>
-              <p className="text-sm text-muted-foreground">Statut : <strong>{PROFILE_STATUS_LABELS[p.status] ?? p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
+              <p className="text-sm text-muted-foreground">Statut : <strong>{PROFILE_STATUS_LABELS[adminProfileStatus(p as any)] ?? p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {p.status !== "active" && (
@@ -160,7 +174,7 @@ function AdminProfileDetail() {
                 </span>
               </button>
             ))}
-            {data.photos.length === 0 && <p className="text-sm text-muted-foreground">Aucune photo</p>}
+            {data.photos.length === 0 && <p className="text-sm text-muted-foreground" role="status">{partial ? "Chargement des photos…" : "Aucune photo"}</p>}
           </div>
         </div>
 
@@ -227,7 +241,7 @@ function AdminProfileDetail() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <Block title={`Signalements reçus (${data.reportsAgainst.length})`} accent="text-destructive" icon={AlertOctagon}>
-            {data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (
+            {partial ? <Empty>Chargement…</Empty> : data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (
               <ul className="space-y-2 text-sm">
                 {data.reportsAgainst.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
@@ -239,7 +253,7 @@ function AdminProfileDetail() {
             )}
           </Block>
           <Block title={`Signalements émis (${data.reportsBy.length})`}>
-            {data.reportsBy.length === 0 ? <Empty>Aucun</Empty> : (
+            {partial ? <Empty>Chargement…</Empty> : data.reportsBy.length === 0 ? <Empty>Aucun</Empty> : (
               <ul className="space-y-2 text-sm">
                 {data.reportsBy.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
@@ -252,14 +266,14 @@ function AdminProfileDetail() {
           </Block>
           <Block title="Avertissements dans le chat" accent={data.chatWarnings > 0 ? "text-amber-600" : undefined}>
             <p className="text-sm text-muted-foreground">
-              {data.chatWarnings === 0
+              {partial ? "Chargement…" : data.chatWarnings === 0
                 ? "Aucun avertissement."
                 : `${data.chatWarnings} message${data.chatWarnings > 1 ? "s" : ""} ou vocal${data.chatWarnings > 1 ? "aux" : ""} signalé${data.chatWarnings > 1 ? "s" : ""} par la modération.`}
             </p>
           </Block>
           <Block title="Messages bloqués dans le chat" accent={data.chatBlocked > 0 ? "text-destructive" : undefined}>
             <p className="text-sm text-muted-foreground">
-              {data.chatBlocked === 0
+              {partial ? "Chargement…" : data.chatBlocked === 0
                 ? "Aucun message bloqué."
                 : `${data.chatBlocked} message${data.chatBlocked > 1 ? "s" : ""} ou vocal${data.chatBlocked > 1 ? "aux" : ""} bloqué${data.chatBlocked > 1 ? "s" : ""} par la modération.`}
             </p>

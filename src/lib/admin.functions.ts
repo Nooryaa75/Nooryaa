@@ -30,11 +30,30 @@ const adminCheckAuthServer = createServerFn({ method: "GET" }).handler(async () 
   return { authed: !!identity, email: identity?.email ?? null, via: identity?.via ?? null };
 });
 
+// Mémorise côté navigateur un accès admin confirmé pendant quelques minutes :
+// passer d'une page admin à l'autre n'attend plus le serveur. Chaque lecture
+// de données reste protégée par requireAdminOrThrow côté serveur.
+const ADMIN_AUTH_CACHE_MS = 3 * 60 * 1000;
+let adminAuthCache: { at: number; value: { authed: boolean; email: string | null; via: string | null } } | null = null;
+
+export function clearAdminAuthCache() {
+  adminAuthCache = null;
+}
+
 /**
  * Vérifie l'accès admin en réessayant : juste après une connexion, la session
  * peut ne pas encore être disponible ou le réseau peut couper une requête.
  */
 export async function adminCheckAuth() {
+  if (typeof window !== "undefined" && adminAuthCache && Date.now() - adminAuthCache.at < ADMIN_AUTH_CACHE_MS) {
+    return adminAuthCache.value;
+  }
+  const result = await adminCheckAuthUncached();
+  if (typeof window !== "undefined") adminAuthCache = result.authed ? { at: Date.now(), value: result } : null;
+  return result;
+}
+
+async function adminCheckAuthUncached() {
   let last = { authed: false, email: null as string | null, via: null as string | null };
   for (let i = 0; i < 4; i++) {
     try {
@@ -152,7 +171,9 @@ export const adminListProfiles = createServerFn({ method: "GET" })
       const term = `%${data.q.trim()}%`;
       q = q.or(`pseudo.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
     }
-    if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.status === "active") q = q.eq("status", "active").eq("photo_verified", true);
+    else if (data.status === "inactive") q = q.eq("status", "active").eq("photo_verified", false);
+    else if (data.status && data.status !== "all") q = q.eq("status", data.status);
     if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
     if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
     if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());

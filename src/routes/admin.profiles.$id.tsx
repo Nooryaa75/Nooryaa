@@ -273,7 +273,7 @@ function AdminProfileDetail() {
           </Block>
           <Block title="Messages bloqués dans le chat" accent={data.chatBlocked > 0 ? "text-destructive" : undefined}>
             <p className="text-sm text-muted-foreground">
-              {data.chatBlocked === 0
+              {partial ? "Chargement…" : data.chatBlocked === 0
                 ? "Aucun message bloqué."
                 : `${data.chatBlocked} message${data.chatBlocked > 1 ? "s" : ""} ou vocal${data.chatBlocked > 1 ? "aux" : ""} bloqué${data.chatBlocked > 1 ? "s" : ""} par la modération.`}
             </p>

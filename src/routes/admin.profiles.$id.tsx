@@ -241,7 +241,7 @@ function AdminProfileDetail() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <Block title={`Signalements reçus (${data.reportsAgainst.length})`} accent="text-destructive" icon={AlertOctagon}>
-            {data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (
+            {partial ? <Empty>Chargement…</Empty> : data.reportsAgainst.length === 0 ? <Empty>Aucun signalement</Empty> : (
               <ul className="space-y-2 text-sm">
                 {data.reportsAgainst.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
@@ -253,7 +253,7 @@ function AdminProfileDetail() {
             )}
           </Block>
           <Block title={`Signalements émis (${data.reportsBy.length})`}>
-            {data.reportsBy.length === 0 ? <Empty>Aucun</Empty> : (
+            {partial ? <Empty>Chargement…</Empty> : data.reportsBy.length === 0 ? <Empty>Aucun</Empty> : (
               <ul className="space-y-2 text-sm">
                 {data.reportsBy.map((r: any) => (
                   <li key={r.id} className="border-b border-border/60 pb-2 last:border-0">
@@ -266,7 +266,7 @@ function AdminProfileDetail() {
           </Block>
           <Block title="Avertissements dans le chat" accent={data.chatWarnings > 0 ? "text-amber-600" : undefined}>
             <p className="text-sm text-muted-foreground">
-              {data.chatWarnings === 0
+              {partial ? "Chargement…" : data.chatWarnings === 0
                 ? "Aucun avertissement."
                 : `${data.chatWarnings} message${data.chatWarnings > 1 ? "s" : ""} ou vocal${data.chatWarnings > 1 ? "aux" : ""} signalé${data.chatWarnings > 1 ? "s" : ""} par la modération.`}
             </p>

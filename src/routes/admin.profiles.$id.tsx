@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-ro
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { adminCheckAuth, adminGetProfile, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
+import { adminCheckAuth, adminGetProfile, adminGetProfileSelfies, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
 import { wantsChildrenLabel } from "@/lib/wants-children";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
@@ -28,10 +28,12 @@ function AdminProfileDetail() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const get = useServerFn(adminGetProfile);
+  const getSelfies = useServerFn(adminGetProfileSelfies);
   const setStatus = useServerFn(adminUpdateStatus);
   const del = useServerFn(adminDeleteProfile);
 
   const { data } = useQuery({ queryKey: ["admin-profile", id], queryFn: () => get({ data: { id } }) });
+  const selfieQuery = useQuery({ queryKey: ["admin-profile-selfies", id], queryFn: () => getSelfies({ data: { id } }), staleTime: 5 * 60 * 1000 });
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [selfieIndex, setSelfieIndex] = useState<number | null>(null);
 
@@ -56,7 +58,7 @@ function AdminProfileDetail() {
   );
 
   const p = data.profile;
-  const selfies = data.verificationSelfies ?? [];
+  const selfies = selfieQuery.data?.verificationSelfies ?? [];
 
   return (
     <div className="min-h-screen mosaic-soft">
@@ -164,7 +166,14 @@ function AdminProfileDetail() {
 
         <div className="bg-card rounded-2xl p-6 border border-border/60">
           <h2 className="font-serif text-primary mb-3">Photo de vérification (selfie)</h2>
-          {selfies.length > 0 ? (
+          {selfieQuery.isPending ? (
+            <p className="text-sm text-muted-foreground" role="status">Chargement des selfies…</p>
+          ) : selfieQuery.isError ? (
+            <div className="space-y-2">
+              <p className="text-sm text-destructive">Impossible de charger les selfies.</p>
+              <Button variant="outline" size="sm" onClick={() => selfieQuery.refetch()}>Réessayer</Button>
+            </div>
+          ) : selfies.length > 0 ? (
             <div className="flex flex-wrap gap-3">
               {selfies.map((s, i) => (
                 <figure key={s.url} className="w-32">

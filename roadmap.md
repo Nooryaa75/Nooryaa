@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Accélérer l’ouverture des profils administrateur : supprimer les lectures inutilisées, charger les selfies séparément et vérifier une vraie fiche.
+- [x] Accélérer l’ouverture des profils administrateur : lectures inutilisées supprimées, compteurs exacts et selfies chargés séparément ; vraie fiche ouverte avec session admin (1,2 s contre 1,73 s avant), partie selfies chargée, aucune alerte et compilation OK. Publication non demandée.
 
 - [x] Trouvaille du suivi du projet « chaque changement de page vide l'écran » mise en mode ouvert puis corrigée : l'écran « Chargement » ne s'affiche plus que tant que le membre n'a pas été vérifié une fois, les contrôles suivants se font en arrière-plan (deck, chat et position de défilement conservés) ; 3 tests réussis, compilation et types vérifiés, navigation contrôlée sans erreur console. Reste à publier le site ; le parcours entre deux pages membres n'a pas pu être parcouru ici (connexion membre refusée).
 

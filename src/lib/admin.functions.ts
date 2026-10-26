@@ -171,7 +171,9 @@ export const adminListProfiles = createServerFn({ method: "GET" })
       const term = `%${data.q.trim()}%`;
       q = q.or(`pseudo.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
     }
-    if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.status === "active") q = q.eq("status", "active").eq("photo_verified", true);
+    else if (data.status === "inactive") q = q.eq("status", "active").eq("photo_verified", false);
+    else if (data.status && data.status !== "all") q = q.eq("status", data.status);
     if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
     if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
     if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
@@ -283,7 +285,9 @@ export const adminListReports = createServerFn({ method: "GET" })
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin.from("reports").select("*").order("created_at", { ascending: false }).limit(200);
-    if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.status === "active") q = q.eq("status", "active").eq("photo_verified", true);
+    else if (data.status === "inactive") q = q.eq("status", "active").eq("photo_verified", false);
+    else if (data.status && data.status !== "all") q = q.eq("status", data.status);
     const { data: rows } = await q;
     const ids = new Set<string>();
     (rows ?? []).forEach((r) => { ids.add(r.reporter); ids.add(r.reported); });

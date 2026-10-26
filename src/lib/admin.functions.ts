@@ -285,9 +285,7 @@ export const adminListReports = createServerFn({ method: "GET" })
     await requireAdminOrThrow();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin.from("reports").select("*").order("created_at", { ascending: false }).limit(200);
-    if (data.status === "active") q = q.eq("status", "active").eq("photo_verified", true);
-    else if (data.status === "inactive") q = q.eq("status", "active").eq("photo_verified", false);
-    else if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.status && data.status !== "all") q = q.eq("status", data.status);
     const { data: rows } = await q;
     const ids = new Set<string>();
     (rows ?? []).forEach((r) => { ids.add(r.reporter); ids.add(r.reported); });

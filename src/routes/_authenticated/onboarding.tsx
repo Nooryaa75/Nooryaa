@@ -222,8 +222,9 @@ function Onboarding() {
     if (selfieRequired && !form.photo_verified) {
       // La vérification a pu aboutir après le chargement du formulaire : on relit l'état réel.
       const { data: fresh } = await supabase
-        .from("profiles").select("photo_verified").eq("id", ctx.userId).maybeSingle();
-      if (!(fresh as any)?.photo_verified) {
+        .from("profiles").select("photo_verified, photo_verification_status").eq("id", ctx.userId).maybeSingle();
+      // « pending » = selfie reçu mais vérification impossible (panne) : contrôle admin, inscription non bloquée.
+      if (!(fresh as any)?.photo_verified && (fresh as any)?.photo_verification_status !== "pending") {
         setExtraError("Vérification par selfie obligatoire");
         errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         return;

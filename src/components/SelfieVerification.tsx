@@ -51,6 +51,9 @@ export function SelfieVerification({
       if (res.verdict === "verified") {
         toast.success(translateText(res.reason || "Photo vérifiée ✅", getStoredLocale()));
         onVerified?.();
+      } else if (res.technical) {
+        toast.success(translateText("Selfie reçu ✅ Notre équipe le vérifiera, vous pouvez continuer.", getStoredLocale()));
+        onVerified?.();
       } else if (res.verdict === "rejected") toast.error(translateText(res.reason || "Vérification refusée", getStoredLocale()));
       else toast.warning(translateText(res.reason || "Vérification à confirmer", getStoredLocale()));
       await qc.invalidateQueries({ queryKey: ["me", userId] });

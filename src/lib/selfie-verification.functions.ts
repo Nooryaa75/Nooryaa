@@ -116,6 +116,29 @@ async function keepVerificationSelfie(userId: string, dataUrl: string) {
 
 
 
+/**
+ * Panne technique (photos illisibles, service indisponible) : le membre n'est
+ * jamais bloqué. Sa vérification passe « en attente » (contrôle admin) et
+ * l'inscription peut se terminer ; l'admin voit le selfie et peut valider.
+ */
+async function technicalPending(userId: string, r: SelfieVerificationResult): Promise<SelfieVerificationResult> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("profiles").update({ photo_verification_status: "pending" }).eq("id", userId).eq("photo_verified", false);
+    await supabaseAdmin.from("moderation_events").insert({
+      user_id: userId,
+      content: "Vérification selfie non effectuée (problème technique) — selfie à contrôler",
+      verdict: "warn",
+      categories: ["selfie_verification"],
+      reason: r.reason,
+      source: "photo",
+    });
+  } catch (e) {
+    console.error("selfie-verification: échec mise en attente", e);
+  }
+  return { ...r, technical: true } as SelfieVerificationResult;
+}
+
 export const verifySelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { selfieDataUrl: string; locale?: string }) => ({
@@ -169,24 +192,24 @@ export const verifySelfie = createServerFn({ method: "POST" })
     ).slice(0, 2);
 
     if (paths.length === 0) {
-      return {
+      return await technicalPending(userId, {
         verdict: "review",
         single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Ajoutez d'abord vos photos de profil avant de lancer la vérification.",
-      };
+      });
     }
 
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) {
-      return {
+      return await technicalPending(userId, {
         verdict: "review",
         single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Vérification indisponible pour le moment, réessayez plus tard.",
-      };
+      });
     }
 
     // Les photos de profil sont téléchargées depuis le stockage puis converties en
@@ -196,13 +219,13 @@ export const verifySelfie = createServerFn({ method: "POST" })
     );
 
     if (profileImages.length === 0) {
-      return {
+      return await technicalPending(userId, {
         verdict: "review",
         single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Vos photos de profil n'ont pas pu être chargées. Réessayez dans un instant.",
-      };
+      });
     }
 
 
@@ -272,13 +295,13 @@ export const verifySelfie = createServerFn({ method: "POST" })
     }
 
     if (gatewayFailed) {
-      return {
+      return await technicalPending(userId, {
         verdict: "review",
         single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
         reason: "Le service de vérification n'a pas répondu. Merci de réessayer dans un instant.",
-      };
+      });
     }
 
 

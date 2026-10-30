@@ -72,7 +72,14 @@ async function downloadPhoto(path: string): Promise<string | null> {
       const buf = new Uint8Array(await res.data.arrayBuffer());
       return bytesToDataUrl(buf, res.data.type || "image/jpeg");
     }
-    console.error("selfie-verification: photo non redimensionnable", path);
+    // Repli : si le redimensionnement côté stockage est indisponible, on envoie
+    // l'original tant qu'il reste raisonnable.
+    const orig = await bucket.download(path);
+    if (!orig.error && orig.data && orig.data.size > 0 && orig.data.size <= 3_500_000) {
+      const buf = new Uint8Array(await orig.data.arrayBuffer());
+      return bytesToDataUrl(buf, orig.data.type || "image/jpeg");
+    }
+    console.error("selfie-verification: photo non redimensionnable", path, orig.error);
     return null;
   } catch (e) {
     console.error("selfie-verification: échec téléchargement photo", path, e);

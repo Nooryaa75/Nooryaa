@@ -5,6 +5,8 @@ import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 export type SelfieVerdict = "verified" | "review" | "rejected";
 
 export type SelfieVerificationResult = {
+  /** Panne technique : vérification en attente de contrôle admin, inscription non bloquée. */
+  technical?: boolean;
   verdict: SelfieVerdict;
   single_face: "yes" | "no" | "unknown";
   same_person: "yes" | "maybe" | "no" | "unknown";
@@ -136,7 +138,7 @@ async function technicalPending(userId: string, r: SelfieVerificationResult): Pr
   } catch (e) {
     console.error("selfie-verification: échec mise en attente", e);
   }
-  return { ...r, technical: true } as SelfieVerificationResult;
+  return { ...r, technical: true };
 }
 
 export const verifySelfie = createServerFn({ method: "POST" })

@@ -6,6 +6,7 @@ import { registerPushNotifications } from "@/lib/push";
 import { PushPermissionNotice } from "@/components/PushPermissionNotice";
 import { isValidPhone } from "@/components/PhoneInput";
 import { onboardingDestination, showAccessGate } from "@/lib/onboarding-access";
+import { registrationComplete } from "@/lib/registration-requirements";
 
 
 export const Route = createFileRoute("/_authenticated")({
@@ -37,13 +38,14 @@ function AuthenticatedLayout() {
         return;
       }
 
-      const [{ data: profile }, { data: roles }] = await Promise.all([
+      const [{ data: profile }, { data: roles }, { count: photoCount }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("onboarded, phone")
+          .select("*")
           .eq("id", userId)
           .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin"),
+        supabase.from("photos").select("id", { count: "exact", head: true }).eq("user_id", userId),
       ]);
       if (cancelled) return;
 
@@ -53,15 +55,9 @@ function AuthenticatedLayout() {
         return;
       }
 
-      // Profil terminé mais sans téléphone valide (anciens inscrits ou
-      // inscription Google/Apple) : on renvoie vers la fiche pour compléter.
-      // Le prénom et le nom ne sont plus demandés dans la fiche.
-      const p = profile as any;
-      const missingIdentity =
-        !!p?.onboarded && !(roles && roles.length > 0) &&
-        !isValidPhone(p.phone ?? "");
-
-      const destination = onboardingDestination(!profile?.onboarded || missingIdentity, pathname);
+      // Un selfie validé ou un ancien drapeau onboarded ne remplacent pas les réponses obligatoires.
+      const complete = registrationComplete(profile, photoCount ?? 0, isValidPhone(profile?.phone ?? ""));
+      const destination = onboardingDestination(!complete && !(roles && roles.length > 0), pathname);
       if (destination) {
         await navigate({ to: destination, replace: true });
         return;

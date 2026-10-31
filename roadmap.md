@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Contrôler les inscriptions user_ff2c0d62d4 et Fatima83 : deux fiches réellement incomplètes, pays affiché France sans être enregistré et réponses complémentaires sauvegardées seulement à la fin. Choix explicite de résidence et lieu où la personne a grandi obligatoires, sauvegarde avant chaque page suivante et contrôle de toutes les réponses à l'accès membre ; 21 tests réussis, vraies fiches consultées sans modification, parcours guidé vérifié jusqu'à la création du compte. Connexion Google/Apple et reprise des questions avec ces membres non testées ; publication reste nécessaire.
+
 - [x] Accélérer l’ouverture des profils administrateur : lectures inutilisées supprimées, compteurs exacts et selfies chargés séparément ; vraie fiche ouverte avec session admin (1,2 s contre 1,73 s avant), partie selfies chargée, aucune alerte et compilation OK. Publication non demandée.
 
 - [x] Trouvaille du suivi du projet « chaque changement de page vide l'écran » mise en mode ouvert puis corrigée : l'écran « Chargement » ne s'affiche plus que tant que le membre n'a pas été vérifié une fois, les contrôles suivants se font en arrière-plan (deck, chat et position de défilement conservés) ; 3 tests réussis, compilation et types vérifiés, navigation contrôlée sans erreur console. Reste à publier le site ; le parcours entre deux pages membres n'a pas pu être parcouru ici (connexion membre refusée).

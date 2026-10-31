@@ -241,7 +241,7 @@ function InscriptionWizard() {
             </div>
             <Button
               className="w-full rounded-full" size="lg"
-              disabled={(answers.origins ?? []).length === 0}
+              disabled={(answers.origins ?? []).length === 0 || !answers.grewUp?.trim()}
               onClick={goNext}
             >
               {t("Suivant")}
@@ -291,7 +291,7 @@ function InscriptionWizard() {
             </div>
             <div>
               <Label>{t("Pays de résidence")}</Label>
-              <Select value={answers.country ?? "France"} onValueChange={(country) => update({ country })}>
+              <Select value={answers.country ?? ""} onValueChange={(country) => update({ country })}>
                 <SelectTrigger><SelectValue placeholder={t("Choisir")} /></SelectTrigger>
                 <SelectContent>
                   {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -300,7 +300,7 @@ function InscriptionWizard() {
             </div>
             <Button
               className="w-full rounded-full" size="lg"
-              disabled={!(answers.city ?? "").trim()}
+              disabled={!(answers.city ?? "").trim() || !answers.country?.trim()}
               onClick={goNext}
             >
               {t("Suivant")}

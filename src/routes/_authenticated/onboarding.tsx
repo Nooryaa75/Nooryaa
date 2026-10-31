@@ -22,7 +22,7 @@ import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 import { registrationChecks } from "@/lib/registration-requirements";
 import { loadPresignup, clearPresignup, hasPresignup, presignupProfilePatch } from "@/lib/presignup";
-import { wantsChildrenAnswered, wantsChildrenChoice } from "@/lib/wants-children";
+import { wantsChildrenChoice } from "@/lib/wants-children";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({

@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Contrôler les inscriptions user_ff2c0d62d4 et Fatima83 : choix explicite de résidence et lieu où la personne a grandi, réponses enregistrées entre les pages et accès réservé aux fiches réellement complètes.
+- [x] Contrôler les inscriptions user_ff2c0d62d4 et Fatima83 : deux fiches réellement incomplètes, pays affiché France sans être enregistré et réponses complémentaires sauvegardées seulement à la fin. Choix explicite de résidence et lieu où la personne a grandi obligatoires, sauvegarde avant chaque page suivante et contrôle de toutes les réponses à l'accès membre ; 21 tests réussis, vraies fiches consultées sans modification, parcours guidé vérifié jusqu'à la création du compte. Connexion Google/Apple et reprise des questions avec ces membres non testées ; publication reste nécessaire.
 
 - [x] Accélérer l’ouverture des profils administrateur : lectures inutilisées supprimées, compteurs exacts et selfies chargés séparément ; vraie fiche ouverte avec session admin (1,2 s contre 1,73 s avant), partie selfies chargée, aucune alerte et compilation OK. Publication non demandée.
 

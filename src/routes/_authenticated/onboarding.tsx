@@ -90,6 +90,8 @@ function Onboarding() {
     return checks().filter(([s, , ok]) => s <= upTo && !ok).map(([, l]) => l);
   }
   const missingFields = attempted ? computeMissing(step) : [];
+  // « Suivant » reste inactif tant que la page courante n'est pas entièrement renseignée.
+  const stepComplete = ready && computeMissing(step).length === 0;
 
   function scrollTop() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
@@ -468,7 +470,7 @@ function Onboarding() {
             </Button>
           )}
           {step < STEPS.length - 1 ? (
-            <Button type="button" disabled={!ready || loading} size="lg" className="flex-1 rounded-full" onClick={goNext}>
+            <Button type="button" disabled={!ready || loading || !stepComplete} size="lg" className="flex-1 rounded-full" onClick={goNext}>
               {t("Suivant")}
             </Button>
           ) : (

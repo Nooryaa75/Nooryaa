@@ -19,15 +19,18 @@ describe("statut admin des profils", () => {
     assert.equal(PROFILE_STATUS_LABELS[adminProfileStatus(entered, 1)], "Entré");
   });
   it("fiche incomplète → Pas encore entré", () => {
-    assert.equal(PROFILE_STATUS_LABELS[adminProfileStatus({ ...entered, bio: null }, 1)], "Pas encore entré");
+    assert.equal(PROFILE_STATUS_LABELS[adminProfileStatus({ ...entered, onboarded: false, bio: null }, 1)], "Pas encore entré");
   });
   it("selfie validé mais fiche incomplète → Pas encore entré", () => {
-    assert.equal(adminProfileStatus({ ...entered, height_cm: null, marital_status: null }, 1), "inactive");
+    assert.equal(adminProfileStatus({ ...entered, onboarded: false, height_cm: null, marital_status: null }, 1), "inactive");
   });
   it("sans photo → Pas encore entré", () => {
-    assert.equal(adminProfileStatus(entered, 0), "inactive");
+    assert.equal(adminProfileStatus({ ...entered, onboarded: false }, 0), "inactive");
   });
   it("suspendu reste Suspendu même entré", () => {
     assert.equal(adminProfileStatus({ ...entered, status: "suspended" }, 1), "suspended");
+  });
+  it("compte ancien déjà marqué onboarded → Entré même si la fiche est incomplète", () => {
+    assert.equal(adminProfileStatus({ status: "active", onboarded: true, pseudo: "Fatima83" }, 0), "active");
   });
 });

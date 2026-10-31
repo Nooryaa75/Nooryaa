@@ -29,15 +29,17 @@ export const PROFILE_STATUS_LABELS: Record<string, string> = {
 };
 
 /**
- * Statut affiché dans l'administration : « Entré » signifie que le membre a
- * terminé son inscription et est réellement entré dans la plateforme (fiche
- * complète, téléphone valide, au moins une photo). La pastille verte, elle,
- * indique uniquement le selfie vérifié. Suspendu et Banni restent
- * prioritaires. Ne modifie pas le statut enregistré.
+ * Statut affiché dans l'administration : « Entré » signifie que le membre est
+ * réellement entré dans la plateforme — inscription terminée (fiche complète,
+ * téléphone valide, au moins une photo) ou compte ancien déjà marqué comme
+ * ayant fini l'inscription (onboarded). La pastille verte, elle, indique
+ * uniquement le selfie vérifié. Suspendu et Banni restent prioritaires.
+ * Ne modifie pas le statut enregistré.
  */
 export function adminProfileStatus(p: Record<string, unknown>, photoCount = 0): string {
   const s = (p.status as string | null | undefined) ?? "active";
   if (s !== "active") return s;
+  if (p.onboarded === true) return "active";
   return registrationComplete(p, photoCount, isValidPhone(p.phone as string | null)) ? "active" : "inactive";
 }
 

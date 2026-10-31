@@ -83,8 +83,8 @@ function AdminProfilesList() {
               <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="active">Actifs (vérifiés)</SelectItem>
-                <SelectItem value="inactive">Non actifs (non vérifiés)</SelectItem>
+                <SelectItem value="active">Entrés dans la plateforme</SelectItem>
+                <SelectItem value="inactive">Pas encore entrés</SelectItem>
                 <SelectItem value="suspended">Suspendus</SelectItem>
                 <SelectItem value="banned">Bannis</SelectItem>
               </SelectContent>
@@ -171,7 +171,7 @@ function AdminProfilesList() {
                   <td className="px-2 py-2 whitespace-nowrap tabular-nums">{ageFromBirthdate(p.birthdate) ?? "—"}</td>
                   <td className="px-2 py-2 whitespace-nowrap text-muted-foreground">{p.created_at ? new Date(p.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"}</td>
                   <td className="px-2 py-2">
-                    <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[adminProfileStatus(p)] ?? ""}`}>{STATUS_LABEL[adminProfileStatus(p)] ?? p.status}</span>
+                    <span className={`block truncate text-center text-xs px-1 py-0.5 rounded-full ${STATUS_CLASS[adminProfileStatus(p, data.photoCounts?.[p.id] ?? 0)] ?? ""}`}>{STATUS_LABEL[adminProfileStatus(p, data.photoCounts?.[p.id] ?? 0)] ?? p.status}</span>
                   </td>
                   <td className="px-2 py-2 text-right">
                     <Link to="/admin/profiles/$id" params={{ id: p.id }} onMouseEnter={() => prefetch(p.id)} onTouchStart={() => prefetch(p.id)} onFocus={() => prefetch(p.id)} className="text-primary underline text-xs">Voir</Link>

@@ -47,3 +47,17 @@ test("photo et téléphone restent obligatoires", () => {
   assert.equal(registrationComplete(complete, 1, false), false);
   assert.equal(registrationComplete(complete, 1, true), true);
 });
+test("le bouton Suivant ne s'active que si toutes les questions de la page sont remplies", () => {
+  const stepOk = (p: object, step: number) =>
+    registrationChecks(p).filter(([s]) => s === step).every(([, , ok]) => ok);
+  assert.equal(stepOk(complete, 0), true);
+  assert.equal(stepOk(complete, 1), true);
+  assert.equal(stepOk(complete, 2), true);
+  assert.equal(stepOk({ ...complete, height_cm: null }, 0), false);
+  assert.equal(stepOk({ ...complete, ramadan: null }, 1), false);
+  assert.equal(stepOk({ ...complete, objective: "" }, 2), false);
+  assert.equal(stepOk({ ...complete, bio: "trop court" }, 2), false);
+  // Une page complète ne débloque pas les suivantes : chaque page est contrôlée seule.
+  assert.equal(stepOk({ ...complete, salat_quotidienne: null }, 1), false);
+  assert.equal(stepOk({ ...complete, salat_quotidienne: null }, 0), true);
+});

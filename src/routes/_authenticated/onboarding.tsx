@@ -20,7 +20,7 @@ import { frenchError } from "@/lib/errors";
 import { useI18n } from "@/lib/i18n";
 import { OpenInAppButton } from "@/components/OpenInAppButton";
 import { BirthdateCalendar } from "@/components/BirthdateCalendar";
-import { practiceChecks } from "@/lib/onboarding-practice";
+import { registrationChecks } from "@/lib/registration-requirements";
 import { loadPresignup, clearPresignup, hasPresignup, presignupProfilePatch } from "@/lib/presignup";
 import { wantsChildrenAnswered, wantsChildrenChoice } from "@/lib/wants-children";
 
@@ -48,7 +48,8 @@ function Onboarding() {
     birthdate: "",
     phone: "",
     city: "",
-    country: "France",
+    country: "",
+    grew_up: "",
     countries_origin: [] as string[],
     marital_status: "" as "celibataire" | "divorce" | "veuf" | "",
     height_cm: "",
@@ -66,6 +67,7 @@ function Onboarding() {
     photo_verified: false,
   });
   const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
   const [extraError, setExtraError] = useState<string | null>(null);
@@ -79,21 +81,9 @@ function Onboarding() {
 
   function checks(): [number, string, boolean][] {
     return [
-      [0, t("Pseudo"), !!form.pseudo.trim()],
-      [0, t("Téléphone (numéro valide)"), lockedPhone || isValidPhone(form.phone)],
-      [0, t("Je suis"), !!form.gender],
-      [0, t("Date de naissance"), !!form.birthdate],
-      [0, t("Situation"), !!form.marital_status],
-      [0, t("Avez-vous des enfants ?"), form.has_children !== null],
-      [0, t("Combien d'enfants ?"), form.has_children !== true || Number(form.children_count) >= 1],
-      [0, t("Voulez-vous des enfants ?"), wantsChildrenAnswered(form.wants_children)],
-      [0, t("Taille (en cm)"), Number(form.height_cm) >= 120 && Number(form.height_cm) <= 230],
-      [0, t("Ville de résidence"), !!form.city],
-      [0, t("Pays de résidence"), !!form.country],
-      [0, t("Pays d'origine"), form.countries_origin.length > 0],
-      ...practiceChecks(form).map(([label, ok]) => [1, t(label), ok] as [number, string, boolean]),
-      [2, t("Mon objectif sur Nooryaa"), !!form.objective],
-      [2, t("À propos de vous (30 à 500 caractères)"), form.bio.length >= 30 && form.bio.length <= 500],
+      [0, t("Téléphone (numéro valide)"), isValidPhone(form.phone)],
+      ...registrationChecks({ ...form, wants_children_answer: form.wants_children })
+        .map(([s, label, ok]) => [s, t(label), ok] as [number, string, boolean]),
     ];
   }
   function computeMissing(upTo = 3): string[] {
@@ -105,12 +95,14 @@ function Onboarding() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
   async function goNext() {
+    if (!ready || loading) return;
     setAttempted(true);
     if (step === 0 && !(await checkPseudo(form.pseudo))) { scrollTop(); return; }
     if (step === 0 && form.birthdate && !isAdult(form.birthdate)) {
       toast.error("Vous devez avoir au moins 18 ans pour vous inscrire."); return;
     }
     if (computeMissing(step).length > 0) { scrollTop(); return; }
+    if (!(await saveProgress(false))) return;
     setAttempted(false);
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
     scrollTop();
@@ -171,6 +163,7 @@ function Onboarding() {
           birthdate: (data as any)?.birthdate || pre.birthdate || f.birthdate,
           city: (data as any)?.city || pre.city || f.city,
           country: (data as any)?.country || pre.country || f.country,
+          grew_up: data?.grew_up || pre.grewUp || f.grew_up,
           countries_origin: origins,
           marital_status: data?.marital_status || f.marital_status,
           has_children: (data as any)?.has_children ?? f.has_children,
@@ -194,6 +187,7 @@ function Onboarding() {
               : {}),
         };
       });
+      setReady(true);
     });
   }, [ctx.userId, navigate]);
 
@@ -208,8 +202,35 @@ function Onboarding() {
     return true;
   }
 
+  async function saveProgress(complete: boolean) {
+    setLoading(true);
+    const { error } = await supabase.from("profiles").update(profilePayload(complete) as any).eq("id", ctx.userId);
+    setLoading(false);
+    if (error) { toast.error(frenchError(error, "L'enregistrement a échoué.")); return false; }
+    return true;
+  }
+
+  function profilePayload(complete: boolean) {
+    return {
+      pseudo: form.pseudo.trim(), gender: form.gender,
+      looking_for: form.gender === "homme" ? "femme" : "homme",
+      birthdate: form.birthdate, phone: form.phone || null,
+      city: form.city || null, country: form.country || null, grew_up: form.grew_up || null,
+      latitude: (form as any).latitude ?? null, longitude: (form as any).longitude ?? null,
+      country_origin: form.countries_origin[0] || null,
+      countries_origin: form.countries_origin.length ? form.countries_origin : null,
+      marital_status: form.marital_status || null, height_cm: form.height_cm ? Number(form.height_cm) : null,
+      has_children: form.has_children, children_count: form.has_children ? Number(form.children_count) || null : null,
+      wants_children_answer: wantsChildrenChoice(form.wants_children) || null,
+      salat_quotidienne: form.salat_quotidienne, ramadan: form.ramadan, hadj: form.hadj, omra: form.omra,
+      porte_voile: form.gender === "femme" ? form.porte_voile : null,
+      objective: form.objective || null, bio: form.bio || null, onboarded: complete,
+    };
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!ready || loading) return;
     if (step < STEPS.length - 1) { await goNext(); return; }
     setAttempted(true);
     if (!(await checkPseudo(form.pseudo))) { setStep(0); scrollTop(); return; }
@@ -237,36 +258,7 @@ function Onboarding() {
       errorBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    setLoading(true);
-    const { error } = await supabase.from("profiles").update({
-      pseudo: form.pseudo,
-      gender: form.gender as any,
-      looking_for: form.gender === "homme" ? "femme" : "homme",
-      birthdate: form.birthdate,
-      phone: form.phone || null,
-      city: form.city || null,
-      latitude: (form as any).latitude ?? null,
-      longitude: (form as any).longitude ?? null,
-      country: form.country || null,
-      country_origin: form.countries_origin[0] || null,
-      countries_origin: form.countries_origin.length > 0 ? form.countries_origin : null,
-      marital_status: form.marital_status as any,
-      height_cm: Number(form.height_cm),
-      has_children: form.has_children,
-      children_count: form.has_children ? Number(form.children_count) : null,
-      wants_children_answer: wantsChildrenChoice(form.wants_children) || null,
-      activities: form.activities || null,
-      salat_quotidienne: form.salat_quotidienne,
-      ramadan: form.ramadan,
-      hadj: form.hadj,
-      omra: form.omra,
-      porte_voile: form.gender === "femme" ? form.porte_voile : null,
-      objective: form.objective || null,
-      bio: form.bio || null,
-      onboarded: true,
-    } as any).eq("id", ctx.userId);
-    setLoading(false);
-    if (error) { toast.error(frenchError(error, "L'enregistrement a échoué.")); return; }
+    if (!(await saveProgress(true))) return;
     toast.success("Profil créé !");
     navigate({ to: "/browse" });
   }
@@ -398,6 +390,15 @@ function Onboarding() {
           />
         </div>
         )}
+        {!form.grew_up && (
+          <div>
+            <Label htmlFor="grew_up">{t("Où as-tu grandi ?")} *</Label>
+            <Select value={form.grew_up} onValueChange={(grew_up) => setForm({ ...form, grew_up })}>
+              <SelectTrigger id="grew_up"><SelectValue placeholder={t("Choisir")} /></SelectTrigger>
+              <SelectContent>{COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        )}
         </div>)}
         {step === 1 && (<div key="s1" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="pt-2">
@@ -467,11 +468,11 @@ function Onboarding() {
             </Button>
           )}
           {step < STEPS.length - 1 ? (
-            <Button type="button" size="lg" className="flex-1 rounded-full" onClick={goNext}>
+            <Button type="button" disabled={!ready || loading} size="lg" className="flex-1 rounded-full" onClick={goNext}>
               {t("Suivant")}
             </Button>
           ) : (
-            <Button type="submit" disabled={loading} size="lg" className="flex-1 rounded-full">
+            <Button type="submit" disabled={!ready || loading} size="lg" className="flex-1 rounded-full">
               {loading ? "Enregistrement..." : t("Terminer mon profil")}
             </Button>
           )}

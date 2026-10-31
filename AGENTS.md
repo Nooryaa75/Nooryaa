@@ -18,6 +18,7 @@
 - Welcome email after social authentication is mounted once at the root; the authenticated server function derives the recipient from the session and reuses the welcome sender, sent-history check and idempotency key (no duplicates web/native).
 
 - Onboarding renders and saves required profile fields only; optional details stay editable in Mon profil and are not cleared for existing members.
+- Registration requirements are shared by onboarding and member access in registration-requirements.ts; save answers before advancing each themed page, and never treat selfie verification or onboarded alone as proof of a complete registration.
 - Onboarding uses the themed Shadcn BirthdateCalendar, not device dialogs; retain age limits and date-only storage.
 - The member layout rechecks onboarding on every pathname change, but withholds the outlet only until the member is verified once in the session (showAccessGate in src/lib/onboarding-access.ts): later route changes keep the app mounted while the recheck runs in the background, so decks, chats and scroll position survive navigation; onboarding hides member navigation so links cannot bypass completion.
 

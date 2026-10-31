@@ -109,45 +109,46 @@ function AdminProfileDetail() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4 text-sm">
-            <Field label="Nom" value={p.last_name} />
-            <Field label="Prénom" value={p.first_name} />
-            <Field label="Email" value={p.email} />
-            <Field label="Téléphone" value={p.phone} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm border-t border-border/60 pt-4">
+            <Field label="Langue" value={({ fr: "Français", en: "Anglais", ar: "Arabe" } as any)[(p as any).locale] ?? (p as any).locale} />
+            <Field label="Mode d'utilisation" value={platformLabel((p as any).last_platform)} />
+            <Field label="Dernière activité" value={new Date(p.last_active).toLocaleString("fr-FR")} />
+            <Field label="Mise à jour" value={(p as any).updated_at ? new Date((p as any).updated_at).toLocaleString("fr-FR") : null} />
+          </div>
+        </div>
+
+        <ProfileSection number={1} title="Avant la validation du compte">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <Field label="Pseudo" value={p.pseudo} />
             <Field label="Sexe" value={p.gender ? GENDER_LABELS[p.gender] : null} />
             <Field label="Cherche" value={p.looking_for ? GENDER_LABELS[p.looking_for] : null} />
-            <Field label="Date de naissance" value={p.birthdate ? `${p.birthdate} (${ageFromBirthdate(p.birthdate)} ans)` : null} />
+            <Field label="Date de naissance" value={p.birthdate ? `${new Date(`${p.birthdate}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} (${ageFromBirthdate(p.birthdate)} ans)` : null} />
+            <Field label="Pays d'origine" value={Array.isArray((p as any).countries_origin) && (p as any).countries_origin.length > 0 ? (p as any).countries_origin.map((origin: string) => frenchPlace(origin)).join(", ") : frenchPlace(p.country_origin)} />
+            <Field label="A grandi à" value={frenchPlace((p as any).grew_up)} />
             <Field label="Ville" value={frenchPlace(p.city)} />
             <Field label="Pays de résidence" value={frenchPlace(p.country)} />
-            <Field label="Pays d'origine" value={frenchPlace(p.country_origin)} />
-            <Field label="Profession" value={p.profession} />
-            <Field label="Études" value={p.education_level} />
-            <Field label="Religion" value={p.religion} />
-            <Field label="Pratique" value={p.religious_practice ? PRACTICE_LABELS[p.religious_practice] : null} />
+            <Field label="Position GPS" value={(p as any).latitude != null && (p as any).longitude != null ? `${Number((p as any).latitude).toFixed(4)}, ${Number((p as any).longitude).toFixed(4)}` : null} />
+          </div>
+        </ProfileSection>
+
+        <ProfileSection number={2} title="Après validation du compte, jusqu'au selfie">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <Field label="Email" value={p.email} />
+            <Field label="Téléphone" value={p.phone} />
             <Field label="Situation" value={p.marital_status ? MARITAL_LABELS[p.marital_status] : null} />
-            <Field label="Objectif" value={p.objective} />
-            <Field label="Activités" value={p.activities} />
-            <Field label="Personnalité" value={(p as any).personality} />
             <Field label="Taille" value={(p as any).height_cm ? `${(p as any).height_cm} cm` : null} />
-            <Field label="Silhouette" value={(p as any).body_type} />
-            <Field label="A grandi à" value={frenchPlace((p as any).grew_up)} />
+            <Field label="A des enfants" value={yn((p as any).has_children)} />
+            <Field label="Nombre d'enfants" value={(p as any).children_count} />
+            <Field label="Veut des enfants" value={wantsChildrenLabel((p as any).wants_children_answer ?? (p as any).wants_children) ?? null} />
             <Field label="Salat quotidienne" value={yn((p as any).salat_quotidienne)} />
             <Field label="Ramadan" value={yn((p as any).ramadan)} />
             <Field label="Hadj" value={yn((p as any).hadj)} />
             <Field label="Omra" value={yn((p as any).omra)} />
-            <Field label="Porte le voile" value={yn((p as any).porte_voile)} />
-            <Field label="A des enfants" value={yn((p as any).has_children)} />
-            <Field label="Nombre d'enfants" value={(p as any).children_count} />
-            <Field label="Veut des enfants" value={wantsChildrenLabel((p as any).wants_children_answer ?? (p as any).wants_children) ?? null} />
-            <Field label="Fumeur" value={yn((p as any).smoker)} />
+            {p.gender === "femme" && <Field label="Porte le voile" value={yn((p as any).porte_voile)} />}
+            <Field label="Objectif" value={p.objective} />
             <Field label="Photo vérifiée" value={(p as any).photo_verified ? "Oui" : `Non (${(p as any).photo_verification_status ?? "—"})`} />
             <Field label="Photo principale floutée" value={yn((p as any).primary_photo_blurred)} />
             <Field label="Profil terminé" value={yn((p as any).onboarded)} />
-            <Field label="Langue" value={({ fr: "Français", en: "Anglais", ar: "Arabe" } as any)[(p as any).locale] ?? (p as any).locale} />
-            <Field label="Position GPS" value={(p as any).latitude != null ? `${Number((p as any).latitude).toFixed(4)}, ${Number((p as any).longitude).toFixed(4)}` : null} />
-            <Field label="Mode d'utilisation" value={platformLabel((p as any).last_platform)} />
-            <Field label="Dernière activité" value={new Date(p.last_active).toLocaleString("fr-FR")} />
-            <Field label="Mise à jour" value={(p as any).updated_at ? new Date((p as any).updated_at).toLocaleString("fr-FR") : null} />
           </div>
           {p.bio && (
             <div className="bg-secondary/40 rounded-lg p-3">
@@ -155,10 +156,8 @@ function AdminProfileDetail() {
               <p className="whitespace-pre-wrap text-sm">{p.bio}</p>
             </div>
           )}
-        </div>
-
-        <div className="bg-card rounded-2xl p-6 border border-border/60">
-          <h2 className="font-serif text-primary mb-3">Photos ({data.photos.length}/6)</h2>
+        <div className="border-t border-border/60 pt-5">
+          <h3 className="font-serif text-primary mb-3">Photos ({data.photos.length}/6)</h3>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
             {data.photos.map((ph: any, i: number) => (
               <button
@@ -178,8 +177,8 @@ function AdminProfileDetail() {
           </div>
         </div>
 
-        <div className="bg-card rounded-2xl p-6 border border-border/60">
-          <h2 className="font-serif text-primary mb-3">Photo de vérification (selfie)</h2>
+        <div className="border-t border-border/60 pt-5">
+          <h3 className="font-serif text-primary mb-3">Photo de vérification (selfie)</h3>
           {selfieQuery.isPending ? (
             <p className="text-sm text-muted-foreground" role="status">Chargement des selfies…</p>
           ) : selfieQuery.isError ? (
@@ -217,6 +216,22 @@ function AdminProfileDetail() {
             </p>
           )}
         </div>
+        </ProfileSection>
+
+        <ProfileSection number={3} title="Informations facultatives ajoutées ensuite">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <Field label="Nom" value={p.last_name} />
+            <Field label="Prénom" value={p.first_name} />
+            <Field label="Profession" value={p.profession} />
+            <Field label="Études" value={p.education_level} />
+            <Field label="Religion" value={p.religion} />
+            <Field label="Pratique" value={p.religious_practice ? PRACTICE_LABELS[p.religious_practice] : null} />
+            <Field label="Activités / centres d'intérêt" value={p.activities} />
+            <Field label="Personnalité" value={(p as any).personality} />
+            <Field label="Silhouette" value={(p as any).body_type} />
+            <Field label="Fumeur" value={yn((p as any).smoker)} />
+          </div>
+        </ProfileSection>
 
         {selfieIndex !== null && selfies.length > 0 && (
           <PhotoLightbox
@@ -284,9 +299,21 @@ function AdminProfileDetail() {
   );
 }
 
+function ProfileSection({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
+  return (
+    <section aria-labelledby={`profile-section-${number}`} className="border-t border-border/60 pt-6 space-y-5">
+      <h2 id={`profile-section-${number}`} className="flex items-center gap-3 font-serif text-xl text-primary">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-sans text-sm font-semibold">{number}</span>
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
 function Field({ label, value }: { label: string; value: any }) {
   return (
-    <div>
+    <div className="min-w-0 break-words">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="font-medium">{value ?? <span className="text-muted-foreground italic">—</span>}</div>
     </div>

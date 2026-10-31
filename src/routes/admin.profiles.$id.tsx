@@ -85,7 +85,7 @@ function AdminProfileDetail() {
             <div>
               <h1 className="text-3xl font-serif text-primary">{p.pseudo}</h1>
               <p className="text-xs text-muted-foreground mt-1">ID : {p.id}</p>
-              <p className="text-sm text-muted-foreground">Statut : <strong>{PROFILE_STATUS_LABELS[adminProfileStatus(p as any)] ?? p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
+              <p className="text-sm text-muted-foreground">Statut : <strong>{PROFILE_STATUS_LABELS[adminProfileStatus(p as any, data.photos?.length ?? 0)] ?? p.status}</strong> · Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {p.status !== "active" && (

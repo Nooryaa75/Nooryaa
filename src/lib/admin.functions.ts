@@ -171,15 +171,22 @@ export const adminListProfiles = createServerFn({ method: "GET" })
       const term = `%${data.q.trim()}%`;
       q = q.or(`pseudo.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
     }
-    if (data.status === "active") q = q.eq("status", "active").eq("photo_verified", true);
-    else if (data.status === "inactive") q = q.eq("status", "active").eq("photo_verified", false);
+    if (data.status === "active") q = q.eq("status", "active").eq("onboarded", true);
+    else if (data.status === "inactive") q = q.eq("status", "active").or("onboarded.is.null,onboarded.eq.false");
     else if (data.status && data.status !== "all") q = q.eq("status", data.status);
     if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
     if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
     if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
     const display = await translateForAdmin(rows ?? []);
-    return { rows: rows ?? [], count: count ?? 0, page, pageSize, display };
+    // Nombre de photos par profil : sert au statut « Entré / Pas encore entré ».
+    const ids = (rows ?? []).map((r: any) => r.id);
+    const photoCounts: Record<string, number> = {};
+    if (ids.length > 0) {
+      const { data: photoRows } = await supabaseAdmin.from("photos").select("user_id").in("user_id", ids);
+      for (const r of photoRows ?? []) photoCounts[(r as any).user_id] = (photoCounts[(r as any).user_id] ?? 0) + 1;
+    }
+    return { rows: rows ?? [], count: count ?? 0, page, pageSize, display, photoCounts };
   });
 
 export const adminGetProfile = createServerFn({ method: "GET" })

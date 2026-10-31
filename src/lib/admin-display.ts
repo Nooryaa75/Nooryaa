@@ -1,4 +1,6 @@
 import { GEO_TRANSLATIONS } from "./geo-catalog";
+import { registrationComplete } from "./registration-requirements";
+import { isValidPhone } from "@/components/PhoneInput";
 
 const frenchPlaces = new Map<string, string>();
 const placeKey = (value: string) => value.trim().normalize("NFC").toLocaleLowerCase("fr-FR");
@@ -23,18 +25,20 @@ export function frenchPlace(value: string | null | undefined): string | null {
 }
 
 export const PROFILE_STATUS_LABELS: Record<string, string> = {
-  active: "Actif", inactive: "Non actif", suspended: "Suspendu", banned: "Banni",
+  active: "Entré", inactive: "Pas encore entré", suspended: "Suspendu", banned: "Banni",
 };
 
 /**
- * Statut affiché dans l'administration : un compte ouvert n'est « Actif » que
- * si son profil est vérifié (selfie validé) ; sinon il apparaît « Non actif ».
- * Suspendu et Banni restent prioritaires. Ne modifie pas le statut enregistré.
+ * Statut affiché dans l'administration : « Entré » signifie que le membre a
+ * terminé son inscription et est réellement entré dans la plateforme (fiche
+ * complète, téléphone valide, au moins une photo). La pastille verte, elle,
+ * indique uniquement le selfie vérifié. Suspendu et Banni restent
+ * prioritaires. Ne modifie pas le statut enregistré.
  */
-export function adminProfileStatus(p: { status?: string | null; photo_verified?: boolean | null }): string {
-  const s = p.status ?? "active";
+export function adminProfileStatus(p: Record<string, unknown>, photoCount = 0): string {
+  const s = (p.status as string | null | undefined) ?? "active";
   if (s !== "active") return s;
-  return p.photo_verified ? "active" : "inactive";
+  return registrationComplete(p, photoCount, isValidPhone(p.phone as string | null)) ? "active" : "inactive";
 }
 
 export const REPORT_STATUS_LABELS: Record<string, string> = {

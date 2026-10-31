@@ -48,7 +48,7 @@ test("photo et téléphone restent obligatoires", () => {
   assert.equal(registrationComplete(complete, 1, true), true);
 });
 test("le bouton Suivant ne s'active que si toutes les questions de la page sont remplies", () => {
-  const stepOk = (p: object, step: number) =>
+  const stepOk = (p: Record<string, unknown>, step: number) =>
     registrationChecks(p).filter(([s]) => s === step).every(([, , ok]) => ok);
   assert.equal(stepOk(complete, 0), true);
   assert.equal(stepOk(complete, 1), true);

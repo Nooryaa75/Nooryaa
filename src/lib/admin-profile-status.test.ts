@@ -30,4 +30,7 @@ describe("statut admin des profils", () => {
   it("suspendu reste Suspendu même entré", () => {
     assert.equal(adminProfileStatus({ ...entered, status: "suspended" }, 1), "suspended");
   });
+  it("compte ancien déjà marqué onboarded → Entré même si la fiche est incomplète", () => {
+    assert.equal(adminProfileStatus({ status: "active", onboarded: true, pseudo: "Fatima83" }, 0), "active");
+  });
 });

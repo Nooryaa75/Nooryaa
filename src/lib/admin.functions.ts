@@ -264,6 +264,23 @@ export const adminUpdateStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const adminSetSelfieVerified = createServerFn({ method: "POST" })
+  .inputValidator((data: { id: string; verified: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(data.verified
+        ? { photo_verified: true, photo_verified_at: new Date().toISOString(), photo_verification_status: "verified" }
+        : { photo_verified: false, photo_verified_at: null, photo_verification_status: "pending" })
+      .eq("id", data.id);
+    if (error) throw error;
+    await supabaseAdmin.from("admin_actions").insert({ action: data.verified ? "selfie_verified" : "selfie_unverified", target_user: data.id });
+    return { ok: true };
+  });
+
 export const adminDeleteProfile = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {

@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-ro
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { adminCheckAuth, adminGetProfile, adminGetProfileSelfies, adminUpdateStatus, adminDeleteProfile } from "@/lib/admin.functions";
+import { adminCheckAuth, adminGetProfile, adminGetProfileSelfies, adminUpdateStatus, adminDeleteProfile, adminSetSelfieVerified } from "@/lib/admin.functions";
 import { wantsChildrenLabel } from "@/lib/wants-children";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,17 @@ function AdminProfileDetail() {
   const statusMut = useMutation({
     mutationFn: (status: "active" | "suspended" | "banned") => setStatus({ data: { id, status } }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profile", id] }); toast.success("Statut mis à jour"); },
+    onError: (e: any) => toast.error(frenchError(e)),
+  });
+
+  const setSelfie = useServerFn(adminSetSelfieVerified);
+  const selfieMut = useMutation({
+    mutationFn: (verified: boolean) => setSelfie({ data: { id, verified } }),
+    onSuccess: (_r, verified) => {
+      qc.invalidateQueries({ queryKey: ["admin-profile", id] });
+      qc.invalidateQueries({ queryKey: ["admin-profiles"] });
+      toast.success(verified ? "Selfie validé ✅" : "Validation du selfie retirée");
+    },
     onError: (e: any) => toast.error(frenchError(e)),
   });
 
@@ -178,7 +189,18 @@ function AdminProfileDetail() {
         </div>
 
         <div className="border-t border-border/60 pt-5">
-          <h3 className="font-serif text-primary mb-3">Photo de vérification (selfie)</h3>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h3 className="font-serif text-primary">Photo de vérification (selfie)</h3>
+            {(p as any).photo_verified ? (
+              <Button variant="outline" size="sm" disabled={selfieMut.isPending} onClick={() => selfieMut.mutate(false)}>
+                Retirer la validation du selfie
+              </Button>
+            ) : (
+              <Button size="sm" disabled={selfieMut.isPending || selfies.length === 0} onClick={() => selfieMut.mutate(true)}>
+                <ShieldCheck className="h-4 w-4 mr-1" /> Valider le selfie
+              </Button>
+            )}
+          </div>
           {selfieQuery.isPending ? (
             <p className="text-sm text-muted-foreground" role="status">Chargement des selfies…</p>
           ) : selfieQuery.isError ? (

@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { ageFromBirthdate, PRACTICE_LABELS, MARITAL_LABELS } from "@/lib/profile";
 import { useMyProfile } from "@/lib/match";
 import { useLikeGraph, isBlurred, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { isLikeLimitError, LIKE_LIMIT_MESSAGE } from "@/lib/like-limit";
+import { persistentAlert } from "@/lib/alert-toast";
 import { useI18n } from "@/lib/i18n";
 import { formatDistance, formatHeight } from "@/lib/units";
 import { PhotoWatermark } from "@/components/PhotoWatermark";
@@ -128,6 +130,12 @@ export function SwipeDeck({ title, profiles, userId, onBack, persistPass = true,
     const likeError = likeResult.error;
     const swipeSaved = !swipeError || swipeError.message.includes("duplicate");
     const likeSaved = !likeError || likeError.message.includes("duplicate");
+
+    if (like && isLikeLimitError(likeError)) {
+      persistentAlert("warning", translateText(LIKE_LIMIT_MESSAGE, getStoredLocale()));
+      setIsDeciding(false);
+      return;
+    }
 
     if (!swipeSaved || (like && !likeSaved)) {
       toast.error(swipeError?.message ?? likeError?.message ?? translateText("Impossible d'enregistrer ce choix.", getStoredLocale()));

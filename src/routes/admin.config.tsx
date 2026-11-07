@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
 import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, adminListAppVersions, adminSaveAppVersion, adminGetSubscriptionsEnabled, adminSetSubscriptionsEnabled, type PlanInput } from "@/lib/admin-insights.functions";
-import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, quotaLabel, type PlanAudience } from "@/lib/entitlements";
+import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, type PlanAudience } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,24 +49,6 @@ const EMPTY: PlanInput = {
 
 const AUDIENCES: PlanAudience[] = ["homme", "femme", "tous"];
 
-/** Champ numérique avec interrupteur « Illimité » (valeur −1). */
-function QuotaField({ label, value, onChange, allowUnlimited = true }: { label: string; value: number; onChange: (v: number) => void; allowUnlimited?: boolean }) {
-  const unlimited = value < 0;
-  return (
-    <div>
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input type="number" min={0} disabled={unlimited} value={unlimited ? "" : value} placeholder={unlimited ? "∞" : "0"} onChange={(e) => onChange(Math.max(0, Number(e.target.value)))} />
-        {allowUnlimited && (
-          <label className="flex items-center gap-1.5 text-xs whitespace-nowrap">
-            <Switch checked={unlimited} onCheckedChange={(v) => onChange(v ? -1 : 0)} aria-label={`${label} illimité`} />
-            Illimité
-          </label>
-        )}
-      </div>
-    </div>
-  );
-}
 
 
 function AdminConfig() {
@@ -216,7 +198,7 @@ function AdminConfig() {
                   {p.highlight && <span className="rounded-full bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] px-2 py-0.5">Mise en avant</span>}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {quotaLabel(p.likes_per_day, "likes")}/j · {quotaLabel(p.messages_per_day ?? -1, "messages")}/j · {p.super_likes} super likes · {p.boosts} boosts · {quotaLabel(p.rewinds ?? 0, "retours")} · TVA {Number(p.vat_rate)}%
+                  TVA {Number(p.vat_rate)}%
                 </div>
                 {granted.length > 0 && (
                   <div className="flex flex-wrap gap-1 pt-1">
@@ -324,17 +306,6 @@ function AdminConfig() {
               <div>
                 <Label>TVA (%)</Label>
                 <Input type="number" step="0.1" value={draft.vat_rate} onChange={(e) => setDraft({ ...draft, vat_rate: Number(e.target.value) })} />
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-base">Quotas</Label>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
-                <QuotaField label="Likes / jour" value={draft.likes_per_day} onChange={(v) => setDraft({ ...draft, likes_per_day: v, access: { ...(draft.access ?? {}), unlimited_likes: v < 0 } })} />
-                <QuotaField label="Messages / jour" value={draft.messages_per_day} onChange={(v) => setDraft({ ...draft, messages_per_day: v })} />
-                <QuotaField label="Retours en arrière / jour" value={draft.rewinds} onChange={(v) => setDraft({ ...draft, rewinds: v })} />
-                <QuotaField label="Super likes (sur la période)" value={draft.super_likes} allowUnlimited={false} onChange={(v) => setDraft({ ...draft, super_likes: v })} />
-                <QuotaField label="Boosts (sur la période)" value={draft.boosts} allowUnlimited={false} onChange={(v) => setDraft({ ...draft, boosts: v, access: { ...(draft.access ?? {}), boost: v > 0 || draft.access?.boost === true } })} />
               </div>
             </div>
 

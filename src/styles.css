@@ -257,6 +257,31 @@
   color: var(--error-text) !important;
 }
 
+/* Avertissements à fermer soi-même : croix bien visible dans le coin de fin. */
+[data-sonner-toaster].toaster [data-sonner-toast].nooryaa-alert {
+  padding-inline-end: 3rem !important;
+  line-height: 1.45;
+}
+[data-sonner-toaster].toaster [data-sonner-toast].nooryaa-alert [data-close-button] {
+  width: 1.9rem !important;
+  height: 1.9rem !important;
+  top: 0.5rem !important;
+  left: auto !important;
+  right: 0.5rem !important;
+  transform: none !important;
+  background: transparent !important;
+  border: 1.5px solid currentColor !important;
+  color: inherit !important;
+}
+[data-sonner-toaster].toaster [data-sonner-toast].nooryaa-alert [data-close-button] svg {
+  width: 1rem;
+  height: 1rem;
+}
+html[dir="rtl"] [data-sonner-toaster].toaster [data-sonner-toast].nooryaa-alert [data-close-button] {
+  right: auto !important;
+  left: 0.5rem !important;
+}
+
 
 @layer base {
   * {

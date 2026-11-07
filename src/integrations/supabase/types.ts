@@ -373,6 +373,24 @@ export type Database = {
         }
         Relationships: []
       }
+      like_usage: {
+        Row: {
+          day: string
+          used: number
+          user_id: string
+        }
+        Insert: {
+          day: string
+          used?: number
+          user_id: string
+        }
+        Update: {
+          day?: string
+          used?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
@@ -1354,6 +1372,7 @@ export type Database = {
         Args: { _receiver: string; _sender: string }
         Returns: boolean
       }
+      daily_like_limit: { Args: { _user: string }; Returns: number }
       delete_own_account:
         | { Args: never; Returns: undefined }
         | { Args: { user_id: string }; Returns: undefined }
@@ -1369,6 +1388,8 @@ export type Database = {
         Args: { from_text: string; j: Json; to_text: string }
         Returns: Json
       }
+      likes_used_today: { Args: { _user: string }; Returns: number }
+      my_likes_remaining_today: { Args: never; Returns: number }
       register_push_token: {
         Args: { _platform: string; _token: string }
         Returns: undefined

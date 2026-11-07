@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
 import { notifyLike, notifyByEmail } from "@/lib/notify";
 import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { isLikeLimitError, LIKE_LIMIT_MESSAGE } from "@/lib/like-limit";
+import { persistentAlert } from "@/lib/alert-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { frenchError } from "@/lib/errors";
@@ -103,7 +105,8 @@ function ProfileView() {
       if (liked) {
         await supabase.from("likes").delete().eq("from_user", ctx.userId).eq("to_user", profile.id);
       } else {
-        await supabase.from("likes").insert({ from_user: ctx.userId, to_user: profile.id });
+        const { error } = await supabase.from("likes").insert({ from_user: ctx.userId, to_user: profile.id });
+        if (error) throw error;
         await notifyLike(ctx.userId, profile.id);
       }
     },
@@ -112,6 +115,10 @@ function ProfileView() {
       qc.invalidateQueries({ queryKey: ["like-graph"] });
       qc.invalidateQueries({ queryKey: ["unread-counts"] });
       toast.success(t(liked ? "Coup de cœur retiré" : "Coup de cœur ajouté 💚"));
+    },
+    onError: (error: { message?: string }) => {
+      if (isLikeLimitError(error)) persistentAlert("warning", t(LIKE_LIMIT_MESSAGE));
+      else toast.error(t("Une erreur est survenue"));
     },
   });
 
@@ -307,8 +314,8 @@ function ProfileView() {
                       type="button"
                       variant="outline"
                       className="rounded-full gap-2 opacity-60"
-                      title={MESSAGE_BLOCKED_HINT}
-                      onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+                      title={t(MESSAGE_BLOCKED_HINT)}
+                      onClick={() => toast.info(t(MESSAGE_BLOCKED_HINT))}
                     >
                       <MessageCircle className="h-4 w-4" /> Message verrouillé
                     </Button>

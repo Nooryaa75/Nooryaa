@@ -314,8 +314,8 @@ function ProfileView() {
                       type="button"
                       variant="outline"
                       className="rounded-full gap-2 opacity-60"
-                      title={MESSAGE_BLOCKED_HINT}
-                      onClick={() => toast.info(MESSAGE_BLOCKED_HINT)}
+                      title={t(MESSAGE_BLOCKED_HINT)}
+                      onClick={() => toast.info(t(MESSAGE_BLOCKED_HINT))}
                     >
                       <MessageCircle className="h-4 w-4" /> Message verrouillé
                     </Button>

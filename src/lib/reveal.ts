@@ -43,16 +43,18 @@ export function isBlurred(
   return !isRevealed(target, me, graph);
 }
 
-/** Un homme ne peut écrire à une femme que si elle lui a envoyé un coup de cœur. */
+/**
+ * La discussion n'est possible qu'après un match : les deux membres se sont
+ * likés mutuellement (même règle que la base de données, can_message).
+ */
 export function canMessage(
-  me: { gender?: string | null } | null | undefined,
-  target: { id?: string | null; gender?: string | null } | null | undefined,
+  me: { id?: string | null } | null | undefined,
+  target: { id?: string | null } | null | undefined,
   graph: LikeGraph,
 ): boolean {
-  if (!me || !target?.id) return true;
-  if (me.gender !== "homme" || target.gender !== "femme") return true;
-  return !!graph?.likedMe.has(target.id);
+  if (!me?.id || !target?.id || !graph) return false;
+  return graph.iLiked.has(target.id) && graph.likedMe.has(target.id);
 }
 
 export const MESSAGE_BLOCKED_HINT =
-  "Vous pourrez lui écrire lorsqu'elle vous aura envoyé un coup de cœur.";
+  "Vous pourrez discuter dès que vous vous serez likés mutuellement (match).";

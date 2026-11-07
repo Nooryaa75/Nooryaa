@@ -82,3 +82,6 @@
 - [x] Démarrage Android toujours sur l'accueil (« Je m'inscris / Je me connecte ») : configure-android-cold-start.mjs ignore la dernière page sauvegardée au lancement à froid ; version Android 1.0.18 (21) dans les deux workflows, 16 tests OK. Rebuild Codemagic à lancer par l'utilisateur.
 - [x] Préparer iOS 1.0.2 (21) : version mise à jour dans les deux workflows iPhone (vérification + App Store). Lancer « Nooryaa iPhone (App Store) » dans Codemagic quand le compte Apple le permet.
 - [x] Admin profils : coche verte en début de ligne pour les profils vérifiés (photo vérifiée) ; lignes non vérifiées laissées vides ; couleur ajoutée aux thèmes clair et sombre, rendu contrôlé, compilation OK.
+
+- [x] Avertissements photo/selfie : message dans la langue du membre, reste affiché jusqu'au clic sur la croix ; vérifié à l'écran en anglais et en arabe.
+- [x] 5 likes maximum par jour pour tous (version gratuite), discussion seulement après un match, quantités retirées des formules ; essai en base : 5 likes acceptés, 6e refusé, essai annulé ; 8 tests réussis.

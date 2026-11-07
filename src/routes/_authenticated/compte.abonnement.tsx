@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
-import { useActivePlans, plansForGender, durationLabel, type PublicPlan } from "@/lib/entitlements";
+import { ACCESS_KEYS, useActivePlans, plansForGender, durationLabel, type PublicPlan } from "@/lib/entitlements";
 
 import {
   AlertDialog,

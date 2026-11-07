@@ -20,7 +20,7 @@ export function memberReason(
     const translated = translate(reason, locale);
     if (translated !== reason) return translated;
     const fr = (result?.reasonFr ?? "").trim();
-    if (fr && fr !== reason) return reason;
+    if (!fr || fr !== reason) return reason;
   }
   return translate(fallbackFr, locale);
 }

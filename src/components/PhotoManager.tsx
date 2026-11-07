@@ -9,6 +9,8 @@ import { verifyPhotoIdentity } from "@/lib/photo-identity.functions";
 import { CameraCapture } from "@/components/CameraCapture";
 import { getStoredLocale, translateText } from "@/lib/i18n";
 import { frenchError } from "@/lib/errors";
+import { persistentAlert } from "@/lib/alert-toast";
+import { memberReason } from "@/lib/member-reason";
 
 
 async function readAsDataUrl(file: File): Promise<string> {
@@ -118,12 +120,13 @@ export function PhotoManager({ userId }: { userId: string }) {
       } catch (e) {
         console.error("PhotoManager: modération indisponible", e);
       }
+      const locale = getStoredLocale();
       if (check?.verdict === "block") {
-        toast.error(translateText(check.reason || "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.", getStoredLocale()));
+        persistentAlert("error", memberReason(check, "Cette photo ne respecte pas nos règles et n'a pas été ajoutée.", locale, translateText));
         return;
       }
       if (check?.verdict === "warn") {
-        toast.warning(translateText(check.reason || "Photo acceptée mais signalée à la modération.", getStoredLocale()));
+        persistentAlert("warning", memberReason(check, "Photo acceptée mais signalée à la modération.", locale, translateText));
       }
 
       // Contrôle d'identité : la nouvelle photo doit être la même personne que
@@ -135,14 +138,14 @@ export function PhotoManager({ userId }: { userId: string }) {
         console.error("PhotoManager: contrôle d'identité indisponible", e);
       }
       if (ident?.verdict === "block") {
-        toast.error(translateText(ident.reason || "Cette photo ne semble pas être vous et n'a pas été ajoutée.", getStoredLocale()));
+        persistentAlert("error", memberReason(ident, "Cette photo ne semble pas être vous et n'a pas été ajoutée.", locale, translateText));
         return;
       }
       if (!check || !ident || ident.verdict === "review" || ident.require_selfie) {
         identityWarning =
           ident?.verdict === "review" && ident.reason
-            ? `${translateText("Photo ajoutée", getStoredLocale())}. ${translateText(ident.reason, getStoredLocale())}`
-            : translateText("Photo ajoutée : elle sera contrôlée par notre équipe. Nous vous contacterons si une nouvelle vérification est nécessaire.", getStoredLocale());
+            ? `${translateText("Photo ajoutée", locale)}. ${memberReason(ident, "Nous n'avons pas pu confirmer que cette photo est bien vous : refaites la vérification par selfie.", locale, translateText)}`
+            : translateText("Photo ajoutée : elle sera contrôlée par notre équipe. Nous vous contacterons si une nouvelle vérification est nécessaire.", locale);
       }
     } finally {
       setChecking(false);
@@ -198,7 +201,7 @@ export function PhotoManager({ userId }: { userId: string }) {
         .eq("id", authId);
     }
     refresh();
-    if (identityWarning) toast.warning(identityWarning);
+    if (identityWarning) persistentAlert("warning", identityWarning);
     else toast.success(translateText("Photo ajoutée", getStoredLocale()));
   }
 

@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { persistentAlert } from "@/lib/alert-toast";
+import { memberReason } from "@/lib/member-reason";
 import { getStoredLocale, translateText } from "@/lib/i18n";
 import { BadgeCheck, Loader2, ScanFace, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,8 +56,8 @@ export function SelfieVerification({
       } else if (res.technical) {
         toast.success(translateText("Selfie reçu ✅ Notre équipe le vérifiera, vous pouvez continuer.", getStoredLocale()));
         onVerified?.();
-      } else if (res.verdict === "rejected") toast.error(translateText(res.reason || "Vérification refusée", getStoredLocale()));
-      else toast.warning(translateText(res.reason || "Vérification à confirmer", getStoredLocale()));
+      } else if (res.verdict === "rejected") persistentAlert("error", memberReason(res, "Vérification refusée", getStoredLocale(), translateText));
+      else persistentAlert("warning", memberReason(res, "Vérification à confirmer", getStoredLocale(), translateText));
       await qc.invalidateQueries({ queryKey: ["me", userId] });
     } catch {
       toast.error(translateText("La vérification a échoué, réessayez.", getStoredLocale()));

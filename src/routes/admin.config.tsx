@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth } from "@/lib/admin.functions";
 import { adminListPlans, adminSavePlan, adminDeletePlan, adminTogglePlan, adminListSocialLinks, adminSaveSocialLink, adminListAppVersions, adminSaveAppVersion, adminGetSubscriptionsEnabled, adminSetSubscriptionsEnabled, type PlanInput } from "@/lib/admin-insights.functions";
-import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, quotaLabel, type PlanAudience } from "@/lib/entitlements";
+import { ACCESS_KEYS, AUDIENCE_LABEL, DURATION_PRESETS, durationLabel, type PlanAudience } from "@/lib/entitlements";
 import { AdminNav } from "@/components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,24 +49,6 @@ const EMPTY: PlanInput = {
 
 const AUDIENCES: PlanAudience[] = ["homme", "femme", "tous"];
 
-/** Champ numérique avec interrupteur « Illimité » (valeur −1). */
-function QuotaField({ label, value, onChange, allowUnlimited = true }: { label: string; value: number; onChange: (v: number) => void; allowUnlimited?: boolean }) {
-  const unlimited = value < 0;
-  return (
-    <div>
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input type="number" min={0} disabled={unlimited} value={unlimited ? "" : value} placeholder={unlimited ? "∞" : "0"} onChange={(e) => onChange(Math.max(0, Number(e.target.value)))} />
-        {allowUnlimited && (
-          <label className="flex items-center gap-1.5 text-xs whitespace-nowrap">
-            <Switch checked={unlimited} onCheckedChange={(v) => onChange(v ? -1 : 0)} aria-label={`${label} illimité`} />
-            Illimité
-          </label>
-        )}
-      </div>
-    </div>
-  );
-}
 
 
 function AdminConfig() {

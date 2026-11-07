@@ -70,11 +70,8 @@ function groupPlans(plans: PublicPlan[]): PlanGroup[] {
 function autoFeatures(p: PublicPlan): string[] {
   const out: string[] = [];
   // Avantages générés automatiquement quand l'admin n'en a saisi aucun.
-  out.push(p.likes_per_day < 0 ? "Likes illimités" : `${p.likes_per_day} likes par jour`);
-  if (p.messages_per_day >= 0) out.push(`${p.messages_per_day} messages par jour`);
-  if (p.super_likes > 0) out.push(`${p.super_likes} super likes`);
-  if (p.boosts > 0) out.push(`${p.boosts} boost${p.boosts > 1 ? "s" : ""}`);
-  if (p.rewinds !== 0) out.push(p.rewinds < 0 ? "Retours en arrière illimités" : `${p.rewinds} retours en arrière par jour`);
+  // Aucune quantité : seuls les accès cochés dans l'administration sont listés.
+  for (const a of ACCESS_KEYS) if (p.access?.[a.key]) out.push(a.label);
   return out;
 }
 

@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { matchPercent, useMyProfile } from "@/lib/match";
 import { notifyLike, notifyByEmail } from "@/lib/notify";
 import { useLikeGraph, isRevealed, canMessage, MESSAGE_BLOCKED_HINT } from "@/lib/reveal";
+import { isLikeLimitError, LIKE_LIMIT_MESSAGE } from "@/lib/like-limit";
+import { persistentAlert } from "@/lib/alert-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { frenchError } from "@/lib/errors";

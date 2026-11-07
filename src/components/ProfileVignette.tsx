@@ -1,4 +1,6 @@
-import { getStoredLocale } from "@/lib/i18n";
+import { getStoredLocale, translateText } from "@/lib/i18n";
+import { isLikeLimitError, LIKE_LIMIT_MESSAGE } from "@/lib/like-limit";
+import { persistentAlert } from "@/lib/alert-toast";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

@@ -66,7 +66,10 @@ export function ProfileVignette({ profile, userId, likeable = false, chatBadge =
       queryClient.invalidateQueries({ queryKey: ["unread-counts", userId] });
       if (!liked) toast.success(({fr:`Vous avez liké ${profile.pseudo} 💜`,en:`You liked ${profile.pseudo} 💜`,ar:`لقد أعجبت بـ ${profile.pseudo} 💜`} as const)[getStoredLocale()]);
     },
-    onError: () => toast.error("Une erreur est survenue"),
+    onError: (error: { message?: string }) => {
+      if (isLikeLimitError(error)) persistentAlert("warning", translateText(LIKE_LIMIT_MESSAGE, getStoredLocale()));
+      else toast.error(translateText("Une erreur est survenue", getStoredLocale()));
+    },
   });
 
   const tags: { label: string }[] = [];

@@ -3,6 +3,8 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Vous avez utilisé vos 5 likes du jour. Revenez demain pour liker de nouveaux profils.": { en: "You have used your 5 likes for today. Come back tomorrow to like new profiles.", ar: "لقد استخدمتم إعجاباتكم الخمسة لهذا اليوم. عودوا غداً للإعجاب بملفات جديدة." },
   "Vous pourrez discuter dès que vous vous serez likés mutuellement (match).": { en: "You can chat as soon as you have both liked each other (match).", ar: "يمكنكم التحدث بمجرد أن يعجب كل منكما بالآخر (توافق)." },
   "Vérification refusée": { en: "Verification declined", ar: "تم رفض التحقق" },
+  "5 likes par jour": { en: "5 likes per day", ar: "5 إعجابات يومياً" },
+  "Discussion après un match": { en: "Chat after a match", ar: "المحادثة بعد التوافق" },
   "Profil complété à": { en: "Profile completion:", ar: "نسبة اكتمال الملف:" },
   "Les profils complets reçoivent jusqu'à 3× plus de likes.": { en: "Complete profiles receive up to 3× more likes.", ar: "الملفات المكتملة تتلقى حتى 3 أضعاف الإعجابات." },
   "À compléter :": { en: "To complete:", ar: "لإكمالها:" },

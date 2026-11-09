@@ -13,6 +13,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CITIES, COUNTRIES, ageFromBirthdate, isAdult } from "@/lib/profile";
 import { loadPresignup, savePresignup, type PresignupAnswers } from "@/lib/presignup";
 import { useI18n } from "@/lib/i18n";
+import { pseudoValid, PSEUDO_TOO_SHORT } from "@/lib/pseudo";
 import { toast } from "sonner";
 import { MapPin, ShieldCheck } from "lucide-react";
 import hommeImg from "@/assets/gender-homme.png";
@@ -197,10 +198,13 @@ function InscriptionWizard() {
                 placeholder="amina_92"
                 autoFocus
               />
+              <p className={`mt-1 text-xs ${(answers.pseudo ?? "").trim() && !pseudoValid(answers.pseudo) ? "font-medium text-destructive" : "text-muted-foreground"}`}>
+                {t(PSEUDO_TOO_SHORT)}
+              </p>
             </div>
             <Button
               className="w-full rounded-full" size="lg"
-              disabled={!(answers.pseudo ?? "").trim()}
+              disabled={!pseudoValid(answers.pseudo)}
               onClick={goNext}
             >
               {t("Suivant")}

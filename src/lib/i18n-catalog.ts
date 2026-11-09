@@ -4746,5 +4746,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Voulez-vous des enfants ? *": { en: "Do you want children? *", ar: "هل تريدون أطفالاً؟ *" },
   "Je ne sais pas": { en: "I don't know", ar: "لا أدري" },
   "Votre photo doit être une vraie photo de vous. Les images avec du texte, les dessins, les logos, les paysages ou les objets ne sont pas acceptés.": { en: "Your photo must be a real photo of you. Images with text, drawings, logos, landscapes or objects are not accepted.", ar: "يجب أن تكون صورتكم صورة حقيقية لكم. لا تُقبل الصور التي تحتوي على نص أو الرسومات أو الشعارات أو المناظر الطبيعية أو الأشياء." },
+  "Le pseudo doit contenir au moins 3 lettres.": { en: "Your username must contain at least 3 letters.", ar: "يجب أن يحتوي الاسم المستعار على 3 أحرف على الأقل." },
+  "Pseudo (au moins 3 lettres)": { en: "Username (at least 3 letters)", ar: "الاسم المستعار (3 أحرف على الأقل)" },
   "Ajoutez d'abord une vraie photo de vous, puis faites le selfie de vérification.": { en: "First add a real photo of yourself, then take the verification selfie.", ar: "أضيفوا أولاً صورة حقيقية لكم، ثم التقطوا صورة السيلفي للتحقق." },
 };

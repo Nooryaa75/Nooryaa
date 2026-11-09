@@ -69,6 +69,8 @@ function Onboarding() {
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const [pseudoError, setPseudoError] = useState<string | null>(null);
+  // Le champ pseudo reste visible dès que le pseudo enregistré ne respecte pas la règle.
+  const [askPseudo, setAskPseudo] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [extraError, setExtraError] = useState<string | null>(null);
   const errorBoxRef = useRef<HTMLDivElement | null>(null);
@@ -198,6 +200,11 @@ function Onboarding() {
       setPseudoError("Pseudo requis");
       return false;
     }
+    if (!pseudoValid(p)) {
+      setAskPseudo(true);
+      setPseudoError(t(PSEUDO_TOO_SHORT));
+      return false;
+    }
     const { data } = await supabase.from("profiles").select("id").eq("pseudo", p).neq("id", ctx.userId).maybeSingle();
     if (data) { setPseudoError("Ce pseudo est déjà pris"); return false; }
     setPseudoError(null);
@@ -284,9 +291,10 @@ function Onboarding() {
       )}
       <form onSubmit={submit} className="space-y-5">
         {step === 0 && (<div key="s0" className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-        {(!form.pseudo.trim() || pseudoError) && (
+        {(askPseudo || !form.pseudo.trim() || pseudoError) && (
         <div>
           <Label htmlFor="pseudo">Pseudo *</Label>
+          <p className="text-xs text-muted-foreground mb-1">{t(PSEUDO_TOO_SHORT)}</p>
           <Input id="pseudo" value={form.pseudo} onChange={(e) => setForm({ ...form, pseudo: e.target.value })} onBlur={(e) => checkPseudo(e.target.value)} placeholder="amina_92" />
           {pseudoError && <p className="text-xs text-destructive mt-1">{pseudoError}</p>}
         </div>

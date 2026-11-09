@@ -1,0 +1,25 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { pseudoValid } from "./pseudo";
+
+test("un pseudo d'une ou deux lettres est refusé", () => {
+  assert.equal(pseudoValid("W"), false);
+  assert.equal(pseudoValid("Ab"), false);
+});
+
+test("un pseudo de 3 lettres est accepté", () => {
+  assert.equal(pseudoValid("Ali"), true);
+});
+
+test("les chiffres ne comptent pas comme lettres", () => {
+  assert.equal(pseudoValid("A12345"), false);
+  assert.equal(pseudoValid("Ama92"), true);
+});
+
+test("les lettres arabes comptent", () => {
+  assert.equal(pseudoValid("عمر"), true);
+});
+
+test("le pseudo provisoire user_ n'est pas un vrai pseudo", () => {
+  assert.equal(pseudoValid("user_ff2c0d62d4"), false);
+});

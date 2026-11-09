@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 import { ageGapMatch, appearsMinor, type AgeMatch } from "./photo-age";
+import { enforceRealPhoto, NOT_REAL_PHOTO_REASON, type RealPhoto } from "./photo-rules";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
 
@@ -16,12 +17,16 @@ export type PhotoModerationResult = {
   apparent_age_min: number;
   apparent_age_max: number;
   age_match: AgeMatch;
+  real_photo: RealPhoto;
+  /** Contrôle impossible (service indisponible) : photo acceptée, revue par l'équipe. */
+  technical?: boolean;
 };
 
 const SYSTEM_PROMPT = `Tu es le modérateur photo de Nooryaa, plateforme de mise en relation musulmane sérieuse (pudeur / hayâ).
 Tu analyses une photo de profil.
 
-Vérifie trois choses :
+Vérifie ces points :
+0. Vraie photo (real_photo) : la photo de profil DOIT être une vraie photographie d'une vraie personne (la personne elle-même, visage ou silhouette reconnaissable ; une femme voilée ou portant le niqab reste une vraie personne). real_photo = "no" si c'est une image avec du texte, une citation, un verset, un logo, un dessin, un avatar, un emoji, un paysage, un objet, une fleur, un animal, un mème, une capture d'écran ou toute image sans vraie personne photographiée. "unsure" en cas de doute. "yes" sinon.
 1. Conformité : verdict "block" si nudité, sous-vêtements, tenue très suggestive, contenu sexuel, violence, drogue, haine, contenu illicite, image pornographique, ou si ce n'est manifestement pas une photo de personne réelle utilisable comme photo de profil (capture d'écran, texte publicitaire, coordonnées visibles). Verdict "warn" si tenue limite, pose aguicheuse, photo de groupe où la personne n'est pas identifiable, photo floue ou de très mauvaise qualité, visage totalement masqué par un objet.
 2. Image générée ou retouchée par IA : "yes", "maybe" ou "no" (indices : peau lissée irréelle, mains/oreilles/bijoux déformés, arrière-plan incohérent, rendu 3D/illustration).
 3. Âge apparent : estime une fourchette d'âge apparent (apparent_age_min / apparent_age_max, entiers). Si aucun visage humain exploitable, mets 0 et 0.
@@ -31,7 +36,7 @@ Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;

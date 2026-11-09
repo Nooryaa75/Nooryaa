@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
+import { PHOTO_BEFORE_SELFIE_REASON } from "./photo-rules";
 
 export type SelfieVerdict = "verified" | "review" | "rejected";
 

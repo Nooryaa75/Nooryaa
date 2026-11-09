@@ -23,6 +23,7 @@ import { BirthdateCalendar } from "@/components/BirthdateCalendar";
 import { registrationChecks } from "@/lib/registration-requirements";
 import { loadPresignup, clearPresignup, hasPresignup, presignupProfilePatch } from "@/lib/presignup";
 import { wantsChildrenChoice } from "@/lib/wants-children";
+import { pseudoValid, PSEUDO_TOO_SHORT } from "@/lib/pseudo";
 
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -194,6 +195,12 @@ function Onboarding() {
       setReady(true);
     });
   }, [ctx.userId, navigate]);
+
+  useEffect(() => {
+    if (ready && !pseudoValid(form.pseudo)) setAskPseudo(true);
+    // Seulement au chargement : on ne masque pas le champ pendant la saisie.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   async function checkPseudo(p: string) {
     if (!p.trim()) {

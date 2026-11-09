@@ -197,10 +197,13 @@ function InscriptionWizard() {
                 placeholder="amina_92"
                 autoFocus
               />
+              <p className={`mt-1 text-xs ${(answers.pseudo ?? "").trim() && !pseudoValid(answers.pseudo) ? "font-medium text-destructive" : "text-muted-foreground"}`}>
+                {t(PSEUDO_TOO_SHORT)}
+              </p>
             </div>
             <Button
               className="w-full rounded-full" size="lg"
-              disabled={!(answers.pseudo ?? "").trim()}
+              disabled={!pseudoValid(answers.pseudo)}
               onClick={goNext}
             >
               {t("Suivant")}

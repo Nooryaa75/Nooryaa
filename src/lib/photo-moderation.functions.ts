@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 import { ageGapMatch, appearsMinor, type AgeMatch } from "./photo-age";
+import { enforceRealPhoto, NOT_REAL_PHOTO_REASON, type RealPhoto } from "./photo-rules";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
 
@@ -16,12 +17,16 @@ export type PhotoModerationResult = {
   apparent_age_min: number;
   apparent_age_max: number;
   age_match: AgeMatch;
+  real_photo: RealPhoto;
+  /** Contrôle impossible (service indisponible) : photo acceptée, revue par l'équipe. */
+  technical?: boolean;
 };
 
 const SYSTEM_PROMPT = `Tu es le modérateur photo de Nooryaa, plateforme de mise en relation musulmane sérieuse (pudeur / hayâ).
 Tu analyses une photo de profil.
 
-Vérifie trois choses :
+Vérifie ces points :
+0. Vraie photo (real_photo) : la photo de profil DOIT être une vraie photographie d'une vraie personne (la personne elle-même, visage ou silhouette reconnaissable ; une femme voilée ou portant le niqab reste une vraie personne). real_photo = "no" si c'est une image avec du texte, une citation, un verset, un logo, un dessin, un avatar, un emoji, un paysage, un objet, une fleur, un animal, un mème, une capture d'écran ou toute image sans vraie personne photographiée. "unsure" en cas de doute. "yes" sinon.
 1. Conformité : verdict "block" si nudité, sous-vêtements, tenue très suggestive, contenu sexuel, violence, drogue, haine, contenu illicite, image pornographique, ou si ce n'est manifestement pas une photo de personne réelle utilisable comme photo de profil (capture d'écran, texte publicitaire, coordonnées visibles). Verdict "warn" si tenue limite, pose aguicheuse, photo de groupe où la personne n'est pas identifiable, photo floue ou de très mauvaise qualité, visage totalement masqué par un objet.
 2. Image générée ou retouchée par IA : "yes", "maybe" ou "no" (indices : peau lissée irréelle, mains/oreilles/bijoux déformés, arrière-plan incohérent, rendu 3D/illustration).
 3. Âge apparent : estime une fourchette d'âge apparent (apparent_age_min / apparent_age_max, entiers). Si aucun visage humain exploitable, mets 0 et 0.
@@ -31,7 +36,7 @@ Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -57,10 +62,31 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       apparent_age_min: 0,
       apparent_age_max: 0,
       age_match: "unknown",
+      real_photo: "unsure",
+      technical: true,
+    };
+    // Contrôle impossible : la photo est acceptée pour ne pas bloquer
+    // l'inscription, mais elle est signalée à l'équipe pour vérification.
+    const technicalFallback = async (): Promise<PhotoModerationResult> => {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("moderation_events").insert({
+          user_id: (context as any).userId,
+          content: "Photo de profil non contrôlée (problème technique) — photo à vérifier",
+          verdict: "warn",
+          categories: ["photo_non_controlee"],
+          reason: "Le contrôle automatique de la photo n'a pas pu être effectué.",
+          source: "photo",
+        });
+      } catch {
+        // la journalisation ne doit jamais bloquer
+      }
+      return fallback;
     };
 
     const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey || !data.imageDataUrl.startsWith("data:image/")) return fallback;
+    if (!data.imageDataUrl.startsWith("data:image/")) return fallback;
+    if (!apiKey) return await technicalFallback();
 
     let result: PhotoModerationResult = fallback;
     try {
@@ -87,7 +113,10 @@ export const moderatePhoto = createServerFn({ method: "POST" })
           max_output_tokens: 2000,
         }),
       });
-      if (!res.ok) return fallback;
+      if (!res.ok) {
+        console.error("photo-moderation gateway error", res.status);
+        return await technicalFallback();
+      }
       const json: any = await res.json();
       const text: string =
         json.output_text ??
@@ -97,10 +126,11 @@ export const moderatePhoto = createServerFn({ method: "POST" })
           .join("") ??
         "";
       const match = text.match(/\{[\s\S]*\}/);
-      if (!match) return fallback;
+      if (!match) return await technicalFallback();
       const parsed = JSON.parse(match[0]);
       result = {
         verdict: safeEnum(parsed.verdict, ["allow", "warn", "block"] as const, "allow"),
+        real_photo: safeEnum(parsed.real_photo, ["yes", "no", "unsure"] as const, "unsure"),
         categories: Array.isArray(parsed.categories) ? parsed.categories.slice(0, 5).map(String) : [],
         reason: typeof parsed.reason === "string" ? parsed.reason : "",
         reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
@@ -111,8 +141,19 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         age_match: "unknown",
       };
     } catch {
-      return fallback;
+      return await technicalFallback();
     }
+
+    const realVerdict = enforceRealPhoto(result.verdict, result.real_photo);
+    if (result.real_photo === "no") {
+      result.categories = [...result.categories, "pas_une_vraie_photo"];
+      if (result.verdict !== "block") {
+        // Le motif de l'analyse ne parlait pas de ce problème : message clair.
+        result.reason = NOT_REAL_PHOTO_REASON;
+        result.reasonFr = NOT_REAL_PHOTO_REASON;
+      }
+    }
+    result.verdict = realVerdict;
 
     const { apparent_age_min: lo, apparent_age_max: hi } = result;
     if (lo > 0 && hi > 0) {

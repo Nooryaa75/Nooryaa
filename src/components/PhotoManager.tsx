@@ -141,7 +141,7 @@ export function PhotoManager({ userId }: { userId: string }) {
         persistentAlert("error", memberReason(ident, "Cette photo ne semble pas être vous et n'a pas été ajoutée.", locale, translateText));
         return;
       }
-      if (!check || !ident || ident.verdict === "review" || ident.require_selfie) {
+      if (!check || check.technical || !ident || ident.verdict === "review" || ident.require_selfie) {
         identityWarning =
           ident?.verdict === "review" && ident.reason
             ? `${translateText("Photo ajoutée", locale)}. ${memberReason(ident, "Nous n'avons pas pu confirmer que cette photo est bien vous : refaites la vérification par selfie.", locale, translateText)}`

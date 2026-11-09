@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
 import { verifySelfie } from "@/lib/selfie-verification.functions";
 import { useI18n } from "@/lib/i18n";
+import { canStartSelfie, PHOTO_BEFORE_SELFIE_REASON } from "@/lib/photo-rules";
 
 async function toDataUrl(file: File, max = 768): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -41,6 +42,14 @@ export function SelfieVerification({
       (await supabase.from("profiles").select("*").eq("id", userId).single()).data,
   });
 
+  // Même clé que la liste des photos : ajouter/supprimer une photo met à jour ce bloc.
+  const { data: photos } = useQuery({
+    queryKey: ["my-photos", userId],
+    queryFn: async () =>
+      (await supabase.from("photos").select("*").eq("user_id", userId).order("position")).data ?? [],
+  });
+  const photoReady = canStartSelfie(photos?.length ?? 0);
+
   const status = (profile as any)?.photo_verification_status ?? "none";
   const verified = !!(profile as any)?.photo_verified;
 
@@ -67,6 +76,10 @@ export function SelfieVerification({
   }
 
   function start() {
+    if (!photoReady) {
+      persistentAlert("warning", translateText(PHOTO_BEFORE_SELFIE_REASON, getStoredLocale()));
+      return;
+    }
     const hasMedia =
       typeof navigator !== "undefined" &&
       !!navigator.mediaDevices?.getUserMedia &&
@@ -124,7 +137,14 @@ export function SelfieVerification({
         </p>
       )}
 
-      <Button type="button" onClick={start} disabled={busy}>
+      {!photoReady && (
+        <p className="flex items-start gap-2 text-sm font-medium text-primary">
+          <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" />
+          {t(PHOTO_BEFORE_SELFIE_REASON)}
+        </p>
+      )}
+
+      <Button type="button" onClick={start} disabled={busy || !photoReady}>
         {busy ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Vérification…

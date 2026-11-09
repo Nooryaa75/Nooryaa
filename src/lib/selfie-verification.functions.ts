@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
+import { PHOTO_BEFORE_SELFIE_REASON } from "./photo-rules";
 
 export type SelfieVerdict = "verified" | "review" | "rejected";
 
@@ -193,14 +194,18 @@ export const verifySelfie = createServerFn({ method: "POST" })
       ),
     ).slice(0, 2);
 
+    // Pas de photo de profil : rien à comparer. Ce n'est PAS une panne : le
+    // selfie n'est pas mis « en attente » et la personne doit d'abord ajouter
+    // une vraie photo d'elle (sinon on validerait un profil sans photo).
     if (paths.length === 0) {
-      return await technicalPending(userId, {
+      return {
         verdict: "review",
         single_face: "unknown",
         same_person: "unknown",
         live_capture: "maybe",
-        reason: "Ajoutez d'abord vos photos de profil avant de lancer la vérification.",
-      });
+        reason: PHOTO_BEFORE_SELFIE_REASON,
+        reasonFr: PHOTO_BEFORE_SELFIE_REASON,
+      };
     }
 
     const apiKey = process.env["LOVABLE_API_KEY"];

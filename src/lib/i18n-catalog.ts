@@ -304,6 +304,18 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
     "en": "Accepts smokers",
     "ar": "يقبل المدخنين"
   },
+  "Suspendre ou supprimer mon compte": {
+    "en": "Suspend or delete my account",
+    "ar": "تعليق حسابي أو حذفه"
+  },
+  "Nooryaa est gratuit": {
+    "en": "Nooryaa is free",
+    "ar": "Nooryaa مجاني"
+  },
+  "Aucun achat n'est proposé : toutes les fonctions de Nooryaa sont gratuites.": {
+    "en": "There is nothing to buy: every Nooryaa feature is free.",
+    "ar": "لا توجد أي مشتريات: جميع ميزات Nooryaa مجانية."
+  },
   "Accès complet offert": {
     "en": "Complimentary full access",
     "ar": "وصول كامل مجانًا"

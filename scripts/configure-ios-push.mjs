@@ -50,6 +50,14 @@ for (const [key, text] of Object.entries(usages)) {
   info = info.replace(/\n<\/dict>\n<\/plist>/, `\n\t<key>${key}</key>\n\t<string>${text}</string>\n</dict>\n</plist>`);
   if (!info.includes(`<key>${key}</key>`)) throw new Error(`Info.plist: ${key} could not be added.`);
 }
+// Conformité export : l'app n'utilise que le chiffrement standard d'iOS (HTTPS).
+// Sans cette déclaration, Apple bloque l'envoi TestFlight (« missing export compliance »).
+if (!info.includes('<key>ITSAppUsesNonExemptEncryption</key>')) {
+  info = info.replace(/\n<\/dict>\n<\/plist>/, `\n\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>\n</dict>\n</plist>`);
+  if (!info.includes('<key>ITSAppUsesNonExemptEncryption</key>')) {
+    throw new Error('Info.plist: ITSAppUsesNonExemptEncryption could not be added.');
+  }
+}
 writeFileSync(plist, info);
 
 // Chaque configuration de compilation doit connaître le fichier

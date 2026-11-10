@@ -44,3 +44,4 @@
 - Selfie needs a stored profile photo first (photo-rules.ts; no photo is not a technical failure). Technical failures (unloadable photos, AI unavailable) never block signup: the server sets photo_verification_status="pending" and logs a moderation event so admins review the stored selfie; photo_verified stays false until verified.
 - Daily like limit lives only in the likes trigger (like_usage per Paris day; unliking never refunds); can_message requires mutual likes and reveal.ts canMessage mirrors it.
 - Photo/selfie warnings use persistentAlert + memberReason so French-only AI text falls back to a translated message.
+- The iPhone app never shows paid plans, Premium banners or prices (paid-plans.ts showPaidPlans), and elsewhere they appear only when the admin subscription switch is on; App Review rejects remotely switchable or non-Apple purchases (guidelines 3.1.1/5.6). Account suspension/deletion must stay reachable from Mon compte.

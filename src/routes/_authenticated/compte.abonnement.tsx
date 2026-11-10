@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { recordSubscription } from "@/lib/subscription.functions";
+import { usePaidPlansVisible } from "@/lib/use-paid-plans";
 import { ACCESS_KEYS, useActivePlans, plansForGender, durationLabel, type PublicPlan } from "@/lib/entitlements";
 
 import {
@@ -130,6 +131,7 @@ function AbonnementPage() {
   }, []);
 
   const subscriptionsDisabled = !plansLoading && (dbPlans?.length ?? 0) === 0;
+  const paidPlansVisible = usePaidPlansVisible();
   const visiblePlans = plansForGender(dbPlans ?? [], gender);
   const groups = groupPlans(visiblePlans);
   const freePlan = visiblePlans.find((p) => p.price_ttc === 0) ?? null;
@@ -192,8 +194,11 @@ function AbonnementPage() {
         <Link to="/compte" aria-label="Retour" className="absolute left-0 text-primary">
           <ChevronLeft className="h-6 w-6" />
         </Link>
-        <h1 className="text-lg font-bold text-primary">Mon abonnement</h1>
+        <h1 className="text-lg font-bold text-primary">
+          {paidPlansVisible ? "Mon abonnement" : "Suspendre ou supprimer mon compte"}
+        </h1>
       </div>
+      {paidPlansVisible && (
       <div className="bg-card rounded-2xl border border-primary/30 p-4 shadow-[var(--shadow-card)] space-y-4 sm:p-5 lg:p-6">
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-primary" />
@@ -267,18 +272,18 @@ function AbonnementPage() {
           </div>
         )}
       </div>
+      )}
 
-      {subscriptionsDisabled ? (
+      {!paidPlansVisible ? (
         <div className="rounded-2xl border border-primary/40 bg-primary/5 p-5">
           <h3 className="text-lg font-serif text-primary mb-1 flex items-center gap-2">
-            <Sparkles className="h-4 w-4" /> Accès complet offert
+            <Sparkles className="h-4 w-4" /> Nooryaa est gratuit
           </h3>
           <p className="text-sm text-muted-foreground">
-            Aucune formule n'est proposée actuellement : vous accédez à l'intégralité de Nooryaa,
-            sans restriction ni abonnement.
+            Aucun achat n'est proposé : toutes les fonctions de Nooryaa sont gratuites.
           </p>
         </div>
-      ) : (
+      ) : subscriptionsDisabled ? null : (
       <div>
         <h3 className="text-lg font-serif text-primary mb-3 flex items-center gap-2">
           <Sparkles className="h-4 w-4" /> Formules d'abonnement

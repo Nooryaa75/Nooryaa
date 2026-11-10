@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { profileCompletion } from "@/lib/profile-completion";
+import { usePaidPlansVisible } from "@/lib/use-paid-plans";
 import {
   User, Bell, CreditCard, Headphones, Users, FileText, ShieldCheck, Database,
   ChevronRight, Settings, Camera, MapPin, Briefcase, Crown, LogOut,
@@ -35,6 +36,7 @@ function CompteHome() {
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", ctx.userId).single()).data,
   });
   const completion = profileCompletion(profile);
+  const paidPlansVisible = usePaidPlansVisible();
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -117,7 +119,8 @@ function CompteHome() {
         <LanguageSwitcher inline />
       </div>
 
-      {/* Bannière Premium */}
+      {/* Bannière Premium : seulement quand des offres sont réellement proposées (jamais sur iPhone) */}
+      {paidPlansVisible && (
       <Link
         to="/compte/abonnement"
         className="flex items-center gap-4 rounded-2xl p-5 text-primary-foreground shadow-[var(--glow-gold)]"
@@ -134,6 +137,7 @@ function CompteHome() {
         </span>
         <ChevronRight className="h-5 w-5 shrink-0" />
       </Link>
+      )}
 
       {/* Menu */}
       <nav className="bg-card rounded-2xl border border-border/60 shadow-[var(--shadow-card)] divide-y divide-border/60 overflow-hidden">
@@ -144,7 +148,9 @@ function CompteHome() {
             className="flex items-center gap-3 px-4 py-3.5 hover:bg-secondary/40 transition-colors"
           >
             <m.icon className="h-5 w-5 text-primary" />
-            <span className="flex-1 text-sm font-medium">{m.label}</span>
+            <span className="flex-1 text-sm font-medium">
+              {m.to === "/compte/abonnement" && !paidPlansVisible ? "Suspendre ou supprimer mon compte" : m.label}
+            </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Link>
         ))}

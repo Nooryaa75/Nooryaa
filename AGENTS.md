@@ -27,7 +27,6 @@
 - Admin discussions union message and liked-profile pairs to match member inboxes; paginated reads must exhaust all database pages before grouping, and UI pagination must never truncate history.
 - Admin language is derived centrally from the current route without overwriting the member's saved locale; admin geographic labels use the canonical French catalog via admin-display so stored profile data stays unchanged.
 
-- Android builds must declare POST_NOTIFICATIONS, CAMERA, RECORD_AUDIO and location permissions in the manifest (one codemagic.yaml step, both workflows) — otherwise Android 13+ greys out the notification toggle and the WebView camera fails, blocking the mandatory selfie. The notification channel is created at startup by src/lib/push.ts; push.server.ts must keep sending to that same channel id.
 - Member photo surfaces use PhotoWatermark and data-photo-guard, never admin (admin lightbox watermarked={false}); root ScreenCaptureGuard toggles html.nooryaa-recording on iOS capture so guarded photos hide.
 - Push payloads must carry the Android channel id and an APNs sound together (push.server.ts sends `android.channel_id` and `apns.payload.aps.sound`); push.ts records the real device platform (ios/android) in push_tokens so AppUpdateChecker picks the matching app_versions row and store link.
 
@@ -44,4 +43,4 @@
 - Selfie needs a stored profile photo first (photo-rules.ts; no photo is not a technical failure). Technical failures (unloadable photos, AI unavailable) never block signup: the server sets photo_verification_status="pending" and logs a moderation event so admins review the stored selfie; photo_verified stays false until verified.
 - Daily like limit lives only in the likes trigger (like_usage per Paris day; unliking never refunds); can_message requires mutual likes and reveal.ts canMessage mirrors it.
 - Photo/selfie warnings use persistentAlert + memberReason so French-only AI text falls back to a translated message.
-- The iPhone app never shows paid plans, Premium banners or prices (paid-plans.ts showPaidPlans), and elsewhere they appear only when the admin subscription switch is on; App Review rejects remotely switchable or non-Apple purchases (guidelines 3.1.1/5.6). Account suspension/deletion must stay reachable from Mon compte.
+- paid-plans.ts showPaidPlans: iOS never shows paid plans/Premium/prices (App Review 3.1.1/5.6); elsewhere only when the admin switch is on. Keep account deletion reachable from Mon compte.

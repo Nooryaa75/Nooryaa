@@ -120,6 +120,13 @@
       "when": 1794602326530,
       "tag": "0016_pseudo_single_word",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794602700464,
+      "tag": "0017_pseudo_one_word_no_joined_words",
+      "breakpoints": true
     }
   ]
 }

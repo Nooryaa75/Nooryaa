@@ -1,15 +1,26 @@
 import { isAdult } from "./profile";
 import { wantsChildrenAnswered } from "./wants-children";
-import { pseudoValid } from "./pseudo";
+import { pseudoLetterCount, pseudoValid } from "./pseudo";
 
 type ProfileAnswers = Record<string, unknown>;
 const filled = (value: unknown) => typeof value === "string" && value.trim().length > 0;
 const answered = (value: unknown) => typeof value === "boolean";
 
+/**
+ * Membres déjà entrés : leur pseudo reste accepté selon l'ancienne règle
+ * (au moins 3 lettres, pas le pseudo provisoire). La règle « un seul mot »
+ * s'applique aux nouvelles inscriptions et à tout changement de pseudo.
+ */
+function pseudoAccepted(p: ProfileAnswers): boolean {
+  if (pseudoValid(p.pseudo)) return true;
+  const pseudo = typeof p.pseudo === "string" ? p.pseudo.trim() : "";
+  return p.onboarded === true && !pseudo.startsWith("user_") && pseudoLetterCount(pseudo) >= 3;
+}
+
 export function registrationChecks(p: ProfileAnswers): [number, string, boolean][] {
   const origins = Array.isArray(p.countries_origin) ? p.countries_origin : [];
   return [
-    [0, "Pseudo (un seul mot, au moins 3 lettres)", pseudoValid(p.pseudo)],
+    [0, "Pseudo (un seul mot, au moins 3 lettres)", pseudoAccepted(p)],
     [0, "Je suis", p.gender === "homme" || p.gender === "femme"],
     [0, "Date de naissance", filled(p.birthdate) && /^\d{4}-\d{2}-\d{2}$/.test(String(p.birthdate)) && isAdult(String(p.birthdate))],
     [0, "Ville de résidence", filled(p.city)],

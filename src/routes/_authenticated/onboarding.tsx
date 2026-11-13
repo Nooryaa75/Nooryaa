@@ -81,11 +81,19 @@ function Onboarding() {
 
   const STEPS = ["Votre situation", "Votre pratique religieuse", "Votre objectif et votre présentation", "Vos photos et la vérification"];
   const [step, setStep] = useState(0);
+  // Membre déjà validé revenu ici (ex. photo retirée) : il garde son pseudo et son statut d'inscrit.
+  const [wasOnboarded, setWasOnboarded] = useState(false);
+  const [storedPseudo, setStoredPseudo] = useState("");
+  const [photoRemoved, setPhotoRemoved] = useState(false);
 
   function checks(): [number, string, boolean][] {
     return [
       [0, t("Téléphone (numéro valide)"), isValidPhone(form.phone)],
-      ...registrationChecks({ ...form, wants_children_answer: form.wants_children })
+      ...registrationChecks({
+        ...form,
+        wants_children_answer: form.wants_children,
+        onboarded: wasOnboarded && form.pseudo.trim() === storedPseudo,
+      })
         .map(([s, label, ok]) => [s, t(label), ok] as [number, string, boolean]),
     ];
   }
@@ -192,12 +200,19 @@ function Onboarding() {
               : {}),
         };
       });
+      const already = (data as any)?.onboarded === true;
+      setWasOnboarded(already);
+      setStoredPseudo(String((data as any)?.pseudo ?? "").trim());
+      setPhotoRemoved(!!(data as any)?.photo_removed_at);
+      // Fiche déjà remplie : on ouvre directement la page des photos et du selfie.
+      if (already && isValidPhone((data as any)?.phone) &&
+          registrationChecks(data as any).every(([s, , ok]) => s > 2 || ok)) setStep(3);
       setReady(true);
     });
   }, [ctx.userId, navigate]);
 
   useEffect(() => {
-    if (ready && !pseudoValid(form.pseudo)) setAskPseudo(true);
+    if (ready && !pseudoValid(form.pseudo) && !(wasOnboarded && form.pseudo.trim() === storedPseudo)) setAskPseudo(true);
     // Seulement au chargement : on ne masque pas le champ pendant la saisie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
@@ -207,7 +222,7 @@ function Onboarding() {
       setPseudoError("Pseudo requis");
       return false;
     }
-    if (!pseudoValid(p)) {
+    if (!pseudoValid(p) && !(wasOnboarded && p.trim() === storedPseudo)) {
       setAskPseudo(true);
       setPseudoError(t(PSEUDO_TOO_SHORT));
       return false;
@@ -240,7 +255,7 @@ function Onboarding() {
       wants_children_answer: wantsChildrenChoice(form.wants_children) || null,
       salat_quotidienne: form.salat_quotidienne, ramadan: form.ramadan, hadj: form.hadj, omra: form.omra,
       porte_voile: form.gender === "femme" ? form.porte_voile : null,
-      objective: form.objective || null, bio: form.bio || null, onboarded: complete,
+      objective: form.objective || null, bio: form.bio || null, onboarded: complete || wasOnboarded,
     };
   }
 
@@ -285,6 +300,12 @@ function Onboarding() {
       <p className="text-muted-foreground text-sm mb-2">{t("Les champs marqués * sont obligatoires pour finaliser votre profil.")}</p>
       <p className="text-muted-foreground text-sm mb-6">{t("Encore quelques questions par thème pour compléter votre profil.")}</p>
       <OpenInAppButton />
+      {photoRemoved && (
+        <div className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive" role="alert">
+          <p className="font-semibold">{t("Photo de profil obligatoire")}</p>
+          <p className="mt-1">{t("Vous avez retiré votre photo de profil. La photo est obligatoire : votre compte n'est plus validé. Ajoutez une vraie photo de vous puis refaites le selfie de vérification pour retrouver l'accès.")}</p>
+        </div>
+      )}
       <h2 className="text-lg font-serif text-primary mb-4">{t(STEPS[step])}</h2>
       {(missingFields.length > 0 || extraError || (attempted && pseudoError && step === 0)) && (
         <div ref={errorBoxRef} className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4" role="alert">

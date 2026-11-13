@@ -40,7 +40,7 @@
 - Admin profile details fetch only displayed records; private selfie URLs load in a separate admin-authorized query so storage latency never delays the profile.
 - Admin profile details use three unframed registration-stage sections, with photos and independently loaded selfies in the post-authentication section; this keeps the display aligned with signup without changing saved data or verification logic.
 - Admin profile status Entré/Pas encore entré comes from registrationComplete via adminProfileStatus (src/lib/admin-display.ts), never written to profiles.status; the profile list shows no verified-selfie badge (selfie state lives in the profile details); admin guards cache the admin check briefly while server functions still enforce requireAdminOrThrow.
-- Last photo removed by a validated member: photos trigger sets photo_removed_at (members can't clear verification fields); only accepted selfie/admin clears it.
+- Validated member removing last photo: photos trigger sets photo_removed_at; only accepted selfie/admin clears it.
 - Pseudo rules: pseudo.ts + profiles trigger; photos need a visible face (photo-rules.ts); identity checks also use the stored selfie.
 - Selfie needs a stored profile photo first (photo-rules.ts; no photo is not a technical failure). Technical failures (unloadable photos, AI unavailable) never block signup: the server sets photo_verification_status="pending" and logs a moderation event so admins review the stored selfie; photo_verified stays false until verified.
 - Daily like limit lives only in the likes trigger (like_usage per Paris day; unliking never refunds); can_message requires mutual likes and reveal.ts canMessage mirrors it.

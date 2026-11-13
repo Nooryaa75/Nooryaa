@@ -1,20 +1,20 @@
 import { isAdult } from "./profile";
 import { wantsChildrenAnswered } from "./wants-children";
-import { pseudoLetterCount, pseudoValid } from "./pseudo";
+import { pseudoValid } from "./pseudo";
 
 type ProfileAnswers = Record<string, unknown>;
 const filled = (value: unknown) => typeof value === "string" && value.trim().length > 0;
 const answered = (value: unknown) => typeof value === "boolean";
 
 /**
- * Membres déjà entrés : leur pseudo reste accepté selon l'ancienne règle
- * (au moins 3 lettres, pas le pseudo provisoire). La règle « un seul mot »
+ * Membres déjà entrés : leur pseudo reste accepté tel quel (sauf le pseudo
+ * provisoire « user_… »). La règle « un seul mot »
  * s'applique aux nouvelles inscriptions et à tout changement de pseudo.
  */
 function pseudoAccepted(p: ProfileAnswers): boolean {
   if (pseudoValid(p.pseudo)) return true;
   const pseudo = typeof p.pseudo === "string" ? p.pseudo.trim() : "";
-  return p.onboarded === true && !pseudo.startsWith("user_") && pseudoLetterCount(pseudo) >= 3;
+  return p.onboarded === true && pseudo.length > 0 && !pseudo.startsWith("user_");
 }
 
 export function registrationChecks(p: ProfileAnswers): [number, string, boolean][] {

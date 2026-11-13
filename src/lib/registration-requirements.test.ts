@@ -68,3 +68,7 @@ test("un membre déjà entré garde son ancien pseudo en plusieurs mots", () => 
 test("une nouvelle inscription avec un pseudo en plusieurs mots est refusée", () => {
   assert.deepEqual(registrationChecks({ ...complete, onboarded: false, pseudo: "Um Sarai" })[0]?.[2], false);
 });
+
+test("un membre déjà entré avec un pseudo court (ex. W) reste validé", () => {
+  assert.equal(registrationComplete({ ...complete, onboarded: true, pseudo: "W" }, 1, true), true);
+});

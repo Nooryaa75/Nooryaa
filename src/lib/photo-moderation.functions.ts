@@ -2,7 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 import { ageGapMatch, appearsMinor, type AgeMatch } from "./photo-age";
-import { enforceRealPhoto, NOT_REAL_PHOTO_REASON, type RealPhoto } from "./photo-rules";
+import {
+  enforceFaceVisible,
+  enforceRealPhoto,
+  NO_FACE_REASON,
+  NOT_REAL_PHOTO_REASON,
+  type FaceVisible,
+  type RealPhoto,
+} from "./photo-rules";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
 
@@ -18,6 +25,7 @@ export type PhotoModerationResult = {
   apparent_age_max: number;
   age_match: AgeMatch;
   real_photo: RealPhoto;
+  face_visible: FaceVisible;
   /** Contrôle impossible (service indisponible) : photo acceptée, revue par l'équipe. */
   technical?: boolean;
 };
@@ -27,6 +35,7 @@ Tu analyses une photo de profil.
 
 Vérifie ces points :
 0. Vraie photo (real_photo) : la photo de profil DOIT être une vraie photographie d'une vraie personne (la personne elle-même, visage ou silhouette reconnaissable ; une femme voilée ou portant le niqab reste une vraie personne). real_photo = "no" si c'est une image avec du texte, une citation, un verset, un logo, un dessin, un avatar, un emoji, un paysage, un objet, une fleur, un animal, un mème, une capture d'écran ou toute image sans vraie personne photographiée. "unsure" en cas de doute. "yes" sinon.
+0 bis. Visage visible (face_visible) : le visage de la personne doit être NETTEMENT visible et reconnaissable — une seule personne principale, de face ou de trois quarts, assez proche, bien éclairée et nette. Le voile est accepté ; le niqab est accepté si les yeux sont bien visibles. face_visible = "no" si aucun visage n'apparaît (photo de dos, silhouette lointaine, mains, corps sans tête, visage caché par un objet, un masque, des lunettes de soleil couvrantes ou un emoji), si la photo est trop sombre ou trop floue pour voir les traits, ou si la personne est trop loin pour être reconnue. "unsure" si tu n'es pas sûr de pouvoir reconnaître cette personne en la croisant. "yes" sinon.
 1. Conformité : verdict "block" si nudité, sous-vêtements, tenue très suggestive, contenu sexuel, violence, drogue, haine, contenu illicite, image pornographique, ou si ce n'est manifestement pas une photo de personne réelle utilisable comme photo de profil (capture d'écran, texte publicitaire, coordonnées visibles). Verdict "warn" si tenue limite, pose aguicheuse, photo de groupe où la personne n'est pas identifiable, photo floue ou de très mauvaise qualité, visage totalement masqué par un objet.
 2. Image générée ou retouchée par IA : "yes", "maybe" ou "no" (indices : peau lissée irréelle, mains/oreilles/bijoux déformés, arrière-plan incohérent, rendu 3D/illustration).
 3. Âge apparent : estime une fourchette d'âge apparent (apparent_age_min / apparent_age_max, entiers). Si aucun visage humain exploitable, mets 0 et 0.
@@ -36,7 +45,7 @@ Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","face_visible":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -63,6 +72,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       apparent_age_max: 0,
       age_match: "unknown",
       real_photo: "unsure",
+      face_visible: "unsure",
       technical: true,
     };
     // Contrôle impossible : la photo est acceptée pour ne pas bloquer
@@ -131,6 +141,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       result = {
         verdict: safeEnum(parsed.verdict, ["allow", "warn", "block"] as const, "allow"),
         real_photo: safeEnum(parsed.real_photo, ["yes", "no", "unsure"] as const, "unsure"),
+        face_visible: safeEnum(parsed.face_visible, ["yes", "no", "unsure"] as const, "unsure"),
         categories: Array.isArray(parsed.categories) ? parsed.categories.slice(0, 5).map(String) : [],
         reason: typeof parsed.reason === "string" ? parsed.reason : "",
         reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
@@ -154,6 +165,14 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       }
     }
     result.verdict = realVerdict;
+
+    // Visage obligatoire : une photo sans visage nettement visible est refusée.
+    if (result.real_photo !== "no" && result.face_visible !== "yes") {
+      result.verdict = enforceFaceVisible(result.verdict, result.face_visible);
+      result.categories = [...result.categories, "visage_non_visible"];
+      result.reason = NO_FACE_REASON;
+      result.reasonFr = NO_FACE_REASON;
+    }
 
     const { apparent_age_min: lo, apparent_age_max: hi } = result;
     if (lo > 0 && hi > 0) {

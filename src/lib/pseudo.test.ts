@@ -23,3 +23,26 @@ test("les lettres arabes comptent", () => {
 test("le pseudo provisoire user_ n'est pas un vrai pseudo", () => {
   assert.equal(pseudoValid("user_ff2c0d62d4"), false);
 });
+
+test("un pseudo en phrase (avec des espaces) est refusé", () => {
+  assert.equal(pseudoValid("Le boureur arrive"), false);
+  assert.equal(pseudoValid("Um Sarai"), false);
+});
+
+test("un pseudo d'un seul mot est accepté, même avec _ - ou .", () => {
+  assert.equal(pseudoValid("amina_92"), true);
+  assert.equal(pseudoValid("Le-boureur"), true);
+});
+
+test("les espaces au début ou à la fin ne comptent pas", () => {
+  assert.equal(pseudoValid("Hafidou6 "), true);
+});
+
+test("un pseudo de plus de 20 caractères est refusé", () => {
+  assert.equal(pseudoValid("abcdefghijklmnopqrstu"), false);
+  assert.equal(pseudoValid("abcdefghijklmnopqrst"), true);
+});
+
+test("une adresse email n'est pas un pseudo", () => {
+  assert.equal(pseudoValid("nanbobo74@gmail.com"), false);
+});

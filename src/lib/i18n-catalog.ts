@@ -4760,5 +4760,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   "Votre photo doit être une vraie photo de vous. Les images avec du texte, les dessins, les logos, les paysages ou les objets ne sont pas acceptés.": { en: "Your photo must be a real photo of you. Images with text, drawings, logos, landscapes or objects are not accepted.", ar: "يجب أن تكون صورتكم صورة حقيقية لكم. لا تُقبل الصور التي تحتوي على نص أو الرسومات أو الشعارات أو المناظر الطبيعية أو الأشياء." },
   "Le pseudo doit contenir au moins 3 lettres.": { en: "Your username must contain at least 3 letters.", ar: "يجب أن يحتوي الاسم المستعار على 3 أحرف على الأقل." },
   "Pseudo (au moins 3 lettres)": { en: "Username (at least 3 letters)", ar: "الاسم المستعار (3 أحرف على الأقل)" },
+  "Le pseudo doit être un seul mot, sans espace, avec au moins 3 lettres (20 caractères maximum).": { en: "Your username must be a single word, with no spaces, at least 3 letters and 20 characters maximum.", ar: "يجب أن يكون الاسم المستعار كلمة واحدة بدون مسافات، تحتوي على 3 أحرف على الأقل و20 حرفًا كحد أقصى." },
+  "Pseudo (un seul mot, au moins 3 lettres)": { en: "Username (one word, at least 3 letters)", ar: "الاسم المستعار (كلمة واحدة، 3 أحرف على الأقل)" },
   "Ajoutez d'abord une vraie photo de vous, puis faites le selfie de vérification.": { en: "First add a real photo of yourself, then take the verification selfie.", ar: "أضيفوا أولاً صورة حقيقية لكم، ثم التقطوا صورة السيلفي للتحقق." },
 };

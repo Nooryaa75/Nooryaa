@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Pseudo vraiment en un seul mot : mots collés par tiret, point ou _ refusés (chiffres finaux permis, ex. Amina92), sur les écrans et en base ; compte démo Apple renommé NooryaaReview ; 11 tests réussis. Publication du site reste à faire.
+
 - [x] Compte « Le boureur arrive » : email envoyé (choisir un pseudo adapté, vraie photo, selfie conforme) puis compte, photos et selfies supprimés.
 - [x] Ressemblance pour tous : selfie toujours utilisé comme référence ; photo d'une autre personne ou ressemblance impossible à établir refusée, doute = selfie à refaire ; 13 tests réussis. Publication du site reste à faire.
 

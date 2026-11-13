@@ -29,9 +29,16 @@ test("un pseudo en phrase (avec des espaces) est refusé", () => {
   assert.equal(pseudoValid("Um Sarai"), false);
 });
 
-test("un pseudo d'un seul mot est accepté, même avec _ - ou .", () => {
+test("un pseudo d'un seul mot est accepté, avec des chiffres à la fin", () => {
   assert.equal(pseudoValid("amina_92"), true);
-  assert.equal(pseudoValid("Le-boureur"), true);
+  assert.equal(pseudoValid("Amina92"), true);
+});
+
+test("des mots collés par un tiret, un point ou un _ sont refusés", () => {
+  assert.equal(pseudoValid("Le-boureur-arrive"), false);
+  assert.equal(pseudoValid("Le-boureur"), false);
+  assert.equal(pseudoValid("samira_raincy"), false);
+  assert.equal(pseudoValid("le.boureur"), false);
 });
 
 test("les espaces au début ou à la fin ne comptent pas", () => {

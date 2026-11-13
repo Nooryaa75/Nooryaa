@@ -17,7 +17,7 @@ const SYSTEM_PROMPT = `Tu es l'agent de contrôle d'identité photo de Nooryaa (
 On te donne la NOUVELLE photo que la personne veut ajouter à son profil, puis (éventuellement) ses PHOTOS DE PROFIL DÉJÀ VALIDÉES, ainsi que le sexe déclaré.
 
 Analyse :
-1. same_person : la personne de la nouvelle photo est-elle la même que sur les photos déjà validées ? "yes" si tu es quasi certain (>90%), "maybe" si ressemblance sans certitude, "no" si les traits morphologiques diffèrent nettement (forme du visage, yeux, nez, bouche, mâchoire), "unknown" si aucune photo de référence n'est fournie ou si aucun visage n'est exploitable.
+1. same_person : la personne de la nouvelle photo est-elle la même que sur les images de référence (selfie de vérification s'il est fourni, photos déjà validées) ? Le selfie de vérification, pris en direct, prime : s'il ne correspond pas, réponds "no". "yes" si tu es quasi certain (>90%), "maybe" si ressemblance sans certitude, "no" si les traits morphologiques diffèrent nettement (forme du visage, yeux, nez, bouche, mâchoire), "unknown" si aucune photo de référence n'est fournie ou si aucun visage n'est exploitable.
 2. gender_match : le genre apparent de la personne sur la nouvelle photo correspond-il au sexe déclaré ? "yes", "no" ou "unknown" si indéterminable.
 
 Sois strict : le doute ne valide pas.
@@ -62,6 +62,24 @@ async function downloadPhoto(path: string): Promise<string | null> {
 }
 
 /**
+ * Selfie de vérification conservé (`<userId>` dans le coffre privé) : c'est la
+ * référence la plus sûre, car pris en direct. Il sert de comparaison même si le
+ * membre a supprimé toutes ses anciennes photos.
+ */
+async function downloadVerificationSelfie(userId: string): Promise<string | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const res = await supabaseAdmin.storage.from("verification-selfies").download(userId);
+    if (res.error || !res.data || res.data.size === 0 || res.data.size > 2_000_000) return null;
+    const buf = new Uint8Array(await res.data.arrayBuffer());
+    return bytesToDataUrl(buf, res.data.type || "image/jpeg");
+  } catch (e) {
+    console.error("photo-identity: échec téléchargement selfie", e);
+    return null;
+  }
+}
+
+/**
  * Contrôle d'identité d'une nouvelle photo de profil :
  * comparaison avec les photos déjà présentes + cohérence avec le sexe déclaré.
  */
@@ -97,7 +115,7 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("gender, photo_verified, primary_photo_url, email, first_name, pseudo")
+      .select("gender, photo_verified, onboarded, primary_photo_url, email, first_name, pseudo")
       .eq("id", userId)
       .single();
 
@@ -115,9 +133,17 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       ),
     ).slice(0, 3);
 
-    const references = (await Promise.all(paths.map(downloadPhoto))).filter(
+    // Membre déjà vérifié ou entré : son selfie de vérification sert aussi de
+    // référence, pour qu'on ne puisse pas remplacer ses photos par celles d'une
+    // autre personne après avoir supprimé les anciennes.
+    const selfie =
+      profile?.photo_verified === true || profile?.onboarded === true
+        ? await downloadVerificationSelfie(userId)
+        : null;
+    const photoRefs = (await Promise.all(paths.map(downloadPhoto))).filter(
       (i): i is string => !!i,
     );
+    const references = [...(selfie ? [selfie] : []), ...photoRefs];
 
     const genderLabel =
       profile?.gender === "homme" ? "un homme" : profile?.gender === "femme" ? "une femme" : "non précisé";
@@ -139,7 +165,9 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
                     type: "input_text",
                     text: `Image 1 = nouvelle photo proposée. ${
                       references.length
-                        ? `Images suivantes (${references.length}) = photos de profil déjà validées.`
+                        ? `${selfie ? "Image 2 = selfie de vérification pris en direct par la personne (référence principale). " : ""}${
+                            photoRefs.length ? `${selfie ? "Images suivantes" : `Images suivantes (${photoRefs.length})`} = photos de profil déjà validées.` : ""
+                          }`
                         : "Aucune photo de référence disponible."
                     } Sexe déclaré : ${genderLabel}.`,
                   },

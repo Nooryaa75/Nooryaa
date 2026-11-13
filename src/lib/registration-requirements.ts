@@ -9,7 +9,7 @@ const answered = (value: unknown) => typeof value === "boolean";
 export function registrationChecks(p: ProfileAnswers): [number, string, boolean][] {
   const origins = Array.isArray(p.countries_origin) ? p.countries_origin : [];
   return [
-    [0, "Pseudo (au moins 3 lettres)", pseudoValid(p.pseudo)],
+    [0, "Pseudo (un seul mot, au moins 3 lettres)", pseudoValid(p.pseudo)],
     [0, "Je suis", p.gender === "homme" || p.gender === "femme"],
     [0, "Date de naissance", filled(p.birthdate) && /^\d{4}-\d{2}-\d{2}$/.test(String(p.birthdate)) && isAdult(String(p.birthdate))],
     [0, "Ville de résidence", filled(p.city)],

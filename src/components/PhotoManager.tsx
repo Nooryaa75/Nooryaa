@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Plus, Star, Trash2, EyeOff, Eye, Loader2, ShieldCheck, Camera } from "lucide-react";
 import { moderatePhoto } from "@/lib/photo-moderation.functions";
 import { verifyPhotoIdentity } from "@/lib/photo-identity.functions";
+import { notifyOwnPhotoRemoved } from "@/lib/notify.functions";
+import { useNavigate } from "@tanstack/react-router";
 import { CameraCapture } from "@/components/CameraCapture";
 import { getStoredLocale, translateText } from "@/lib/i18n";
 import { frenchError } from "@/lib/errors";
@@ -47,6 +49,10 @@ async function toDataUrl(file: File, max = 768): Promise<string> {
 
 
 const MAX_PHOTOS = 3;
+const LAST_PHOTO_WARNING =
+  "La photo de profil est obligatoire. Si vous retirez votre dernière photo, votre compte ne sera plus validé et vous n'aurez plus accès au service jusqu'à l'ajout d'une nouvelle photo et d'un nouveau selfie. Continuer ?";
+const PHOTO_REMOVED_MESSAGE =
+  "Vous avez retiré votre photo de profil. La photo est obligatoire : votre compte n'est plus validé. Ajoutez une vraie photo de vous puis refaites le selfie de vérification pour retrouver l'accès.";
 
 export function PhotoManager({ userId }: { userId: string }) {
   const qc = useQueryClient();
@@ -56,6 +62,8 @@ export function PhotoManager({ userId }: { userId: string }) {
   const [cameraOpen, setCameraOpen] = useState(false);
   const checkPhoto = useServerFn(moderatePhoto);
   const checkIdentity = useServerFn(verifyPhotoIdentity);
+  const notifyPhotoRemoved = useServerFn(notifyOwnPhotoRemoved);
+  const navigate = useNavigate();
 
   // Web app : getUserMedia. Apps natives / navigateurs mobiles sans getUserMedia :
   // repli sur <input capture> qui ouvre l'appareil photo du téléphone.
@@ -207,8 +215,20 @@ export function PhotoManager({ userId }: { userId: string }) {
 
 
   async function deletePhoto(photo: any) {
+    const remainingAfter = (photos?.length ?? 0) - 1;
+    // Membre validé : retirer sa dernière photo fait repasser le compte en non validé.
+    const losesValidation = profile?.onboarded === true && !(profile as any)?.photo_removed_at && remainingAfter <= 0;
+    if (losesValidation && !window.confirm(translateText(LAST_PHOTO_WARNING, getStoredLocale()))) return;
     await supabase.storage.from("profile-photos").remove([photo.storage_path]);
-    await supabase.from("photos").delete().eq("id", photo.id);
+    const { error: deleteError } = await supabase.from("photos").delete().eq("id", photo.id);
+    if (deleteError) { toast.error(frenchError(deleteError, "La suppression a échoué.")); return; }
+    if (losesValidation) {
+      refresh();
+      try { await notifyPhotoRemoved(); } catch (e) { console.error("notifyOwnPhotoRemoved", e); }
+      persistentAlert("error", translateText(PHOTO_REMOVED_MESSAGE, getStoredLocale()));
+      navigate({ to: "/onboarding", replace: true });
+      return;
+    }
     if (profile?.primary_photo_url === photo.url) {
       const remaining = photos?.filter((p) => p.id !== photo.id) ?? [];
       await supabase.from("profiles").update({

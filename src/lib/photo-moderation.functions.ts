@@ -168,10 +168,12 @@ export const moderatePhoto = createServerFn({ method: "POST" })
 
     // Visage obligatoire : une photo sans visage nettement visible est refusée.
     if (result.real_photo !== "no" && result.face_visible !== "yes") {
+      if (result.verdict !== "block") {
+        result.reason = NO_FACE_REASON;
+        result.reasonFr = NO_FACE_REASON;
+      }
       result.verdict = enforceFaceVisible(result.verdict, result.face_visible);
       result.categories = [...result.categories, "visage_non_visible"];
-      result.reason = NO_FACE_REASON;
-      result.reasonFr = NO_FACE_REASON;
     }
 
     const { apparent_age_min: lo, apparent_age_max: hi } = result;
@@ -206,7 +208,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         await supabaseAdmin.from("moderation_events").insert({
           user_id: (context as any).userId,
-          content: `Photo de profil — IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
+          content: `Photo de profil — visage:${result.face_visible} / IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
           verdict: result.verdict,
           categories: result.categories,
           reason: result.reasonFr || result.reason,

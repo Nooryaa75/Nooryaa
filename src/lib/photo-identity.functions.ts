@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { identityDecision } from "./photo-rules";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
 
 export type PhotoIdentityResult = {
@@ -133,13 +134,10 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       ),
     ).slice(0, 3);
 
-    // Membre déjà vérifié ou entré : son selfie de vérification sert aussi de
-    // référence, pour qu'on ne puisse pas remplacer ses photos par celles d'une
-    // autre personne après avoir supprimé les anciennes.
-    const selfie =
-      profile?.photo_verified === true || profile?.onboarded === true
-        ? await downloadVerificationSelfie(userId)
-        : null;
+    // Le selfie de vérification, dès qu'il existe, est la référence principale :
+    // chaque nouvelle photo doit montrer la même personne que ce selfie, même si
+    // le membre a supprimé ou remplacé ses anciennes photos.
+    const selfie = await downloadVerificationSelfie(userId);
     const photoRefs = (await Promise.all(paths.map(downloadPhoto))).filter(
       (i): i is string => !!i,
     );
@@ -224,18 +222,19 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       result.reason =
         "Cette photo ne correspond pas au sexe déclaré sur votre profil. Merci d'utiliser une photo de vous.";
       result.reasonFr = result.reason;
-    } else if (references.length > 0 && result.same_person === "no") {
-      result.verdict = "block";
-      result.reason =
-        "Cette photo ne semble pas être vous : elle ne correspond pas à vos photos de profil. Ajoutez une photo de vous ou refaites la vérification par selfie.";
-      result.reasonFr = result.reason;
-    } else if (references.length > 0 && result.same_person !== "yes") {
-      // Doute : la photo est acceptée mais la vérification par selfie est à refaire.
-      result.verdict = "review";
-      result.require_selfie = true;
-      result.reason =
-        result.reason ||
-        "Nous n'avons pas pu confirmer que cette photo est bien vous : refaites la vérification par selfie.";
+    } else if (identityDecision(references.length > 0, result.same_person).verdict !== "allow") {
+      const decision = identityDecision(references.length > 0, result.same_person);
+      result.verdict = decision.verdict;
+      result.require_selfie = decision.requireSelfie;
+      if (decision.reason) {
+        result.reason = decision.reason;
+        result.reasonFr = decision.reason;
+      } else {
+        // Doute : la photo est acceptée mais la vérification par selfie est à refaire.
+        result.reason =
+          result.reason ||
+          "Nous n'avons pas pu confirmer que cette photo est bien vous : refaites la vérification par selfie.";
+      }
     } else if (
       references.length === 0 &&
       profile?.photo_verified &&

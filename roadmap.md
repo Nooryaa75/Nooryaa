@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Compte « Le boureur arrive » : email envoyé (choisir un pseudo adapté, vraie photo, selfie conforme) puis compte, photos et selfies supprimés.
+- [x] Ressemblance pour tous : selfie toujours utilisé comme référence ; photo d'une autre personne ou ressemblance impossible à établir refusée, doute = selfie à refaire ; 13 tests réussis. Publication du site reste à faire.
+
 - [x] Contrôler les inscriptions user_ff2c0d62d4 et Fatima83 : deux fiches réellement incomplètes, pays affiché France sans être enregistré et réponses complémentaires sauvegardées seulement à la fin. Choix explicite de résidence et lieu où la personne a grandi obligatoires, sauvegarde avant chaque page suivante et contrôle de toutes les réponses à l'accès membre ; 21 tests réussis, vraies fiches consultées sans modification, parcours guidé vérifié jusqu'à la création du compte. Connexion Google/Apple et reprise des questions avec ces membres non testées ; publication reste nécessaire.
 
 - [x] Accélérer l’ouverture des profils administrateur : lectures inutilisées supprimées, compteurs exacts et selfies chargés séparément ; vraie fiche ouverte avec session admin (1,2 s contre 1,73 s avant), partie selfies chargée, aucune alerte et compilation OK. Publication non demandée.

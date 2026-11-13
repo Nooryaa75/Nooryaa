@@ -43,3 +43,27 @@ export function enforceFaceVisible<V extends "allow" | "warn" | "block">(
 export function canStartSelfie(photoCount: number): boolean {
   return photoCount > 0;
 }
+
+export const NOT_SAME_PERSON_REASON =
+  "Cette photo ne semble pas être vous : elle ne correspond pas à vos photos de profil. Ajoutez une photo de vous ou refaites la vérification par selfie.";
+
+export const SAME_PERSON_UNCONFIRMED_REASON =
+  "Nous ne reconnaissons pas la même personne que sur votre selfie de vérification et vos autres photos. Ajoutez une photo de vous où votre visage est bien visible.";
+
+/**
+ * Ressemblance d'une nouvelle photo avec les références du membre (selfie de
+ * vérification en priorité, puis photos déjà acceptées). Règle pour chaque
+ * membre : toutes ses photos doivent montrer la même personne que son selfie.
+ * - personne différente ou ressemblance impossible à établir → photo refusée ;
+ * - ressemblance sans certitude → photo acceptée mais selfie à refaire ;
+ * - aucune référence (toute première photo) → pas de comparaison possible.
+ */
+export function identityDecision(
+  hasReferences: boolean,
+  samePerson: "yes" | "maybe" | "no" | "unknown",
+): { verdict: "allow" | "review" | "block"; requireSelfie: boolean; reason?: string } {
+  if (!hasReferences || samePerson === "yes") return { verdict: "allow", requireSelfie: false };
+  if (samePerson === "no") return { verdict: "block", requireSelfie: false, reason: NOT_SAME_PERSON_REASON };
+  if (samePerson === "unknown") return { verdict: "block", requireSelfie: false, reason: SAME_PERSON_UNCONFIRMED_REASON };
+  return { verdict: "review", requireSelfie: true };
+}

@@ -24,6 +24,7 @@ const STATUS_LABEL = PROFILE_STATUS_LABELS;
 const STATUS_CLASS: Record<string, string> = {
   active: "bg-[color:var(--verified-bg)] text-[color:var(--verified)]",
   inactive: "bg-muted text-muted-foreground",
+  photo_removed: "bg-destructive/10 text-destructive",
   suspended: "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]",
   banned: "bg-destructive/10 text-destructive",
 };

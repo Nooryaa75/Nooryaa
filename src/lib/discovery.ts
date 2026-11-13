@@ -71,7 +71,7 @@ export async function queryDiscoveryProfiles({
   const wantedGender = me?.gender === "homme" ? "femme" : me?.gender === "femme" ? "homme" : null;
   if (!wantedGender) return [];
 
-  let q = supabase.from("profiles").select("*").eq("onboarded", true).eq("status", "active").neq("id", userId);
+  let q = supabase.from("profiles").select("*").eq("onboarded", true).eq("status", "active").is("photo_removed_at", null).neq("id", userId);
   q = q.eq("gender", wantedGender);
 
   q = q.gte("birthdate", minBirth).lte("birthdate", maxBirth);

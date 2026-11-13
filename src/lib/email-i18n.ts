@@ -48,6 +48,14 @@ type Copy = {
     inAppTitle: string;
     inAppBody: string;
   };
+  photoRemoved: {
+    subject: (site: string) => string;
+    title: string;
+    body: (site: string) => string;
+    cta: string;
+    inAppTitle: string;
+    inAppBody: string;
+  };
 };
 
 const fr: Copy = {
@@ -157,6 +165,14 @@ const fr: Copy = {
     cta: "Refaire ma vérification",
     inAppTitle: "Vérification de votre profil à refaire",
     inAppBody: "Une de vos nouvelles photos n'a pas pu être confirmée. Refaites la vérification par selfie depuis Mon compte pour retrouver votre badge « Profil vérifié ».",
+  },
+  photoRemoved: {
+    subject: (site) => `${site} : une photo de profil est obligatoire`,
+    title: "Votre photo de profil est obligatoire",
+    body: (site) => `<p>Vous avez retiré votre photo de profil. Sur <strong>${site}</strong>, une vraie photo de vous, avec le visage bien visible, est obligatoire pour chaque membre, même après la validation du compte.</p><p>Votre compte est donc repassé en <strong>non validé</strong> et vous n'avez plus accès au service. Pour le retrouver, ajoutez une vraie photo de vous puis refaites le selfie de vérification.</p>`,
+    cta: "Ajouter ma photo",
+    inAppTitle: "Photo de profil obligatoire",
+    inAppBody: "Vous avez retiré votre photo de profil : votre compte n'est plus validé. Ajoutez une vraie photo de vous puis refaites le selfie de vérification pour retrouver l'accès.",
   },
 };
 
@@ -268,6 +284,14 @@ const en: Copy = {
     inAppTitle: "Your profile verification must be redone",
     inAppBody: "One of your new photos could not be confirmed. Redo the selfie verification from My account to get your \"Verified profile\" badge back.",
   },
+  photoRemoved: {
+    subject: (site) => `${site}: a profile photo is required`,
+    title: "Your profile photo is required",
+    body: (site) => `<p>You removed your profile photo. On <strong>${site}</strong>, a real photo of yourself, with your face clearly visible, is required for every member, even after the account has been validated.</p><p>Your account is therefore <strong>no longer validated</strong> and you no longer have access to the service. To get it back, add a real photo of yourself and redo the verification selfie.</p>`,
+    cta: "Add my photo",
+    inAppTitle: "Profile photo required",
+    inAppBody: "You removed your profile photo: your account is no longer validated. Add a real photo of yourself and redo the verification selfie to get access back.",
+  },
 };
 
 const ar: Copy = {
@@ -377,6 +401,14 @@ const ar: Copy = {
     cta: "إعادة التحقق",
     inAppTitle: "يجب إعادة التحقق من ملفك",
     inAppBody: "تعذّر تأكيد إحدى صورك الجديدة. أعد التحقق بصورة سيلفي من «حسابي» لاستعادة شارة «ملف موثّق».",
+  },
+  photoRemoved: {
+    subject: (site) => `${site}: صورة الملف الشخصي إلزامية`,
+    title: "صورة ملفكم الشخصي إلزامية",
+    body: (site) => `<p>لقد حذفتم صورة ملفكم الشخصي. على <strong>${site}</strong>، تُعدّ صورة حقيقية لكم يظهر فيها الوجه بوضوح إلزامية لكل عضو، حتى بعد التحقق من الحساب.</p><p>لذلك أصبح حسابكم <strong>غير موثّق</strong> ولم يعد بإمكانكم الوصول إلى الخدمة. لاستعادته، أضيفوا صورة حقيقية لكم ثم أعيدوا صورة السيلفي للتحقق.</p>`,
+    cta: "إضافة صورتي",
+    inAppTitle: "صورة الملف الشخصي إلزامية",
+    inAppBody: "لقد حذفتم صورة ملفكم الشخصي: لم يعد حسابكم موثّقًا. أضيفوا صورة حقيقية لكم ثم أعيدوا صورة السيلفي للتحقق لاستعادة الوصول.",
   },
 };
 

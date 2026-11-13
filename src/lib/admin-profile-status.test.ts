@@ -34,3 +34,9 @@ describe("statut admin des profils", () => {
     assert.equal(adminProfileStatus({ status: "active", onboarded: true, pseudo: "Fatima83" }, 0), "active");
   });
 });
+
+describe("photo retirée après validation", () => {
+  it("un membre validé qui retire sa photo s'affiche Non validé", () => {
+    assert.equal(PROFILE_STATUS_LABELS[adminProfileStatus({ ...entered, photo_removed_at: "2026-11-13T21:22:51Z" }, 0)], "Non validé (photo retirée)");
+  });
+});

@@ -72,3 +72,9 @@ test("une nouvelle inscription avec un pseudo en plusieurs mots est refusée", (
 test("un membre déjà entré avec un pseudo court (ex. W) reste validé", () => {
   assert.equal(registrationComplete({ ...complete, onboarded: true, pseudo: "W" }, 1, true), true);
 });
+test("un membre validé qui retire sa photo n'a plus accès au service", () => {
+  assert.equal(registrationComplete({ ...complete, photo_removed_at: "2026-11-13T21:22:51Z" }, 0, true), false);
+  // Même après avoir remis une photo : il reste non validé tant que le selfie n'est pas refait.
+  assert.equal(registrationComplete({ ...complete, photo_removed_at: "2026-11-13T21:22:51Z" }, 1, true), false);
+  assert.equal(registrationComplete({ ...complete, photo_removed_at: null }, 1, true), true);
+});

@@ -127,7 +127,8 @@ async function keepVerificationSelfie(userId: string, dataUrl: string) {
 async function technicalPending(userId: string, r: SelfieVerificationResult): Promise<SelfieVerificationResult> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("profiles").update({ photo_verification_status: "pending" }).eq("id", userId).eq("photo_verified", false);
+    // Panne : jamais bloquant. Le membre a remis une photo (le selfie l'exige), l'admin contrôlera.
+    await supabaseAdmin.from("profiles").update({ photo_verification_status: "pending", photo_removed_at: null }).eq("id", userId).eq("photo_verified", false);
     await supabaseAdmin.from("moderation_events").insert({
       user_id: userId,
       content: "Vérification selfie non effectuée (problème technique) — selfie à contrôler",
@@ -333,6 +334,8 @@ export const verifySelfie = createServerFn({ method: "POST" })
           photo_verified: result.verdict === "verified",
           photo_verified_at: result.verdict === "verified" ? new Date().toISOString() : null,
           photo_verification_status: result.verdict,
+          // Selfie validé : un compte repassé en non validé (photo retirée) est de nouveau validé.
+          ...(result.verdict === "verified" ? { photo_removed_at: null } : {}),
         })
         .eq("id", userId);
 

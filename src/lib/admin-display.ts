@@ -25,7 +25,7 @@ export function frenchPlace(value: string | null | undefined): string | null {
 }
 
 export const PROFILE_STATUS_LABELS: Record<string, string> = {
-  active: "Entré", inactive: "Pas encore entré", suspended: "Suspendu", banned: "Banni",
+  active: "Entré", inactive: "Pas encore entré", photo_removed: "Non validé (photo retirée)", suspended: "Suspendu", banned: "Banni",
 };
 
 /**
@@ -39,6 +39,7 @@ export const PROFILE_STATUS_LABELS: Record<string, string> = {
 export function adminProfileStatus(p: Record<string, unknown>, photoCount = 0): string {
   const s = (p.status as string | null | undefined) ?? "active";
   if (s !== "active") return s;
+  if (p.photo_removed_at) return "photo_removed";
   if (p.onboarded === true) return "active";
   return registrationComplete(p, photoCount, isValidPhone(p.phone as string | null)) ? "active" : "inactive";
 }

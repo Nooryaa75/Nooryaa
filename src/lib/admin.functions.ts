@@ -273,7 +273,7 @@ export const adminSetSelfieVerified = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin
       .from("profiles")
       .update(data.verified
-        ? { photo_verified: true, photo_verified_at: new Date().toISOString(), photo_verification_status: "verified" }
+        ? { photo_verified: true, photo_verified_at: new Date().toISOString(), photo_verification_status: "verified", photo_removed_at: null }
         : { photo_verified: false, photo_verified_at: null, photo_verification_status: "pending" })
       .eq("id", data.id);
     if (error) throw error;

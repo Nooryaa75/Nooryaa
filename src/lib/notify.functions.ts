@@ -669,6 +669,108 @@ export async function requestSelfieRedo(opts: {
 
 
 /**
+ * Photo de profil retirée par un membre validé : le compte repasse en non
+ * validé (déclencheur base sur photos). Prévient le membre une seule fois par
+ * retrait (notification in-app + email). Indépendant des préférences de
+ * notification : c'est une information sur l'accès au compte.
+ */
+export async function sendPhotoRemovedNotice(opts: { userId: string }) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("id, email, first_name, pseudo, locale, photo_removed_at")
+    .eq("id", opts.userId)
+    .maybeSingle();
+  if (!profile?.photo_removed_at) return { sent: false, reason: "not_removed" as const };
+  const { count } = await supabaseAdmin.from("photos").select("id", { count: "exact", head: true }).eq("user_id", opts.userId);
+  if ((count ?? 0) > 0) return { sent: false, reason: "has_photo" as const };
+
+  const { data: already } = await supabaseAdmin
+    .from("email_notifications")
+    .select("id")
+    .eq("user_id", opts.userId)
+    .eq("kind", "photo_removed")
+    .gte("created_at", profile.photo_removed_at)
+    .limit(1);
+  if (already && already.length > 0) return { sent: false, reason: "already_sent" as const };
+
+  const locale = normalizeLocale(profile.locale);
+  const c = copyFor(locale);
+  try {
+    await supabaseAdmin.from("notifications").insert({
+      user_id: opts.userId,
+      actor_id: null,
+      kind: "system",
+      title: c.photoRemoved.inAppTitle,
+      body: c.photoRemoved.inAppBody,
+      link: "/onboarding",
+    });
+  } catch (e) {
+    console.error("photo removed notification error", e);
+  }
+
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  const resendKey = process.env["RESEND_API_KEY"];
+  if (!lovableKey || !resendKey || !profile.email) return { sent: false, reason: "not_configured" as const };
+
+  const name = escapeHtml(profile.first_name || profile.pseudo || "");
+  const html = layout(
+    c.photoRemoved.title,
+    `<p>${c.greeting(name)}</p>${c.photoRemoved.body(SITE_NAME)}`,
+    c.photoRemoved.cta,
+    `${SITE_URL}/onboarding`,
+    locale,
+  );
+
+  let status = "sent";
+  let errorText: string | null = null;
+  try {
+    const response = await fetch(`${GATEWAY_URL}/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+        "Idempotency-Key": `photo-removed-${opts.userId}-${new Date(profile.photo_removed_at).getTime()}`,
+      },
+      body: JSON.stringify({
+        from: `${SITE_NAME} <noreply@info.nooryaa.com>`,
+        to: [profile.email],
+        subject: c.photoRemoved.subject(SITE_NAME),
+        html,
+      }),
+    });
+    if (!response.ok) {
+      status = "failed";
+      errorText = `[${response.status}] ${await response.text()}`;
+      console.error("Resend gateway error (photo removed)", errorText);
+    }
+  } catch (e: any) {
+    status = "failed";
+    errorText = e?.message ?? "unknown error";
+  }
+
+  try {
+    await supabaseAdmin.from("email_notifications").insert({
+      user_id: opts.userId,
+      kind: "photo_removed",
+      actor_id: null,
+      email: profile.email,
+      status,
+      error: errorText,
+    });
+  } catch {
+    // la journalisation ne doit pas bloquer
+  }
+  return { sent: status === "sent" };
+}
+
+/** Appelé par le membre après avoir retiré sa dernière photo ; le destinataire vient de la session. */
+export const notifyOwnPhotoRemoved = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => sendPhotoRemovedNotice({ userId: context.userId }));
+
+/**
  * Mot de passe oublié : génère un lien de réinitialisation sécurisé
  * et l'envoie avec le template email Nooryaa (Resend).
  * Réponse volontairement neutre : on n'indique jamais si l'email existe.

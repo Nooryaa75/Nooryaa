@@ -44,6 +44,8 @@ export function registrationChecks(p: ProfileAnswers): [number, string, boolean]
 
 export function registrationComplete(p: ProfileAnswers | null, photoCount: number, validPhone: boolean): boolean {
   return !!p && p.onboarded === true && validPhone && photoCount > 0 &&
+    // Photo retirée après validation : compte non validé jusqu'à une nouvelle photo et un nouveau selfie.
+    !p.photo_removed_at &&
     // onboarded n'est posé qu'après un selfie accepté : une revérification ultérieure
     // (nouvelle photo à contrôler) ne doit pas renvoyer un membre déjà entré vers l'inscription.
     (p.photo_verified === true || p.photo_verification_status === "pending" || p.onboarded === true) &&

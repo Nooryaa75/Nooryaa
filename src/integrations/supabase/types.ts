@@ -781,6 +781,7 @@ export type Database = {
           onboarded: boolean
           personality: string | null
           phone: string | null
+          photo_removed_at: string | null
           photo_verification_status: string
           photo_verified: boolean
           photo_verified_at: string | null
@@ -837,6 +838,7 @@ export type Database = {
           onboarded?: boolean
           personality?: string | null
           phone?: string | null
+          photo_removed_at?: string | null
           photo_verification_status?: string
           photo_verified?: boolean
           photo_verified_at?: string | null
@@ -893,6 +895,7 @@ export type Database = {
           onboarded?: boolean
           personality?: string | null
           phone?: string | null
+          photo_removed_at?: string | null
           photo_verification_status?: string
           photo_verified?: boolean
           photo_verified_at?: string | null

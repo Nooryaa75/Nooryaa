@@ -9,6 +9,28 @@ export type RealPhoto = "yes" | "no" | "unsure";
 /** Visage de la personne nettement visible (voile et niqab acceptés si les yeux se voient). */
 export type FaceVisible = "yes" | "no" | "unsure";
 
+/** Torse nu visible (homme ou femme) : interdit sur Nooryaa, règle de pudeur. */
+export type BareChest = "yes" | "no" | "unsure";
+
+export const BARE_CHEST_REASON =
+  "Les photos torse nu ne sont pas autorisées sur Nooryaa. Merci d'ajouter une photo de vous habillé(e), dans le respect des règles de pudeur.";
+
+/** Statut de vérification posé quand l'équipe retire une photo non conforme. */
+export const PHOTO_REJECTED_STATUS = "photo_rejected";
+
+/**
+ * Pudeur : une photo torse nu est toujours refusée ; en cas de doute elle
+ * est au moins signalée à l'équipe.
+ */
+export function enforceModestDress<V extends "allow" | "warn" | "block">(
+  verdict: V,
+  bareChest: BareChest,
+): V | "block" | "warn" {
+  if (bareChest === "yes") return "block";
+  if (bareChest === "unsure" && verdict === "allow") return "warn";
+  return verdict;
+}
+
 export const NO_FACE_REASON =
   "Votre visage doit être bien visible sur la photo : de face, assez près, bien éclairé et net. Les photos sans visage, de loin, trop sombres ou floues ne sont pas acceptées.";
 

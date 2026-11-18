@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { canStartSelfie, enforceFaceVisible, enforceRealPhoto, identityDecision } from "./photo-rules";
+import { canStartSelfie, enforceFaceVisible, enforceModestDress, enforceRealPhoto, identityDecision } from "./photo-rules";
 
 test("une image qui n'est pas une vraie photo de personne (ex. texte) est refusée", () => {
   assert.equal(enforceRealPhoto("allow", "no"), "block");
@@ -54,4 +54,17 @@ test("une photo de la même personne est acceptée", () => {
 
 test("la toute première photo n'a rien à comparer et passe au contrôle suivant", () => {
   assert.equal(identityDecision(false, "unknown").verdict, "allow");
+});
+
+test("une photo torse nu est refusée, même si le reste de l'analyse l'acceptait", () => {
+  assert.equal(enforceModestDress("allow", "yes"), "block");
+  assert.equal(enforceModestDress("warn", "yes"), "block");
+});
+
+test("en cas de doute sur le torse nu, la photo est signalée à l'équipe", () => {
+  assert.equal(enforceModestDress("allow", "unsure"), "warn");
+});
+
+test("une photo habillée n'est pas touchée par la règle torse nu", () => {
+  assert.equal(enforceModestDress("allow", "no"), "allow");
 });

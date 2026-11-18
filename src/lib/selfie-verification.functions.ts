@@ -26,7 +26,7 @@ Analyse :
 1. single_face : le selfie doit contenir EXACTEMENT UNE SEULE tête/personne visible. "yes" si une seule personne est clairement visible, "no" si plusieurs personnes ou plusieurs visages sont présents, "unknown" si aucun visage n'est détecté ou si le visage est trop flou/caché.
 2. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
 3. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
-4. Le selfie doit rester conforme (pas de nudité, pas de contenu choquant) : sinon verdict "rejected".
+4. Le selfie doit rester conforme (pas de nudité, pas de torse nu — interdit pour les hommes comme pour les femmes —, pas de contenu choquant) : sinon verdict "rejected".
 
 Verdict :
 - "verified" si single_face = yes ET same_person = yes ET live_capture = yes.

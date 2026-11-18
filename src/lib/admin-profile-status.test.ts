@@ -27,6 +27,10 @@ describe("statut admin des profils", () => {
   it("sans photo → Pas encore entré", () => {
     assert.equal(adminProfileStatus({ ...entered, onboarded: false }, 0), "inactive");
   });
+  it("photo retirée par l'équipe (torse nu) → Non validé (photo refusée)", () => {
+    const p = { ...entered, photo_removed_at: "2026-11-18T15:40:00Z", photo_verified: false, photo_verification_status: "photo_rejected" };
+    assert.equal(PROFILE_STATUS_LABELS[adminProfileStatus(p, 1)], "Non validé (photo refusée)");
+  });
   it("suspendu reste Suspendu même entré", () => {
     assert.equal(adminProfileStatus({ ...entered, status: "suspended" }, 1), "suspended");
   });

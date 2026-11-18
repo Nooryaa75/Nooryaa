@@ -85,6 +85,7 @@ function Onboarding() {
   const [wasOnboarded, setWasOnboarded] = useState(false);
   const [storedPseudo, setStoredPseudo] = useState("");
   const [photoRemoved, setPhotoRemoved] = useState(false);
+  const [photoRejected, setPhotoRejected] = useState(false);
 
   function checks(): [number, string, boolean][] {
     return [
@@ -204,6 +205,7 @@ function Onboarding() {
       setWasOnboarded(already);
       setStoredPseudo(String((data as any)?.pseudo ?? "").trim());
       setPhotoRemoved(!!(data as any)?.photo_removed_at);
+      setPhotoRejected(!!(data as any)?.photo_removed_at && (data as any)?.photo_verification_status === "photo_rejected");
       // Fiche déjà remplie : on ouvre directement la page des photos et du selfie.
       if (already && isValidPhone((data as any)?.phone) &&
           registrationChecks(data as any).every(([s, , ok]) => s > 2 || ok)) setStep(3);
@@ -303,7 +305,9 @@ function Onboarding() {
       {photoRemoved && (
         <div className="mb-5 rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive" role="alert">
           <p className="font-semibold">{t("Photo de profil obligatoire")}</p>
-          <p className="mt-1">{t("Vous avez retiré votre photo de profil. La photo est obligatoire : votre compte n'est plus validé. Ajoutez une vraie photo de vous puis refaites le selfie de vérification pour retrouver l'accès.")}</p>
+          <p className="mt-1">{photoRejected
+            ? t("Notre équipe a retiré une de vos photos : les photos torse nu ne sont pas autorisées sur Nooryaa. Votre compte n'est plus validé. Ajoutez une nouvelle photo de vous habillé(e), dans le respect des règles de pudeur, puis refaites le selfie de vérification. Sans nouvelle photo conforme, votre compte sera supprimé.")
+            : t("Vous avez retiré votre photo de profil. La photo est obligatoire : votre compte n'est plus validé. Ajoutez une vraie photo de vous puis refaites le selfie de vérification pour retrouver l'accès.")}</p>
         </div>
       )}
       <h2 className="text-lg font-serif text-primary mb-4">{t(STEPS[step])}</h2>

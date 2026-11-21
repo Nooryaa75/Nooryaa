@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { ageFromBirthdate } from "@/lib/profile";
+import { isOnline } from "@/lib/discovery";
 import { frenchPlace, PROFILE_STATUS_LABELS, adminProfileStatus } from "@/lib/admin-display";
 
 export const Route = createFileRoute("/admin/profiles/")({
@@ -51,6 +52,8 @@ function AdminProfilesList() {
     queryFn: () => list({ data: { q: search, status, gender, page, from: from || undefined, to: to || undefined } }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
+    // Rafraîchit la liste chaque minute pour garder le point « en ligne » à jour.
+    refetchInterval: 60_000,
   });
   // Les textes en arabe (pseudo, ville, nom) sont traduits après l'affichage.
   const translate = useServerFn(adminTranslateProfiles);
@@ -132,10 +135,9 @@ function AdminProfilesList() {
             <thead className="bg-secondary/40 text-left">
               <tr>
                 <th className="px-2 py-2 font-medium text-xs w-[5%]">Photo</th>
-                <th className="px-2 py-2 font-medium text-xs w-[9%]">Pseudo</th>
-                <th className="px-2 py-2 font-medium text-xs w-[8%]">Nom</th>
-                <th className="px-2 py-2 font-medium text-xs w-[8%]">Prénom</th>
-                <th className="px-2 py-2 font-medium text-xs w-[13%]">Email</th>
+                <th className="px-2 py-2 font-medium text-xs w-[6%] text-center whitespace-nowrap">En ligne</th>
+                <th className="px-2 py-2 font-medium text-xs w-[12%]">Pseudo</th>
+                <th className="px-2 py-2 font-medium text-xs w-[18%]">Email</th>
                 <th className="px-2 py-2 font-medium text-xs w-[9%]">Téléphone</th>
                 <th className="px-2 py-2 font-medium text-xs w-[8%]">Ville</th>
                 <th className="px-2 py-2 font-medium text-xs w-[7%]">Pays</th>
@@ -161,9 +163,14 @@ function AdminProfilesList() {
                       )}
                     </Link>
                   </td>
+                  <td className="px-2 py-2 text-center">
+                    {isOnline(p) ? (
+                      <span className="inline-block h-3 w-3 rounded-full bg-[color:var(--verified)] ring-2 ring-[color:var(--verified-bg)]" title="En ligne" aria-label="En ligne" role="img" />
+                    ) : (
+                      <span className="inline-block h-2.5 w-2.5 rounded-full bg-muted-foreground/25" title="Hors ligne" aria-label="Hors ligne" role="img" />
+                    )}
+                  </td>
                   <td className="px-2 py-2 font-medium text-primary" data-no-translate><span className="block truncate" title={d.pseudo ?? p.pseudo}>{d.pseudo ?? p.pseudo}</span></td>
-                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.last_name ?? p.last_name ?? ""}>{d.last_name ?? p.last_name ?? "—"}</span></td>
-                  <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.first_name ?? p.first_name ?? ""}>{d.first_name ?? p.first_name ?? "—"}</span></td>
                   <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.email}>{p.email}</span></td>
                   <td className="px-2 py-2 text-muted-foreground" data-no-translate><span className="block truncate" title={p.phone ?? ""}>{p.phone ?? "—"}</span></td>
                   <td className="px-2 py-2" data-no-translate><span className="block truncate" title={d.city ?? frenchPlace(p.city) ?? ""}>{d.city ?? frenchPlace(p.city) ?? "—"}</span></td>
@@ -180,7 +187,7 @@ function AdminProfilesList() {
                 );
               })}
               {data && data.rows.length === 0 && (
-                <tr><td colSpan={12} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
+                <tr><td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">Aucun profil</td></tr>
               )}
             </tbody>
           </table>

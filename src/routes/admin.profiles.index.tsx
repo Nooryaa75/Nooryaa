@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCheckAuth, adminListProfiles, adminGetProfile } from "@/lib/admin.functions";
+import { adminCheckAuth, adminListProfiles, adminGetProfile, adminTranslateProfiles } from "@/lib/admin.functions";
 import { AdminNav } from "@/components/AdminNav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,17 @@ function AdminProfilesList() {
   const { data } = useQuery({
     queryKey: ["admin-profiles", search, status, gender, page, from, to],
     queryFn: () => list({ data: { q: search, status, gender, page, from: from || undefined, to: to || undefined } }),
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
+  // Les textes en arabe (pseudo, ville, nom) sont traduits après l'affichage.
+  const translate = useServerFn(adminTranslateProfiles);
+  const ids = (data?.rows ?? []).map((r: any) => r.id as string);
+  const { data: display } = useQuery({
+    queryKey: ["admin-profiles-display", ids],
+    queryFn: () => translate({ data: { ids } }),
+    enabled: ids.length > 0,
+    staleTime: 10 * 60 * 1000,
   });
 
   return (
@@ -137,7 +148,7 @@ function AdminProfilesList() {
             </thead>
             <tbody>
               {data?.rows.map((p: any) => {
-                const d = (data.display?.[p.id] ?? {}) as Record<string, string>;
+                const d = (display?.[p.id] ?? {}) as Record<string, string>;
                 return (
                 <tr key={p.id} className="border-t border-border/60">
                   <td className="px-2 py-2">

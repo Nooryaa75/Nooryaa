@@ -178,15 +178,52 @@ export const adminListProfiles = createServerFn({ method: "GET" })
     if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
     if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
-    const display = await translateForAdmin(rows ?? []);
     // Nombre de photos par profil : sert au statut « Entré / Pas encore entré ».
+    // La traduction des textes arabes est chargée à part (adminTranslateProfiles)
+    // pour ne jamais retarder l'affichage de la liste.
     const ids = (rows ?? []).map((r: any) => r.id);
     const photoCounts: Record<string, number> = {};
     if (ids.length > 0) {
       const { data: photoRows } = await supabaseAdmin.from("photos").select("user_id").in("user_id", ids);
       for (const r of photoRows ?? []) photoCounts[(r as any).user_id] = (photoCounts[(r as any).user_id] ?? 0) + 1;
     }
-    return { rows: rows ?? [], count: count ?? 0, page, pageSize, display, photoCounts };
+    return { rows: rows ?? [], count: count ?? 0, page, pageSize, photoCounts };
+  });
+
+// Traductions déjà faites, gardées en mémoire tant que le serveur reste actif.
+const adminTranslationCache = new Map<string, string>();
+
+export const adminTranslateProfiles = createServerFn({ method: "GET" })
+  .inputValidator((data: { ids: string[] }) => ({ ids: (data.ids ?? []).slice(0, 60) }))
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    if (data.ids.length === 0) return {} as Record<string, Record<string, string>>;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows } = await supabaseAdmin.from("profiles").select("id, pseudo, city, first_name, last_name").in("id", data.ids);
+    const out: Record<string, Record<string, string>> = {};
+    const missing: any[] = [];
+    for (const r of rows ?? []) {
+      const pending: Record<string, string> = {};
+      for (const field of ["pseudo", "city", "first_name", "last_name"] as const) {
+        const v = (r as any)[field];
+        if (typeof v !== "string" || !ARABIC_RE.test(v)) continue;
+        const cached = adminTranslationCache.get(`${field}:${v}`);
+        if (cached) (out[r.id] ??= {})[field] = cached;
+        else pending[field] = v;
+      }
+      if (Object.keys(pending).length > 0) missing.push({ id: r.id, ...pending });
+    }
+    if (missing.length > 0) {
+      const fresh = await translateForAdmin(missing);
+      for (const r of missing) {
+        for (const [field, fr] of Object.entries(fresh[r.id] ?? {})) {
+          adminTranslationCache.set(`${field}:${r[field]}`, fr);
+          (out[r.id] ??= {})[field] = fr;
+        }
+      }
+    }
+    return out;
   });
 
 export const adminGetProfile = createServerFn({ method: "GET" })

@@ -37,7 +37,7 @@
 - Apparent-age thresholds for photo control live only in src/lib/photo-age.ts; member messages and admin flags follow the verdict, never the raw estimate.
 - "Wants children" uses only profiles.wants_children_answer (oui/non/je_ne_sais_pas; old boolean is a read fallback) through src/lib/wants-children.ts, so je_ne_sais_pas counts as answered but never filters or matches.
 - Verification selfies are stored in the private verification-selfies bucket before any AI analysis (latest as `<userId>`, every attempt as `<userId>-<timestamp>`), so admins can always view them even when verification fails; admin profile deletion removes all of them.
-- Admin profile details fetch only displayed records; private selfie URLs load in a separate admin-authorized query so storage latency never delays the profile.
+- Admin profile list/details fetch only displayed records; AI name translation and private selfie URLs load in separate admin-authorized queries so they never delay the page.
 - Admin profile details use three unframed registration-stage sections, with photos and independently loaded selfies in the post-authentication section; this keeps the display aligned with signup without changing saved data or verification logic.
 - Admin profile status Entré/Pas encore entré comes from registrationComplete via adminProfileStatus (src/lib/admin-display.ts), never written to profiles.status; the profile list shows no verified-selfie badge (selfie state lives in the profile details); admin guards cache the admin check briefly while server functions still enforce requireAdminOrThrow.
 - photo_removed_at (last photo removed, or team-rejected photo_rejected) blocks access until selfie/admin clears it; bare chest blocked in photo-rules.ts.

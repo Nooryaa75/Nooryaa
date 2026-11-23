@@ -166,18 +166,32 @@ export const adminListProfiles = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const page = data.page ?? 0;
     const pageSize = 30;
-    let q = supabaseAdmin.from("profiles").select("*", { count: "exact" });
-    if (data.q && data.q.trim()) {
-      const term = `%${data.q.trim()}%`;
-      q = q.or(`pseudo.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
-    }
-    if (data.status === "active") q = q.eq("status", "active").eq("onboarded", true);
-    else if (data.status === "inactive") q = q.eq("status", "active").or("onboarded.is.null,onboarded.eq.false");
-    else if (data.status && data.status !== "all") q = q.eq("status", data.status);
-    if (data.gender === "homme" || data.gender === "femme") q = q.eq("gender", data.gender);
-    if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
-    if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
-    const { data: rows, count } = await q.order("created_at", { ascending: false }).range(page * pageSize, page * pageSize + pageSize - 1);
+    // Filtres communs à la liste et aux compteurs de répartition : les
+    // pourcentages Hommes / Femmes ne bougent pas quand on clique sur
+    // « Tous », « Hommes » ou « Femmes ».
+    const withFilters = (query: any) => {
+      let q = query;
+      if (data.q && data.q.trim()) {
+        const term = `%${data.q.trim()}%`;
+        q = q.or(`pseudo.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
+      }
+      if (data.status === "active") q = q.eq("status", "active").eq("onboarded", true);
+      else if (data.status === "inactive") q = q.eq("status", "active").or("onboarded.is.null,onboarded.eq.false");
+      else if (data.status && data.status !== "all") q = q.eq("status", data.status);
+      if (data.from) q = q.gte("created_at", new Date(data.from).toISOString());
+      if (data.to) q = q.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
+      return q;
+    };
+    const listQuery = withFilters(supabaseAdmin.from("profiles").select("*", { count: "exact" }));
+    const genderCount = (gender: "homme" | "femme") =>
+      withFilters(supabaseAdmin.from("profiles").select("id", { count: "exact", head: true })).eq("gender", gender);
+    const [{ data: rows, count }, { count: hommeCount }, { count: femmeCount }] = await Promise.all([
+      (data.gender === "homme" || data.gender === "femme" ? listQuery.eq("gender", data.gender) : listQuery)
+        .order("created_at", { ascending: false })
+        .range(page * pageSize, page * pageSize + pageSize - 1),
+      genderCount("homme"),
+      genderCount("femme"),
+    ]);
     // Nombre de photos par profil : sert au statut « Entré / Pas encore entré ».
     // La traduction des textes arabes est chargée à part (adminTranslateProfiles)
     // pour ne jamais retarder l'affichage de la liste.
@@ -187,7 +201,15 @@ export const adminListProfiles = createServerFn({ method: "GET" })
       const { data: photoRows } = await supabaseAdmin.from("photos").select("user_id").in("user_id", ids);
       for (const r of photoRows ?? []) photoCounts[(r as any).user_id] = (photoCounts[(r as any).user_id] ?? 0) + 1;
     }
-    return { rows: rows ?? [], count: count ?? 0, page, pageSize, photoCounts };
+    return {
+      rows: rows ?? [],
+      count: count ?? 0,
+      page,
+      pageSize,
+      photoCounts,
+      // Répartition lue en même temps que la liste, pour l'afficher tout de suite.
+      genderCounts: { homme: hommeCount ?? 0, femme: femmeCount ?? 0 },
+    };
   });
 
 // Traductions déjà faites, gardées en mémoire tant que le serveur reste actif.

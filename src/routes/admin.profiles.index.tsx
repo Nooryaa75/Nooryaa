@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { ageFromBirthdate } from "@/lib/profile";
 import { isOnline } from "@/lib/discovery";
-import { frenchPlace, PROFILE_STATUS_LABELS, adminProfileStatus } from "@/lib/admin-display";
+import { frenchPlace, PROFILE_STATUS_LABELS, adminProfileStatus, genderShares } from "@/lib/admin-display";
 
 export const Route = createFileRoute("/admin/profiles/")({
   ssr: false,
@@ -64,28 +64,40 @@ function AdminProfilesList() {
     enabled: ids.length > 0,
     staleTime: 10 * 60 * 1000,
   });
+  // Répartition hommes / femmes des profils listés (mêmes filtres).
+  const shares = genderShares(data?.genderCounts);
 
   return (
     <div className="min-h-screen mosaic-soft">
       <AdminNav />
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-4">
         <h1 className="text-3xl font-serif text-primary">Profils</h1>
-        <div className="inline-flex rounded-full bg-secondary/60 p-1 border border-border/60">
-          {([
-            { v: "all", label: "Tous" },
-            { v: "homme", label: "Hommes" },
-            { v: "femme", label: "Femmes" },
-          ] as const).map((t) => (
-            <Button
-              key={t.v}
-               variant="ghost"
-               size="sm"
-              onClick={() => { setGender(t.v); setPage(0); }}
-              className={`px-5 py-1.5 rounded-full text-sm font-medium transition-colors ${gender === t.v ? "bg-primary text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"}`}
-            >
-              {t.label}
-            </Button>
-          ))}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="inline-flex rounded-full bg-secondary/60 p-1 border border-border/60">
+            {([
+              { v: "all", label: "Tous" },
+              { v: "homme", label: "Hommes" },
+              { v: "femme", label: "Femmes" },
+            ] as const).map((t) => (
+              <Button
+                key={t.v}
+                variant="ghost"
+                size="sm"
+                onClick={() => { setGender(t.v); setPage(0); }}
+                className={`px-5 py-1.5 rounded-full text-sm font-medium transition-colors ${gender === t.v ? "bg-primary text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"}`}
+              >
+                {t.label}
+                {t.v !== "all" && shares[t.v] !== null && (
+                  <span className="ml-1.5 text-xs tabular-nums opacity-80">{shares[t.v]} %</span>
+                )}
+              </Button>
+            ))}
+          </div>
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {shares.total > 0
+              ? `${shares.homme} % d'hommes · ${shares.femme} % de femmes (${shares.hommeCount} hommes, ${shares.femmeCount} femmes)`
+              : "Aucun membre avec un sexe renseigné"}
+          </span>
         </div>
         <form onSubmit={(e) => { e.preventDefault(); setPage(0); setSearch(q); }} className="bg-card rounded-2xl p-4 border border-border/60 flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[200px]">

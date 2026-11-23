@@ -47,3 +47,28 @@ export function adminProfileStatus(p: Record<string, unknown>, photoCount = 0): 
 export const REPORT_STATUS_LABELS: Record<string, string> = {
   open: "Ouvert", reviewed: "Examiné", resolved: "Résolu", dismissed: "Classé sans suite", closed: "Fermé",
 };
+
+export type GenderShares = {
+  /** Pourcentage d'hommes, null si aucun profil n'est concerné. */
+  homme: number | null;
+  /** Pourcentage de femmes, null si aucun profil n'est concerné. */
+  femme: number | null;
+  hommeCount: number;
+  femmeCount: number;
+  total: number;
+};
+
+/**
+ * Répartition hommes / femmes en pourcentages sur les profils réellement
+ * listés (mêmes filtres de recherche, statut et dates). Les deux pourcentages
+ * summent toujours à 100 et valent null quand aucun profil n'est concerné,
+ * pour n'afficher aucun chiffre trompeur.
+ */
+export function genderShares(counts: { homme?: number | null; femme?: number | null } | null | undefined): GenderShares {
+  const homme = Math.max(0, Math.trunc(counts?.homme ?? 0));
+  const femme = Math.max(0, Math.trunc(counts?.femme ?? 0));
+  const total = homme + femme;
+  if (total === 0) return { homme: null, femme: null, hommeCount: 0, femmeCount: 0, total: 0 };
+  const hommePct = Math.round((homme / total) * 100);
+  return { homme: hommePct, femme: 100 - hommePct, hommeCount: homme, femmeCount: femme, total };
+}

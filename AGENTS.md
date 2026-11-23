@@ -37,12 +37,13 @@
 - Apparent-age thresholds for photo control live only in src/lib/photo-age.ts; member messages and admin flags follow the verdict, never the raw estimate.
 - "Wants children" uses only profiles.wants_children_answer (oui/non/je_ne_sais_pas; old boolean is a read fallback) through src/lib/wants-children.ts, so je_ne_sais_pas counts as answered but never filters or matches.
 - Verification selfies are stored in the private verification-selfies bucket before any AI analysis (latest as `<userId>`, every attempt as `<userId>-<timestamp>`), so admins can always view them even when verification fails; admin profile deletion removes all of them.
-- Admin profile list/details fetch only displayed records; AI translation and selfie URLs load in separate admin queries.
+- Admin list/details fetch only displayed records; translation and selfie URLs load separately.
 - Admin profile details use three unframed registration-stage sections, with photos and independently loaded selfies in the post-authentication section; this keeps the display aligned with signup without changing saved data or verification logic.
-- Admin profile status Entré/Pas encore entré comes from registrationComplete via adminProfileStatus (src/lib/admin-display.ts), never written to profiles.status; the profile list shows no verified-selfie badge (selfie state lives in the profile details); admin guards cache the admin check briefly while server functions still enforce requireAdminOrThrow.
-- photo_removed_at (last photo removed, or team-rejected photo_rejected) blocks access until selfie/admin clears it; bare chest blocked in photo-rules.ts.
+- Admin profile status Entré/Pas encore entré comes from registrationComplete via adminProfileStatus (src/lib/admin-display.ts), never written to profiles.status; no selfie badge in the list; admin guards cache the admin check briefly while server functions still enforce requireAdminOrThrow.
+- photo_removed_at (last photo removed or team-rejected) blocks access until selfie/admin clears it; bare chest blocked in photo-rules.ts.
 - Pseudo rules: pseudo.ts + profiles trigger; photos need a visible face (photo-rules.ts); identity checks also use the stored selfie.
 - Selfie needs a stored profile photo first (photo-rules.ts; no photo is not a technical failure). Technical failures (unloadable photos, AI unavailable) never block signup: the server sets photo_verification_status="pending" and logs a moderation event so admins review the stored selfie; photo_verified stays false until verified.
 - Daily like limit lives only in the likes trigger (like_usage per Paris day; unliking never refunds); can_message requires mutual likes and reveal.ts canMessage mirrors it.
 - Photo/selfie warnings use persistentAlert + memberReason so French-only AI text falls back to a translated message.
 - paid-plans.ts showPaidPlans: iOS never shows paid plans/Premium/prices (App Review 3.1.1/5.6); elsewhere only when the admin switch is on. Keep account deletion reachable from Mon compte.
+- Moderation events store checked media in media_bucket/media_path (photos: private moderation-media) for the admin detail.

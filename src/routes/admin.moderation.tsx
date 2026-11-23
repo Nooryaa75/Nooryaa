@@ -2,6 +2,9 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminCheckAuth, adminListModeration } from "@/lib/admin.functions";
+import { ModerationDetailDialog } from "@/components/admin/ModerationDetailDialog";
+import { MODERATION_KIND_LABELS, moderationKind, moderationContentTitle } from "@/lib/moderation-display";
+import { ChevronRight } from "lucide-react";
 import { AdminNav } from "@/components/AdminNav";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
@@ -27,6 +30,7 @@ function AdminModeration() {
   const [qName, setQName] = useState("");
   const [qReason, setQReason] = useState("");
   const [qDate, setQDate] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
   const norm = (s: unknown) => String(s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const filtered = (data ?? []).filter((e: any) => {
     if (qName.trim()) {
@@ -63,7 +67,7 @@ function AdminModeration() {
           </Select>
         </div>
         <p className="text-sm text-muted-foreground">
-          Chaque message privé est analysé avant envoi : lexique interdit, ton et contexte. Les messages contraires à la charte sont bloqués, les cas limites sont signalés ici.
+          Chaque message, vocal, photo et selfie est analysé automatiquement. Les contenus contraires à la charte sont bloqués, les cas limites sont signalés ici. Cliquez sur un événement pour voir tous ses détails.
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -74,10 +78,18 @@ function AdminModeration() {
 
         <div className="space-y-3">
           {filtered.map((e: any) => (
-            <div key={e.id} className="rounded-xl border border-border/60 bg-card p-4 space-y-2">
+            <button
+              type="button"
+              key={e.id}
+              onClick={() => setOpenId(e.id)}
+              className="w-full text-left rounded-xl border border-border/60 bg-card p-4 space-y-2 transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               <div className="flex items-center justify-between flex-wrap gap-2 text-sm">
                 <span className="font-medium text-primary">
-                  {e.author?.pseudo ?? "—"} → {e.target?.pseudo ?? "—"}
+                  {e.author?.pseudo ?? "—"}{e.target ? ` → ${e.target.pseudo ?? "—"}` : ""}
+                </span>
+                <span className="text-xs rounded-full border border-border px-2 py-0.5 text-muted-foreground">
+                  {MODERATION_KIND_LABELS[moderationKind(e)]}
                 </span>
                 <span className="flex items-center gap-2">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${e.verdict === "block" ? "bg-destructive/10 text-destructive" : "bg-[color-mix(in_oklab,var(--gold)_20%,transparent)] text-[color:var(--gold)]"}`}>
@@ -93,15 +105,21 @@ function AdminModeration() {
                   ))}
                 </div>
               )}
-              <p className="text-sm italic text-muted-foreground">« {e.content} »</p>
-              {e.reason && <p className="text-xs text-muted-foreground">Motif : {e.reason}</p>}
-            </div>
+              <p className="text-sm italic text-muted-foreground line-clamp-2">
+                {e.source === "photo" ? moderationContentTitle(e.content) : `« ${e.content} »`}
+              </p>
+              {e.reason && <p className="text-xs text-muted-foreground line-clamp-2">Motif : {e.reason}</p>}
+              <span className="flex items-center gap-1 text-xs font-medium text-primary">
+                Voir le détail <ChevronRight className="h-3 w-3" />
+              </span>
+            </button>
           ))}
           {data && filtered.length === 0 && (
             <p className="text-muted-foreground text-sm">Aucun événement de modération.</p>
           )}
         </div>
       </main>
+      <ModerationDetailDialog id={openId} onClose={() => setOpenId(null)} />
     </div>
   );
 }

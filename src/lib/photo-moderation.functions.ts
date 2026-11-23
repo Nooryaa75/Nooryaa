@@ -86,8 +86,12 @@ export const moderatePhoto = createServerFn({ method: "POST" })
     const technicalFallback = async (): Promise<PhotoModerationResult> => {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { keepModerationImage, MODERATION_MEDIA_BUCKET } = await import("./moderation-media.server");
+        const mediaPath = await keepModerationImage((context as any).userId, data.imageDataUrl);
         await supabaseAdmin.from("moderation_events").insert({
           user_id: (context as any).userId,
+          media_bucket: mediaPath ? MODERATION_MEDIA_BUCKET : null,
+          media_path: mediaPath,
           content: "Photo de profil non contrôlée (problème technique) — photo à vérifier",
           verdict: "warn",
           categories: ["photo_non_controlee"],
@@ -226,8 +230,12 @@ export const moderatePhoto = createServerFn({ method: "POST" })
     if (result.verdict !== "allow") {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { keepModerationImage, MODERATION_MEDIA_BUCKET } = await import("./moderation-media.server");
+        const mediaPath = await keepModerationImage((context as any).userId, data.imageDataUrl);
         await supabaseAdmin.from("moderation_events").insert({
           user_id: (context as any).userId,
+          media_bucket: mediaPath ? MODERATION_MEDIA_BUCKET : null,
+          media_path: mediaPath,
           content: `Photo de profil — visage:${result.face_visible} / torse nu:${result.bare_chest} / IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
           verdict: result.verdict,
           categories: result.categories,

@@ -253,8 +253,12 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       if (result.verdict !== "allow") {
+        const { keepModerationImage, MODERATION_MEDIA_BUCKET } = await import("./moderation-media.server");
+        const mediaPath = await keepModerationImage(userId, data.imageDataUrl);
         await supabaseAdmin.from("moderation_events").insert({
           user_id: userId,
+          media_bucket: mediaPath ? MODERATION_MEDIA_BUCKET : null,
+          media_path: mediaPath,
           content: `Contrôle identité photo — même personne:${result.same_person} / sexe cohérent:${result.gender_match}`,
           verdict: result.verdict === "block" ? "block" : "warn",
           categories: ["photo_identity"],

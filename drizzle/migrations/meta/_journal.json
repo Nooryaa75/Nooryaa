@@ -134,6 +134,13 @@
       "when": 1794607923108,
       "tag": "0018_photo_required_after_validation",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795462373063,
+      "tag": "0019_moderation_event_media",
+      "breakpoints": true
     }
   ]
 }

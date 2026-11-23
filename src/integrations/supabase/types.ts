@@ -503,6 +503,8 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          media_bucket: string | null
+          media_path: string | null
           reason: string | null
           source: string
           target_user: string | null
@@ -514,6 +516,8 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          media_bucket?: string | null
+          media_path?: string | null
           reason?: string | null
           source?: string
           target_user?: string | null
@@ -525,6 +529,8 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          media_bucket?: string | null
+          media_path?: string | null
           reason?: string | null
           source?: string
           target_user?: string | null

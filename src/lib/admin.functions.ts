@@ -693,3 +693,82 @@ export const adminListModeration = createServerFn({ method: "GET" })
     const byId = new Map((profs ?? []).map((p) => [p.id, p]));
     return (rows ?? []).map((r: any) => ({ ...r, author: byId.get(r.user_id), target: r.target_user ? byId.get(r.target_user) : null }));
   });
+
+// Détail complet d'un événement de modération : membres concernés, photo,
+// selfie ou vocal contrôlé, et contexte de la discussion.
+export const adminGetModerationDetail = createServerFn({ method: "GET" })
+  .inputValidator((data: { id: string }) => ({ id: String(data?.id ?? "") }))
+  .handler(async ({ data }) => {
+    const { requireAdminOrThrow } = await import("./admin-session.server");
+    await requireAdminOrThrow();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { moderationKind, selfieForEvent } = await import("./moderation-display");
+    const { data: ev, error } = await supabaseAdmin.from("moderation_events").select("*").eq("id", data.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!ev) throw new Error("Événement introuvable");
+    const kind = moderationKind(ev);
+    const profileFields =
+      "id, pseudo, email, gender, birthdate, city, country, status, onboarded, photo_verified, photo_verification_status, photo_removed_at, primary_photo_url, created_at, last_seen, locale";
+    const ids = [ev.user_id, ev.target_user].filter((x): x is string => !!x);
+    const sign = async (bucket: string, path: string) => {
+      const { data: s } = await supabaseAdmin.storage.from(bucket).createSignedUrl(path, 60 * 60 * 6);
+      return s?.signedUrl ?? null;
+    };
+
+    const isPhoto = kind === "photo" || kind === "selfie" || kind === "identite";
+    const [profs, photos, history, media, selfieUrl, conversation] = await Promise.all([
+      supabaseAdmin.from("profiles").select(profileFields).in("id", ids),
+      isPhoto
+        ? supabaseAdmin.from("photos").select("id, url, position, created_at").eq("user_id", ev.user_id).order("position")
+        : Promise.resolve({ data: [] as any[] }),
+      supabaseAdmin
+        .from("moderation_events")
+        .select("id, verdict, source, categories, reason, content, created_at")
+        .eq("user_id", ev.user_id)
+        .neq("id", ev.id)
+        .order("created_at", { ascending: false })
+        .limit(10),
+      ev.media_bucket && ev.media_path ? sign(ev.media_bucket, ev.media_path) : Promise.resolve(null),
+      (async () => {
+        if (!isPhoto) return null;
+        try {
+          const bucket = supabaseAdmin.storage.from("verification-selfies");
+          const { data: files } = await bucket.list("", { search: ev.user_id, limit: 200 });
+          const names = (files ?? []).map((f) => f.name);
+          const name = selfieForEvent(names, ev.user_id, ev.created_at) ?? (names.includes(ev.user_id) ? ev.user_id : null);
+          if (!name) return null;
+          return { url: await sign("verification-selfies", name), atEvent: name !== ev.user_id };
+        } catch {
+          return null;
+        }
+      })(),
+      (async () => {
+        if (!ev.target_user || isPhoto) return [];
+        const a = ev.user_id, b = ev.target_user;
+        const pair = `and(sender.eq.${a},receiver.eq.${b}),and(sender.eq.${b},receiver.eq.${a})`;
+        const fields = "id, sender, receiver, content, image_path, audio_path, audio_duration, deleted_at, created_at";
+        const [before, after] = await Promise.all([
+          supabaseAdmin.from("messages").select(fields).or(pair).lte("created_at", ev.created_at).order("created_at", { ascending: false }).limit(10),
+          supabaseAdmin.from("messages").select(fields).or(pair).gt("created_at", ev.created_at).order("created_at", { ascending: true }).limit(5),
+        ]);
+        const rows = [...(before.data ?? []).reverse(), ...(after.data ?? [])];
+        return await Promise.all(rows.map(async (m: any) => ({
+          ...m,
+          image_url: m.image_path ? await sign("message-photos", m.image_path) : null,
+          audio_url: m.audio_path ? await sign("message-audio", m.audio_path) : null,
+        })));
+      })(),
+    ]);
+    const byId = new Map(((profs.data ?? []) as any[]).map((p) => [p.id, p]));
+    return {
+      event: ev,
+      kind,
+      author: byId.get(ev.user_id) ?? null,
+      target: ev.target_user ? byId.get(ev.target_user) ?? null : null,
+      mediaUrl: media,
+      selfie: selfieUrl,
+      photos: (photos.data ?? []) as { id: string; url: string; position: number; created_at: string }[],
+      conversation: conversation as any[],
+      history: history.data ?? [],
+    };
+  });

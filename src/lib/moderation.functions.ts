@@ -174,6 +174,8 @@ export const moderateVoice = createServerFn({ method: "POST" })
           user_id: (context as any).userId,
           target_user: data.targetUserId ?? null,
           content: transcript.slice(0, 2000),
+          media_bucket: "message-audio",
+          media_path: data.audioPath,
           verdict: result.verdict,
           categories: result.categories,
           reason: result.reasonFr || result.reason,

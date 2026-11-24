@@ -12,6 +12,25 @@ export type FaceVisible = "yes" | "no" | "unsure";
 /** Torse nu visible (homme ou femme) : interdit sur Nooryaa, règle de pudeur. */
 export type BareChest = "yes" | "no" | "unsure";
 
+/** Une seule personne sur la photo (photo de profil et selfie) : pas de photo de groupe ni à deux. */
+export type SinglePerson = "yes" | "no" | "unsure";
+
+export const SINGLE_PERSON_REASON =
+  "Une seule personne doit être présente sur la photo. Les photos de groupe ou avec une autre personne ne sont pas acceptées.";
+
+/**
+ * Une seule personne : une photo de groupe ou à deux est toujours refusée ;
+ * en cas de doute (personne en arrière-plan) elle est signalée à l'équipe.
+ */
+export function enforceSinglePerson<V extends "allow" | "warn" | "block">(
+  verdict: V,
+  singlePerson: SinglePerson,
+): V | "block" | "warn" {
+  if (singlePerson === "no") return "block";
+  if (singlePerson === "unsure" && verdict === "allow") return "warn";
+  return verdict;
+}
+
 export const BARE_CHEST_REASON =
   "Les photos torse nu ne sont pas autorisées sur Nooryaa. Merci d'ajouter une photo de vous habillé(e), dans le respect des règles de pudeur.";
 

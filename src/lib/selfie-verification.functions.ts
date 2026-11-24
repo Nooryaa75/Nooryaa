@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
-import { PHOTO_BEFORE_SELFIE_REASON } from "./photo-rules";
+import { PHOTO_BEFORE_SELFIE_REASON, SINGLE_PERSON_REASON } from "./photo-rules";
 
 export type SelfieVerdict = "verified" | "review" | "rejected";
 
@@ -23,7 +23,7 @@ On te donne le SELFIE de vérification pris en direct par la personne, puis une 
 Sois TRÈS STRICT : en cas de doute, ne valide pas. Compare précisément la morphologie du visage (forme du visage, écartement et forme des yeux, nez, bouche, mâchoire, oreilles, grains de beauté), l'âge apparent et le genre apparent. Une simple ressemblance générale (même couleur de cheveux, même type physique, même voile) NE SUFFIT PAS : réponds "no" si un seul trait morphologique diffère nettement.
 
 Analyse :
-1. single_face : le selfie doit contenir EXACTEMENT UNE SEULE tête/personne visible. "yes" si une seule personne est clairement visible, "no" si plusieurs personnes ou plusieurs visages sont présents, "unknown" si aucun visage n'est détecté ou si le visage est trop flou/caché.
+1. single_face : le selfie doit contenir EXACTEMENT UNE SEULE tête/personne visible. "yes" si une seule personne est clairement visible, "no" si plusieurs personnes ou plusieurs visages sont présents (une autre personne à côté, derrière, dans les bras ou en partie visible ; une photo de groupe ou à deux), "unknown" si aucun visage n'est détecté ou si le visage est trop flou/caché.
 2. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
 3. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
 4. Le selfie doit rester conforme (pas de nudité, pas de torse nu — interdit pour les hommes comme pour les femmes —, pas de contenu choquant) : sinon verdict "rejected".
@@ -316,11 +316,13 @@ export const verifySelfie = createServerFn({ method: "POST" })
     // Garde-fous côté serveur (stricts : le doute ne valide jamais)
     if (result.single_face === "no" || result.same_person === "no" || result.live_capture === "no") {
       result.verdict = "rejected";
-      if (!result.reason) {
+      if (result.single_face === "no") {
+        // Selfie avec plusieurs personnes : toujours le même message clair.
+        result.reason = SINGLE_PERSON_REASON;
+        result.reasonFr = SINGLE_PERSON_REASON;
+      } else if (!result.reason) {
         result.reason =
-          result.single_face === "no"
-            ? "Le selfie doit montrer une seule personne. Plusieurs visages ou absence de visage entraînent un refus."
-            : "Le selfie ne correspond pas à vos photos de profil.";
+          "Le selfie ne correspond pas à vos photos de profil.";
       }
     } else if (result.single_face !== "yes" || result.same_person !== "yes" || result.live_capture !== "yes") {
       result.verdict = "review";

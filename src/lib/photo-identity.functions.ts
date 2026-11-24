@@ -243,11 +243,10 @@ export const verifyPhotoIdentity = createServerFn({ method: "POST" })
       // Aucune photo de référence disponible, mais le membre est déjà vérifié :
       // on ne retire le badge que si l'IA n'a même pas pu confirmer la cohérence
       // avec le sexe déclaré. Une photo cohérente conserve le badge.
-      result.verdict = "review";
-      result.require_selfie = true;
+      result.verdict = "block";
       result.reason =
-        result.reason ||
-        "Nous n'avons pas pu confirmer le contenu de cette photo : refaites la vérification par selfie.";
+        "Nous n'avons pas pu confirmer que cette photo est bien vous. Merci d'ajouter une autre photo, de face et bien éclairée.";
+      result.reasonFr = result.reason;
     }
 
     try {

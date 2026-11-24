@@ -20,6 +20,7 @@ import {
   type FaceVisible,
   type RealPhoto,
   type SinglePerson,
+  UNCERTAIN_PHOTO_REASON,
 } from "./photo-rules";
 
 export type PhotoVerdict = "allow" | "warn" | "block";
@@ -64,7 +65,7 @@ Si la personne paraît mineure (moins de 18 ans) → verdict "block".
 Si ai_generated = "yes" ou filtered = "heavy" → verdict "block". Si ai_generated = "maybe" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","face_visible":"yes|no|unsure","bare_chest":"yes|no|unsure","single_person":"yes|no|unsure","too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","face_visible":"yes|no|unsure","bare_chest":"yes|no|unsure","single_person":"yes|no|unsure","too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","tilted":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -271,10 +272,15 @@ export const moderatePhoto = createServerFn({ method: "POST" })
           result.verdict = "block";
           result.reason = violation.reason;
           result.reasonFr = violation.reason;
-        } else if (violation.verdict === "warn" && result.verdict === "allow") {
-          result.verdict = "warn";
         }
       }
+    }
+
+    // Plus de statut « averti » : tout doute refuse la photo.
+    if (result.verdict === "warn") {
+      result.verdict = "block";
+      if (!result.reason) result.reason = UNCERTAIN_PHOTO_REASON;
+      if (!result.reasonFr) result.reasonFr = result.reason;
     }
 
     if (result.verdict !== "allow") {

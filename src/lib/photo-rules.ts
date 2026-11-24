@@ -106,7 +106,8 @@ export function identityDecision(
   if (!hasReferences || samePerson === "yes") return { verdict: "allow", requireSelfie: false };
   if (samePerson === "no") return { verdict: "block", requireSelfie: false, reason: NOT_SAME_PERSON_REASON };
   if (samePerson === "unknown") return { verdict: "block", requireSelfie: false, reason: SAME_PERSON_UNCONFIRMED_REASON };
-  return { verdict: "review", requireSelfie: true };
+  // Doute sur la ressemblance : refusé (plus de simple avertissement).
+  return { verdict: "block", requireSelfie: false, reason: SAME_PERSON_UNCONFIRMED_REASON };
 }
 
 // ---------------------------------------------------------------------------
@@ -128,6 +129,8 @@ export type PhotoRuleChecks = {
   shorts: Tri;
   /** Visage visible en entier (pas coupé par le cadre ni à moitié caché). */
   face_complete: Tri;
+  /** Photo penchée / de travers (l'image ou la tête nettement inclinée). */
+  tilted: Tri;
   /** Orientation du visage : « profile » = pris de côté. */
   face_angle: FaceAngle;
   /** Sexe apparent, seulement quand l'analyse est sûre. */
@@ -159,6 +162,14 @@ export const SEXUAL_CONTENT_REASON =
 export const ADDED_TEXT_REASON =
   "Les photos avec du texte ajouté (écriture, légende, numéro, lien) ne sont pas acceptées. Merci d'ajouter une photo de vous sans texte.";
 
+export const TILTED_REASON =
+  "Votre photo doit être droite. Les photos de travers ou penchées ne sont pas acceptées.";
+
+export const UNCERTAIN_PHOTO_REASON =
+  "Votre photo ne respecte pas les règles de Nooryaa. Merci d'ajouter une photo de vous seul, de face, droite, bien éclairée et sans retouche.";
+export const SELFIE_UNCERTAIN_REASON =
+  "Votre selfie n'a pas pu être validé. Merci de le refaire seul, de face, droit, bien éclairé et ressemblant à vos photos.";
+
 export type RuleViolation = { verdict: "block" | "warn"; category: string; reason: string };
 
 /**
@@ -181,6 +192,7 @@ export function photoRuleViolation(
     [c.too_dark === "yes", "trop_sombre", TOO_DARK_REASON],
     [c.face_complete === "no", "visage_a_moitie", HALF_FACE_REASON],
     [c.face_angle === "profile", "photo_de_profil", PROFILE_VIEW_REASON],
+    [c.tilted === "yes", "photo_de_travers", TILTED_REASON],
     [
       !!declaredGender && c.apparent_gender !== "unknown" && c.apparent_gender !== declaredGender,
       "sexe_incoherent",
@@ -188,15 +200,18 @@ export function photoRuleViolation(
     ],
   ];
   for (const [hit, category, reason] of blocks) if (hit) return { verdict: "block", category, reason };
-  if (!strict) return null;
+  void strict; // photo et selfie appliquent désormais les mêmes règles
   const warns: [boolean, string, string][] = [
     [c.sexual === "unsure", "caractere_sexuel", SEXUAL_CONTENT_REASON],
     [c.shorts === "unsure", "short", SHORTS_REASON],
     [c.ai_generated === "maybe", "modifiee_ia", AI_EDITED_REASON],
     [c.added_text === "unsure", "texte", ADDED_TEXT_REASON],
     [c.face_complete === "unsure", "visage_a_moitie", HALF_FACE_REASON],
+    [c.too_dark === "unsure", "trop_sombre", TOO_DARK_REASON],
+    [c.tilted === "unsure", "photo_de_travers", TILTED_REASON],
   ];
-  for (const [hit, category, reason] of warns) if (hit) return { verdict: "warn", category, reason };
+  // Plus de simple avertissement : un doute refuse aussi la photo / le selfie.
+  for (const [hit, category, reason] of warns) if (hit) return { verdict: "block", category, reason };
   return null;
 }
 
@@ -209,6 +224,7 @@ export function parsePhotoRuleChecks(p: Record<string, unknown>): PhotoRuleCheck
     too_dark: pick(p["too_dark"], tri, "no"),
     shorts: pick(p["shorts"], tri, "no"),
     face_complete: pick(p["face_complete"], tri, "yes"),
+    tilted: pick(p["tilted"], tri, "no"),
     face_angle: pick(p["face_angle"], ["front", "three_quarter", "profile", "unknown"] as const, "unknown"),
     apparent_gender: pick(p["apparent_gender"], ["homme", "femme", "unknown"] as const, "unknown"),
     sexual: pick(p["sexual"], tri, "no"),
@@ -223,6 +239,7 @@ export const PHOTO_RULES_PROMPT = `Règles de refus Nooryaa (analyse l'image de 
 - too_dark : "yes" si la photo est prise dans le noir ou si elle est si sombre qu'on distingue mal le visage ; "unsure" si limite ; "no" si l'éclairage est correct.
 - shorts : "yes" si la personne porte un short, un bermuda ou une tenue laissant les jambes nues au-dessus du genou (hommes comme femmes) ; "unsure" si on ne voit pas assez ; "no" si les jambes sont couvertes ou ne sont pas visibles (photo de buste, de visage).
 - face_complete : "no" si le visage est coupé par le bord de l'image ou à moitié caché (main, cheveux, objet, téléphone, ombre forte sur une moitié) ; "unsure" en cas de doute ; "yes" si le visage entier se voit. Le voile qui couvre les cheveux est accepté ; le niqab est accepté si les yeux se voient bien.
+- tilted : "yes" si la photo est de travers (image penchée, horizon incliné, tête nettement penchée sur le côté) ; "unsure" si légèrement penchée ; "no" si la photo est droite.
 - face_angle : "front" (de face), "three_quarter" (légèrement tourné, les deux yeux visibles), "profile" (pris de côté, un seul œil ou le visage vu de côté), "unknown" si pas de visage.
 - apparent_gender : "homme" ou "femme" uniquement si tu es certain du sexe de la personne sur l'image ; "unknown" en cas de doute.
 - sexual : "yes" si l'image a un caractère sexuel ou suggestif (pose provocante, tenue moulante ou transparente, sous-vêtements, décolleté marqué, gestes ou regard aguicheurs explicites) ; "unsure" si limite ; "no" sinon.
@@ -233,5 +250,5 @@ export const PHOTO_RULES_PROMPT = `Règles de refus Nooryaa (analyse l'image de 
 /** Résumé lisible des règles communes pour le journal de modération. */
 export function checksSummary(c: PhotoRuleChecks | undefined): string {
   if (!c) return "";
-  return ` / sombre:${c.too_dark} / short:${c.shorts} / visage entier:${c.face_complete} / orientation:${c.face_angle} / sexe apparent:${c.apparent_gender} / sexuel:${c.sexual} / texte:${c.added_text}`;
+  return ` / sombre:${c.too_dark} / short:${c.shorts} / visage entier:${c.face_complete} / orientation:${c.face_angle} / de travers:${c.tilted} / sexe apparent:${c.apparent_gender} / sexuel:${c.sexual} / texte:${c.added_text}`;
 }

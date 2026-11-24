@@ -45,7 +45,7 @@ test("une photo dont la ressemblance ne peut pas être établie est refusée", (
 });
 
 test("une photo qui ressemble sans certitude est acceptée mais le selfie est à refaire", () => {
-  assert.deepEqual(identityDecision(true, "maybe"), { verdict: "review", requireSelfie: true });
+  assert.equal(identityDecision(true, "maybe").verdict, "block");
 });
 
 test("une photo de la même personne est acceptée", () => {
@@ -100,6 +100,9 @@ const refused: [string, Partial<PhotoRuleChecks>, string][] = [
   ["avec un filtre qui change le visage", { filtered: "heavy" }, "modifiee_ia"],
   ["à caractère sexuel", { sexual: "yes" }, "caractere_sexuel"],
   ["avec du texte", { added_text: "yes" }, "texte"],
+  ["de travers", { tilted: "yes" }, "photo_de_travers"],
+  ["un peu de travers (doute)", { tilted: "unsure" }, "photo_de_travers"],
+  ["en doute IA (plus d'avertissement)", { ai_generated: "maybe" }, "modifiee_ia"],
 ];
 for (const [label, change, category] of refused) {
   test(`photo ${label} : refusée (photo et selfie)`, () => {
@@ -123,7 +126,7 @@ test("photo légèrement tournée (trois quarts) : acceptée", () => {
   assert.equal(photoRuleViolation({ ...ok, face_angle: "three_quarter" }, "homme"), null);
 });
 
-test("doute sur un short : signalée à l'équipe pour une photo, sans effet sur le selfie", () => {
-  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme")?.verdict, "warn");
-  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme", false), null);
+test("doute sur un short : refusé, photo comme selfie (plus d'avertissement)", () => {
+  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme")?.verdict, "block");
+  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme", false)?.verdict, "block");
 });

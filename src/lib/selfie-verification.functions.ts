@@ -11,6 +11,7 @@ import {
   photoRuleViolation,
   SINGLE_PERSON_REASON,
   type PhotoRuleChecks,
+  SELFIE_UNCERTAIN_REASON,
 } from "./photo-rules";
 
 const SELFIE_AGE_REASON =
@@ -55,7 +56,7 @@ Verdict :
 - "review" dans les autres cas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","bare_chest":"yes|no|unsure","apparent_age_min":0,"apparent_age_max":0,"too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
+{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","bare_chest":"yes|no|unsure","apparent_age_min":0,"apparent_age_max":0,"too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","tilted":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -376,6 +377,13 @@ export const verifySelfie = createServerFn({ method: "POST" })
         result.reason = rejectReason;
         result.reasonFr = rejectReason;
       }
+    }
+
+    // Plus de statut « à contrôler » : un doute refuse le selfie (à refaire).
+    if (result.verdict === "review") {
+      result.verdict = "rejected";
+      if (!result.reason) result.reason = SELFIE_UNCERTAIN_REASON;
+      if (!result.reasonFr) result.reasonFr = result.reason;
     }
 
     try {

@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, RefreshCw, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { centerSquare } from "@/lib/camera-frame";
 
 /**
  * Prise de photo via la caméra de l'appareil (web app + webview native).
  * Utilise getUserMedia ; l'appelant gère le repli <input capture> si indisponible.
  */
+function cropToCenterSquare(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  const { sx, sy, side } = centerSquare(canvas.width, canvas.height);
+  if (side === canvas.width && side === canvas.height) return canvas;
+  const out = document.createElement("canvas");
+  out.width = side;
+  out.height = side;
+  out.getContext("2d")!.drawImage(canvas, sx, sy, side, side, 0, 0, side, side);
+  return out;
+}
+
 /** Part du cadre occupée par le cercle de cadrage du visage. */
 const GUIDE_RATIO = 0.74;
 
@@ -107,7 +118,11 @@ export function CameraCapture({
       return;
     }
 
-    setShot(canvas.toDataURL("image/jpeg", 0.9));
+    // L'aperçu est carré (le reste de l'image est rogné à l'écran) : on garde
+    // exactement ce carré, pour que la photo envoyée soit celle que le membre voit
+    // et qu'aucune personne cachée au bord ne soit contrôlée à son insu.
+    const square = cropToCenterSquare(canvas);
+    setShot(square.toDataURL("image/jpeg", 0.9));
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
   }

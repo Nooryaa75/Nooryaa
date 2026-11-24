@@ -1,7 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { asMemberLocale, memberLanguageRule } from "./moderation-language";
-import { PHOTO_BEFORE_SELFIE_REASON, SINGLE_PERSON_REASON } from "./photo-rules";
+import { ageGapMatch } from "./photo-age";
+import {
+  BARE_CHEST_REASON,
+  checksSummary,
+  parsePhotoRuleChecks,
+  PHOTO_BEFORE_SELFIE_REASON,
+  PHOTO_RULES_PROMPT,
+  photoRuleViolation,
+  SINGLE_PERSON_REASON,
+  type PhotoRuleChecks,
+} from "./photo-rules";
+
+const SELFIE_AGE_REASON =
+  "L'âge visible sur cette photo ne correspond pas à votre âge déclaré. Merci d'utiliser une photo récente de vous.";
 
 export type SelfieVerdict = "verified" | "review" | "rejected";
 
@@ -15,6 +28,11 @@ export type SelfieVerificationResult = {
   reason: string;
   /** Copie française conservée pour le journal de modération. */
   reasonFr?: string;
+  /** Règles de refus communes appliquées au selfie (Image 1). */
+  checks?: PhotoRuleChecks;
+  bare_chest?: "yes" | "no" | "unsure";
+  apparent_age_min?: number;
+  apparent_age_max?: number;
 };
 
 const SYSTEM_PROMPT = `Tu es l'agent de vérification d'identité photo de Nooryaa (plateforme de mise en relation musulmane).
@@ -26,7 +44,10 @@ Analyse :
 1. single_face : le selfie doit contenir EXACTEMENT UNE SEULE tête/personne visible. "yes" si une seule personne est clairement visible, "no" si plusieurs personnes ou plusieurs visages sont présents (une autre personne à côté, derrière, dans les bras ou en partie visible ; une photo de groupe ou à deux), "unknown" si aucun visage n'est détecté ou si le visage est trop flou/caché.
 2. same_person : la personne du selfie est-elle la même que sur les photos de profil ? "yes" uniquement si tu es quasi certain (>90%) sur au moins une photo de profil nette, "maybe" si ressemblance sans certitude, "no" si les traits diffèrent, "unknown" si un visage est absent/illisible.
 3. live_capture : le selfie semble-t-il pris en direct par la webcam/le téléphone ? "no" si c'est une photo d'écran, une photo d'une photo, une image téléchargée d'internet, une image générée par IA ou fortement retouchée.
-4. Le selfie doit rester conforme (pas de nudité, pas de torse nu — interdit pour les hommes comme pour les femmes —, pas de contenu choquant) : sinon verdict "rejected".
+4. Le selfie doit rester conforme (pas de nudité, pas de torse nu — interdit pour les hommes comme pour les femmes —, pas de contenu choquant) : sinon verdict "rejected". bare_chest = "yes" si torse/poitrine/ventre nus sur le selfie, "unsure" si on ne voit pas assez, "no" sinon.
+5. Âge apparent sur le selfie : apparent_age_min / apparent_age_max (entiers, 0 si aucun visage).
+6. Pour le SELFIE (Image 1 uniquement), remplis aussi les champs suivants :
+${PHOTO_RULES_PROMPT}
 
 Verdict :
 - "verified" si single_face = yes ET same_person = yes ET live_capture = yes.
@@ -34,7 +55,7 @@ Verdict :
 - "review" dans les autres cas.
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
+{"verdict":"verified|review|rejected","single_face":"yes|no|unknown","same_person":"yes|maybe|no|unknown","live_capture":"yes|maybe|no","bare_chest":"yes|no|unsure","apparent_age_min":0,"apparent_age_max":0,"too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français"}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -174,7 +195,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("primary_photo_url")
+      .select("primary_photo_url, gender, birthdate")
       .eq("id", userId)
       .single();
 
@@ -295,6 +316,10 @@ export const verifySelfie = createServerFn({ method: "POST" })
           live_capture: safeEnum(parsed.live_capture, ["yes", "maybe", "no"] as const, "maybe"),
           reason: typeof parsed.reason === "string" ? parsed.reason : "",
           reasonFr: typeof parsed.reason_fr === "string" ? parsed.reason_fr : "",
+          checks: parsePhotoRuleChecks(parsed),
+          bare_chest: safeEnum(parsed.bare_chest, ["yes", "no", "unsure"] as const, "no"),
+          apparent_age_min: Number.isFinite(Number(parsed.apparent_age_min)) ? Number(parsed.apparent_age_min) : 0,
+          apparent_age_max: Number.isFinite(Number(parsed.apparent_age_max)) ? Number(parsed.apparent_age_max) : 0,
         };
         gatewayFailed = false;
       } catch (e) {
@@ -328,6 +353,31 @@ export const verifySelfie = createServerFn({ method: "POST" })
       result.verdict = "review";
     }
 
+    // Règles de refus communes aux photos et au selfie : seul un problème
+    // certain refuse le selfie (le doute reste géré par « à contrôler »).
+    if (result.verdict !== "rejected") {
+      const declaredGender = profile?.gender === "homme" || profile?.gender === "femme" ? profile.gender : null;
+      const violation = result.checks ? photoRuleViolation(result.checks, declaredGender, false) : null;
+      let rejectReason: string | null = null;
+      if (result.bare_chest === "yes") rejectReason = BARE_CHEST_REASON;
+      else if (violation) rejectReason = violation.reason;
+      else if (profile?.birthdate && (result.apparent_age_min ?? 0) > 0 && (result.apparent_age_max ?? 0) > 0) {
+        const birth = new Date(profile.birthdate);
+        const now = new Date();
+        let age = now.getUTCFullYear() - birth.getUTCFullYear();
+        const m = now.getUTCMonth() - birth.getUTCMonth();
+        if (m < 0 || (m === 0 && now.getUTCDate() < birth.getUTCDate())) age--;
+        if (ageGapMatch(age, result.apparent_age_min!, result.apparent_age_max!) === "mismatch") {
+          rejectReason = SELFIE_AGE_REASON;
+        }
+      }
+      if (rejectReason) {
+        result.verdict = "rejected";
+        result.reason = rejectReason;
+        result.reasonFr = rejectReason;
+      }
+    }
+
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin
@@ -344,7 +394,7 @@ export const verifySelfie = createServerFn({ method: "POST" })
       if (result.verdict !== "verified") {
         await supabaseAdmin.from("moderation_events").insert({
           user_id: userId,
-          content: `Vérification selfie — une seule tête:${result.single_face} / même personne:${result.same_person} / prise en direct:${result.live_capture}`,
+          content: `Vérification selfie — une seule tête:${result.single_face} / même personne:${result.same_person} / prise en direct:${result.live_capture} / torse nu:${result.bare_chest ?? "?"} / âge apparent:${result.apparent_age_min ?? 0}-${result.apparent_age_max ?? 0}${checksSummary(result.checks)}`,
           verdict: result.verdict === "rejected" ? "block" : "warn",
           categories: ["selfie_verification"],
           reason: result.reasonFr || result.reason,

@@ -35,13 +35,16 @@ const CHECK_VALUES: Record<string, string> = {
   mismatch: "Incohérent",
   true: "Oui",
   false: "Non",
+  front: "De face",
+  three_quarter: "Trois quarts",
+  profile: "De profil",
 };
 
 const translateValue = (v: string) =>
   v
     .replace(/\s*vs déclaré:\s*/g, " · âge déclaré ")
     .replace(/\(ok\)/g, "(écart accepté)")
-    .replace(/\b(yes|no|maybe|unsure|unknown|heavy|light|none|mismatch|match|true|false)\b/g, (w) => CHECK_VALUES[w] ?? w);
+    .replace(/\b(yes|no|maybe|unsure|unknown|heavy|light|none|mismatch|match|true|false|front|three_quarter|profile)\b/g, (w) => CHECK_VALUES[w] ?? w);
 
 /**
  * Transforme le résumé technique d'un contrôle photo/selfie

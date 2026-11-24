@@ -81,3 +81,49 @@ test("en cas de doute sur une deuxième personne, la photo est signalée à l'é
 test("une photo avec une seule personne garde son verdict", () => {
   assert.equal(enforceSinglePerson("allow", "yes"), "allow");
 });
+
+// Règles de refus photo + selfie (Nooryaa, 24 nov. 2026)
+import { photoRuleViolation, parsePhotoRuleChecks, type PhotoRuleChecks } from "./photo-rules";
+
+const ok: PhotoRuleChecks = parsePhotoRuleChecks({ face_angle: "front", apparent_gender: "homme" });
+
+test("une photo conforme ne déclenche aucune règle", () => {
+  assert.equal(photoRuleViolation(ok, "homme"), null);
+});
+
+const refused: [string, Partial<PhotoRuleChecks>, string][] = [
+  ["dans le noir", { too_dark: "yes" }, "trop_sombre"],
+  ["en short", { shorts: "yes" }, "short"],
+  ["visage à moitié", { face_complete: "no" }, "visage_a_moitie"],
+  ["prise de profil", { face_angle: "profile" }, "photo_de_profil"],
+  ["créée par l'IA", { ai_generated: "yes" }, "modifiee_ia"],
+  ["avec un filtre qui change le visage", { filtered: "heavy" }, "modifiee_ia"],
+  ["à caractère sexuel", { sexual: "yes" }, "caractere_sexuel"],
+  ["avec du texte", { added_text: "yes" }, "texte"],
+];
+for (const [label, change, category] of refused) {
+  test(`photo ${label} : refusée (photo et selfie)`, () => {
+    assert.deepEqual(
+      [photoRuleViolation({ ...ok, ...change }, "homme")?.verdict, photoRuleViolation({ ...ok, ...change }, "homme")?.category],
+      ["block", category],
+    );
+    assert.equal(photoRuleViolation({ ...ok, ...change }, "homme", false)?.verdict, "block");
+  });
+}
+
+test("photo d'une femme sur un profil homme : refusée", () => {
+  assert.equal(photoRuleViolation({ ...ok, apparent_gender: "femme" }, "homme")?.category, "sexe_incoherent");
+});
+
+test("sexe apparent incertain : la photo n'est pas refusée", () => {
+  assert.equal(photoRuleViolation({ ...ok, apparent_gender: "unknown" }, "femme"), null);
+});
+
+test("photo légèrement tournée (trois quarts) : acceptée", () => {
+  assert.equal(photoRuleViolation({ ...ok, face_angle: "three_quarter" }, "homme"), null);
+});
+
+test("doute sur un short : signalée à l'équipe pour une photo, sans effet sur le selfie", () => {
+  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme")?.verdict, "warn");
+  assert.equal(photoRuleViolation({ ...ok, shorts: "unsure" }, "homme", false), null);
+});

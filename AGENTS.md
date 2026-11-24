@@ -42,6 +42,7 @@
 - Admin profile status Entré/Pas encore entré comes from registrationComplete via adminProfileStatus (src/lib/admin-display.ts), never written to profiles.status; no selfie badge in the list; admin guards cache the admin check briefly while server functions still enforce requireAdminOrThrow.
 - photo_removed_at (last photo removed or team-rejected) blocks access until selfie/admin clears it; bare chest blocked in photo-rules.ts.
 - Pseudo rules: pseudo.ts + profiles trigger; photos need a visible face (photo-rules.ts); identity checks also use the stored selfie.
+- Photo and selfie refusal rules share PHOTO_RULES_PROMPT + photoRuleViolation (photo-rules.ts) so both surfaces refuse the same cases; selfie applies only certain violations (strict=false).
 - Selfie needs a stored profile photo first (photo-rules.ts; no photo is not a technical failure). Technical failures (unloadable photos, AI unavailable) never block signup: the server sets photo_verification_status="pending" and logs a moderation event so admins review the stored selfie; photo_verified stays false until verified.
 - Daily like limit lives only in the likes trigger (like_usage per Paris day; unliking never refunds); can_message requires mutual likes and reveal.ts canMessage mirrors it.
 - Photo/selfie warnings use persistentAlert + memberReason so French-only AI text falls back to a translated message.

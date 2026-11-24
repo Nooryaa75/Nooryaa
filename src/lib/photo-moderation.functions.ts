@@ -10,7 +10,12 @@ import {
   enforceSinglePerson,
   NO_FACE_REASON,
   NOT_REAL_PHOTO_REASON,
+  checksSummary,
+  parsePhotoRuleChecks,
+  PHOTO_RULES_PROMPT,
+  photoRuleViolation,
   SINGLE_PERSON_REASON,
+  type PhotoRuleChecks,
   type BareChest,
   type FaceVisible,
   type RealPhoto,
@@ -34,6 +39,8 @@ export type PhotoModerationResult = {
   face_visible: FaceVisible;
   bare_chest: BareChest;
   single_person: SinglePerson;
+  /** Règles de refus communes photo/selfie (sombre, short, visage, profil, sexe, texte…). */
+  checks?: PhotoRuleChecks;
   /** Contrôle impossible (service indisponible) : photo acceptée, revue par l'équipe. */
   technical?: boolean;
 };
@@ -47,15 +54,17 @@ Vérifie ces points :
 0 quater. Une seule personne (single_person) : sur Nooryaa la photo de profil doit montrer UNE SEULE personne. Les photos de groupe, à deux (couple, ami, enfant, parent dans les bras ou à côté), ou avec une autre personne visible à côté ou derrière sont INTERDITES. single_person = "no" dès qu'une deuxième personne (visage ou corps) est clairement visible sur la photo, même en partie ou en arrière-plan proche. "unsure" si une silhouette lointaine et floue pourrait être une autre personne. "yes" si une seule personne apparaît. Une personne sur une affiche, un tableau ou un écran derrière compte aussi comme une autre personne si son visage est visible.
 0 ter. Torse nu (bare_chest) : sur Nooryaa les photos torse nu sont INTERDITES, pour les hommes comme pour les femmes. bare_chest = "yes" si la personne a le torse, la poitrine ou le ventre nus (sans t-shirt, sans haut, en maillot de bain, à la plage ou à la piscine sans haut, débardeur ouvert laissant le torse nu), même si seule une partie du torse est visible au bas de la photo. "unsure" si on ne voit pas assez pour savoir si la personne porte un haut. "no" si la personne porte un haut qui couvre le torse.
 1. Conformité : verdict "block" si torse nu, maillot de bain, nudité, sous-vêtements, tenue très suggestive, contenu sexuel, violence, drogue, haine, contenu illicite, image pornographique, ou si ce n'est manifestement pas une photo de personne réelle utilisable comme photo de profil (capture d'écran, texte publicitaire, coordonnées visibles). Verdict "block" aussi pour toute photo de groupe ou avec plus d'une personne. Verdict "warn" si tenue limite, pose aguicheuse, photo floue ou de très mauvaise qualité, visage totalement masqué par un objet.
-2. Image générée ou retouchée par IA : "yes", "maybe" ou "no" (indices : peau lissée irréelle, mains/oreilles/bijoux déformés, arrière-plan incohérent, rendu 3D/illustration).
+2. Image générée ou retouchée par IA : voir ai_generated ci-dessous.
 3. Âge apparent : estime une fourchette d'âge apparent (apparent_age_min / apparent_age_max, entiers). Si aucun visage humain exploitable, mets 0 et 0.
-4. Filtres : "no", "light" (retouche légère) ou "heavy" (filtre beauté marqué, déformation du visage, stickers, oreilles d'animaux).
+4. Filtres : voir filtered ci-dessous.
+
+${PHOTO_RULES_PROMPT}
 
 Si la personne paraît mineure (moins de 18 ans) → verdict "block".
-Si ai_generated = "yes" → verdict "block". Si ai_generated = "maybe" ou filtered = "heavy" → au moins "warn".
+Si ai_generated = "yes" ou filtered = "heavy" → verdict "block". Si ai_generated = "maybe" → au moins "warn".
 
 Réponds UNIQUEMENT en JSON strict :
-{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","face_visible":"yes|no|unsure","bare_chest":"yes|no|unsure","single_person":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
+{"verdict":"allow|warn|block","real_photo":"yes|no|unsure","face_visible":"yes|no|unsure","bare_chest":"yes|no|unsure","single_person":"yes|no|unsure","too_dark":"yes|no|unsure","shorts":"yes|no|unsure","face_complete":"yes|no|unsure","face_angle":"front|three_quarter|profile|unknown","apparent_gender":"homme|femme|unknown","sexual":"yes|no|unsure","added_text":"yes|no|unsure","categories":["..."],"reason":"phrase courte adressée à la personne, dans la langue demandée","reason_fr":"la même phrase en français","ai_generated":"no|maybe|yes","filtered":"no|light|heavy","apparent_age_min":0,"apparent_age_max":0}`;
 
 function safeEnum<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
@@ -168,6 +177,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
         apparent_age_min: Number.isFinite(Number(parsed.apparent_age_min)) ? Number(parsed.apparent_age_min) : 0,
         apparent_age_max: Number.isFinite(Number(parsed.apparent_age_max)) ? Number(parsed.apparent_age_max) : 0,
         age_match: "unknown",
+        checks: parsePhotoRuleChecks(parsed),
       };
     } catch {
       return await technicalFallback();
@@ -239,9 +249,32 @@ export const moderatePhoto = createServerFn({ method: "POST" })
       }
     }
 
-    if (result.ai_generated === "yes") result.verdict = "block";
-    else if ((result.ai_generated === "maybe" || result.filtered === "heavy") && result.verdict === "allow") {
-      result.verdict = "warn";
+    // Règles de refus communes (sombre, short, visage à moitié, photo de profil,
+    // IA, sexe différent de celui indiqué, caractère sexuel, texte ajouté).
+    if (result.checks) {
+      let declaredGender: "homme" | "femme" | null = null;
+      try {
+        const { data: me } = await (context as any).supabase
+          .from("profiles")
+          .select("gender")
+          .eq("id", (context as any).userId)
+          .maybeSingle();
+        declaredGender = me?.gender === "homme" || me?.gender === "femme" ? me.gender : null;
+      } catch {
+        // sans sexe connu, la règle « sexe indiqué » ne s'applique pas
+      }
+      const violation = photoRuleViolation(result.checks, declaredGender);
+      if (violation) {
+        result.categories = [...result.categories, violation.category];
+        // Motif précis (sombre, de profil, visage à moitié…) plutôt que le message général sur le visage.
+        if (violation.verdict === "block" && (result.verdict !== "block" || result.reason === NO_FACE_REASON)) {
+          result.verdict = "block";
+          result.reason = violation.reason;
+          result.reasonFr = violation.reason;
+        } else if (violation.verdict === "warn" && result.verdict === "allow") {
+          result.verdict = "warn";
+        }
+      }
     }
 
     if (result.verdict !== "allow") {
@@ -253,7 +286,7 @@ export const moderatePhoto = createServerFn({ method: "POST" })
           user_id: (context as any).userId,
           media_bucket: mediaPath ? MODERATION_MEDIA_BUCKET : null,
           media_path: mediaPath,
-          content: `Photo de profil — visage:${result.face_visible} / une seule personne:${result.single_person} / torse nu:${result.bare_chest} / IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})`,
+          content: `Photo de profil — visage:${result.face_visible} / une seule personne:${result.single_person} / torse nu:${result.bare_chest} / IA:${result.ai_generated} / filtres:${result.filtered} / âge apparent:${result.apparent_age_min}-${result.apparent_age_max} vs déclaré:${data.declaredAge ?? "?"} (${result.age_match})${checksSummary(result.checks)}`,
           verdict: result.verdict,
           categories: result.categories,
           reason: result.reasonFr || result.reason,

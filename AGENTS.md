@@ -48,3 +48,4 @@
 - Photo/selfie warnings use persistentAlert + memberReason so French-only AI text falls back to a translated message.
 - paid-plans.ts showPaidPlans: iOS never shows paid plans/Premium/prices (App Review 3.1.1/5.6); elsewhere only when the admin switch is on. Keep account deletion reachable from Mon compte.
 - Moderation events store checked media in media_bucket/media_path (photos: private moderation-media) for the admin detail.
+- Conversation retention uses a service-only atomic database purge and a managed daily authenticated callback; queue attachment deletion durably through the Storage API so failures do not orphan files or race message inserts.

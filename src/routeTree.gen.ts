@@ -61,6 +61,7 @@ import { Route as AdminProfilesIdRouteImport } from './routes/admin.profiles.$id
 import { Route as AdminSupportIndexRouteImport } from './routes/admin.support.index'
 import { Route as AdminSupportIdRouteImport } from './routes/admin.support.$id'
 import { Route as ApiPublicLegalDocumentsRouteImport } from './routes/api.public.legal-documents'
+import { Route as ApiPublicHooksConversationCleanupRouteImport } from './routes/api/public/hooks/conversation-cleanup'
 import { Route as ApiPublicHooksIncompleteProfilesRouteImport } from './routes/api/public/hooks/incomplete-profiles'
 
 const IndexRoute = IndexRouteImport.update({
@@ -333,6 +334,12 @@ const ApiPublicLegalDocumentsRoute = ApiPublicLegalDocumentsRouteImport.update({
   path: '/api/public/legal-documents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksConversationCleanupRoute =
+  ApiPublicHooksConversationCleanupRouteImport.update({
+    id: '/api/public/hooks/conversation-cleanup',
+    path: '/api/public/hooks/conversation-cleanup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksIncompleteProfilesRoute =
   ApiPublicHooksIncompleteProfilesRouteImport.update({
     id: '/api/public/hooks/incomplete-profiles',
@@ -392,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
   '/admin/support/': typeof AdminSupportIndexRoute
+  '/api/public/hooks/conversation-cleanup': typeof ApiPublicHooksConversationCleanupRoute
   '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRoutesByTo {
@@ -445,6 +453,7 @@ export interface FileRoutesByTo {
   '/admin/conversations': typeof AdminConversationsIndexRoute
   '/admin/profiles': typeof AdminProfilesIndexRoute
   '/admin/support': typeof AdminSupportIndexRoute
+  '/api/public/hooks/conversation-cleanup': typeof ApiPublicHooksConversationCleanupRoute
   '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRoutesById {
@@ -501,6 +510,7 @@ export interface FileRoutesById {
   '/admin/conversations/': typeof AdminConversationsIndexRoute
   '/admin/profiles/': typeof AdminProfilesIndexRoute
   '/admin/support/': typeof AdminSupportIndexRoute
+  '/api/public/hooks/conversation-cleanup': typeof ApiPublicHooksConversationCleanupRoute
   '/api/public/hooks/incomplete-profiles': typeof ApiPublicHooksIncompleteProfilesRoute
 }
 export interface FileRouteTypes {
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/'
     | '/admin/profiles/'
     | '/admin/support/'
+    | '/api/public/hooks/conversation-cleanup'
     | '/api/public/hooks/incomplete-profiles'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -610,6 +621,7 @@ export interface FileRouteTypes {
     | '/admin/conversations'
     | '/admin/profiles'
     | '/admin/support'
+    | '/api/public/hooks/conversation-cleanup'
     | '/api/public/hooks/incomplete-profiles'
   id:
     | '__root__'
@@ -665,6 +677,7 @@ export interface FileRouteTypes {
     | '/admin/conversations/'
     | '/admin/profiles/'
     | '/admin/support/'
+    | '/api/public/hooks/conversation-cleanup'
     | '/api/public/hooks/incomplete-profiles'
   fileRoutesById: FileRoutesById
 }
@@ -700,6 +713,7 @@ export interface RootRouteChildren {
   AdminConversationsIndexRoute: typeof AdminConversationsIndexRoute
   AdminProfilesIndexRoute: typeof AdminProfilesIndexRoute
   AdminSupportIndexRoute: typeof AdminSupportIndexRoute
+  ApiPublicHooksConversationCleanupRoute: typeof ApiPublicHooksConversationCleanupRoute
   ApiPublicHooksIncompleteProfilesRoute: typeof ApiPublicHooksIncompleteProfilesRoute
 }
 
@@ -1069,6 +1083,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLegalDocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/conversation-cleanup': {
+      id: '/api/public/hooks/conversation-cleanup'
+      path: '/api/public/hooks/conversation-cleanup'
+      fullPath: '/api/public/hooks/conversation-cleanup'
+      preLoaderRoute: typeof ApiPublicHooksConversationCleanupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/incomplete-profiles': {
       id: '/api/public/hooks/incomplete-profiles'
       path: '/api/public/hooks/incomplete-profiles'
@@ -1183,6 +1204,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConversationsIndexRoute: AdminConversationsIndexRoute,
   AdminProfilesIndexRoute: AdminProfilesIndexRoute,
   AdminSupportIndexRoute: AdminSupportIndexRoute,
+  ApiPublicHooksConversationCleanupRoute:
+    ApiPublicHooksConversationCleanupRoute,
   ApiPublicHooksIncompleteProfilesRoute: ApiPublicHooksIncompleteProfilesRoute,
 }
 export const routeTree = rootRouteImport

@@ -242,6 +242,27 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_media_cleanup: {
+        Row: {
+          bucket: string
+          created_at: string
+          id: string
+          path: string
+        }
+        Insert: {
+          bucket: string
+          created_at?: string
+          id?: string
+          path: string
+        }
+        Update: {
+          bucket?: string
+          created_at?: string
+          id?: string
+          path?: string
+        }
+        Relationships: []
+      }
       credit_events: {
         Row: {
           amount: number
@@ -1381,6 +1402,10 @@ export type Database = {
         Args: { _receiver: string; _sender: string }
         Returns: boolean
       }
+      conversation_expired: {
+        Args: { at_time?: string; last_message: string }
+        Returns: boolean
+      }
       daily_like_limit: { Args: { _user: string }; Returns: number }
       delete_own_account:
         | { Args: never; Returns: undefined }
@@ -1399,6 +1424,10 @@ export type Database = {
       }
       likes_used_today: { Args: { _user: string }; Returns: number }
       my_likes_remaining_today: { Args: never; Returns: number }
+      purge_inactive_conversations: {
+        Args: { dry_run?: boolean }
+        Returns: Json
+      }
       register_push_token: {
         Args: { _platform: string; _token: string }
         Returns: undefined

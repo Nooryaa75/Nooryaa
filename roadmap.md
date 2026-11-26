@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Discussions : historique réel consulté en administrateur ; suppression après 10 jours sans échange, nettoyage quotidien à 03 h UTC avec délai supplémentaire inférieur à 24 h, photos/vocaux supprimés par une file durable. Deux tests du délai réussis, accès sans autorisation refusé (401), contrôle à blanc puis effacement de 2 messages expirés, deuxième passage sans effet et historique vide confirmé à l’écran. Reste à publier le site pour que le nettoyage quotidien atteigne la nouvelle adresse ; aucun fichier joint n’était présent dans l’échange nettoyé.
+
 - [x] Pseudo vraiment en un seul mot : mots collés par tiret, point ou _ refusés (chiffres finaux permis, ex. Amina92), sur les écrans et en base ; compte démo Apple renommé NooryaaReview ; 11 tests réussis. Publication du site reste à faire.
 
 - [x] Compte « Le boureur arrive » : email envoyé (choisir un pseudo adapté, vraie photo, selfie conforme) puis compte, photos et selfies supprimés.

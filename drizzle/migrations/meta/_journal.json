@@ -141,6 +141,13 @@
       "when": 1795462373063,
       "tag": "0019_moderation_event_media",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795687999104,
+      "tag": "0020_inactive_conversation_retention",
+      "breakpoints": true
     }
   ]
 }

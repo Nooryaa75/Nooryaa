@@ -49,3 +49,4 @@
 - paid-plans.ts showPaidPlans: iOS never shows paid plans/Premium/prices (App Review 3.1.1/5.6); elsewhere only when the admin switch is on. Keep account deletion reachable from Mon compte.
 - Moderation events store checked media in media_bucket/media_path (photos: private moderation-media) for the admin detail.
 - Conversation retention uses a service-only atomic database purge and a managed daily authenticated callback; queue attachment deletion durably through the Storage API so failures do not orphan files or race message inserts.
+- Account retention invitations use the browser-safe account-retention predicate in the deletion dialog; cancellation keeps the account unchanged and immediate deletion remains available.

@@ -25,9 +25,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { frenchError } from "@/lib/errors";
+import { showPatienceMessage } from "@/lib/account-retention";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/compte/abonnement")({
-  head: () => ({ meta: [{ title: "Mon abonnement — Nooryaa" }] }),
+  head: () => ({ meta: [
+    { title: "Abonnement et gestion du compte — Nooryaa" },
+    { name: "description", content: "Gérez votre abonnement Nooryaa et choisissez de conserver, suspendre ou supprimer votre compte." },
+    { property: "og:title", content: "Abonnement et gestion du compte — Nooryaa" },
+    { property: "og:description", content: "Gérez votre abonnement Nooryaa et choisissez de conserver, suspendre ou supprimer votre compte." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AbonnementPage,
 });
 
@@ -83,6 +92,7 @@ const euro = (n: number) =>
   n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
 function AbonnementPage() {
+  const { t } = useI18n();
   const saveSubscription = useServerFn(recordSubscription);
   const [current, setCurrent] = useState<string | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);
@@ -96,6 +106,7 @@ function AbonnementPage() {
   const [suspendDetails, setSuspendDetails] = useState("");
   const [deleteReason, setDeleteReason] = useState("");
   const [deleteDetails, setDeleteDetails] = useState("");
+  const inviteToWait = showPatienceMessage("delete", deleteReason);
   const router = useRouter();
   const doSuspend = useServerFn(suspendAccount);
   const doDelete = useServerFn(deleteAccount);
@@ -481,8 +492,16 @@ function AbonnementPage() {
                 details={deleteDetails}
                 onDetails={setDeleteDetails}
               />
+              {inviteToWait && (
+                <div data-no-translate role="status" className="space-y-2 border-l-4 border-primary bg-primary/5 p-4 text-sm">
+                  <p className="font-semibold text-primary">{t("Et si vous nous laissiez encore quelques jours ?")}</p>
+                  <p className="leading-relaxed text-foreground">{t("Nooryaa est une application récente et notre communauté grandit. De nouveaux profils vont bientôt arriver, in cha Allah. Nous comprenons votre souhait de faire une belle rencontre : laissez-vous encore quelques jours avant de décider de supprimer votre compte. Votre prochaine rencontre est peut-être à venir. Vous restez libre de supprimer votre compte dès maintenant si vous le souhaitez.")}</p>
+                </div>
+              )}
               <AlertDialogFooter>
-                <AlertDialogCancel disabled={loading === "delete"}>Annuler</AlertDialogCancel>
+                <AlertDialogCancel disabled={loading === "delete"}>
+                  {inviteToWait ? t("Je patiente encore quelques jours") : "Annuler"}
+                </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={(e) => {
                     if (!deleteReason) e.preventDefault();
